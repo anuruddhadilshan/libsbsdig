@@ -244,3 +244,19 @@ to be written (see TODO_3);
 ```
 
 
+#### NOTE ABOUT RUNNING REPLAY SCRIPTS WITH ROOT6
+May need to include a rootlogon.C in the current directory to get it
+to pick up the SBS-offline stuff properly. It requires SBS_ANALYSIS
+environmental variable to be set, but all in all it looks something
+like this:
+```cpp
+R__LOAD_LIBRARY($SBS_ANALYSIS/libsbs.so)
+R__LOAD_LIBRARY(../libsbsdig.so)
+
+void rootlogon()
+{
+  // SBS-offline path
+  gSystem->AddDynamicPath("${SBS_ANALYSIS}");
+  gSystem->AddIncludePath(" -I${SBS_ANALYSIS}");
+}
+```

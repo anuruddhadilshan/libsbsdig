@@ -1,0 +1,9 @@
+generalinfo.ndetectors = 1 # to be revised: it is doubtful we will have 2 cherenkovs in one arm
+generalinfo.g4sbs_exptype = 1
+generalinfo.g4sbs_dettype = 1
+generalinfo.chan_per_slot = 128
+generalinfo.slot_per_crate = 16
+
+generalinfo.nsignal = 1
+generalinfo.signal1.pid = 11
+generalinfo.signal1.tid = 1

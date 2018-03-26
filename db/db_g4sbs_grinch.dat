@@ -1,0 +1,23 @@
+950101
+g4sbs_grinch.zckov_in = 1.3824 #m
+g4sbs_grinch.n_radiator = 1.00137
+g4sbs_grinch.l_radiator = 0.66 #m
+g4sbs_grinch.npmts = 510
+g4sbs_grinch.npmtrows = 60
+g4sbs_grinch.npmtcolsmax = 9
+g4sbs_grinch.pmtdistx = 0.03100 #m
+g4sbs_grinch.pmtdisty = 0.03100 #m
+g4sbs_grinch.x_tcpmt = -0.914500 #m
+g4sbs_grinch.y_tcpmt = -0.124000 #m
+
+
+g4sbs_grinch.cher0.zckov_in = 1.3824 #m
+g4sbs_grinch.cher0.n_radiator = 1.00137
+g4sbs_grinch.cher0.l_radiator = 0.66 #m
+g4sbs_grinch.cher0.npmts = 510
+g4sbs_grinch.cher0.npmtrows = 60
+g4sbs_grinch.cher0.npmtcolsmax = 9
+g4sbs_grinch.cher0.pmtdistx = 0.03100 #m
+g4sbs_grinch.cher0.pmtdisty = 0.03100 #m
+g4sbs_grinch.cher0.x_tcpmt = -0.914500 #m
+g4sbs_grinch.cher0.y_tcpmt = -0.124000 #m

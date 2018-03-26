@@ -1,0 +1,30 @@
+950101
+
+# PMT parameters:
+ratedig.pmtgain = 7.0e6
+ratedig.pmttransittime = 33.0  # ns
+ratedig.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
+#ratedig.pmtrisetime = 4.5 # ns
+#ratedig.pmtjitter = 4.0 # ns
+#ratedig.pmtfwhm = 7.5 # ns
+#ratedig.pmtpulseshapetau = 38.3  # ns
+
+# Electronics parameters:
+ratedig.triggeroffset = 30.  # ns 
+ratedig.triggerjitter = 3.0  # ns
+ratedig.gatewidth = 100. #ns
+ratedig.tdctimeconversion = 1.0 #ns
+ratedig.tdcbits = 16
+ratedig.tdcthreshold = 0.003 # V
+ratedig.tdcresolution = 1.0 # ns
+ratedig.readoutimpedance = 50 # ohm
+
+# pedestal noise
+ratedig.pulsenoiseconst = 30.   #ADC values
+ratedig.pulsenoisesigma = 7.    #ADC values
+
+#NINO cross talk parameter
+ratedig.do_crosstalk = 0
+ratedig.crosstalk_mean = 0.1
+ratedig.crosstalk_sigma = 0.03
+ratedig.crosstalk_chan_apart = 8
