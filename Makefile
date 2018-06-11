@@ -69,11 +69,7 @@ CXXFLAGS += $(SOLINCLUDE)
 DICT	= $(NAME)_dict
 SRC   = src/g4sbs_tree.cxx \
         src/g4sbs_data.cxx \
-        src/TSBSCher.cxx \
-        src/TSBSDet.cxx \
-        src/TSBSCherData.cxx \
         src/TSBSDBManager.cxx \
-        src/TSBSDetData.cxx \
         src/TSBSGeant4File.cxx \
         src/TSBSSimDecoder.cxx \
         src/TSBSSimEvent.cxx \
@@ -83,8 +79,11 @@ SRC   = src/g4sbs_tree.cxx \
         src/TSBSSimDetector.cxx \
         src/TSBSSimData.cxx \
         src/TSBSSimHCal.cxx
-#         src/TSBSSimCherDigitization.cxx \
-#         src/TSBSSimDetDigitization.cxx \
+#        src/TSBSSimCherDigitization.cxx \
+#        src/TSBSCher.cxx \
+#        src/TSBSDet.cxx \
+#        src/TSBSCherData.cxx \
+#        src/TSBSDetData.cxx \
 
 
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o

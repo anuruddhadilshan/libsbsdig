@@ -62,8 +62,8 @@ class TSBSGeant4File {
   g4sbsgendata *GetGenData(Int_t i) const { return fg4sbsGenData[i]; }
   
   //get GEM data
-  TSBSCherData *GetCherData();
-  void GetCherData(TSBSCherData* gd);
+  //TSBSCherData *GetCherData();
+  //void GetCherData(TSBSCherData* gd);
   
  private:
   // Members

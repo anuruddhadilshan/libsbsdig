@@ -608,6 +608,7 @@ void TSBSGeant4File::Clear(){
   return;
 }
 
+/*
 TSBSCherData* TSBSGeant4File::GetCherData()
 {
   // Return TSBSCherData object filled with GEM data of present event.
@@ -618,7 +619,9 @@ TSBSCherData* TSBSGeant4File::GetCherData()
   GetCherData(chd);
   return chd;
 }
+*/
 
+/*
 void TSBSGeant4File::GetCherData(TSBSCherData* chd)
 {
   // Pack data into TSBSCherData
@@ -670,7 +673,7 @@ void TSBSGeant4File::GetCherData(TSBSCherData* chd)
   }
   chd->SetNHit(nchdata);
 }
-
+*/
 
 
 #endif//__CINT__
