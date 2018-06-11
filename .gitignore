@@ -1,10 +1,12 @@
 # Compiled stuff
 *.[od]
 lib*.so*
+*.so
 
 # Generated files
 *_dict.h
 *_dict.cxx
+*.pcm
 
 # Editor lint
 .#*
