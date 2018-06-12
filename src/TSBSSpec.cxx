@@ -1,5 +1,5 @@
 #include "TSBSSpec.h"
-#include "TSBSCher.h"
+//#include "TSBSCher.h"
 #include <iostream>
 
 using namespace std;
@@ -22,6 +22,7 @@ TSBSSpec::~TSBSSpec()
   // }
 }
 
+/*
 Int_t 
 TSBSSpec::AddCher (TSBSCher* pcdet)
 {
@@ -32,6 +33,7 @@ TSBSSpec::AddCher (TSBSCher* pcdet)
   fCherDets.push_back(pcdet);
   return 0;
 }
+*/
 
 Int_t TSBSSpec::CoarseTrack(){
     // Needs work
@@ -79,9 +81,10 @@ void
 TSBSSpec::Print() const
 {
   cout << "Hello, I'm a spectrometer named " << GetName() << endl;
-  
+  /*
   for( vector<TSBSCher*>::const_iterator it = fCherDets.begin();
        it != fCherDets.end(); ++it ) {
     (*it)->Print();
   }
+  */
 }
