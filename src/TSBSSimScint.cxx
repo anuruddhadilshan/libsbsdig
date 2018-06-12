@@ -43,9 +43,9 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   int type = 0;
   double data = 0;
   for( const g4sbshitdata *ev: evbuffer) {
-    // Only get detector data for HCAL
-    // TODO: Don't hard code DetID here!!!
-    if(ev->GetDetID() == kScint) {
+    // Only get detector data for Scintillator
+    // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
+    if(ev->GetDetType() == kScint) {
       mod  = ev->GetData(0);
       type = ev->GetData(1);
       data = ev->GetData(2);

@@ -31,20 +31,23 @@ class g4sbshitdata {
 	virtual ~g4sbshitdata();
 	
 	//Get detector ID
-	int     GetDetID() const { return fDetID;}
+	det_type  GetDetType() const { return fDetType;}
+	int      GetDetID() const { return fDetID;}
+	int     GetDetUniqueID() const { return ((int)fDetType)*10+fDetID;}
 
 	// Get/set one specific element of the data for this hit
-	void    SetData( unsigned int, double );
-	double  GetData( unsigned int ) const ;
+	void  SetData( unsigned int, double );
+	double GetData( unsigned int ) const ;
 	double *GetData(){ return fData; }//Get all data array 
 	
 	bool    IsFilled() const ;
 	
     protected:
-	int     fDetID;//detector ID
-	unsigned int     fSize;//data array size;
+	det_type   fDetType;//detector type (see g4sbs_types.h)
+	int         fDetID;//detector ID
+	unsigned int fSize;//data array size;
 	long long int fFillbits;
-	double *fData;//data array: See in .cxx the sequence of this data array for g4sbs GRINCH/RICH
+	double        *fData;//data array: See in .cxx the sequence of this data array for g4sbs GRINCH/RICH
 };
 
 ////////////////////////////////////////////////////////////////////////////

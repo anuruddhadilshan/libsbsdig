@@ -2,6 +2,7 @@
 #define _TSBSSIMDETECTOR_H
 
 #include <vector>
+#include "g4sbs_types.h"
 
 class g4sbshitdata;
 class TSBSSimEvent;
@@ -18,6 +19,7 @@ protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
 private:
   bool fHasData;
+  det_type   fDetType;//detector type (see g4sbs_types.h) no need right now, but it might come in handy
   TSBSDBManager* fDBmanager;
 };
 
