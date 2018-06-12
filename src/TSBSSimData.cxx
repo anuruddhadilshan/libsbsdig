@@ -4,8 +4,10 @@
 ///////////////////////////////////////////////////////////////
 // hitdata classes 
 
-g4sbshitdata::g4sbshitdata(int detid, unsigned int size ){
-  fDetID = detid;
+g4sbshitdata::g4sbshitdata(int unique_detid, unsigned int size ){
+  fDetID = unique_detid%10;
+  fDetType = (det_type)((unique_detid-fDetID)/10);//Should assign the right det flag to the right 
+  // again: kHCal: 0, kECal: 1, kCher: 3, kScint: 3, kGEM: 4;
   fData  = new double[size];
   fSize  = size;
   fFillbits = 0;

@@ -45,7 +45,7 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for HCAL
     // TODO: Don't hard code DetID here!!!
-    if(ev->GetDetID() == 2) {
+    if(ev->GetDetType() == kHCal) {
       mod  = ev->GetData(0);
       type = ev->GetData(1);
       data = ev->GetData(2);

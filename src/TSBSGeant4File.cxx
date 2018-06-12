@@ -10,8 +10,23 @@
 #define D_FLAG 1 //0: nothing; 1: warning; 2: debug;
 #endif
 
-#define CHER_HIT_ID 0
-#define HCAL_DET_ID 2
+//List of detector unique IDs: 
+// by (proposed) convention: DetUniqueID = DetType*10+DetID
+// DetType of type det_type defined in g4sbs_types: kHCal(0), kECal(1), kCher(2), kScint(3), kGEM(4);
+#define HCAL_UNIQUE_DETID 0
+#define BBPS_UNIQUE_DETID 10
+#define BBSH_UNIQUE_DETID 11
+#define ECAL_UNIQUE_DETID 12
+#define GRINCH_UNIQUE_DETID 20
+#define RICH_UNIQUE_DETID 21
+#define HODO_UNIQUE_DETID 30
+#define CDET_UNIQUE_DETID 31
+#define BBGEM_UNIQUE_DETID 40
+#define SBSGEM_UNIQUE_DETID 41
+#define FT_UNIQUE_DETID 42
+#define FPP1_UNIQUE_DETID 43
+#define FPP2_UNIQUE_DETID 44
+//#define CHER_HIT_ID 0
 
 TSBSGeant4File::TSBSGeant4File() : fFile(0), fSource(0) {
   fFilename[0] = '\0';
@@ -556,7 +571,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->hcalpart.E) {
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {
       if(fTree->hcalpart.detected->at(k)) {
-        g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_DET_ID,3);
+        g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,3);
         hcalpmthit->SetData(0,fTree->hcalpart.part_PMT->at(k));
         hcalpmthit->SetData(1,0); // data type 0 == optical photon
         hcalpmthit->SetData(2,fTree->hcalpart.t->at(k));
@@ -568,7 +583,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // scintillators. This can be changed later, I suppose...
   if(fTree->hcalscint.sumedep) {
     for(size_t k = 0; k < fTree->hcalscint.sumedep->size(); k++) {
-      g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_DET_ID,3);
+      g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_UNIQUE_DETID,3);
       hcalscinthit->SetData(0,fTree->hcalscint.cell->at(k));
       hcalscinthit->SetData(1,1); // data type 1 == sumedep
       hcalscinthit->SetData(2,fTree->hcalscint.sumedep->at(k));
