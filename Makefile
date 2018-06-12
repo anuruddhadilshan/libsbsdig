@@ -74,17 +74,19 @@ SRC   = src/g4sbs_tree.cxx \
         src/TSBSSimDecoder.cxx \
         src/TSBSSimEvent.cxx \
         src/TSBSSimFile.cxx \
-        src/TSBSSpec.cxx \
         src/TSBSSimDigitizer.cxx \
         src/TSBSSimDetector.cxx \
         src/TSBSSimData.cxx \
+	src/TSBSSimCher.cxx \
         src/TSBSSimHCal.cxx \
 	src/TSBSSimScint.cxx
-#        src/TSBSSimCherDigitization.cxx \
 #        src/TSBSCher.cxx \
-#        src/TSBSDet.cxx \
 #        src/TSBSCherData.cxx \
+#        src/TSBSDet.cxx \
 #        src/TSBSDetData.cxx \
+#        src/TSBSSimDetDigitization.cxx \
+#        src/TSBSSimCherDigitization.cxx \
+#        src/TSBSSpec.cxx \
 
 
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o
