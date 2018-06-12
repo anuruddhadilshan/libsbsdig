@@ -1,0 +1,41 @@
+950101
+#cdet general info
+sbs.cdet.dettype = Scint
+sbs.cdet.chan_per_slot = 128
+sbs.cdet.slot_per_crate = 16
+sbs.cdet.nchan = 2352
+
+#cdet geometry info
+sbs.cdet.nplanes = 2
+sbs.cdet.nmodules = 6
+sbs.cdet.xsize = 2.25 #m
+sbs.cdet.zpos = 15.0 15.5 #m
+
+#grinch PMT info
+sbs.cdet.pmtgain = 7.0e6
+sbs.cdet.pmttransittime = 33.0  # ns
+#sbs.cdet.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
+#sbs.cdet.pmtrisetime = 4.5 # ns
+#sbs.cdet.pmtjitter = 4.0 # ns
+#sbs.cdet.pmtfwhm = 7.5 # ns
+#sbs.cdet.pmtpulseshapetau = 38.3  # ns
+
+# Electronics parameters:
+sbs.cdet.triggeroffset = 30.  # ns 
+sbs.cdet.triggerjitter = 3.0  # ns
+sbs.cdet.gatewidth = 100. #ns
+sbs.cdet.tdctimeconversion = 1.0 #ns
+sbs.cdet.tdcbits = 16
+sbs.cdet.tdcthreshold = 0.003 # V
+sbs.cdet.tdcresolution = 1.0 # ns
+sbs.cdet.readoutimpedance = 50 # ohm
+
+# pedestal noise 
+#sbs.cdet.pulsenoiseconst = 30.   #ADC values
+#sbs.cdet.pulsenoisesigma = 7.    #ADC values
+
+#NINO cross talk parameter
+#sbs.cdet.do_crosstalk = 0
+#sbs.cdet.crosstalk_mean = 0.1
+#sbs.cdet.crosstalk_sigma = 0.03
+#sbs.cdet.crosstalk_chan_apart = 8
