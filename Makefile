@@ -78,7 +78,8 @@ SRC   = src/g4sbs_tree.cxx \
         src/TSBSSimDigitizer.cxx \
         src/TSBSSimDetector.cxx \
         src/TSBSSimData.cxx \
-        src/TSBSSimHCal.cxx
+        src/TSBSSimHCal.cxx \
+	src/TSBSSimScint.cxx
 #        src/TSBSSimCherDigitization.cxx \
 #        src/TSBSCher.cxx \
 #        src/TSBSDet.cxx \

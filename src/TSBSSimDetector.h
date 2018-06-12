@@ -5,6 +5,7 @@
 
 class g4sbshitdata;
 class TSBSSimEvent;
+class TSBSDBManager;
 
 class TSBSSimDetector {
 public:
@@ -17,6 +18,7 @@ protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
 private:
   bool fHasData;
+  TSBSDBManager* fDBmanager;
 };
 
 #endif // _TSBSSIMDETECTOR_H

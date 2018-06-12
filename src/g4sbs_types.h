@@ -28,4 +28,17 @@ static int data_size(int tag){
     }
     return 0;
 }
+
+enum exp_type{
+  kGMn, kGEp, kGEn, 
+  kSIDIS, kA1n, kTDIS, kDVCS
+};
+
+enum det_type{
+  kHCal, kECal,
+  kCher, kScint,
+  kGEM
+};
+
+
 #endif//__GEMC_TYPES_H

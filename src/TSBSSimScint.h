@@ -7,7 +7,6 @@ class TF1;
 class TF1Convolution;
 class TTree;
 class TFile;
-class TSBSDBManager;
 
 class TSBSSimScint : public TSBSSimDetector {
 public:
@@ -61,7 +60,6 @@ public:
 private:
   SPEModel *fSPE;
   std::vector<Signal> fSignals;
-  TSBSDBManager* DBman;
 };
 
 #endif //_TSBSSIMHCAL_H

@@ -6,8 +6,8 @@ ebeam      = 11.0
 g4sbs_grinch.theta    = 33.0
 g4sbs_grinch.pcentral = 2.0
 
-sbs_bb.theta    = 33.0
-sbs_bb.pcentral = 2.0
+bb.theta    = 33.0
+bb.pcentral = 2.0
 
 g4sbs_rich.theta    = 33.0
 g4sbs_rich.pcentral = 2.0

@@ -16,6 +16,7 @@
 #pragma link C++ defined_in "src/TSBSSimDigitizer.h";
 #pragma link C++ defined_in "src/TSBSSimDetector.h";
 #pragma link C++ defined_in "src/TSBSSimHCal.h";
+#pragma link C++ defined_in "src/TSBSSimScint.h";
 
 //#pragma link C++ defined_in "src/TSBSCher.h";
 //#pragma link C++ defined_in "src/TSBSCherData.h";

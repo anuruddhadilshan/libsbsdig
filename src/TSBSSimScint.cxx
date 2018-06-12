@@ -9,7 +9,6 @@
 
 TSBSSimScint::TSBSSimScint()
 {
-  DBman = TSBSDBManager::GetInstance();
   Init();
 }
 
@@ -22,7 +21,7 @@ void TSBSSimScint::Init()
   fSPE = new SPEModel();
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
-  fSignals.resize(288); // TODO: Don't hard code this!!!
+  fSignals.resize(180); // TODO: Don't hard code this!!!
 
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
@@ -46,7 +45,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for HCAL
     // TODO: Don't hard code DetID here!!!
-    if(ev->GetDetID() == 2) {
+    if(ev->GetDetID() == kScint) {
       mod  = ev->GetData(0);
       type = ev->GetData(1);
       data = ev->GetData(2);
