@@ -1,6 +1,7 @@
 #expt info
-generalinfo.exptype = gmn
+generalinfo.sbsexptype = gmn
 generalinfo.nspecs = 2
+generalinfo.specnames = sbs sbs
 
 #sbs spectrometer MC signal info
 generalinfo.sbs.nsignal = 2

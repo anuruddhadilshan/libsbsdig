@@ -17,6 +17,7 @@
 #pragma link C++ defined_in "src/TSBSSimCher.h";
 #pragma link C++ defined_in "src/TSBSSimHCal.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
+#pragma link C++ defined_in "src/TSBSSpec.h";
 
 //#pragma link C++ defined_in "src/TSBSCher.h";
 //#pragma link C++ defined_in "src/TSBSCherData.h";
@@ -24,7 +25,6 @@
 //#pragma link C++ defined_in "src/TSBSDetData.h";
 //#pragma link C++ defined_in "src/TSBSSimCherDigitization.h";
 //#pragma link C++ defined_in "src/TSBSSimDetDigitization.h";
-//#pragma link C++ defined_in "src/TSBSSpec.h";
 
 // Limited stuff in EVIO file.  We don't want to be
 // able to call the evio functions in the interpreter

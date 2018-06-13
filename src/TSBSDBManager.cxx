@@ -5,6 +5,7 @@
 #include "TMath.h"
 #include "TVector2.h"
 #include "TRandom3.h"
+#include "TString.h"
 
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
@@ -16,6 +17,42 @@ TSBSDBManager::TSBSDBManager()
 TSBSDBManager::~TSBSDBManager()
 {
 }
+
+//______________________________________________________________
+void TSBSDBManager::LoadGeneralInfo(const string& fileName)
+{  
+  ifstream input(fileName.c_str());
+  if (!input.is_open()){
+    cout<<"cannot find general information file "<<fileName
+	<<". Exiting the program"<<endl;
+        exit(0);
+  }
+  
+  const string prefix = "generalinfo.";
+  
+  string exp_str;
+  string specs_str;
+  
+  DBRequest request[] = {
+    {"sbsexptype", &exp_str,    kTString, 0, 1},
+    {"nspecs",     &fNSpecs,    kInt,     0, 1},
+    {"specnames",  &specs_str,  kInt,     0, 1},
+    { 0 }
+  };
+  
+  if(exp_str.compare("gmn")==0)fSBSExpType = kGMn;
+  if(exp_str.compare("gep")==0)fSBSExpType = kGEp;
+  if(exp_str.compare("gen")==0)fSBSExpType = kGEn;
+  if(exp_str.compare("sidis")==0)fSBSExpType = kSIDIS;
+  if(exp_str.compare("a1n")==0)fSBSExpType = kA1n;
+  if(exp_str.compare("tdis")==0)fSBSExpType = kTDIS;
+  
+  fSpecNames = vsplit(specs_str);
+  
+  
+  
+}
+/*
 //______________________________________________________________
 void TSBSDBManager::LoadGeneralInfo(const string& fileName)
 {  
@@ -284,3 +321,4 @@ const double & TSBSDBManager::GetY_TCPMTs(int i)
   if (!CheckIndex(i)) return fErrVal;
   return fGeoInfo.at(i).fY_TCPMT;
 }
+*/

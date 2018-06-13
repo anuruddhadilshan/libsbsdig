@@ -3,17 +3,18 @@
 
 #include <iostream>
 #include <fstream>
+#include "THaAnalysisObject.h"
 #include <vector>
 #include <string>
 #include <sstream>
 #include "Rtypes.h"
 #include "VarDef.h"
 #include "TMath.h"
-#include "types.h"
+#include "g4sbs_types.h"
 
 using namespace std;
 
-class TSBSDBManager {
+class TSBSDBManager : public THaAnalysisObject {
 public:
   ~TSBSDBManager();
   static TSBSDBManager* GetInstance() {
@@ -23,12 +24,28 @@ public:
   
   void LoadGeneralInfo(const string& fileName);
   void LoadGeoInfo(const string& prefix);
+
+  const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
+  const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
   
+  
+ protected:
+  TSBSDBManager();
+  
+  //New database parameters:
+  exp_type fSBSExpType;
+  int fNSpecs;
+  std::vector<string> fSpecNames;
+  
+  int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);
+  string FindKey( ifstream& inp, const string& key );
+  
+  static TSBSDBManager* fManager;
+  
+  /*
   const int    &   GetNDetectors()   { return fNDetectors;   }
   const int    &   Getg4sbsExpType() { return fg4sbsExpType; }
   const int    &   Getg4sbsDetType() { return fg4sbsDetType; }
-  const int    &   GetChanPerSlot()  { return fChanPerSlot;  }
-  const int    &   GetSlotPerCrate() { return fSlotPerCrate; }
   
   const int    &   GetSigPID(unsigned int i);
   const int    &   GetSigTID(unsigned int i);
@@ -77,6 +94,7 @@ public:
   
   //map< int, vector<GeoInfo> > fGeoInfo;
   vector<GeoInfo> fGeoInfo;
+  */
   
   int    fErrID;
   double fErrVal;

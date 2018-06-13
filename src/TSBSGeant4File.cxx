@@ -67,6 +67,7 @@ Int_t TSBSGeant4File::Open(){
     
     TChain* C1 = (TChain*)fFile->Get("T");//Get the tree from the file
     
+    /*
 #if D_FLAG>1 
     cout << "Detector option " << fManager->Getg4sbsDetType() << endl;
 #endif
@@ -82,6 +83,7 @@ Int_t TSBSGeant4File::Open(){
     // g4sbs_tree declare all variables, branches, etc... 
     // to read, event by event, the varaibles stored in the tree. 
     // See comments in g4sbs_tree for more details...
+    */
     
     fEvNum = -1;
  
@@ -155,7 +157,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   // NB: See comment lines 128-129 of TSBSGeant4File.h 
   //variables for the correction of hits given by very small momenta
-
+  
+  /*
   switch(fManager->Getg4sbsDetType()){
   case(1)://BB GEMs
     if(fManager->Getg4sbsExpType()==3){
@@ -254,15 +257,15 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       //gen_data_temp[7] = origvolflag;
       gen_data_temp[8] = weight;
       
-      /*
-      //store information to rescue, if necessary, the generated info
-      if(fTree->Earm_BBGEM.p->at(i)>pmax && pid==fManager->GetSigPID(0)){
-      	pmax = fTree->Earm_BBGEM.p->at(i);
-      	for(int k = 0; k<9; k++){
-      	  gen_data_temp_max[k] = gen_data_temp[k];
-      	}
-      }
-      */
+
+      // //store information to rescue, if necessary, the generated info
+      // if(fTree->Earm_BBGEM.p->at(i)>pmax && pid==fManager->GetSigPID(0)){
+      // 	pmax = fTree->Earm_BBGEM.p->at(i);
+      // 	for(int k = 0; k<9; k++){
+      // 	  gen_data_temp_max[k] = gen_data_temp[k];
+      // 	}
+      // }
+
       // ... to copy it in the actual g4sbsGenData structure.
       // only store signal, primary MC tracks
       if(fSource==0 && n_gen==0 && type==1){
@@ -272,36 +275,36 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       	  fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
       	}
       	n_gen++;
-      }/*
-      else{// this determines if the track is new or not
-	newtrk = true; 
-	for(int z = n_gen-1; z>=0; z--){
-	dupli = true;
-	if(fg4sbsGenData[z]->GetData(1)!=gen_data_temp[1]){
-	dupli=false;
-	}else{
-	for(int j = 5; j<8; j++){
-	if(fg4sbsGenData[z]->GetData(j)!=gen_data_temp[j]){
-	dupli=false;
-	break;
-	}
-	}
-	}
-	if(dupli){
-	newtrk = false;
-	break;
-	}
-	}
+      }
+      // else{// this determines if the track is new or not
+      // 	newtrk = true; 
+      // 	for(int z = n_gen-1; z>=0; z--){
+      // 	  dupli = true;
+      // 	  if(fg4sbsGenData[z]->GetData(1)!=gen_data_temp[1]){
+      // 	    dupli=false;
+      // 	  }else{
+      // 	    for(int j = 5; j<8; j++){
+      // 	      if(fg4sbsGenData[z]->GetData(j)!=gen_data_temp[j]){
+      // 		dupli=false;
+      // 		break;
+      // 	      }
+      // 	    }
+      // 	  }
+      // 	  if(dupli){
+      // 	    newtrk = false;
+      // 	    break;
+      // 	  }
+      // 	}
 	
-	if(newtrk){
-	fg4sbsGenData.push_back(new g4sbsgendata());
-	for(int j = 0; j<9; j++){
-	fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
-	}
-	n_gen++;
-	}
-	}
-      */
+      // 	if(newtrk){
+      // 	  fg4sbsGenData.push_back(new g4sbsgendata());
+      // 	  for(int j = 0; j<9; j++){
+      // 	    fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
+      // 	  }
+      // 	  n_gen++;
+      // 	}
+      // }
+      
       
     //   if(d_flag>1){
     // 	cout << "Hit number: " << i << " BBGEM: X_global : " 
@@ -458,15 +461,15 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       //gen_data_temp[7] = origvolflag;
       gen_data_temp[8] = weight;
       
-      /*
-      //store information to rescue, if necessary, the generated info
-      if(fTree->Earm_BBGEM.p->at(i)>pmax && pid==fManager->GetSigPID(0)){
-      	pmax = fTree->Earm_BBGEM.p->at(i);
-      	for(int k = 0; k<9; k++){
-      	  gen_data_temp_max[k] = gen_data_temp[k];
-      	}
-      }
-      */
+
+      // //store information to rescue, if necessary, the generated info
+      // if(fTree->Earm_BBGEM.p->at(i)>pmax && pid==fManager->GetSigPID(0)){
+      // 	pmax = fTree->Earm_BBGEM.p->at(i);
+      // 	for(int k = 0; k<9; k++){
+      // 	  gen_data_temp_max[k] = gen_data_temp[k];
+      // 	}
+      // }
+
       // ... to copy it in the actual g4sbsGenData structure.
       // only store signal, primary MC tracks
       if(fSource==0 && n_gen==0 && type==1){
@@ -475,36 +478,36 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       	  fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
       	}
       	n_gen++;
-      }/*
-      else{// this determines if the track is new or not
-	newtrk = true; 
-	for(int z = n_gen-1; z>=0; z--){
-	dupli = true;
-	if(fg4sbsGenData[z]->GetData(1)!=gen_data_temp[1]){
-	dupli=false;
-	}else{
-	for(int j = 5; j<8; j++){
-	if(fg4sbsGenData[z]->GetData(j)!=gen_data_temp[j]){
-	dupli=false;
-	break;
-	}
-	}
-	}
-	if(dupli){
-	newtrk = false;
-	break;
-	}
-	}
+      }
+      // else{// this determines if the track is new or not
+      // 	newtrk = true; 
+      // 	for(int z = n_gen-1; z>=0; z--){
+      // 	  dupli = true;
+      // 	  if(fg4sbsGenData[z]->GetData(1)!=gen_data_temp[1]){
+      // 	    dupli=false;
+      // 	  }else{
+      // 	    for(int j = 5; j<8; j++){
+      // 	      if(fg4sbsGenData[z]->GetData(j)!=gen_data_temp[j]){
+      // 		dupli=false;
+      // 		break;
+      // 	      }
+      // 	    }
+      // 	  }
+      // 	  if(dupli){
+      // 	    newtrk = false;
+      // 	    break;
+      // 	  }
+      // 	}
 	
-	if(newtrk){
-	fg4sbsGenData.push_back(new g4sbsgendata());
-	for(int j = 0; j<9; j++){
-	fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
-	}
-	n_gen++;
-	}
-	}
-      */
+      // 	if(newtrk){
+      // 	  fg4sbsGenData.push_back(new g4sbsgendata());
+      // 	  for(int j = 0; j<9; j++){
+      // 	    fg4sbsGenData[n_gen]->SetData(j, gen_data_temp[j]);
+      // 	  }
+      // 	  n_gen++;
+      // 	}
+      // }
+       
       
     //   if(d_flag>1){
     // 	cout << "Hit number: " << i << " BBGEM: X_global : " 
@@ -566,7 +569,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     break;
     
   }//end switch(fManager->Getg4sbsDetType)
-
+  */
   // Now process HCAL data
   if(fTree->hcalpart.E) {
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {
