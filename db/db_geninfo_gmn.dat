@@ -1,0 +1,55 @@
+#expt info
+geninfo.sbsexptype = gmn
+geninfo.nspecs = 2
+geninfo.specnames = sbs sbs
+
+#sbs spectrometer MC signal info
+geninfo.sbs.nsignal = 2
+geninfo.sbs.signal.pid = 2112 2212
+geninfo.sbs.signal.tid = 2 2
+geninfo.sbs.ndets = 2
+geninfo.sbs.detnames = hcal cdet
+
+#hcal general info #probably won't use it, but leave it here ftm
+geninfo.sbs.hcal.dettype = HCal
+geninfo.sbs.hcal.chan_per_slot = 128
+geninfo.sbs.hcal.slot_per_crate = 16
+geninfo.sbs.hcal.nchan = 288
+
+#cdet general info #probably won't use it, but leave it here ftm
+geninfo.sbs.cdet.dettype = Scint
+geninfo.sbs.cdet.chan_per_slot = 128
+geninfo.sbs.cdet.slot_per_crate = 16
+geninfo.sbs.cdet.nchan = 2352
+
+#bb spectrometer MC signal info
+geninfo.bb.nsignal = 1
+geninfo.bb.signal1.pid = 11
+geninfo.bb.signal1.tid = 1
+geninfo.sbs.ndets = 4
+geninfo.sbs.detnames = sh psh hodo grinch gem
+
+#shower general info #probably won't use it, but leave it here ftm
+geninfo.bb.sh.dettype = ECal
+geninfo.bb.sh.chan_per_slot = 128
+geninfo.bb.sh.slot_per_crate = 16
+geninfo.bb.sh.nchan = 189
+
+#preshower general info #probably won't use it, but leave it here ftm
+geninfo.bb.ps.dettype = ECal
+geninfo.bb.ps.chan_per_slot = 128
+geninfo.bb.ps.slot_per_crate = 16
+geninfo.bb.ps.nchan = 54
+
+#hodoscope general info #probably won't use it, but leave it here ftm
+geninfo.bb.hodo.dettype = Scint
+geninfo.bb.hodo.chan_per_slot = 128
+geninfo.bb.hodo.slot_per_crate = 16
+geninfo.bb.hodo.nchan = 180
+
+#grinch general info #probably won't use it, but leave it here ftm
+geninfo.bb.grinch.dettype = Cher
+geninfo.bb.grinch.chan_per_slot = 128
+geninfo.bb.grinch.slot_per_crate = 16
+geninfo.bb.grinch.nchan = 510
+

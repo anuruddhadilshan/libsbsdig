@@ -1,6 +1,9 @@
 #ifndef __G4SBS_TYPES_H
 #define __G4SBS_TYPES_H
 
+#include <vector>
+#include <string>
+
 ////////////////////////////////////////////////////////
 //  Data for extracting things from GEMC
 //
@@ -54,6 +57,16 @@ struct SignalInfo{
   SignalInfo() {}
   SignalInfo(int apid, int atid):pid(apid), tid(atid) {}
   ~SignalInfo() {}
+};
+
+struct SpectroInfo{
+  std::vector<SignalInfo> MCsignalInfo;
+  int fNDets;
+  std::vector<std::string> fDetNames;
+  
+  SpectroInfo() {}
+  SpectroInfo(int ndets):fNDets(ndets) {}
+  ~SpectroInfo() {}
 };
 
 struct GeoInfo{

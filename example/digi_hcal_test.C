@@ -40,7 +40,7 @@ void digi_hcal_test()
 
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("data/sbsin_931.root");
-
+  
   TSBSSimHCal *hcal = new TSBSSimHCal();
   digitizer->Add(hcal);
 

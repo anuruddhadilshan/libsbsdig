@@ -22,13 +22,12 @@ public:
     return fManager;
   }
   
-  void LoadGeneralInfo(const string& fileName);
+  Int_t LoadGeneralInfo(const string& fileName);
   void LoadGeoInfo(const string& prefix);
 
   const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
   const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
-  
-  
+    
  protected:
   TSBSDBManager();
   
@@ -36,6 +35,8 @@ public:
   exp_type fSBSExpType;
   int fNSpecs;
   std::vector<string> fSpecNames;
+  
+  std::vector<SpectroInfo> fSpectroInfos;
   
   int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);
   string FindKey( ifstream& inp, const string& key );

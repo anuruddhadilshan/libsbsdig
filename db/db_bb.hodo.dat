@@ -1,0 +1,41 @@
+950101
+#hodoscope general info
+bb.hodo.dettype = Scint
+bb.hodo.chan_per_slot = 128
+bb.hodo.slot_per_crate = 16
+bb.hodo.nchan = 180
+
+#hodoscope geometry info
+bb.hodo.nrows = 90
+bb.hodo.width = 0.6 #m
+bb.hodo.xsize = 2.25 #m
+bb.hodo.zpos = 2.5 #m
+
+#grinch PMT info
+bb.hodo.pmtgain = 7.0e6
+bb.hodo.pmttransittime = 33.0  # ns
+#bb.hodo.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
+#bb.hodo.pmtrisetime = 4.5 # ns
+#bb.hodo.pmtjitter = 4.0 # ns
+#bb.hodo.pmtfwhm = 7.5 # ns
+#bb.hodo.pmtpulseshapetau = 38.3  # ns
+
+# Electronics parameters:
+bb.hodo.triggeroffset = 30.  # ns 
+bb.hodo.triggerjitter = 3.0  # ns
+bb.hodo.gatewidth = 100. #ns
+bb.hodo.tdctimeconversion = 1.0 #ns
+bb.hodo.tdcbits = 16
+bb.hodo.tdcthreshold = 0.003 # V
+bb.hodo.tdcresolution = 1.0 # ns
+bb.hodo.readoutimpedance = 50 # ohm
+
+# pedestal noise 
+#bb.hodo.pulsenoiseconst = 30.   #ADC values
+#bb.hodo.pulsenoisesigma = 7.    #ADC values
+
+#NINO cross talk parameter
+#bb.hodo.do_crosstalk = 0
+#bb.hodo.crosstalk_mean = 0.1
+#bb.hodo.crosstalk_sigma = 0.03
+#bb.hodo.crosstalk_chan_apart = 8

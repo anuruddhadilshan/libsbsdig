@@ -19,8 +19,9 @@ TSBSDBManager::~TSBSDBManager()
 }
 
 //______________________________________________________________
-void TSBSDBManager::LoadGeneralInfo(const string& fileName)
+Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
 {  
+  // Load the experiment/setup general info
   ifstream input(fileName.c_str());
   if (!input.is_open()){
     cout<<"cannot find general information file "<<fileName
@@ -28,29 +29,89 @@ void TSBSDBManager::LoadGeneralInfo(const string& fileName)
         exit(0);
   }
   
-  const string prefix = "generalinfo.";
+  const string prefix = "geninfo.";
   
   string exp_str;
   string specs_str;
   
+  //first, load the experiment general info: expt type, number and names of spectrometers
   DBRequest request[] = {
-    {"sbsexptype", &exp_str,    kTString, 0, 1},
-    {"nspecs",     &fNSpecs,    kInt,     0, 1},
-    {"specnames",  &specs_str,  kInt,     0, 1},
+    {"sbsexptype",         &exp_str,    kTString, 0, 1},
+    {"nspectrometers",     &fNSpecs,    kInt,     0, 1},
+    {"spectrometernames",  &specs_str,  kTString, 0, 1},
     { 0 }
   };
+
+  int err = LoadDB( input, request,  prefix);
   
+  if( err ) exit(2); 
+  
+  //assing the right exp_type value to the exp_type flag according to the expt name
   if(exp_str.compare("gmn")==0)fSBSExpType = kGMn;
   if(exp_str.compare("gep")==0)fSBSExpType = kGEp;
   if(exp_str.compare("gen")==0)fSBSExpType = kGEn;
   if(exp_str.compare("sidis")==0)fSBSExpType = kSIDIS;
   if(exp_str.compare("a1n")==0)fSBSExpType = kA1n;
   if(exp_str.compare("tdis")==0)fSBSExpType = kTDIS;
+  if(exp_str.compare("ndvcs")==0)fSBSExpType = kDVCS;
   
+  //split the full string to extract the individual spectrometer names
   fSpecNames = vsplit(specs_str);
   
-  
-  
+  //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
+  for(int i_spec = 0; i_spec<fNSpecs; i_spec++){
+    SpectroInfo specinfo;
+    int ndets;
+    string dets_str;
+    int nsig;
+
+    string prefix2 = prefix+fSpecNames.at(i_spec)+".";
+    
+    std::vector<int>* pid = 0;
+    std::vector<int>* tid = 0;
+    
+    try{
+      pid = new vector<int>;
+      tid = new vector<int>;
+      
+      DBRequest request[] = {
+	{"nsignal",        &nsig,      kInt,      0, 1},
+	{"signal.pid",     pid,        kIntV,     0, 1},
+	{"signal.tid",     tid,        kIntV,     0, 1},
+	{"ndetectors",     &ndets,     kInt,      0, 1},
+	{"detectornames",  &dets_str,  kTString,  0, 1},
+	{ 0 }
+      };
+      
+      Int_t err = LoadDB (input, request, prefix);
+      //input.close();
+      if (err){
+	input.close();
+	return kInitError;
+      }
+      
+      specinfo.fNDets = ndets;
+      specinfo.fDetNames = vsplit(dets_str);
+      
+      for(int i_sig = 0; i_sig<nsig; i_sig++){
+	SignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
+	specinfo.MCsignalInfo.push_back(siginfo);
+      }
+      fSpectroInfos.push_back(specinfo);
+	
+      delete pid;
+      delete tid;
+    }  catch(...) {
+      delete pid;
+      delete tid;
+      input.close();
+      throw;
+    }//end try / catch
+    
+    
+  }
+  input.close();
+  return(kOK);
 }
 /*
 //______________________________________________________________
