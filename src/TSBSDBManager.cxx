@@ -37,8 +37,8 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
   //first, load the experiment general info: expt type, number and names of spectrometers
   DBRequest request[] = {
     {"sbsexptype",         &exp_str,    kTString, 0, 1},
-    {"nspectrometers",     &fNSpecs,    kInt,     0, 1},
-    {"spectrometernames",  &specs_str,  kTString, 0, 1},
+    {"nspecs",     &fNSpecs,    kInt,     0, 1},
+    {"specnames",  &specs_str,  kTString, 0, 1},
     { 0 }
   };
 
@@ -78,8 +78,8 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
 	{"nsignal",        &nsig,      kInt,      0, 1},
 	{"signal.pid",     pid,        kIntV,     0, 1},
 	{"signal.tid",     tid,        kIntV,     0, 1},
-	{"ndetectors",     &ndets,     kInt,      0, 1},
-	{"detectornames",  &dets_str,  kTString,  0, 1},
+	{"ndets",          &ndets,     kInt,      0, 1},
+	{"detnames",       &dets_str,  kTString,  0, 1},
 	{ 0 }
       };
       
