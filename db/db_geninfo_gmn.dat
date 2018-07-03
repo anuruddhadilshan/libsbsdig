@@ -7,9 +7,8 @@ geninfo.specnames = sbs bb
 geninfo.sbs.nsignal = 2
 geninfo.sbs.signal.pid = 2112 2212
 geninfo.sbs.signal.tid = 2 2
-geninfo.sbs.ndets = 1
-geninfo.sbs.detnames = cdet 
-#hcal cdet
+geninfo.sbs.ndets = 2
+geninfo.sbs.detnames = hcal cdet
 
 #hcal general info #probably won't use it, but leave it here ftm
 geninfo.sbs.hcal.dettype = HCal

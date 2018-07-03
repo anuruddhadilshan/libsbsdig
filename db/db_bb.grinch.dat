@@ -8,27 +8,27 @@ bb.grinch.nplanes = 1
 bb.grinch.nmodules = 1
 
 #grinch geometry info
-bb.grinch.geo.nrows = 60
-bb.grinch.geo.ncols = 9
-bb.grinch.geo.xsize = 1.86
-bb.grinch.geo.ysize = 0.279
-bb.grinch.geo.zpos = 1.3824 #m
+geo.bb.grinch.nrows = 60
+geo.bb.grinch.ncols = 9
+geo.bb.grinch.xsize = 1.86
+geo.bb.grinch.ysize = 0.279
+geo.bb.grinch.zpos = 1.3824 #m
 
 
 #grinch geometry info
-bb.grinch.z_in = 1.3824 #m
-bb.grinch.n_radiator = 1.00137
-bb.grinch.l_radiator = 0.66 #m
-bb.grinch.nrows = 60
-bb.grinch.ncolsmax = 9
-bb.grinch.pmtdistx = 0.03100 #m
-bb.grinch.pmtdisty = 0.03100 #m
-bb.grinch.x_tcpmt = -0.914500 #m
-bb.grinch.y_tcpmt = -0.124000 #m
+geo.bb.grinch.z_in = 1.3824 #m
+geo.bb.grinch.n_radiator = 1.00137
+geo.bb.grinch.l_radiator = 0.66 #m
+geo.bb.grinch.nrows = 60
+geo.bb.grinch.ncolsmax = 9
+geo.bb.grinch.pmtdistx = 0.03100 #m
+geo.bb.grinch.pmtdisty = 0.03100 #m
+geo.bb.grinch.x_tcpmt = -0.914500 #m
+geo.bb.grinch.y_tcpmt = -0.124000 #m
 
 #grinch PMT info
-bb.grinch.pmtgain = 7.0e6
-bb.grinch.pmttransittime = 33.0  # ns
+dig.bb.grinch.pmtgain = 7.0e6
+dig.bb.grinch.pmttransittime = 33.0  # ns
 #bb.grinch.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
 #bb.grinch.pmtrisetime = 4.5 # ns
 #bb.grinch.pmtjitter = 4.0 # ns
@@ -36,18 +36,18 @@ bb.grinch.pmttransittime = 33.0  # ns
 #bb.grinch.pmtpulseshapetau = 38.3  # ns
 
 # Electronics parameters:
-bb.grinch.triggeroffset = 30.  # ns 
-bb.grinch.triggerjitter = 3.0  # ns
-bb.grinch.gatewidth = 100. #ns
-bb.grinch.tdctimeconversion = 1.0 #ns
-bb.grinch.tdcbits = 16
-bb.grinch.tdcthreshold = 0.003 # V
-bb.grinch.tdcresolution = 1.0 # ns
-bb.grinch.readoutimpedance = 50 # ohm
+dig.bb.grinch.triggeroffset = 30.  # ns 
+dig.bb.grinch.triggerjitter = 3.0  # ns
+dig.bb.grinch.gatewidth = 100. #ns
+dig.bb.grinch.tdctimeconversion = 1.0 #ns
+dig.bb.grinch.tdcbits = 16
+dig.bb.grinch.tdcthreshold = 0.003 # V
+dig.bb.grinch.tdcresolution = 1.0 # ns
+dig.bb.grinch.readoutimpedance = 50 # ohm
 
 # pedestal noise 
-#bb.grinch.pulsenoiseconst = 30.   #ADC values
-#bb.grinch.pulsenoisesigma = 7.    #ADC values
+#dig.bb.grinch.pulsenoiseconst = 30.   #ADC values
+#dig.bb.grinch.pulsenoisesigma = 7.    #ADC values
 
 #NINO cross talk parameter
 #bb.grinch.do_crosstalk = 0

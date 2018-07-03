@@ -18,10 +18,10 @@ geo.sbs.cdet.1.1.zpos = 15.0 #m
 dig.sbs.cdet.pmtgain = 7.0e6
 dig.sbs.cdet.pmttransittime = 33.0  # ns
 #sbs.cdet.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
-#sbs.cdet.pmtrisetime = 4.5 # ns
-#sbs.cdet.pmtjitter = 4.0 # ns
-#sbs.cdet.pmtfwhm = 7.5 # ns
-#sbs.cdet.pmtpulseshapetau = 38.3  # ns
+#dig.sbs.cdet.pmtrisetime = 4.5 # ns
+#dig.sbs.cdet.pmtjitter = 4.0 # ns
+#dig.sbs.cdet.pmtfwhm = 7.5 # ns
+#dig.sbs.cdet.pmtpulseshapetau = 38.3  # ns
 
 # Electronics parameters:
 dig.sbs.cdet.triggeroffset = 30.  # ns 
@@ -34,8 +34,8 @@ dig.sbs.cdet.tdcresolution = 1.0 # ns
 dig.sbs.cdet.readoutimpedance = 50 # ohm
 
 # pedestal noise 
-#sbs.cdet.pulsenoiseconst = 30.   #ADC values
-#sbs.cdet.pulsenoisesigma = 7.    #ADC values
+#dig.sbs.cdet.pulsenoiseconst = 30.   #ADC values
+#dig.sbs.cdet.pulsenoisesigma = 7.    #ADC values
 
 #NINO cross talk parameter
 #sbs.cdet.do_crosstalk = 0
