@@ -22,9 +22,9 @@ public:
     return fManager;
   }
   
-  Int_t LoadGeneralInfo(const string& fileName);
-  void LoadGeoInfo(const string& prefix);
-
+  Int_t LoadGenInfo(const string& fileName);
+  Int_t LoadDetInfo(const string& specname, const string& detname);
+  
   const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
   const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
     
@@ -35,11 +35,11 @@ public:
   exp_type fSBSExpType;
   int fNSpecs;
   std::vector<string> fSpecNames;
-  
-  std::vector<SpectroInfo> fSpectroInfos;
-  
-  int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);
-  string FindKey( ifstream& inp, const string& key );
+  std::vector<SpectroInfo> fSpectroInfo;
+  std::vector<DetInfo> fDetInfo;
+
+  // int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);
+  // string FindKey( ifstream& inp, const string& key );
   
   static TSBSDBManager* fManager;
   

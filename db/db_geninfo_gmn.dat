@@ -1,7 +1,7 @@
 #expt info
 geninfo.sbsexptype = gmn
 geninfo.nspecs = 2
-geninfo.specnames = sbs sbs
+geninfo.specnames = sbs bb
 
 #sbs spectrometer MC signal info
 geninfo.sbs.nsignal = 2
@@ -26,8 +26,8 @@ geninfo.sbs.cdet.nchan = 2352
 geninfo.bb.nsignal = 1
 geninfo.bb.signal1.pid = 11
 geninfo.bb.signal1.tid = 1
-geninfo.sbs.ndets = 4
-geninfo.sbs.detnames = sh psh hodo grinch gem
+geninfo.bb.ndets = 4
+geninfo.bb.detnames = sh psh hodo grinch gem
 
 #shower general info #probably won't use it, but leave it here ftm
 geninfo.bb.sh.dettype = ECal

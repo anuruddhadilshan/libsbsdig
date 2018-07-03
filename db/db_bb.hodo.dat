@@ -1,19 +1,22 @@
 950101
 #hodoscope general info
 bb.hodo.dettype = Scint
+bb.hodo.nchan = 180
 bb.hodo.chan_per_slot = 128
 bb.hodo.slot_per_crate = 16
-bb.hodo.nchan = 180
+bb.hodo.nplanes = 1
+bb.hodo.nmodules = 1
 
 #hodoscope geometry info
-bb.hodo.nrows = 90
-bb.hodo.width = 0.6 #m
-bb.hodo.xsize = 2.25 #m
-bb.hodo.zpos = 2.5 #m
+bb.hodo.geo.nrows = 90
+bb.hodo.geo.ncols = 0.6 #m
+bb.hodo.geo.xsize = 2.25 #m
+bb.hodo.geo.ysize = 0.6 #m
+bb.hodo.geo.zpos =  2.5 #m
 
-#grinch PMT info
-bb.hodo.pmtgain = 7.0e6
-bb.hodo.pmttransittime = 33.0  # ns
+#hodoscope digitization info
+bb.hodo.dig.pmtgain = 7.0e6
+bb.hodo.dig.pmttransittime = 33.0  # ns
 #bb.hodo.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
 #bb.hodo.pmtrisetime = 4.5 # ns
 #bb.hodo.pmtjitter = 4.0 # ns
@@ -21,14 +24,14 @@ bb.hodo.pmttransittime = 33.0  # ns
 #bb.hodo.pmtpulseshapetau = 38.3  # ns
 
 # Electronics parameters:
+bb.hodo.readoutimpedance = 50 # ohm
 bb.hodo.triggeroffset = 30.  # ns 
 bb.hodo.triggerjitter = 3.0  # ns
 bb.hodo.gatewidth = 100. #ns
-bb.hodo.tdctimeconversion = 1.0 #ns
-bb.hodo.tdcbits = 16
-bb.hodo.tdcthreshold = 0.003 # V
-bb.hodo.tdcresolution = 1.0 # ns
-bb.hodo.readoutimpedance = 50 # ohm
+#bb.hodo.tdctimeconversion = 1.0 #ns
+#bb.hodo.tdcbits = 16
+#bb.hodo.tdcthreshold = 0.003 # V
+#bb.hodo.tdcresolution = 1.0 # ns
 
 # pedestal noise 
 #bb.hodo.pulsenoiseconst = 30.   #ADC values

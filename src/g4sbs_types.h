@@ -70,19 +70,50 @@ struct SpectroInfo{
 };
 
 struct GeoInfo{
-  int    fZCkovIn;       // Z of the entrance window in the spectrometer central ray;
-  int    fNradiator;     // radiator index of refraction;
-  int    fLradiator;     // radiator length on central ray;
-  //int    fNquartz;       // quartz window index of refraction;
-  int    fNPMTs;         // number of PMTs
-  int    fNPMTrows;      // number of PMT rows
-  int    fNPMTcolsMax;   // max number of PMT columns 
-  double fPMTmatrixHext; // horizontal extension, in m, of the PMT matrix (from lower PMT center to higher PMT center)
-  double fPMTmatrixVext; // vertical extension, in m, of the PMT matrix (from left PMT center to right PMT center)
-  double fPMTdistX;      // projected X distance between the center of 2 PMT tubes in consecutive rows, in m
-  double fPMTdistY;      // Y distance between the center of 2 PMT tubes in consecutive columns, in m
-  double fX_TCPMT;       // X position of the top close PMT center in the PMT matrix (transport coord)
-  double fY_TCPMT;       // Y position of the top close PMT center in the PMT matrix (transport coord)
+  // I don't think this can fit all detectors. 
+  // Might have to do a class or something so it can be inherited ?
+  int     fNrows;      // number of rows
+  int     fNcols;      // number of columns
+  double  fXsize;      // detector X size (in transport coordinates)
+  double  fYsize;      // detector Y size (in transport coordinates)
+  double  fZpos;       // detector position on spectrometer axis
+};
+
+struct DigInfo{
+  // same remark as for GeoInfo
+  double  fROImpedance;   // readout impedance
+  double  fGain;          // Gain 
+  double  fPedestal;      // Pedestal value (adc value)
+  double  fPedNoise;      // Pedestal noise (adc value)
+  double  fTriggerJitter; // trigger jitter (ns)
+  double  fTriggerOffset; // trigger offset (ns)
+  double  fGateWidth;     // gate width (ns)
+};
+
+struct DetInfo{
+  std::string fDetName;      // Detector name
+  det_type     fDetType;      // DetectorType
+  int           fNChan;        // Total number of channels over all detector
+  int            fChanPerSlot;  // Number of channels per slot
+  int             fSlotPerCrate; // Number of slots per crate
+  int              fNPlanes;      // Number of planes // useful e.g. GEM, CDet
+  std::vector<int>  fNModules;     // Number of modules per plane // useful e.g. GEM, CDet
+  
+  std::vector<GeoInfo> fGeoInfo;
+  DigInfo fDigInfo;
+  DetInfo()
+  {
+    fNModules.clear();
+    fGeoInfo.clear();
+  }
+  DetInfo(const std::string detname)
+  {
+    fDetName = detname;
+    fNModules.clear();
+    fGeoInfo.clear();
+  }
+  ~DetInfo(){}
+
 };
 
 #endif//__GEMC_TYPES_H

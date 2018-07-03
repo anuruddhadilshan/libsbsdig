@@ -4,6 +4,16 @@ bb.grinch.dettype = Cher
 bb.grinch.chan_per_slot = 128
 bb.grinch.slot_per_crate = 16
 bb.grinch.nchan = 510
+bb.grinch.nplanes = 1
+bb.grinch.nmodules = 1
+
+#grinch geometry info
+bb.grinch.geo.nrows = 60
+bb.grinch.geo.ncols = 9
+bb.grinch.geo.xsize = 1.86
+bb.grinch.geo.ysize = 0.279
+bb.grinch.geo.zpos = 1.3824 #m
+
 
 #grinch geometry info
 bb.grinch.z_in = 1.3824 #m

@@ -10,7 +10,7 @@
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
 TSBSDBManager::TSBSDBManager() 
-: fErrID(-999), fErrVal(-999.)
+  : fErrID(-999), fErrVal(-999.)
 {
 }
 //______________________________________________________________
@@ -19,7 +19,7 @@ TSBSDBManager::~TSBSDBManager()
 }
 
 //______________________________________________________________
-Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
+Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 {  
   // Load the experiment/setup general info
   ifstream input(fileName.c_str());
@@ -29,6 +29,10 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
         exit(0);
   }
   
+  cout << "File name " << fileName << endl;
+  
+  FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
+  
   const string prefix = "geninfo.";
   
   string exp_str;
@@ -36,13 +40,18 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
   
   //first, load the experiment general info: expt type, number and names of spectrometers
   DBRequest request[] = {
-    {"sbsexptype",         &exp_str,    kTString, 0, 1},
-    {"nspecs",     &fNSpecs,    kInt,     0, 1},
-    {"specnames",  &specs_str,  kTString, 0, 1},
+    {"sbsexptype", &exp_str,   kString, 0, 1},
+    {"nspecs",     &fNSpecs,   kInt,    0, 1},
+    {"specnames",  &specs_str, kString, 0, 1},
     { 0 }
   };
 
-  int err = LoadDB( input, request,  prefix);
+  //int err = LoadDB( input, request,  prefix);
+  int err = LoadDB(file, GetInitDate(), request,  prefix.c_str());
+  
+  cout << "err: " << err << endl;
+  cout << "nspecs "<< fNSpecs << endl;
+  cout << specs_str.c_str() << endl;
   
   if( err ) exit(2); 
   
@@ -64,8 +73,10 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
     int ndets;
     string dets_str;
     int nsig;
-
+    
     string prefix2 = prefix+fSpecNames.at(i_spec)+".";
+    
+    cout << prefix2.c_str() << endl;
     
     std::vector<int>* pid = 0;
     std::vector<int>* tid = 0;
@@ -79,11 +90,13 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
 	{"signal.pid",     pid,        kIntV,     0, 1},
 	{"signal.tid",     tid,        kIntV,     0, 1},
 	{"ndets",          &ndets,     kInt,      0, 1},
-	{"detnames",       &dets_str,  kTString,  0, 1},
+	{"detnames",       &dets_str,  kString,  0, 1},
 	{ 0 }
       };
       
-      Int_t err = LoadDB (input, request, prefix);
+      //Int_t err = LoadDB (input, request, prefix2);
+      Int_t err = LoadDB (file, GetInitDate(), request, prefix2.c_str());
+      
       //input.close();
       if (err){
 	input.close();
@@ -93,11 +106,13 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
       specinfo.fNDets = ndets;
       specinfo.fDetNames = vsplit(dets_str);
       
+      cout << specinfo.fNDets << endl;
+      
       for(int i_sig = 0; i_sig<nsig; i_sig++){
 	SignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
 	specinfo.MCsignalInfo.push_back(siginfo);
       }
-      fSpectroInfos.push_back(specinfo);
+      fSpectroInfo.push_back(specinfo);
 	
       delete pid;
       delete tid;
@@ -108,11 +123,211 @@ Int_t TSBSDBManager::LoadGeneralInfo(const string& fileName)
       throw;
     }//end try / catch
     
+    cout << specinfo.fNDets << endl;
     
-  }
+    // then loop on detectors
+    for(int i_det = 0; i_det<specinfo.fNDets; i_det++){
+      LoadDetInfo(fSpecNames.at(i_spec), specinfo.fDetNames.at(i_det));
+    }
+    
+  }// end spectrometer loop
   input.close();
   return(kOK);
 }
+
+//______________________________________________________________
+Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
+{
+  DetInfo detinfo(detname);
+  // Include DB_DIR (standard Hall A analyzer DB path in the search)
+  std::string path = "";
+  if(std::getenv("DB_DIR")) {
+    path = std::string(std::getenv("DB_DIR")) + "/";
+  }
+  const string& fileName = path+"db_"+specname+"."+detname+".dat";
+  
+  ifstream input(fileName.c_str());
+  if (!input.is_open()){
+    cout<<"cannot find geometry file "<<fileName
+	<<". Exiting the program"<<endl;
+    exit(0);
+  }
+
+  FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
+
+  const string prefix = specname+"."+detname;
+
+  string dettype_str;
+  int nchan, chan_per_slot, slot_per_crate;
+  int nplanes;
+  std::vector<int>* nmodules = 0;
+  
+  try{
+    nmodules = new vector<int>;
+    DBRequest request[] = {
+      {"dettype",        &dettype_str,    kString, 0, 1},
+      {"nchan",          &nchan,          kInt,     0, 1},
+      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 1},
+      {"slot_per_crate", &slot_per_crate, kInt,     0, 1},
+      {"nplanes",        &nplanes,        kInt,     0, 1},
+      {"nmodules",       nmodules,        kInt,     0, 1},
+      { 0 }
+    };
+    
+    cout << prefix.c_str() << endl;
+    
+    //Int_t err = LoadDB (input, request, prefix);
+    Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+     
+    if (err){
+      input.close();
+      return kInitError;
+    }
+    
+    if(dettype_str.compare("HCal")==0)detinfo.fDetType = kHCal;
+    if(dettype_str.compare("ECal")==0)detinfo.fDetType = kECal;
+    if(dettype_str.compare("Cher")==0) detinfo.fDetType = kCher;
+    if(dettype_str.compare("Scint")==0) detinfo.fDetType = kScint;
+    if(dettype_str.compare("GEM")==0) detinfo.fDetType = kGEM;
+    
+    detinfo.fNChan = nchan;
+    detinfo.fChanPerSlot = chan_per_slot;
+    detinfo.fSlotPerCrate = slot_per_crate;
+    detinfo.fNPlanes = nplanes;
+
+    const string digprefix = prefix+".dig";
+    const string geoprefix = prefix+".geo";
+    
+    
+    for(int i_pl = 0; i_pl<nplanes; i_pl++){
+      detinfo.fNModules.push_back(nmodules->at(i_pl));
+      
+      for(int i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
+	GeoInfo thisGeo;
+	
+	DBRequest request_geo[] = {
+	  {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
+	  {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
+	  {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
+	  {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
+	  {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
+	  { 0 }
+	};
+	
+	cout << geoprefix.c_str() << endl;
+	string geoprefix_ii = geoprefix;
+	if(nplanes>1) geoprefix_ii = geoprefix_ii+"."+std::to_string(i_pl);
+	if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+"."+std::to_string(i_mod);
+	cout << geoprefix_ii.c_str() << endl;
+	
+	//err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));
+	err = LoadDB (file, GetInitDate(), request_geo, geoprefix_ii.c_str());
+	if (err){
+	  input.close();
+	  return kInitError;
+	}
+	
+	detinfo.fGeoInfo.push_back(thisGeo);
+      }
+    }//end 
+    
+    DBRequest request_dig[] = {
+      {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance,   kDouble,    0, 1},
+      {"gain",              &detinfo.fDigInfo.fGain,          kDouble,    0, 1},
+      {"pedestal",          &detinfo.fDigInfo.fPedestal,      kDouble,    0, 1},
+      {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,      kDouble,    0, 1},
+      {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble,    0, 1},
+      {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,    0, 1},
+      {"gatewidth",         &detinfo.fDigInfo.fGateWidth,     kDouble,    0, 1},
+      { 0 }
+    };
+
+    cout << digprefix.c_str() << endl;
+    
+    //err = LoadDB (input, request_dig, digprefix);
+    err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
+    if (err){
+      input.close();
+      return kInitError;
+    }
+        
+    delete nmodules;
+  }  catch(...) {
+    delete nmodules;
+    input.close();
+    throw;
+  }//end try / catch
+   
+  fDetInfo.push_back(detinfo);
+  
+  input.close();
+  return(kOK);
+}
+
+/*
+//______________________________________________________________
+string TSBSDBManager::FindKey( ifstream& inp, const string& key )
+{
+  static const string empty("");
+  string line;
+  string::size_type keylen = key.size();
+  inp.seekg(0); // could probably be more efficient, but it's fast enough
+  while( getline(inp,line) ) {
+    if( line.size() <= keylen )
+      continue;
+    if( line.compare(0,keylen,key) == 0 ) {
+      if( keylen < line.size() ) {
+	string::size_type pos = line.find_first_not_of(" \t=", keylen);
+	if( pos != string::npos )
+	  return line.substr(pos);
+      }
+      break;
+    }
+  }
+  return empty;
+}
+//_________________________________________________________________
+int TSBSDBManager::LoadDB( ifstream& inp, DBRequest* request, const string& prefix )
+{
+  DBRequest* item = request;
+  while( item->name ) {
+    ostringstream sn(prefix, ios_base::ate);
+    sn << item->name;
+    const string& key = sn.str();
+    string val = FindKey(inp,key);
+    if( !val.empty() ) {
+      istringstream sv(val);
+      switch(item->type){
+        case kDouble:
+          sv >> *((double*)item->var);
+          break;
+        case kInt:
+          sv >> *((Int_t*)item->var);
+          break;
+        case kInt:
+          sv >> *((Int_t*)item->var);
+          break;
+        case kString:
+          sv >> *((string*)item->var);
+          break;
+        default:
+          return 1;
+        break;
+      }
+      if( !sv ) {
+	cerr << "Error converting key/value = " << key << "/" << val << endl;
+	return 1;
+      }
+    } else {
+      cerr << "key \"" << key << "\" not found" << endl;
+      return 2;
+    }
+    ++item;
+  }
+  return 0;
+}
+*/
+
 /*
 //______________________________________________________________
 void TSBSDBManager::LoadGeneralInfo(const string& fileName)
@@ -214,61 +429,6 @@ void TSBSDBManager::LoadGeoInfo(const string& prefix)
   
 }
 
-//______________________________________________________________
-string TSBSDBManager::FindKey( ifstream& inp, const string& key )
-{
-  static const string empty("");
-  string line;
-  string::size_type keylen = key.size();
-  inp.seekg(0); // could probably be more efficient, but it's fast enough
-  while( getline(inp,line) ) {
-    if( line.size() <= keylen )
-      continue;
-    if( line.compare(0,keylen,key) == 0 ) {
-      if( keylen < line.size() ) {
-	string::size_type pos = line.find_first_not_of(" \t=", keylen);
-	if( pos != string::npos )
-	  return line.substr(pos);
-      }
-      break;
-    }
-  }
-  return empty;
-}
-//_________________________________________________________________
-int TSBSDBManager::LoadDB( ifstream& inp, DBRequest* request, const string& prefix )
-{
-  DBRequest* item = request;
-  while( item->name ) {
-    ostringstream sn(prefix, ios_base::ate);
-    sn << item->name;
-    const string& key = sn.str();
-    string val = FindKey(inp,key);
-    if( !val.empty() ) {
-      istringstream sv(val);
-      switch(item->type){
-        case kDouble:
-          sv >> *((double*)item->var);
-          break;
-        case kInt:
-          sv >> *((Int_t*)item->var);
-          break;
-        default:
-          return 1;
-        break;
-      }
-      if( !sv ) {
-	cerr << "Error converting key/value = " << key << "/" << val << endl;
-	return 1;
-      }
-    } else {
-      cerr << "key \"" << key << "\" not found" << endl;
-      return 2;
-    }
-    ++item;
-  }
-  return 0;
-}
 //_____________________________________________________________________
 const int & TSBSDBManager::GetSigPID(unsigned int i)
 {

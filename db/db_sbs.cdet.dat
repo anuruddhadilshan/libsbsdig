@@ -4,14 +4,14 @@ sbs.cdet.dettype = Scint
 sbs.cdet.chan_per_slot = 128
 sbs.cdet.slot_per_crate = 16
 sbs.cdet.nchan = 2352
-
-#cdet geometry info
 sbs.cdet.nplanes = 2
 sbs.cdet.nmodules = 6
-sbs.cdet.xsize = 2.25 #m
-sbs.cdet.zpos = 15.0 15.5 #m
 
-#grinch PMT info
+#cdet geometry info
+sbs.cdet.1.xsize = 2.25 #m
+sbs.cdet.1.zpos = 15.0 #m
+
+#cdet PMT info
 sbs.cdet.pmtgain = 7.0e6
 sbs.cdet.pmttransittime = 33.0  # ns
 #sbs.cdet.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
