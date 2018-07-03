@@ -90,7 +90,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 	{"signal.pid",     pid,        kIntV,     0, 1},
 	{"signal.tid",     tid,        kIntV,     0, 1},
 	{"ndets",          &ndets,     kInt,      0, 1},
-	{"detnames",       &dets_str,  kString,  0, 1},
+	{"detnames",       &dets_str,  kString,   0, 1},
 	{ 0 }
       };
       

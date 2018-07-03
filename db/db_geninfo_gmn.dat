@@ -26,7 +26,7 @@ geninfo.sbs.cdet.nchan = 2352
 geninfo.bb.nsignal = 1
 geninfo.bb.signal1.pid = 11
 geninfo.bb.signal1.tid = 1
-geninfo.bb.ndets = 4
+geninfo.bb.ndets = 5
 geninfo.bb.detnames = sh psh hodo grinch gem
 
 #shower general info #probably won't use it, but leave it here ftm
