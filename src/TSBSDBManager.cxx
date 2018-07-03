@@ -40,9 +40,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   
   //first, load the experiment general info: expt type, number and names of spectrometers
   DBRequest request[] = {
-    {"sbsexptype", &exp_str,   kString, 0, 1},
-    {"nspecs",     &fNSpecs,   kInt,    0, 1},
-    {"specnames",  &specs_str, kString, 0, 1},
+    {"sbsexptype", &exp_str,   kString, 0, 0},
+    {"nspecs",     &fNSpecs,   kInt,    0, 0},
+    {"specnames",  &specs_str, kString, 0, 0},
     { 0 }
   };
 
@@ -86,11 +86,11 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       tid = new vector<int>;
       
       DBRequest request[] = {
-	{"nsignal",        &nsig,      kInt,      0, 1},
-	{"signal.pid",     pid,        kIntV,     0, 1},
-	{"signal.tid",     tid,        kIntV,     0, 1},
-	{"ndets",          &ndets,     kInt,      0, 1},
-	{"detnames",       &dets_str,  kString,   0, 1},
+	{"nsignal",        &nsig,      kInt,      0, 0},
+	{"signal.pid",     pid,        kIntV,     0, 0},
+	{"signal.tid",     tid,        kIntV,     0, 0},
+	{"ndets",          &ndets,     kInt,      0, 0},
+	{"detnames",       &dets_str,  kString,   0, 0},
 	{ 0 }
       };
       
@@ -155,7 +155,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
 
-  const string prefix = specname+"."+detname;
+  const string prefix = specname+"."+detname+".";
 
   string dettype_str;
   int nchan, chan_per_slot, slot_per_crate;
@@ -165,12 +165,12 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   try{
     nmodules = new vector<int>;
     DBRequest request[] = {
-      {"dettype",        &dettype_str,    kString, 0, 1},
-      {"nchan",          &nchan,          kInt,     0, 1},
-      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 1},
-      {"slot_per_crate", &slot_per_crate, kInt,     0, 1},
-      {"nplanes",        &nplanes,        kInt,     0, 1},
-      {"nmodules",       nmodules,        kInt,     0, 1},
+      {"dettype",        &dettype_str,    kString,  0, 0},
+      {"nchan",          &nchan,          kInt,     0, 0},
+      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
+      {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
+      {"nplanes",        &nplanes,        kInt,     0, 0},
+      {"nmodules",       nmodules,        kIntV,    0, 0},
       { 0 }
     };
     
@@ -195,8 +195,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     detinfo.fSlotPerCrate = slot_per_crate;
     detinfo.fNPlanes = nplanes;
 
-    const string digprefix = prefix+".dig";
-    const string geoprefix = prefix+".geo";
+    const string digprefix = "dig."+prefix;
+    const string geoprefix = "geo."+prefix;
     
     
     for(int i_pl = 0; i_pl<nplanes; i_pl++){
@@ -216,8 +216,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	
 	cout << geoprefix.c_str() << endl;
 	string geoprefix_ii = geoprefix;
-	if(nplanes>1) geoprefix_ii = geoprefix_ii+"."+std::to_string(i_pl);
-	if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+"."+std::to_string(i_mod);
+	if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
+	if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
 	cout << geoprefix_ii.c_str() << endl;
 	
 	//err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));

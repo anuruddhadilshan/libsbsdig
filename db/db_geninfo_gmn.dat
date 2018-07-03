@@ -7,8 +7,9 @@ geninfo.specnames = sbs bb
 geninfo.sbs.nsignal = 2
 geninfo.sbs.signal.pid = 2112 2212
 geninfo.sbs.signal.tid = 2 2
-geninfo.sbs.ndets = 2
-geninfo.sbs.detnames = hcal cdet
+geninfo.sbs.ndets = 1
+geninfo.sbs.detnames = cdet 
+#hcal cdet
 
 #hcal general info #probably won't use it, but leave it here ftm
 geninfo.sbs.hcal.dettype = HCal
@@ -24,10 +25,10 @@ geninfo.sbs.cdet.nchan = 2352
 
 #bb spectrometer MC signal info
 geninfo.bb.nsignal = 1
-geninfo.bb.signal1.pid = 11
-geninfo.bb.signal1.tid = 1
+geninfo.bb.signal.pid = 11
+geninfo.bb.signal.tid = 1
 geninfo.bb.ndets = 5
-geninfo.bb.detnames = sh psh hodo grinch gem
+geninfo.bb.detnames = sh ps hodo grinch gem
 
 #shower general info #probably won't use it, but leave it here ftm
 geninfo.bb.sh.dettype = ECal

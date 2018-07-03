@@ -1,0 +1,7 @@
+950101
+bb.ps.dettype = ECal
+bb.ps.chan_per_slot = 128
+bb.ps.slot_per_crate = 16
+bb.ps.nchan = 54
+bb.ps.nplanes = 1
+bb.ps.nmodules = 1
