@@ -3,12 +3,13 @@
 
 #include <vector>
 #include "g4sbs_types.h"
+#include "THaAnalysisObject.h"
 
 class g4sbshitdata;
 class TSBSSimEvent;
 class TSBSDBManager;
 
-class TSBSSimDetector {
+class TSBSSimDetector : public THaAnalysisObject {
 public:
   TSBSSimDetector();
   virtual ~TSBSSimDetector();
@@ -17,10 +18,11 @@ public:
   virtual bool HasData() { return fHasData; }
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
+
+  TSBSDBManager* fDBmanager;
+  DetInfo fDetInfo;
 private:
   bool fHasData;
-  det_type   fDetType;//detector type (see g4sbs_types.h) no need right now, but it might come in handy
-  TSBSDBManager* fDBmanager;
 };
 
 #endif // _TSBSSIMDETECTOR_H

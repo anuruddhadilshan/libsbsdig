@@ -25,9 +25,13 @@ public:
   Int_t LoadGenInfo(const string& fileName);
   Int_t LoadDetInfo(const string& specname, const string& detname);
   
+  // This is left as a patch, to make the program compile, but we'll need to replace them eventually,
+  // cause we'll need these information for each detector.
   const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
   const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
-    
+  
+  const DetInfo & GetDetInfo(const char* detname);
+  
  protected:
   TSBSDBManager();
   

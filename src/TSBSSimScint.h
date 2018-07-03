@@ -10,12 +10,12 @@ class TFile;
 
 class TSBSSimScint : public TSBSSimDetector {
 public:
-  TSBSSimScint();
+  TSBSSimScint(const char* name);
   virtual ~TSBSSimScint();
   // This loads the simulation event data
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
-
+  
   virtual void Clear();
 
   // Initialize
@@ -58,6 +58,7 @@ public:
     void Clear();
   };
 private:
+
   SPEModel *fSPE;
   std::vector<Signal> fSignals;
 };

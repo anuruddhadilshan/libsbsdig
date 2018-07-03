@@ -4,8 +4,10 @@
 TSBSSimDetector::TSBSSimDetector() : fHasData(false)
 {
   fDBmanager = TSBSDBManager::GetInstance();
+  
 }
 
 TSBSSimDetector::~TSBSSimDetector()
 {
+  fDBmanager->Delete();
 }

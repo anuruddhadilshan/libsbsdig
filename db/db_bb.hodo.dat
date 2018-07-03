@@ -9,7 +9,7 @@ bb.hodo.nmodules = 1
 
 #hodoscope geometry info
 geo.bb.hodo.nrows = 90
-geo.bb.hodo.ncols = 0.6 #m
+geo.bb.hodo.ncols = 2
 geo.bb.hodo.xsize = 2.25 #m
 geo.bb.hodo.ysize = 0.6 #m
 geo.bb.hodo.zpos =  2.5 #m

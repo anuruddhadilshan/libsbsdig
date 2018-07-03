@@ -6,9 +6,11 @@
 #include <TTree.h>
 #include <TFile.h>
 #include <TSBSSimEvent.h>
+#include "TSBSDBManager.h"
 
-TSBSSimScint::TSBSSimScint()
+TSBSSimScint::TSBSSimScint(const char* name)
 {
+  fName = name;
   Init();
 }
 
@@ -19,10 +21,14 @@ TSBSSimScint::~TSBSSimScint()
 void TSBSSimScint::Init()
 {
   fSPE = new SPEModel();
+  
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
-  fSignals.resize(180); // TODO: Don't hard code this!!!
-
+  //fSignals.resize(180); // TODO: Don't hard code this!!!
+  
+  fDetInfo = fDBmanager->GetDetInfo(fName.Data());
+  
+  fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {

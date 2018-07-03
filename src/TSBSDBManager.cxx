@@ -22,16 +22,23 @@ TSBSDBManager::~TSBSDBManager()
 Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 {  
   // Load the experiment/setup general info
+  /*
   ifstream input(fileName.c_str());
   if (!input.is_open()){
     cout<<"cannot find general information file "<<fileName
 	<<". Exiting the program"<<endl;
         exit(0);
   }
+  */
+  std::string path = "";
+  if(std::getenv("DB_DIR")) {
+    path = std::string(std::getenv("DB_DIR")) + "/";
+  }
+  const string& PathfileName = path+fileName;
   
   cout << "File name " << fileName << endl;
   
-  FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
+  FILE* file = OpenFile( PathfileName.c_str(), GetInitDate() );
   
   const string prefix = "geninfo.";
   
@@ -97,9 +104,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       //Int_t err = LoadDB (input, request, prefix2);
       Int_t err = LoadDB (file, GetInitDate(), request, prefix2.c_str());
       
-      //input.close();
       if (err){
-	input.close();
+	//input.close();
+	fclose(file);
 	return kInitError;
       }
       
@@ -119,7 +126,8 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     }  catch(...) {
       delete pid;
       delete tid;
-      input.close();
+      //input.close();
+      fclose(file);
       throw;
     }//end try / catch
     
@@ -131,7 +139,8 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     }
     
   }// end spectrometer loop
-  input.close();
+  //input.close();
+  fclose(file);
   return(kOK);
 }
 
@@ -146,122 +155,184 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   }
   const string& fileName = path+"db_"+specname+"."+detname+".dat";
   
+  /*
   ifstream input(fileName.c_str());
   if (!input.is_open()){
     cout<<"cannot find geometry file "<<fileName
 	<<". Exiting the program"<<endl;
     exit(0);
   }
-
+  */
+  
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
-
+  
   const string prefix = specname+"."+detname+".";
 
   string dettype_str;
   int nchan, chan_per_slot, slot_per_crate;
-  int nplanes;
-  std::vector<int>* nmodules = 0;
+
+  //First load the parameters which will be common to *all* detectors (including digitization parameters)
+  DBRequest request[] = {
+    {"dettype",        &dettype_str,    kString,  0, 0},
+    {"nchan",          &nchan,          kInt,     0, 0},
+    {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
+    {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
+    { 0 }
+  };
   
-  try{
-    nmodules = new vector<int>;
-    DBRequest request[] = {
-      {"dettype",        &dettype_str,    kString,  0, 0},
-      {"nchan",          &nchan,          kInt,     0, 0},
-      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
-      {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
-      {"nplanes",        &nplanes,        kInt,     0, 0},
-      {"nmodules",       nmodules,        kIntV,    0, 0},
-      { 0 }
-    };
-    
-    cout << prefix.c_str() << endl;
-    
-    //Int_t err = LoadDB (input, request, prefix);
-    Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
-     
-    if (err){
-      input.close();
-      return kInitError;
-    }
-    
-    if(dettype_str.compare("HCal")==0)detinfo.fDetType = kHCal;
-    if(dettype_str.compare("ECal")==0)detinfo.fDetType = kECal;
-    if(dettype_str.compare("Cher")==0) detinfo.fDetType = kCher;
-    if(dettype_str.compare("Scint")==0) detinfo.fDetType = kScint;
-    if(dettype_str.compare("GEM")==0) detinfo.fDetType = kGEM;
-    
-    detinfo.fNChan = nchan;
-    detinfo.fChanPerSlot = chan_per_slot;
-    detinfo.fSlotPerCrate = slot_per_crate;
-    detinfo.fNPlanes = nplanes;
+  Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+  
+  if(dettype_str.compare("HCal")==0)detinfo.fDetType = kHCal;
+  if(dettype_str.compare("ECal")==0)detinfo.fDetType = kECal;
+  if(dettype_str.compare("Cher")==0) detinfo.fDetType = kCher;
+  if(dettype_str.compare("Scint")==0) detinfo.fDetType = kScint;
+  if(dettype_str.compare("GEM")==0) detinfo.fDetType = kGEM;
+  
+  detinfo.fNChan = nchan;
+  detinfo.fChanPerSlot = chan_per_slot;
+  detinfo.fSlotPerCrate = slot_per_crate;
 
-    const string digprefix = "dig."+prefix;
-    const string geoprefix = "geo."+prefix;
+  const string digprefix = "dig."+prefix;
+  
+  DBRequest request_dig[] = {
+    {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance,   kDouble,    0, 1},
+    {"gain",              &detinfo.fDigInfo.fGain,          kDouble,    0, 1},
+    {"pedestal",          &detinfo.fDigInfo.fPedestal,      kDouble,    0, 1},
+    {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,      kDouble,    0, 1},
+    {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble,    0, 1},
+    {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,    0, 1},
+    {"gatewidth",         &detinfo.fDigInfo.fGateWidth,     kDouble,    0, 1},
+    { 0 }
+  };
+  
+  cout << digprefix.c_str() << endl;
+  
+  //err = LoadDB (input, request_dig, digprefix);
+  err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
+  if (err){
+    //input.close();
+    fclose(file);
+    return kInitError;
+  }
+  
+  const string geoprefix = "geo."+prefix;
+  
+  if(detinfo.fDetType==kGEM || detinfo.fDetType==kScint){
+    int nplanes;
+    std::vector<int>* nmodules = 0;
     
-    
-    for(int i_pl = 0; i_pl<nplanes; i_pl++){
-      detinfo.fNModules.push_back(nmodules->at(i_pl));
+    try{
+      nmodules = new vector<int>;
+      DBRequest request[] = {
+	{"nplanes",        &nplanes,        kInt,     0, 0},
+	{"nmodules",       nmodules,        kIntV,    0, 0},
+	{ 0 }
+      };
       
-      for(int i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
-	GeoInfo thisGeo;
-	
-	DBRequest request_geo[] = {
-	  {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
-	  {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
-	  {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
-	  {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
-	  {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
-	  { 0 }
-	};
-	
-	cout << geoprefix.c_str() << endl;
-	string geoprefix_ii = geoprefix;
-	if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
-	if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
-	cout << geoprefix_ii.c_str() << endl;
-	
-	//err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));
-	err = LoadDB (file, GetInitDate(), request_geo, geoprefix_ii.c_str());
-	if (err){
-	  input.close();
-	  return kInitError;
-	}
-	
-	detinfo.fGeoInfo.push_back(thisGeo);
+      cout << prefix.c_str() << endl;
+      
+      //Int_t err = LoadDB (input, request, prefix);
+      Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+      
+      if (err){
+	//input.close();
+	fclose(file);
+	return kInitError;
       }
-    }//end 
+      
+      detinfo.fNPlanes = nplanes;
+      
+      
+      for(int i_pl = 0; i_pl<nplanes; i_pl++){
+	detinfo.fNModules.push_back(nmodules->at(i_pl));
+	
+	for(int i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
+	  GeoInfo thisGeo;
+	  
+	  DBRequest request_geo[] = {
+	    {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
+	    {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
+	    {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
+	    {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
+	    {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
+	    { 0 }
+	  };
+	  
+	  cout << geoprefix.c_str() << endl;
+	  string geoprefix_ii = geoprefix;
+	  if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
+	  if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
+	  cout << geoprefix_ii.c_str() << endl;
+	  
+	  //err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));
+	  err = LoadDB (file, GetInitDate(), request_geo, geoprefix_ii.c_str());
+	  if (err){
+	    //input.close();
+	    fclose(file);
+	    return kInitError;
+	  }
+	  
+	  detinfo.fGeoInfo.push_back(thisGeo);
+	}
+      }//end 
+      delete nmodules;
+    }  catch(...) {
+      delete nmodules;
+      //input.close();
+      fclose(file);
+      throw;
+    }//end try / catch
     
-    DBRequest request_dig[] = {
-      {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance,   kDouble,    0, 1},
-      {"gain",              &detinfo.fDigInfo.fGain,          kDouble,    0, 1},
-      {"pedestal",          &detinfo.fDigInfo.fPedestal,      kDouble,    0, 1},
-      {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,      kDouble,    0, 1},
-      {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble,    0, 1},
-      {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,    0, 1},
-      {"gatewidth",         &detinfo.fDigInfo.fGateWidth,     kDouble,    0, 1},
+  }else{
+    GeoInfo thisGeo;
+    
+    DBRequest request_geo[] = {
+      {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
+      {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
+      {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
+      {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
+      {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
       { 0 }
     };
-
-    cout << digprefix.c_str() << endl;
     
-    //err = LoadDB (input, request_dig, digprefix);
-    err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
+    err = LoadDB (file, GetInitDate(), request_geo, geoprefix.c_str());
     if (err){
-      input.close();
+      //input.close();
+      fclose(file);
       return kInitError;
     }
-        
-    delete nmodules;
-  }  catch(...) {
-    delete nmodules;
-    input.close();
-    throw;
-  }//end try / catch
+    
+    detinfo.fGeoInfo.push_back(thisGeo);
+  }
+  
    
   fDetInfo.push_back(detinfo);
   
-  input.close();
+  //input.close();
+  fclose(file);
   return(kOK);
+}
+
+//function to retrieve the coorect detector information from the detector name
+const DetInfo & TSBSDBManager::GetDetInfo(const char* detname)
+{
+  //check if the detectors databases is loaded in the first place
+  if(fDetInfo.size()==0){
+    cout << "Detector info has not been loaded by the manager yet; Exiting." << endl;
+    cout << "To avoid this, make sure you load the DB information with the DB manager before you declare any detector." << endl;
+    exit(2);
+  }
+  
+  // if so, loop on list of detectors.
+  for(int i = 0; i<fDetInfo.size(); i++){
+    if(fDetInfo.at(i).fDetName.compare(detname)==0){
+      return fDetInfo.at(i);
+    }
+  }
+  
+  // if no valid detectors have been found exit with error message
+  cout << "No detector corresponding to " << detname << "found in database. Check program or database" << endl;
+  exit(2);
 }
 
 /*

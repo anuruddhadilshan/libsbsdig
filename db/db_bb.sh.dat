@@ -3,5 +3,3 @@ bb.sh.dettype = ECal
 bb.sh.chan_per_slot = 128
 bb.sh.slot_per_crate = 16
 bb.sh.nchan = 189
-bb.sh.nplanes = 1
-bb.sh.nmodules = 1
