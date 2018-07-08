@@ -331,7 +331,7 @@ const DetInfo & TSBSDBManager::GetDetInfo(const char* detname)
   }
   
   // if no valid detectors have been found exit with error message
-  cout << "No detector corresponding to " << detname << "found in database. Check program or database" << endl;
+  cout << "No detector corresponding to " << detname << " found in database. Check program or database" << endl;
   exit(2);
 }
 

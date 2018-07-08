@@ -20,6 +20,7 @@ public:
 
   // Initialize
   void Init();
+  /*
   struct SPEModel {
     double gain_pmt;
     double resistance; //ohm
@@ -39,7 +40,9 @@ public:
     double sig;
     double t0;
   };
+  */
   struct Signal {
+    /*
     std::vector<double> samples;
     std::vector<double> samples_raw;
     double sumedep;
@@ -52,6 +55,16 @@ public:
     int dnraw;
     double dx_samples;
     double dx_raw;
+    */
+    double sumedep;
+    int npe;
+    std::vector<double> leadtimes;
+    std::vector<double> trailtimes;
+    
+    
+    
+    std::vector<uint32_t> vetrocwords;
+    
     Signal();
     void Fill(SPEModel *model,double t, double toffset = 0.0);
     void Digitize();

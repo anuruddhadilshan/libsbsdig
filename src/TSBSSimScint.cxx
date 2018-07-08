@@ -20,14 +20,14 @@ TSBSSimScint::~TSBSSimScint()
 
 void TSBSSimScint::Init()
 {
-  fSPE = new SPEModel();
-  
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
   //fSignals.resize(180); // TODO: Don't hard code this!!!
   
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  
+  fSPE = new SPEModel(fDetInfo.fDigInfo, fName.Data());
+  //fSPE->DigInfo = fDetInfo.fDigInfo;
+    
   fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
@@ -42,6 +42,7 @@ void TSBSSimScint::Init()
 
 void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
+  /*
   Clear();
   // Just make HCAL be 288 modules for now to make it easier....
   //Double_t mint = 1e9;
@@ -67,10 +68,12 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     }
   }
   //std::cout << "Mint = " << mint << std::endl;
+  */
 }
 
 void TSBSSimScint::Signal::Digitize()
 {
+  /*
   if(npe <= 0)
     return;
 
@@ -85,7 +88,7 @@ void TSBSSimScint::Signal::Digitize()
     }
     if(max>2)
       max = 2;
-    //samples[bs] =int((max/2.);//*4095);
+    //samples[bs] =int((max/2.);// *4095);
     samples[bs] =int((max/2.)*4095);
     //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
     braw += dnraw;
@@ -94,10 +97,12 @@ void TSBSSimScint::Signal::Digitize()
 
   // Also digitize the sumedep
   sumedep *= 1e9; // To store in eV
+  */
 }
 
 void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
+  /*
   bool any_events = false;
   for(size_t m = 0; m < fSignals.size(); m++) {
     fSignals[m].Digitize();
@@ -125,8 +130,10 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
     }
   }
   SetHasDataFlag(any_events);
+  */
 }
 
+/*
 TSBSSimScint::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   dnraw(10), sumedep(0.0)
   //mint(0.0), maxt(50.), nbins(50),
@@ -137,7 +144,9 @@ TSBSSimScint::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   samples.resize(nbins);
   samples_raw.resize(nbins_raw);
 }
+*/
 
+/*
 void TSBSSimScint::Signal::Fill(SPEModel *model,double t, double toffset)
 {
   int start_bin = 0;
@@ -158,10 +167,16 @@ void TSBSSimScint::Signal::Fill(SPEModel *model,double t, double toffset)
   }
   npe++;
 }
+*/
 
+
+
+/*
 TSBSSimScint::SPEModel::SPEModel() :
   gain_pmt(1e6), resistance(50.0),qe(1.602e-19), unit(1e-9)
 {
+  
+  
   scale = gain_pmt*resistance*qe/unit;
   start_t = -12.5;
   mint = -25;
@@ -182,22 +197,27 @@ TSBSSimScint::SPEModel::SPEModel() :
   model = new TF1("fHCalSignal",*fConvolution,mint,maxt,
         fConvolution->GetNpar());
 }
+*/
 
+
+/*
 double TSBSSimScint::SPEModel::Eval(double t)
 {
   return scale*model->Eval(t);
   //return model->Eval(t);
   //return 1.0;
 }
+*/
 
-
+/*
 void TSBSSimScint::Clear()
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();
   }
 }
-
+*/
+/*
 void TSBSSimScint::Signal::Clear()
 {
   for(size_t i = 0; i < samples.size(); i++) {
@@ -208,3 +228,4 @@ void TSBSSimScint::Signal::Clear()
   }
   npe = 0;
 }
+*/
