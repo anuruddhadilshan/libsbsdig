@@ -50,7 +50,7 @@ class SPEModel {
   double mint;
   double start_t;
   double maxt;
-  double tao;
+  double tau;
   double sig;
   double t0;
 };

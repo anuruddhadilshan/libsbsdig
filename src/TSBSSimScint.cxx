@@ -170,62 +170,19 @@ void TSBSSimScint::Signal::Fill(SPEModel *model,double t, double toffset)
 */
 
 
-
-/*
-TSBSSimScint::SPEModel::SPEModel() :
-  gain_pmt(1e6), resistance(50.0),qe(1.602e-19), unit(1e-9)
-{
-  
-  
-  scale = gain_pmt*resistance*qe/unit;
-  start_t = -12.5;
-  mint = -25;
-  maxt = 75.0;
-  tao = 2.08*5; //ns
-  sig = 2.20*5; //ns
-  // test values
-  tao = 2.08;
-  sig = 2.20;
-  t0 = 5.0;
-  fFunc1 = new TF1("fFunc1HCal",TString::Format("TMath::Max(0.,"
-        "(x/%g)*TMath::Exp(-x/(%g)))",tao*tao,tao),mint,maxt);
-  fFunc2 = new TF1("fFunc2HCal",TString::Format(
-        "%g*TMath::Exp(-((x-%g)**2)/(%g))",
-        1./TMath::Sqrt(2*TMath::Pi()*sig),t0,sig*sig),mint,maxt);
-  fConvolution = new TF1Convolution(fFunc1,fFunc2);
-
-  model = new TF1("fHCalSignal",*fConvolution,mint,maxt,
-        fConvolution->GetNpar());
-}
-*/
-
-
-/*
-double TSBSSimScint::SPEModel::Eval(double t)
-{
-  return scale*model->Eval(t);
-  //return model->Eval(t);
-  //return 1.0;
-}
-*/
-
-/*
 void TSBSSimScint::Clear()
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();
   }
 }
-*/
-/*
 void TSBSSimScint::Signal::Clear()
 {
-  for(size_t i = 0; i < samples.size(); i++) {
-    samples[i] = 0;
-  }
-  for(size_t i = 0; i < samples_raw.size(); i++) {
-    samples_raw[i] = 0;
-  }
+  // for(size_t i = 0; i < samples.size(); i++) {
+  //   samples[i] = 0;
+  // }
+  // for(size_t i = 0; i < samples_raw.size(); i++) {
+  //   samples_raw[i] = 0;
+  // }
   npe = 0;
 }
-*/

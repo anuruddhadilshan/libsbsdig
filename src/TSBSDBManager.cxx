@@ -194,14 +194,20 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 
   const string digprefix = "dig."+prefix;
   
+  bool ignore_pmt = false;
+  if(detinfo.fDetType==kGEM) ignore_pmt = true;
+  
   DBRequest request_dig[] = {
-    {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance,   kDouble,    0, 1},
-    {"gain",              &detinfo.fDigInfo.fGain,          kDouble,    0, 1},
-    {"pedestal",          &detinfo.fDigInfo.fPedestal,      kDouble,    0, 1},
-    {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,      kDouble,    0, 1},
-    {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble,    0, 1},
-    {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,    0, 1},
-    {"gatewidth",         &detinfo.fDigInfo.fGateWidth,     kDouble,    0, 1},
+    {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance, kDouble, 0,  ignore_pmt},
+    {"gain",              &detinfo.fDigInfo.fGain,        kDouble,  0, 0},
+    {"pedestal",          &detinfo.fDigInfo.fPedestal,     kDouble, 0,  0},
+    {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,     kDouble,  0, 0},
+    {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble, 0,  0},
+    {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,  0, 0},
+    {"gatewidth",         &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
+    {"spe_tau",           &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
+    {"spe_sigma",         &detinfo.fDigInfo.fSPEsig,          kDouble, 0,  ignore_pmt},
+    {"spe_transit_time",  &detinfo.fDigInfo.fSPEtransittime,  kDouble,  0, ignore_pmt},
     { 0 }
   };
   

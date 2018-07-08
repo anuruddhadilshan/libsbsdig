@@ -22,12 +22,12 @@ SPEModel::SPEModel(DigInfo diginfo, const char* detname):
   mint = fDigInfo.fTriggerOffset-fDigInfo.fGateWidth/2.0;
   maxt = fDigInfo.fTriggerOffset+fDigInfo.fGateWidth/2.0;
   // test values
-  tao = 2.08;
-  sig = 2.20;
-  t0 = 5.0;
+  tau = fDigInfo.fSPEtau;
+  sig = fDigInfo.fSPEsig;
+  t0 = fDigInfo.fSPEtransittime;
   fFunc1 = new TF1(Form("fFunc1%s",detname),
 		   TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))",
-				   tao*tao,tao),
+				   tau*tau,tau),
 		   mint,maxt);
   fFunc2 = new TF1(Form("fFunc2%s",detname),
 		   TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))",

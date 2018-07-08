@@ -81,13 +81,16 @@ struct GeoInfo{
 
 struct DigInfo{
   // same remark as for GeoInfo
-  double  fROImpedance;   // readout impedance
-  double  fGain;          // Gain 
-  double  fPedestal;      // Pedestal value (adc value)
-  double  fPedNoise;      // Pedestal noise (adc value)
+  double  fROImpedance; // readout impedance
+  double  fGain;        // Gain 
+  double  fPedestal;     // Pedestal value (adc value)
+  double  fPedNoise;     // Pedestal noise (adc value)
   double  fTriggerJitter; // trigger jitter (ns)
   double  fTriggerOffset; // trigger offset (ns)
-  double  fGateWidth;     // gate width (ns)
+  double  fGateWidth;      // gate width (ns)
+  double  fSPEtau;         // tau param for SPE
+  double  fSPEsig;          // sigma param for SPE
+  double  fSPEtransittime;  // pmt transit time param for SPE
 };
 
 struct DetInfo{
