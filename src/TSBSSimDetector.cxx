@@ -19,8 +19,8 @@ SPEModel::SPEModel(DigInfo diginfo, const char* detname):
   resistance = fDigInfo.fROImpedance;
   scale = gain_pmt*resistance*qe/unit;
   //start_t = -12.5;
-  mint = -25;
-  maxt = 75.0;
+  mint = fDigInfo.fTriggerOffset-fDigInfo.fGateWidth/2.0;
+  maxt = fDigInfo.fTriggerOffset+fDigInfo.fGateWidth/2.0;
   // test values
   tao = 2.08;
   sig = 2.20;
@@ -36,4 +36,11 @@ SPEModel::SPEModel(DigInfo diginfo, const char* detname):
   fConvolution = new TF1Convolution(fFunc1,fFunc2);
   
   model = new TF1(Form("fSignal%s",detname),*fConvolution,mint,maxt, fConvolution->GetNpar());
+}
+
+double SPEModel::Eval(double t)
+{
+  return scale*model->Eval(t);
+  //return model->Eval(t);
+  //return 1.0;
 }
