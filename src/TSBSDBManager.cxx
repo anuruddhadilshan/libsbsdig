@@ -56,9 +56,11 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   //int err = LoadDB( input, request,  prefix);
   int err = LoadDB(file, GetInitDate(), request,  prefix.c_str());
   
-  cout << "err: " << err << endl;
-  cout << "nspecs "<< fNSpecs << endl;
-  cout << specs_str.c_str() << endl;
+  if(fDebug>=2){
+    cout << "err: " << err << endl;
+    cout << "nspecs "<< fNSpecs << endl;
+    cout << specs_str.c_str() << endl;
+  }
   
   if( err ) exit(2); 
   
@@ -77,13 +79,16 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
   for(int i_spec = 0; i_spec<fNSpecs; i_spec++){
     SpectroInfo specinfo;
+    double mcangle;
     int ndets;
     string dets_str;
     int nsig;
     
     string prefix2 = prefix+fSpecNames.at(i_spec)+".";
     
-    cout << prefix2.c_str() << endl;
+    if(fDebug>=3){
+      cout << prefix2.c_str() << endl;
+    }
     
     std::vector<int>* pid = 0;
     std::vector<int>* tid = 0;
@@ -93,6 +98,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       tid = new vector<int>;
       
       DBRequest request[] = {
+	{"mcangle",        &mcangle,         kDouble,   0, 0},
 	{"nsignal",        &nsig,      kInt,      0, 0},
 	{"signal.pid",     pid,        kIntV,     0, 0},
 	{"signal.tid",     tid,        kIntV,     0, 0},
@@ -110,10 +116,13 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 	return kInitError;
       }
       
+      specinfo.fMCangle = mcangle;
       specinfo.fNDets = ndets;
       specinfo.fDetNames = vsplit(dets_str);
       
-      cout << specinfo.fNDets << endl;
+      if(fDebug>=3){
+	cout << specinfo.fNDets << endl;
+      }
       
       for(int i_sig = 0; i_sig<nsig; i_sig++){
 	SignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
@@ -131,7 +140,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       throw;
     }//end try / catch
     
-    cout << specinfo.fNDets << endl;
+    if(fDebug>=3){
+      cout << specinfo.fNDets << endl;
+    }
     
     // then loop on detectors
     for(int i_det = 0; i_det<specinfo.fNDets; i_det++){
@@ -198,20 +209,22 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   if(detinfo.fDetType==kGEM) ignore_pmt = true;
   
   DBRequest request_dig[] = {
-    {"readoutimpedance",  &detinfo.fDigInfo.fROImpedance, kDouble, 0,  ignore_pmt},
-    {"gain",              &detinfo.fDigInfo.fGain,        kDouble,  0, 0},
-    {"pedestal",          &detinfo.fDigInfo.fPedestal,     kDouble, 0,  0},
-    {"pedestalnoise",     &detinfo.fDigInfo.fPedNoise,     kDouble,  0, 0},
-    {"triggerjitter",     &detinfo.fDigInfo.fTriggerJitter, kDouble, 0,  0},
-    {"triggeroffset",     &detinfo.fDigInfo.fTriggerOffset, kDouble,  0, 0},
-    {"gatewidth",         &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
-    {"spe_tau",           &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
-    {"spe_sigma",         &detinfo.fDigInfo.fSPEsig,          kDouble, 0,  ignore_pmt},
-    {"spe_transit_time",  &detinfo.fDigInfo.fSPEtransittime,  kDouble,  0, ignore_pmt},
+    {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
+    {"gain",          &detinfo.fDigInfo.fGain,           kDouble,  0, 0},
+    {"pedestal",      &detinfo.fDigInfo.fPedestal,       kDouble, 0,  0},
+    {"pednoise",      &detinfo.fDigInfo.fPedNoise,       kDouble,  0, 0},
+    {"triggerjitter", &detinfo.fDigInfo.fTriggerJitter,  kDouble, 0,  0},
+    {"triggeroffset", &detinfo.fDigInfo.fTriggerOffset,  kDouble,  0, 0},
+    {"gatewidth",     &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
+    {"spe_tau",       &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
+    {"spe_sigma",     &detinfo.fDigInfo.fSPEsig,         kDouble, 0,  ignore_pmt},
+    {"spe_transit",   &detinfo.fDigInfo.fSPEtransittime, kDouble,  0, ignore_pmt},
     { 0 }
   };
   
-  cout << digprefix.c_str() << endl;
+  if(fDebug>=3){
+    cout << digprefix.c_str() << endl;
+  }
   
   //err = LoadDB (input, request_dig, digprefix);
   err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
@@ -234,8 +247,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	{"nmodules",       nmodules,        kIntV,    0, 0},
 	{ 0 }
       };
-      
-      cout << prefix.c_str() << endl;
+       
+      if(fDebug>=3){
+	cout << prefix.c_str() << endl;
+      }
       
       //Int_t err = LoadDB (input, request, prefix);
       Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
@@ -264,11 +279,16 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	    { 0 }
 	  };
 	  
-	  cout << geoprefix.c_str() << endl;
+	  if(fDebug>=3){
+	    cout << geoprefix.c_str() << endl;
+	  }
 	  string geoprefix_ii = geoprefix;
 	  if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
 	  if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
-	  cout << geoprefix_ii.c_str() << endl;
+	  
+	  if(fDebug>=3){
+	    cout << geoprefix_ii.c_str() << endl;
+	  }
 	  
 	  //err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));
 	  err = LoadDB (file, GetInitDate(), request_geo, geoprefix_ii.c_str());

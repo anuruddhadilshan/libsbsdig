@@ -60,6 +60,7 @@ struct SignalInfo{
 };
 
 struct SpectroInfo{
+  double fMCangle;
   std::vector<SignalInfo> MCsignalInfo;
   int fNDets;
   std::vector<std::string> fDetNames;
