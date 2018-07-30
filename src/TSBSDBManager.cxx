@@ -98,7 +98,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       tid = new vector<int>;
       
       DBRequest request[] = {
-	{"mcangle",        &mcangle,         kDouble,   0, 0},
+	{"mcangle",        &mcangle,   kDouble,   0, 0},
 	{"nsignal",        &nsig,      kInt,      0, 0},
 	{"signal.pid",     pid,        kIntV,     0, 0},
 	{"signal.tid",     tid,        kIntV,     0, 0},
@@ -207,33 +207,88 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   
   bool ignore_pmt = false;
   if(detinfo.fDetType==kGEM) ignore_pmt = true;
+ 
+  std::vector<double>* gain = 0;
+  std::vector<double>* pedestal = 0;
+  std::vector<double>* pednoise = 0;
   
-  DBRequest request_dig[] = {
-    {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
-    {"gain",          &detinfo.fDigInfo.fGain,           kDouble,  0, 0},
-    {"pedestal",      &detinfo.fDigInfo.fPedestal,       kDouble, 0,  0},
-    {"pednoise",      &detinfo.fDigInfo.fPedNoise,       kDouble,  0, 0},
-    {"triggerjitter", &detinfo.fDigInfo.fTriggerJitter,  kDouble, 0,  0},
-    {"triggeroffset", &detinfo.fDigInfo.fTriggerOffset,  kDouble,  0, 0},
-    {"gatewidth",     &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
-    {"spe_tau",       &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
-    {"spe_sigma",     &detinfo.fDigInfo.fSPEsig,         kDouble, 0,  ignore_pmt},
-    {"spe_transit",   &detinfo.fDigInfo.fSPEtransittime, kDouble,  0, ignore_pmt},
-    { 0 }
-  };
-  
-  if(fDebug>=3){
-    cout << digprefix.c_str() << endl;
-  }
-  
-  //err = LoadDB (input, request_dig, digprefix);
-  err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
-  if (err){
+  try{
+    gain = new vector<double>;
+    pedestal = new vector<double>;
+    pednoise = new vector<double>;
+    
+    DBRequest request_dig[] = {
+      {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
+      {"gain",          gain,             kDoubleV, 0, 0},
+      {"pedestal",      pedestal,         kDoubleV, 0, 0},
+      {"pednoise",      pednoise,         kDoubleV, 0, 0},
+      {"triggerjitter", &detinfo.fDigInfo.fTriggerJitter,  kDouble, 0,  0},
+      {"triggeroffset", &detinfo.fDigInfo.fTriggerOffset,  kDouble,  0, 0},
+      {"gatewidth",     &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
+      {"spe_tau",       &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
+      {"spe_sigma",     &detinfo.fDigInfo.fSPEsig,         kDouble, 0,  ignore_pmt},
+      {"spe_transit",   &detinfo.fDigInfo.fSPEtransittime, kDouble,  0, ignore_pmt},
+      { 0 }
+    };
+    
+    if(fDebug>=3){
+      cout << digprefix.c_str() << endl;
+    }
+    
+    if(gain->size()!=detinfo.fNChan){
+      cout << "warning: number of gains in input (" << gain->size() 
+	   << ") does not match number of channels (" << detinfo.fNChan
+	   << "): check you database! " << endl;
+      cout << "use first gain as default for all channels" << endl;
+      detinfo.fDigInfo.fGain.push_back(gain->at(0));
+    }else{
+      for(uint i__ = 0; i__<gain->size(); i__++){
+	detinfo.fDigInfo.fGain.push_back(gain->at(i__));
+      }
+    }
+    if(pedestal->size()!=detinfo.fNChan){
+      cout << "warning: number of pedestals in input (" << pedestal->size() 
+	   << ") does not match number of channels (" << detinfo.fNChan
+	   << "): check you database! " << endl;
+      cout << "use first pedestals as default for all channels" << endl;
+      detinfo.fDigInfo.fPedestal.push_back(pedestal->at(0));
+    }else{
+      for(uint i__ = 0; i__<pedestal->size(); i__++){
+	detinfo.fDigInfo.fPedestal.push_back(pedestal->at(i__));
+      }
+    }
+    if(pednoise->size()!=detinfo.fNChan){
+      cout << "warning: number of pedestal noises in input (" << pednoise->size() 
+	   << ") does not match number of channels (" << detinfo.fNChan
+	   << "): check you database! " << endl;
+      cout << "use first pedestal noise as default for all channels" << endl;
+      detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(0));
+    }else{
+      for(uint i__ = 0; i__<pednoise->size(); i__++){
+	detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(i__));
+      }
+    }
+    
+    //err = LoadDB (input, request_dig, digprefix);
+    err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
+    if (err){
+      //input.close();
+      fclose(file);
+      return kInitError;
+    }
+    
+    delete gain;
+    delete pedestal;
+    delete pednoise;
+  }  catch(...) {
+    delete gain;
+    delete pedestal;
+    delete pednoise;
     //input.close();
     fclose(file);
-    return kInitError;
-  }
-  
+    throw;
+  }//end try / catch
+    
   const string geoprefix = "geo."+prefix;
   
   if(detinfo.fDetType==kGEM || detinfo.fDetType==kScint){
