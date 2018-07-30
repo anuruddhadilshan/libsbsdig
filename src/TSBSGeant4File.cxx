@@ -570,6 +570,10 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     
   }//end switch(fManager->Getg4sbsDetType)
   */
+  // Process Scint data
+  //if(fTree->)
+
+
   // Now process HCAL data
   if(fTree->hcalpart.E) {
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {

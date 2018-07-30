@@ -12,22 +12,22 @@ geo.bb.hodo.nrows = 90
 geo.bb.hodo.ncols = 2
 geo.bb.hodo.xsize = 2.25 #m
 geo.bb.hodo.ysize = 0.6 #m
-geo.bb.hodo.zpos =  2.5 #m
+geo.bb.hodo.zpos =  2.59241 #m
 
 #hodoscope digitization info
-dig.bb.hodo.pmtgain = 7.0e6
-dig.bb.hodo.pmttransittime = 33.0  # ns
-#bb.hodo.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
-#bb.hodo.pmtrisetime = 4.5 # ns
-#bb.hodo.pmtjitter = 4.0 # ns
-#bb.hodo.pmtfwhm = 7.5 # ns
-#bb.hodo.pmtpulseshapetau = 38.3  # ns
+dig.bb.hodo.readoutimpedance = 50 # ohm
+dig.bb.hodo.triggerjitter = 3.0  # ns
+dig.bb.hodo.triggeroffset = 30.  # ns 
+dig.bb.hodo.gatewidth = 100. #ns
+dig.bb.hodo.gain = 1.0e5
+dig.bb.hodo.pedestal = 0.0
+dig.bb.hodo.pednoise = 0.0
+
+dig.bb.hodo.spe_tau = 0.65  # ns
+dig.bb.hodo.spe_sigma = 1.05  # ns
+dig.bb.hodo.spe_transit = 19.0  # ns
 
 # Electronics parameters:
-dig.bb.hodo.readoutimpedance = 50 # ohm
-dig.bb.hodo.triggeroffset = 30.  # ns 
-dig.bb.hodo.triggerjitter = 3.0  # ns
-dig.bb.hodo.gatewidth = 100. #ns
 #bb.hodo.tdctimeconversion = 1.0 #ns
 #bb.hodo.tdcbits = 16
 #bb.hodo.tdcthreshold = 0.003 # V
@@ -37,7 +37,6 @@ dig.bb.hodo.gatewidth = 100. #ns
 #dig.bb.hodo.pulsenoiseconst = 30.   #ADC values
 #dig.bb.hodo.pulsenoisesigma = 7.    #ADC values
 
-#NINO cross talk parameter
 #bb.hodo.do_crosstalk = 0
 #bb.hodo.crosstalk_mean = 0.1
 #bb.hodo.crosstalk_sigma = 0.03
