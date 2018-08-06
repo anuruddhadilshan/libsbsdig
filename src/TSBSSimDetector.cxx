@@ -13,34 +13,46 @@ TSBSSimDetector::~TSBSSimDetector()
 }
 
 SPEModel::SPEModel(DigInfo diginfo, const char* detname):
-  fDigInfo(diginfo), qe(1.602e-19), unit(1e-9)
+  fDigInfo(diginfo)//, qe(1.602e-19), unit(1e-9)
 {
-  gain_pmt = fDigInfo.fGain;  
-  resistance = fDigInfo.fROImpedance;
-  scale = gain_pmt*resistance*qe/unit;
-  //start_t = -12.5;
-  mint = fDigInfo.fTriggerOffset-fDigInfo.fGateWidth/2.0;
-  maxt = fDigInfo.fTriggerOffset+fDigInfo.fGateWidth/2.0;
-  // test values
-  tau = fDigInfo.fSPEtau;
-  sig = fDigInfo.fSPEsig;
-  t0 = fDigInfo.fSPEtransittime;
-  fFunc1 = new TF1(Form("fFunc1%s",detname),
-		   TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))",
-				   tau*tau,tau),
-		   mint,maxt);
-  fFunc2 = new TF1(Form("fFunc2%s",detname),
-		   TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))",
-				   1./TMath::Sqrt(2*TMath::Pi()*sig),t0,sig*sig),
-		   mint,maxt);
-  fConvolution = new TF1Convolution(fFunc1,fFunc2);
+  fScale = fDigInfo.fROImpedance*qe/spe_unit;
   
-  model = new TF1(Form("fSignal%s",detname),*fConvolution,mint,maxt, fConvolution->GetNpar());
+  if(fDigInfo.fGain.size()==1){
+    fScale*= fDigInfo.fGain[0];
+  }
+  
+  //start_t = -12.5;
+  double mint = fDigInfo.fTriggerOffset-fDigInfo.fGateWidth/2.0;
+  double maxt = fDigInfo.fTriggerOffset+fDigInfo.fGateWidth/2.0;
+  // test values
+  double tau = fDigInfo.fSPEtau;
+  double sig = fDigInfo.fSPEsig;
+  double t0 = fDigInfo.fSPEtransittime;
+  
+  TF1 fFunc1(Form("fFunc1%s",detname),
+	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))",
+			     tau*tau,tau),
+	     mint,maxt);
+  TF1 fFunc2(Form("fFunc2%s",detname),
+	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))",
+			     1./TMath::Sqrt(2*TMath::Pi()*sig),t0,sig*sig),
+	     mint,maxt);
+  TF1Convolution fConvolution(&fFunc1,&fFunc2);
+  
+  model = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
 }
 
-double SPEModel::Eval(double t)
+double SPEModel::Eval(double t, int chan)
 {
-  return scale*model->Eval(t);
+  if(fDigInfo.fGain.size()>1){
+    if(fDigInfo.fGain.size()<=chan){
+      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fGain.size() << " check database ! " << endl;
+      exit(-1);
+    }
+    fScale*= fDigInfo.fGain[chan];
+  }
+  
+  return fScale*model->Eval(t);
   //return model->Eval(t);
   //return 1.0;
 }

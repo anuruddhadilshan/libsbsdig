@@ -43,6 +43,9 @@ enum det_type{
   kGEM
 };
 
+#define qe 1.602e-19
+#define spe_unit 1.0e-9
+
 struct SignalInfo{
   int pid;
   int tid;

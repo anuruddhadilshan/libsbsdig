@@ -23,8 +23,8 @@ public:
   struct SPEModel {
     double gain_pmt;
     double resistance; //ohm
-    double qe; //
-    double unit;
+    //double qe; //
+    //double unit;
     double scale;
     TF1 *model;
     SPEModel();

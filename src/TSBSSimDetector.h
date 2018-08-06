@@ -31,19 +31,22 @@ private:
 class SPEModel {
  public:
   SPEModel(DigInfo diginfo, const char* detname);
-  double Eval(double t);
+  double Eval(double t, int chan = 0);
   double GetStartTime(){return start_t;};
   void SetStartTime(double t){start_t = t;};
   
  private:
   DigInfo fDigInfo;
+  TF1 *model;
+  double fScale;
+  double start_t;
   
+  /*
   double gain_pmt;
   double resistance; //ohm
   double qe; //
   double unit;
   double scale;
-  TF1 *model;
   TF1 *fFunc1;
   TF1 *fFunc2;
   TF1Convolution *fConvolution;
@@ -53,6 +56,7 @@ class SPEModel {
   double tau;
   double sig;
   double t0;
+  */
 };
 
 #endif // _TSBSSIMDETECTOR_H

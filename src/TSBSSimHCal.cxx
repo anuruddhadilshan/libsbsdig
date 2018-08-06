@@ -154,9 +154,9 @@ void TSBSSimHCal::Signal::Fill(SPEModel *model,double t, double toffset)
 }
 
 TSBSSimHCal::SPEModel::SPEModel() :
-  gain_pmt(1e6), resistance(50.0),qe(1.602e-19), unit(1e-9)
+  gain_pmt(1e6), resistance(50.0)//,qe(1.602e-19), unit(1e-9)
 {
-  scale = gain_pmt*resistance*qe/unit;
+  scale = gain_pmt*resistance*qe/spe_unit;
   start_t = -12.5;
   mint = -25;
   maxt = 75.0;
