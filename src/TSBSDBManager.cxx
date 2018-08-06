@@ -235,6 +235,14 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       cout << digprefix.c_str() << endl;
     }
     
+    //err = LoadDB (input, request_dig, digprefix);
+    err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
+    if (err){
+      //input.close();
+      fclose(file);
+      return kInitError;
+    }
+    
     if(gain->size()!=detinfo.fNChan){
       cout << "warning: number of gains in input (" << gain->size() 
 	   << ") does not match number of channels (" << detinfo.fNChan
@@ -267,14 +275,6 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       for(uint i__ = 0; i__<pednoise->size(); i__++){
 	detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(i__));
       }
-    }
-    
-    //err = LoadDB (input, request_dig, digprefix);
-    err = LoadDB (file, GetInitDate(), request_dig, digprefix.c_str());
-    if (err){
-      //input.close();
-      fclose(file);
-      return kInitError;
     }
     
     delete gain;

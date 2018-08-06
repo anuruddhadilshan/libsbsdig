@@ -15,7 +15,7 @@ geo.bb.hodo.ysize = 0.6 #m
 geo.bb.hodo.zpos =  2.59241 #m
 
 #hodoscope digitization info
-dig.bb.hodo.readoutimpedance = 50 # ohm
+dig.bb.hodo.roimpedance = 50 # ohm
 dig.bb.hodo.triggerjitter = 3.0  # ns
 dig.bb.hodo.triggeroffset = 30.  # ns 
 dig.bb.hodo.gatewidth = 100. #ns
