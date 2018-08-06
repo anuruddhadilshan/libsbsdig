@@ -103,6 +103,8 @@ public:
   
   int    fErrID;
   double fErrVal;
+  
+  ClassDef(TSBSDBManager,1)
 };
 
 #endif

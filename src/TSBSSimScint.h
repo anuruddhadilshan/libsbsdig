@@ -74,6 +74,8 @@ private:
 
   SPEModel *fSPE;
   std::vector<Signal> fSignals;
+
+  ClassDef(TSBSSimScint,1)
 };
 
 #endif //_TSBSSIMHCAL_H

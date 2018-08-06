@@ -26,6 +26,8 @@ protected:
   DetInfo fDetInfo;
 private:
   bool fHasData;
+
+  ClassDef(TSBSSimDetector,1)
 };
 
 class SPEModel {
@@ -57,6 +59,7 @@ class SPEModel {
   double sig;
   double t0;
   */
+  ClassDef(SPEModel,1)
 };
 
 #endif // _TSBSSIMDETECTOR_H
