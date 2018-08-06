@@ -39,8 +39,6 @@ public:
     int npe;
     std::vector<double> leadtimes;
     std::vector<double> trailtimes;
-        
-    //std::vector<uint32_t> vetrocwords;
     
     Signal();
     void Fill(TSPEModel *model, double t, double toffset = 0.0);
@@ -51,7 +49,7 @@ private:
 
   TSPEModel *fSPE;
   std::vector<Signal> fSignals;
-
+  
   ClassDef(TSBSSimScint,1)
 };
 

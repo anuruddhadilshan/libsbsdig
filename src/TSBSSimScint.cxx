@@ -28,7 +28,7 @@ void TSBSSimScint::Init()
   fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
   //fSPE->DigInfo = fDetInfo.fDigInfo;
   
-  fSignals.resize(fDetInfo.fNChan);
+  //fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {
@@ -42,13 +42,14 @@ void TSBSSimScint::Init()
 
 void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
-  /*
+  
   Clear();
   // Just make HCAL be 288 modules for now to make it easier....
-  //Double_t mint = 1e9;
   int mod = 0;
   int type = 0;
   double data = 0;
+  double time = 0;
+  
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for Scintillator
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
