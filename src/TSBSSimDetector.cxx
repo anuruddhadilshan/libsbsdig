@@ -12,7 +12,7 @@ TSBSSimDetector::~TSBSSimDetector()
   fDBmanager->Delete();
 }
 
-SPEModel::SPEModel(DigInfo diginfo, const char* detname):
+TSPEModel::TSPEModel(DigInfo diginfo, const char* detname):
   fDigInfo(diginfo)//, qe(1.602e-19), unit(1e-9)
 {
   fScale = fDigInfo.fROImpedance*qe/spe_unit;
@@ -42,7 +42,7 @@ SPEModel::SPEModel(DigInfo diginfo, const char* detname):
   model = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
 }
 
-double SPEModel::Eval(double t, int chan)
+double TSPEModel::Eval(double t, int chan)
 {
   if(fDigInfo.fGain.size()>1){
     if(fDigInfo.fGain.size()<=chan){

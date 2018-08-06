@@ -25,9 +25,9 @@ void TSBSSimScint::Init()
   //fSignals.resize(180); // TODO: Don't hard code this!!!
   
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  fSPE = new SPEModel(fDetInfo.fDigInfo, fName.Data());
+  fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
   //fSPE->DigInfo = fDetInfo.fDigInfo;
-    
+  
   fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");

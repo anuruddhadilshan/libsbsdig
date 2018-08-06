@@ -6,6 +6,7 @@
 #include <TTree.h>
 #include <TFile.h>
 #include <TSBSSimEvent.h>
+#include "TSBSDBManager.h"
 
 TSBSSimCher::TSBSSimCher()
 {
@@ -18,11 +19,12 @@ TSBSSimCher::~TSBSSimCher()
 
 void TSBSSimCher::Init()
 {
-  fSPE = new SPEModel();
+  fDetInfo = fDBmanager->GetDetInfo(fName.Data());
+  fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
-  fSignals.resize(180); // TODO: Don't hard code this!!!
-
+  fSignals.resize(fDetInfo.fNChan);
+  
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {
@@ -132,7 +134,7 @@ TSBSSimCher::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   samples_raw.resize(nbins_raw);
 }
 
-void TSBSSimCher::Signal::Fill(SPEModel *model,double t, double toffset)
+void TSBSSimCher::Signal::Fill(TSPEModel *model, double t, double toffset)
 {
   int start_bin = 0;
   if( mint > t )
@@ -144,7 +146,7 @@ void TSBSSimCher::Signal::Fill(SPEModel *model,double t, double toffset)
     return; // Way outside our window anyways
 
   // Now digitize this guy into the raw_bin (scope)
-  double tt = model->start_t-toffset;
+  double tt = model->GetStartTime()-toffset;
   //std::cout << "t=" << t << ", tt=" << tt << std::endl;
   for(int bin = start_bin; bin < nbins_raw; bin++) {
     samples_raw[bin] += model->Eval(tt);
@@ -153,6 +155,7 @@ void TSBSSimCher::Signal::Fill(SPEModel *model,double t, double toffset)
   npe++;
 }
 
+/*
 TSBSSimCher::SPEModel::SPEModel() :
   gain_pmt(1e6), resistance(50.0)//,qe(1.602e-19), unit(1e-9)
 {
@@ -183,7 +186,7 @@ double TSBSSimCher::SPEModel::Eval(double t)
   //return model->Eval(t);
   //return 1.0;
 }
-
+*/
 
 void TSBSSimCher::Clear()
 {

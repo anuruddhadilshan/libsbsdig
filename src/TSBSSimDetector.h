@@ -30,9 +30,9 @@ private:
   ClassDef(TSBSSimDetector,1)
 };
 
-class SPEModel {
+class TSPEModel {
  public:
-  SPEModel(DigInfo diginfo, const char* detname);
+  TSPEModel(DigInfo diginfo, const char* detname);
   double Eval(double t, int chan = 0);
   double GetStartTime(){return start_t;};
   void SetStartTime(double t){start_t = t;};
@@ -59,7 +59,7 @@ class SPEModel {
   double sig;
   double t0;
   */
-  ClassDef(SPEModel,1)
+  ClassDef(TSPEModel,1)
 };
 
 #endif // _TSBSSIMDETECTOR_H
