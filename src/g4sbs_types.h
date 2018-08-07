@@ -49,14 +49,12 @@ enum det_type{
 struct SignalInfo{
   int pid;
   int tid;
-  /*
-    Int_t fillBitsGEM;
-    Int_t fillBitsEC;
-    Int_t signalSector; //used if map sector
-    Double_t ECEDep;
-    Double_t momentum;
-    Double_t R;
-  */
+  // Int_t fillBitsGEM;
+  // Int_t fillBitsEC;
+  // Int_t signalSector; //used if map sector
+  // Double_t ECEDep;
+  // Double_t momentum;
+  // Double_t R;
   SignalInfo() {}
   SignalInfo(int apid, int atid):pid(apid), tid(atid) {}
   ~SignalInfo() {}

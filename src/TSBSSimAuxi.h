@@ -73,12 +73,15 @@ class TPMTSignal : public TObject {
 
 class TSignalInfo : public TObject {
  public:
-  TSignalInfo(){};
+  TSignalInfo() {};
  TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
-  ~TSignalInfo(){};
+  ~TSignalInfo() {};
   
   double GetPID(){return fPID;};
   double GetTID(){return fTID;};
+
+  void SetPID(int apid){fPID = apid;};
+  void SetTID(int atid){fTID = atid;};
   
  private:
   int fPID;
@@ -87,33 +90,43 @@ class TSignalInfo : public TObject {
   ClassDef(TSignalInfo, 1);
 };
 
-/*
-class  : public TObject{
+class TSpectroInfo : public TObject{
  public:
+  TSpectroInfo() {};
+  TSpectroInfo(int ndets):fNDets(ndets) {};
+  ~TSpectroInfo() {};
+
+  //TSignalInfo
+  
   
  private:
   
+  double fMCangle;
+  int fNDets;
+  std::vector<TSignalInfo> fMCsignalInfo;
+  std::vector<std::string> fDetNames;
   
-  ClassDef(, 1)
-}
+  ClassDef(TSpectroInfo, 1);
+};
+
+/*
+class  : public TObject{
+ public:
+
+  ClassDef(, 1);
+};
 
 class  : public TObject{
  public:
 
-  ClassDef(, 1)
-}
+  ClassDef(, 1);
+};
 
 class  : public TObject{
  public:
 
-  ClassDef(, 1)
-}
-
-class  : public TObject{
- public:
-
-  ClassDef(, 1)
-}
+  ClassDef(, 1);
+};
 */
 /*
 struct TSignalInfo{
