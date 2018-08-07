@@ -30,18 +30,18 @@ private:
   ClassDef(TSBSSimDetector,1)
 };
 
-class TSPEModel {
+class TSPEModel : public TObject {
  public:
   TSPEModel(DigInfo diginfo, const char* detname);
   double Eval(double t, int chan = 0);
-  double GetStartTime(){return start_t;};
-  void SetStartTime(double t){start_t = t;};
+  double GetStartTime(){return fStartTime;};
+  void SetStartTime(double t){fStartTime = t;};
   
  private:
   DigInfo fDigInfo;
   TF1 *model;
   double fScale;
-  double start_t;
+  double fStartTime;
   
   /*
   double gain_pmt;
@@ -60,6 +60,39 @@ class TSPEModel {
   double t0;
   */
   ClassDef(TSPEModel,1)
+};
+
+class TPMTSignal : public TObject {
+ public:
+  /*
+    std::vector<double> samples;
+    std::vector<double> samples_raw;
+    double sumedep;
+    double mint;
+    double maxt;
+    int nbins;
+    int nbins_raw;
+    int npe;
+    int sum;
+    int dnraw;
+    double dx_samples;
+    double dx_raw;
+  */
+  //double sumedep;
+  int fNpe;
+  int fADC;// One unique ADC value ?
+  //TDCs: multiple values possible.
+  std::vector<double> leadtimes;
+  std::vector<double> trailtimes;
+  
+  
+
+  TPMTSignal();
+  void Fill(TSPEModel *model, double t, double toffset = 0.0);
+  void Digitize();
+  void Clear();
+  
+  ClassDef(TPMTSignal,1)
 };
 
 #endif // _TSBSSIMDETECTOR_H
