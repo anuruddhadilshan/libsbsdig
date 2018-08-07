@@ -61,6 +61,7 @@ class TPMTSignal : public TObject {
     double dx_raw;
   */
   //double sumedep;
+  //double fADC;
   int fNpe;
   int fADC;// One unique ADC value ?
   //TDCs: multiple values possible.
@@ -71,11 +72,15 @@ class TPMTSignal : public TObject {
   void Fill(TNPEModel *model, double t, double toffset = 0.0);
   void Digitize();
   void Clear();
-  ~TPMTSignal(){};
+  ~TPMTSignal();
   
   ClassDef(TPMTSignal,1);
 };
 
+//
+// Classes for DB information: TO BE COMPLETED LATER! 
+// structs already exist for DB and code is functional. 
+//
 class TSignalInfo : public TObject {
  public:
   TSignalInfo() {};

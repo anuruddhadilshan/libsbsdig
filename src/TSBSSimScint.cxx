@@ -28,7 +28,7 @@ void TSBSSimScint::Init()
   fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
   //fNPE->DigInfo = fDetInfo.fDigInfo;
   
-  //fSignals.resize(fDetInfo.fNChan);
+  fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {
@@ -64,7 +64,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         //  mint = ev->GetData(1);
         fSignals[mod].Fill(fNPE,data-75.);
       } else if (type == 1) { // sumedep data
-        fSignals[mod].sumedep = data;
+        //fSignals[mod].sumedep = data;
       }
     }
   }

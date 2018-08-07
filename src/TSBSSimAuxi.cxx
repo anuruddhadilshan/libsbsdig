@@ -89,3 +89,8 @@ void TPMTSignal::Clear()
   leadtimes.clear();
   trailtimes.clear();
 }
+ 
+TPMTSignal::~TPMTSignal()
+{
+  Clear();
+}

@@ -21,8 +21,8 @@ public:
 
   // Initialize
   void Init();
+  /*
   struct Signal {
-    /*
     std::vector<double> samples;
     std::vector<double> samples_raw;
     double sumedep;
@@ -35,7 +35,7 @@ public:
     int dnraw;
     double dx_samples;
     double dx_raw;
-    */
+
     double sumedep;
     int npe;
     std::vector<double> leadtimes;
@@ -46,10 +46,12 @@ public:
     void Digitize();
     void Clear();
   };
-private:
-
+  */
+  
+ private:
+  
   TNPEModel *fNPE;
-  std::vector<Signal> fSignals;
+  std::vector<TPMTSignal> fSignals;
   
   ClassDef(TSBSSimScint,1)
 };
