@@ -71,6 +71,7 @@ SRC   = src/g4sbs_tree.cxx \
         src/g4sbs_data.cxx \
         src/TSBSDBManager.cxx \
         src/TSBSGeant4File.cxx \
+        src/TSBSSimAuxi.cxx \
         src/TSBSSimDecoder.cxx \
         src/TSBSSimEvent.cxx \
         src/TSBSSimFile.cxx \

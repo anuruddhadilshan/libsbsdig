@@ -2,6 +2,7 @@
 #define _TSBSSIMCHER_H
 
 #include "TSBSSimDetector.h"
+#include "TSBSSimAuxi.h"
 
 class TF1;
 class TF1Convolution;

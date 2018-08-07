@@ -69,7 +69,6 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     }
   }
   //std::cout << "Mint = " << mint << std::endl;
-  */
 }
 
 void TSBSSimScint::Signal::Digitize()

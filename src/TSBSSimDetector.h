@@ -30,6 +30,7 @@ private:
   ClassDef(TSBSSimDetector,1)
 };
 
+/*
 class TSPEModel : public TObject {
  public:
   TSPEModel(DigInfo diginfo, const char* detname);
@@ -43,41 +44,39 @@ class TSPEModel : public TObject {
   double fScale;
   double fStartTime;
   
-  /*
-  double gain_pmt;
-  double resistance; //ohm
-  double qe; //
-  double unit;
-  double scale;
-  TF1 *fFunc1;
-  TF1 *fFunc2;
-  TF1Convolution *fConvolution;
-  double mint;
-  double start_t;
-  double maxt;
-  double tau;
-  double sig;
-  double t0;
-  */
+  // double gain_pmt;
+  // double resistance; //ohm
+  // double qe; //
+  // double unit;
+  // double scale;
+  // TF1 *fFunc1;
+  // TF1 *fFunc2;
+  // TF1Convolution *fConvolution;
+  // double mint;
+  // double start_t;
+  // double maxt;
+  // double tau;
+  // double sig;
+  // double t0;
+  
   ClassDef(TSPEModel,1)
 };
 
 class TPMTSignal : public TObject {
  public:
-  /*
-    std::vector<double> samples;
-    std::vector<double> samples_raw;
-    double sumedep;
-    double mint;
-    double maxt;
-    int nbins;
-    int nbins_raw;
-    int npe;
-    int sum;
-    int dnraw;
-    double dx_samples;
-    double dx_raw;
-  */
+  // std::vector<double> samples;
+  // std::vector<double> samples_raw;
+  // double sumedep;
+  // double mint;
+  // double maxt;
+  // int nbins;
+  // int nbins_raw;
+  // int npe;
+  // int sum;
+  // int dnraw;
+  // double dx_samples;
+  // double dx_raw;
+  
   //double sumedep;
   int fNpe;
   int fADC;// One unique ADC value ?
@@ -94,5 +93,6 @@ class TPMTSignal : public TObject {
   
   ClassDef(TPMTSignal,1)
 };
+*/
 
 #endif // _TSBSSIMDETECTOR_H

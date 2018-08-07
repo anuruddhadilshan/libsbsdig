@@ -8,6 +8,7 @@
 #pragma link C++ defined_in "src/g4sbs_data.h";
 #pragma link C++ defined_in "src/TSBSDBManager.h";
 #pragma link C++ defined_in "src/TSBSGeant4File.h";
+#pragma link C++ defined_in "src/TSBSSimAuxi.h";
 #pragma link C++ defined_in "src/TSBSSimDecoder.h";
 #pragma link C++ defined_in "src/TSBSSimEvent.h";
 #pragma link C++ defined_in "src/TSBSSimFile.h";

@@ -1,18 +1,5 @@
-#include "TSBSSimDetector.h"
+#include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
-
-TSBSSimDetector::TSBSSimDetector() : fHasData(false)
-{
-  fDBmanager = TSBSDBManager::GetInstance();
-  
-}
-
-TSBSSimDetector::~TSBSSimDetector()
-{
-  fDBmanager->Delete();
-}
-
-/*
 //
 // Class TSPEModel
 //
@@ -101,4 +88,3 @@ void TPMTSignal::Clear()
   leadtimes.clear();
   trailtimes.clear();
 }
-*/
