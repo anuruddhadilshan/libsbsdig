@@ -8,17 +8,21 @@
 #include "TF1.h"
 #include "TF1Convolution.h"
 
-class TSPEModel : public TObject {
+class TNPEModel : public TObject {
  public:
-  TSPEModel(DigInfo diginfo, const char* detname);
+  TNPEModel(DigInfo diginfo, const char* detname, int npe = 1);
   double Eval(double t, int chan = 0);
+  double GetNpe(){return fNpe;};
+  void SetNpe(double npe){fNpe = npe;};
   double GetStartTime(){return fStartTime;};
   void SetStartTime(double t){fStartTime = t;};
+  ~TNPEModel(){};
   
- private:
+ protected:
   DigInfo fDigInfo;
   TF1 *model;
   double fScale;
+  double fNpe;
   double fStartTime;
   
   /*
@@ -37,7 +41,7 @@ class TSPEModel : public TObject {
   double sig;
   double t0;
   */
-  ClassDef(TSPEModel,1);
+  ClassDef(TNPEModel,1);
 };
 
 class TPMTSignal : public TObject {
@@ -64,9 +68,10 @@ class TPMTSignal : public TObject {
   std::vector<double> trailtimes;
   
   TPMTSignal();
-  void Fill(TSPEModel *model, double t, double toffset = 0.0);
+  void Fill(TNPEModel *model, double t, double toffset = 0.0);
   void Digitize();
   void Clear();
+  ~TPMTSignal(){};
   
   ClassDef(TPMTSignal,1);
 };

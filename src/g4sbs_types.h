@@ -87,6 +87,7 @@ struct DigInfo{
   std::vector<double>  fGain;     // Gain 
   std::vector<double>  fPedestal; // Pedestal value (adc value)
   std::vector<double>  fPedNoise; // Pedestal noise (adc value)
+  std::vector<double>  fThreshold; //Channel threshold
   double  fTriggerJitter;         // trigger jitter (ns)
   double  fTriggerOffset;        // trigger offset (ns)
   double  fGateWidth;           // gate width (ns)

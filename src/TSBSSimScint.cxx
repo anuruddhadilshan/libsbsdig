@@ -20,13 +20,13 @@ TSBSSimScint::~TSBSSimScint()
 
 void TSBSSimScint::Init()
 {
-  //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
+  //fNPE = new NPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
   //fSignals.resize(180); // TODO: Don't hard code this!!!
   
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
-  //fSPE->DigInfo = fDetInfo.fDigInfo;
+  fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
+  //fNPE->DigInfo = fDetInfo.fDigInfo;
   
   //fSignals.resize(fDetInfo.fNChan);
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
@@ -62,7 +62,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-        fSignals[mod].Fill(fSPE,data-75.);
+        fSignals[mod].Fill(fNPE,data-75.);
       } else if (type == 1) { // sumedep data
         fSignals[mod].sumedep = data;
       }
@@ -71,9 +71,9 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   //std::cout << "Mint = " << mint << std::endl;
 }
 
+/*
 void TSBSSimScint::Signal::Digitize()
 {
-  /*
   if(npe <= 0)
     return;
 
@@ -97,8 +97,8 @@ void TSBSSimScint::Signal::Digitize()
 
   // Also digitize the sumedep
   sumedep *= 1e9; // To store in eV
-  */
 }
+*/
 
 void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
@@ -147,7 +147,7 @@ TSBSSimScint::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
 */
 
 /*
-void TSBSSimScint::Signal::Fill(SPEModel *model,double t, double toffset)
+void TSBSSimScint::Signal::Fill(NPEModel *model,double t, double toffset)
 {
   int start_bin = 0;
   if( mint > t )
@@ -176,6 +176,7 @@ void TSBSSimScint::Clear()
     fSignals[i].Clear();
   }
 }
+/*
 void TSBSSimScint::Signal::Clear()
 {
   // for(size_t i = 0; i < samples.size(); i++) {
@@ -186,3 +187,4 @@ void TSBSSimScint::Signal::Clear()
   // }
   npe = 0;
 }
+*/

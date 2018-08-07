@@ -211,17 +211,20 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   std::vector<double>* gain = 0;
   std::vector<double>* pedestal = 0;
   std::vector<double>* pednoise = 0;
+  std::vector<double>* threshold = 0;
   
   try{
     gain = new vector<double>;
     pedestal = new vector<double>;
     pednoise = new vector<double>;
+    threshold = new vector<double>;
     
     DBRequest request_dig[] = {
       {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
       {"gain",          gain,             kDoubleV, 0, 0},
       {"pedestal",      pedestal,         kDoubleV, 0, 0},
       {"pednoise",      pednoise,         kDoubleV, 0, 0},
+      {"threshold",     threshold,        kDoubleV, 0, 0},
       {"triggerjitter", &detinfo.fDigInfo.fTriggerJitter,  kDouble, 0,  0},
       {"triggeroffset", &detinfo.fDigInfo.fTriggerOffset,  kDouble,  0, 0},
       {"gatewidth",     &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
@@ -277,13 +280,27 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       }
     }
     
+    if(threshold->size()!=detinfo.fNChan){
+      cout << "warning: number of thresholds in input (" << gain->size() 
+	   << ") does not match number of channels (" << detinfo.fNChan
+	   << "): check you database! " << endl;
+      cout << "use first threshold as default for all channels" << endl;
+      detinfo.fDigInfo.fThreshold.push_back(threshold->at(0));
+    }else{
+      for(uint i__ = 0; i__<threshold->size(); i__++){
+	detinfo.fDigInfo.fGain.push_back(threshold->at(i__));
+      }
+    }
+    
     delete gain;
     delete pedestal;
     delete pednoise;
+    delete threshold;
   }  catch(...) {
     delete gain;
     delete pedestal;
     delete pednoise;
+    delete threshold;
     //input.close();
     fclose(file);
     throw;

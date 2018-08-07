@@ -1,10 +1,10 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
 //
-// Class TSPEModel
+// Class TNPEModel
 //
-TSPEModel::TSPEModel(DigInfo diginfo, const char* detname):
-  fDigInfo(diginfo)//, qe(1.602e-19), unit(1e-9)
+TNPEModel::TNPEModel(DigInfo diginfo, const char* detname, int npe)
+  : fDigInfo(diginfo), fNpe(npe)
 {
   fScale = fDigInfo.fROImpedance*qe/spe_unit;
   
@@ -12,14 +12,13 @@ TSPEModel::TSPEModel(DigInfo diginfo, const char* detname):
     fScale*= fDigInfo.fGain[0];
   }
   
-  //fStartTime = ;
-  //start_t = -12.5;
   double mint = -fDigInfo.fGateWidth/2.0;
   double maxt = +fDigInfo.fGateWidth/2.0;
   // test values
   double tau = fDigInfo.fSPEtau;
   double sig = fDigInfo.fSPEsig;
   double t0 = fDigInfo.fSPEtransittime-fDigInfo.fTriggerOffset;
+  fStartTime = t0;
   
   TF1 fFunc1(Form("fFunc1%s",detname),
 	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))",
@@ -34,7 +33,7 @@ TSPEModel::TSPEModel(DigInfo diginfo, const char* detname):
   model = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
 }
 
-double TSPEModel::Eval(double t, int chan)
+double TNPEModel::Eval(double t, int chan)
 {
   if(fDigInfo.fGain.size()>1){
     if(fDigInfo.fGain.size()<=chan){
@@ -44,10 +43,12 @@ double TSPEModel::Eval(double t, int chan)
     fScale*= fDigInfo.fGain[chan];
   }
   
-  return fScale*model->Eval(t);
+  return fNpe*fScale*model->Eval(t);
   //return model->Eval(t);
   //return 1.0;
 }
+
+
 
 //
 // Class TPMTSignal
@@ -60,7 +61,7 @@ TPMTSignal::TPMTSignal()
   trailtimes.clear();
 }
 
-void TPMTSignal::Fill(TSPEModel *model,double t, double toffset)
+void TPMTSignal::Fill(TNPEModel *model,double t, double toffset)
 {
   // int start_bin = 0;
   // if( mint > t )

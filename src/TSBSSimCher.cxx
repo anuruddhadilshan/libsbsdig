@@ -20,7 +20,7 @@ TSBSSimCher::~TSBSSimCher()
 void TSBSSimCher::Init()
 {
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
+  fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
   fSignals.resize(fDetInfo.fNChan);
@@ -56,7 +56,7 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-        fSignals[mod].Fill(fSPE,data-75.);
+        fSignals[mod].Fill(fNPE,data-75.);
       } else if (type == 1) { // sumedep data
         fSignals[mod].sumedep = data;
       }
@@ -134,7 +134,7 @@ TSBSSimCher::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   samples_raw.resize(nbins_raw);
 }
 
-void TSBSSimCher::Signal::Fill(TSPEModel *model, double t, double toffset)
+void TSBSSimCher::Signal::Fill(TNPEModel *model, double t, double toffset)
 {
   int start_bin = 0;
   if( mint > t )
