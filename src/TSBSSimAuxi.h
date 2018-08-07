@@ -16,9 +16,11 @@ class TNPEModel : public TObject {
   void SetNpe(double npe){fNpe = npe;};
   double GetStartTime(){return fStartTime;};
   void SetStartTime(double t){fStartTime = t;};
+  double GetADCconversion(){return fDigInfo.fADCconversion;};
+  double GetTDCconversion(){return fDigInfo.fTDCconversion;};
   ~TNPEModel(){};
   
- protected:
+ private:
   DigInfo fDigInfo;
   TF1 *model;
   double fScale;
@@ -60,13 +62,13 @@ class TPMTSignal : public TObject {
     double dx_samples;
     double dx_raw;
   */
-  //double sumedep;
+  double fSumedep;//Not forced to use it for everything
   //double fADC;
   int fNpe;
   int fADC;// One unique ADC value ?
   //TDCs: multiple values possible.
-  std::vector<double> leadtimes;
-  std::vector<double> trailtimes;
+  std::vector<double> fLeadTimes;
+  std::vector<double> fTrailTimes;
   
   TPMTSignal();
   void Fill(TNPEModel *model, double t, double toffset = 0.0);

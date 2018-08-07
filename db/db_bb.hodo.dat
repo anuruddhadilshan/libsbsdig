@@ -16,13 +16,15 @@ geo.bb.hodo.zpos =  2.59241 #m
 
 #hodoscope digitization info
 dig.bb.hodo.roimpedance = 50 # ohm
+dig.bb.hodo.tdcconversion = 1.0 #ns
+dig.bb.hodo.tdcbits = 16
 dig.bb.hodo.triggerjitter = 3.0  # ns
 dig.bb.hodo.triggeroffset = 30.  # ns 
 dig.bb.hodo.gatewidth = 100. #ns
 dig.bb.hodo.gain = 1.0e5
 dig.bb.hodo.pedestal = 0.0
 dig.bb.hodo.pednoise = 0.0
-dig.bb.hodo.threshold = 3.0 #mV
+dig.bb.hodo.threshold = 0.003 #V
 
 dig.bb.hodo.spe_tau = 0.65  # ns
 dig.bb.hodo.spe_sigma = 1.05  # ns

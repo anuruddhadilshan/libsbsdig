@@ -62,9 +62,9 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-        fSignals[mod].Fill(fNPE,data-75.);
+        fSignals[mod].Fill(fNPE,data);//
       } else if (type == 1) { // sumedep data
-        //fSignals[mod].sumedep = data;
+        fSignals[mod].fSumedep = data;
       }
     }
   }

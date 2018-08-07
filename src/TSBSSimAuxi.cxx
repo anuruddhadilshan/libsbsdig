@@ -57,12 +57,16 @@ double TNPEModel::Eval(double t, int chan)
 TPMTSignal::TPMTSignal()
   : fNpe(0), fADC(0)
 {  
-  leadtimes.clear();
-  trailtimes.clear();
+  fLeadTimes.clear();
+  fTrailTimes.clear();
 }
 
 void TPMTSignal::Fill(TNPEModel *model,double t, double toffset)
 {
+  //
+  fNpe = model->GetNpe();
+  fADC = fNpe*model->GetADCconversion();
+  
   // int start_bin = 0;
   // if( mint > t )
   //   toffset -= (mint-t);
@@ -86,8 +90,8 @@ void TPMTSignal::Clear()
 {
   fNpe = 0;
   fADC = 0;
-  leadtimes.clear();
-  trailtimes.clear();
+  fLeadTimes.clear();
+  fTrailTimes.clear();
 }
  
 TPMTSignal::~TPMTSignal()

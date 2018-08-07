@@ -83,10 +83,14 @@ struct GeoInfo{
 
 struct DigInfo{
   // same remark as for GeoInfo
-  double  fROImpedance;          // readout impedance
-  std::vector<double>  fGain;     // Gain 
-  std::vector<double>  fPedestal; // Pedestal value (adc value)
-  std::vector<double>  fPedNoise; // Pedestal noise (adc value)
+  double  fROImpedance;        // readout impedance
+  double  fADCconversion;        // charge/ADC channel conversion
+  int     fADCbits;               // number of bits in ADC
+  double  fTDCconversion;          // time/TDC channel conversion
+  int     fTDCbits;               // number of bits in ADC
+  std::vector<double>  fGain;      // Gain 
+  std::vector<double>  fPedestal;  // Pedestal value (adc value)
+  std::vector<double>  fPedNoise;  // Pedestal noise (adc value)
   std::vector<double>  fThreshold; //Channel threshold
   double  fTriggerJitter;         // trigger jitter (ns)
   double  fTriggerOffset;        // trigger offset (ns)

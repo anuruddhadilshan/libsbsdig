@@ -207,7 +207,13 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   
   bool ignore_pmt = false;
   if(detinfo.fDetType==kGEM) ignore_pmt = true;
- 
+
+  bool ignore_adc = false;
+  if(detinfo.fDetType==kScint || detinfo.fDetType==kCher) ignore_adc = true;
+  ignore_adc = (ignore_pmt || ignore_adc);
+
+  bool ignore_tdc = false;
+
   std::vector<double>* gain = 0;
   std::vector<double>* pedestal = 0;
   std::vector<double>* pednoise = 0;
@@ -221,6 +227,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     
     DBRequest request_dig[] = {
       {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
+      {"adcconversion", &detinfo.fDigInfo.fADCconversion,  kDouble, 0,  ignore_adc},
+      {"adcbits",       &detinfo.fDigInfo.fADCbits,        kInt,    0,  ignore_adc},
+      {"tdcconversion", &detinfo.fDigInfo.fTDCconversion,  kDouble, 0,  ignore_tdc},
+      {"tdcbits",       &detinfo.fDigInfo.fTDCbits,        kInt,    0,  ignore_tdc},
       {"gain",          gain,             kDoubleV, 0, 0},
       {"pedestal",      pedestal,         kDoubleV, 0, 0},
       {"pednoise",      pednoise,         kDoubleV, 0, 0},
