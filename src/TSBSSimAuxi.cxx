@@ -30,25 +30,74 @@ TNPEModel::TNPEModel(DigInfo diginfo, const char* detname, int npe)
 	     mint,maxt);
   TF1Convolution fConvolution(&fFunc1,&fFunc2);
   
-  model = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
+  fModel = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
 }
 
-double TNPEModel::Eval(double t, int chan)
+double TNPEModel::Eval(int chan, double t)
 {
-  if(fDigInfo.fGain.size()>1){
+  double totalscale = fNpe*fScale;
+  if(fDigInfo.fGain.size()>1){//if not, fScale already includes the gain
     if(fDigInfo.fGain.size()<=chan){
-      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fGain.size() << " check database ! " << endl;
+      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fGain.size() << " check your code ! " << endl;
       exit(-1);
     }
-    fScale*= fDigInfo.fGain[chan];
+    totalscale*= fDigInfo.fGain[chan];
   }
   
-  return fNpe*fScale*model->Eval(t);
-  //return model->Eval(t);
-  //return 1.0;
+  return totalscale*fModel->Eval(t);
 }
 
+void TNPEModel::FindLeadTrailTime(int chan, double &t_lead, double &t_trail)
+{
+  double thresh = fDigInfo.fThreshold[0];
+  if(fDigInfo.fThreshold.size()>1){
+    if(fDigInfo.fThreshold.size()<=chan){
+      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fThreshold.size() << " check your code ! " << endl;
+      exit(-1);
+    }
+    thresh = fDigInfo.fThreshold[chan];
+  }
+  double totalscale = fNpe*fScale;
+  if(fDigInfo.fGain.size()>1){
+    totalscale*= fDigInfo.fGain[chan];
+  }
+  //Since we cannot seem to scale the pulse, we'll scale the threshold
+  thresh = thresh/totalscale;
+  
+  if(PulseOverThr()){
+    t_lead = 1.0e38;
+    t_trail = 1.0e38;
+  }else{
+    double xmax = fModel->GetMaximumX();
+    t_lead = fModel->GetX(thresh, -fDigInfo.fGateWidth, xmax);
+    t_trail = fModel->GetX(thresh, xmax, +fDigInfo.fGateWidth);
+    
+  }
+}
 
+bool TNPEModel::PulseOverThr(int chan)
+{
+  double thresh = fDigInfo.fThreshold[0];
+  if(fDigInfo.fThreshold.size()>1){
+    if(fDigInfo.fThreshold.size()<=chan){
+      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fThreshold.size() << " check your code ! " << endl;
+      exit(-1);
+    }
+    thresh = fDigInfo.fThreshold[chan];
+  }
+  double totalscale = fNpe*fScale;
+  if(fDigInfo.fGain.size()>1){
+    totalscale*= fDigInfo.fGain[chan];
+  }
+  //Since we cannot seem to scale the pulse, we'll scale the threshold
+  thresh = thresh/totalscale;
+  
+  if(fModel->GetMaximum(-fDigInfo.fGateWidth, +fDigInfo.fGateWidth)<thresh){
+    return false;
+  }else{
+    return true;
+  }
+};
 
 //
 // Class TPMTSignal
@@ -61,29 +110,15 @@ TPMTSignal::TPMTSignal()
   fTrailTimes.clear();
 }
 
-void TPMTSignal::Fill(TNPEModel *model,double t, double toffset)
+void TPMTSignal::Fill(int chan, TNPEModel *model,double t, double toffset)
 {
   //
   fNpe = model->GetNpe();
-  fADC = fNpe*model->GetADCconversion();
+  if(model->PulseOverThr(chan))fADC = fNpe*model->GetADCconversion();
   
-  // int start_bin = 0;
-  // if( mint > t )
-  //   toffset -= (mint-t);
-  // else
-  //   start_bin = (t-mint)/dx_raw;
-
-  // if(start_bin > nbins_raw)
-  //   return; // Way outside our window anyways
-
-  // // Now digitize this guy into the raw_bin (scope)
-  //double tt = model->GetStartTime-toffset;
-  // //std::cout << "t=" << t << ", tt=" << tt << std::endl;
-  // for(int bin = start_bin; bin < nbins_raw; bin++) {
-  //   samples_raw[bin] += model->Eval(tt);
-  //   tt += dx_raw;
-  // }
-  // npe++;
+  //determine lead and trail times
+  double t_lead, t_trail;
+  model->FindLeadTrailTime(chan, t_lead, t_trail);
 }
 
 void TPMTSignal::Clear()

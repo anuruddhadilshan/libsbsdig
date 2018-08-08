@@ -18,35 +18,9 @@ public:
   virtual void Digitize(TSBSSimEvent &event);
   
   virtual void Clear();
-
+  
   // Initialize
   void Init();
-  /*
-  struct Signal {
-    std::vector<double> samples;
-    std::vector<double> samples_raw;
-    double sumedep;
-    double mint;
-    double maxt;
-    int nbins;
-    int nbins_raw;
-    int npe;
-    int sum;
-    int dnraw;
-    double dx_samples;
-    double dx_raw;
-
-    double sumedep;
-    int npe;
-    std::vector<double> leadtimes;
-    std::vector<double> trailtimes;
-    
-    Signal();
-    void Fill(TNPEModel *model, double t, double toffset = 0.0);
-    void Digitize();
-    void Clear();
-  };
-  */
   
  private:
   

@@ -123,6 +123,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
   SetHasDataFlag(any_events);
 }
 
+/*
 TSBSSimCher::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   dnraw(10), sumedep(0.0)
   //mint(0.0), maxt(50.), nbins(50),
@@ -155,7 +156,7 @@ void TSBSSimCher::Signal::Fill(TNPEModel *model, double t, double toffset)
   npe++;
 }
 
-/*
+
 TSBSSimCher::SPEModel::SPEModel() :
   gain_pmt(1e6), resistance(50.0)//,qe(1.602e-19), unit(1e-9)
 {

@@ -42,13 +42,12 @@ void TSBSSimScint::Init()
 
 void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
-  
   Clear();
-  // Just make HCAL be 288 modules for now to make it easier....
+  
   int mod = 0;
   int type = 0;
-  double data = 0;
   double time = 0;
+  double data = 0;
   
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for Scintillator
@@ -56,13 +55,16 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     if(ev->GetDetType() == kScint) {
       mod  = ev->GetData(0);
       type = ev->GetData(1);
-      data = ev->GetData(2);
+      time = ev->GetData(2);
+      data = ev->GetData(3);
+      fNPE->SetNpe(data);
+      
       if(type == 0) {
         //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-        fSignals[mod].Fill(fNPE,data);//
+        fSignals[mod].Fill(mod, fNPE, data);//
       } else if (type == 1) { // sumedep data
         fSignals[mod].fSumedep = data;
       }

@@ -11,18 +11,22 @@
 class TNPEModel : public TObject {
  public:
   TNPEModel(DigInfo diginfo, const char* detname, int npe = 1);
-  double Eval(double t, int chan = 0);
   double GetNpe(){return fNpe;};
-  void SetNpe(double npe){fNpe = npe;};
+  void   SetNpe(double npe){fNpe = npe;};
   double GetStartTime(){return fStartTime;};
-  void SetStartTime(double t){fStartTime = t;};
+  void   SetStartTime(double t){fStartTime = t;};
   double GetADCconversion(){return fDigInfo.fADCconversion;};
   double GetTDCconversion(){return fDigInfo.fTDCconversion;};
+
+  double Eval(int chan, double t);
+  void   FindLeadTrailTime(int chan, double &t_lead, double &t_trail);
+  bool   PulseOverThr(int chan = 0);
+    
   ~TNPEModel(){};
   
  private:
   DigInfo fDigInfo;
-  TF1 *model;
+  TF1 *fModel;
   double fScale;
   double fNpe;
   double fStartTime;
@@ -71,7 +75,7 @@ class TPMTSignal : public TObject {
   std::vector<double> fTrailTimes;
   
   TPMTSignal();
-  void Fill(TNPEModel *model, double t, double toffset = 0.0);
+  void Fill(int chan, TNPEModel *model, double t, double toffset = 0.0);
   void Digitize();
   void Clear();
   ~TPMTSignal();
