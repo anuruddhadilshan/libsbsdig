@@ -27,13 +27,14 @@
 // Header file for the classes stored in the TTree if any.
 #include <vector>
 #include "g4sbs_data.h"
+#include "g4sbs_types.h"
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
 class g4sbs_tree {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
-   int             fExpOption;// Choose experiment option: 1: GMn, 2: GEn, 3: GEp, 4: SIDIS, 5: A1n
+   exp_type        fExpt;    // Choose experiment type: defined in "g4sbs_types.h"
    bool            fPythia;// needed to turn on/off the reading of the pythia variables
    bool            fEcalBox;// needed to turn on/off the reading of the ECAL_box data
    bool            fHcalBox;// needed to turn on/off the reading of the HCAL_box data
@@ -222,7 +223,7 @@ public :
    TBranch        *b_Primaries_phi;   //!
 
 
-   g4sbs_tree(TTree *tree=0, int det_opt = 0, bool pythia = false, bool ecalbox = false, bool hcalbox = false);
+   g4sbs_tree(TTree *tree=0, exp_type expt = kGMn, bool pythia = false, bool ecalbox = false, bool hcalbox = false);
    virtual ~g4sbs_tree();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntries();

@@ -7,7 +7,7 @@
 
 // g4sbs_tree constructor: the tree will be the 
 // the boolean is a flag to consider(true) or ignore(false) the ECal_box and HCal_box data
-g4sbs_tree::g4sbs_tree(TTree *tree, int det_opt, bool pythia, bool ecalbox, bool have_hcalbox) : fChain(0) 
+g4sbs_tree::g4sbs_tree(TTree *tree, exp_type expt, bool pythia, bool ecalbox, bool have_hcalbox) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -18,7 +18,7 @@ g4sbs_tree::g4sbs_tree(TTree *tree, int det_opt, bool pythia, bool ecalbox, bool
       }
       f->GetObject("T",tree);
    }
-   fExpOption = det_opt;
+   fExpt = expt;
    fPythia = pythia;
    fEcalBox = ecalbox;
    fHcalBox = have_hcalbox;
@@ -101,7 +101,7 @@ void g4sbs_tree::Init(TTree *tree)
    fChain->SetBranchAddress("gen", &gen_thbb, &b_gen);
    
    //BigBite detector package: all expts except GEp
-   if(fExpOption!=3){
+   if(fExpt==kGMn || fExpt==kGEn || fExpt==kSIDIS || fExpt==kA1n){
      SetupDetBranch(Earm_BBGEM,"Earm.BBGEM.hit");
      SetupDetBranch(Earm_BBGEM_Track,"Earm.BBGEM.Track");
      SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
@@ -130,8 +130,9 @@ void g4sbs_tree::Init(TTree *tree)
        SetupDetBranch(Earm_BBPS,    "Earm.BBSH.hit");
        SetupDetBranch(Earm_BBPSTF1, "Earm.BBSHTF1.hit");
      }
-   }else{
-     //if(fExpOption==3){
+   }
+   
+   if(fExpt==kGEp){
      SetupDetBranch(Earm_CDET,"Earm.CDET.hit");
      SetupDetBranch(Earm_CDET_Scint,"Earm.CDET_Scint.hit");
 
@@ -151,12 +152,12 @@ void g4sbs_tree::Init(TTree *tree)
      SetupDetBranch(Harm_FT_Track, "Harm.FT.Track");
    }
    
-   if(fExpOption==1){
+   if(fExpt==kGMn){
      SetupDetBranch(Harm_CDET,"Harm.CDET.hit");
      SetupDetBranch(Harm_CDET_Scint,"Harm.CDET_Scint.hit");
    }
      
-   if(fExpOption<5){
+   if(fExpt!=kTDIS && fExpt!=kDVCS){
      // Example of simplified HCAL branch setup
      if(fHcalBox){
        SetupDetBranch(hcalbox,"Harm.HCAL_box.hit");
@@ -167,7 +168,7 @@ void g4sbs_tree::Init(TTree *tree)
      }
    }
    
-   if(fExpOption==4 /* >=4 ??? */){
+   if(fExpt==kSIDIS || fExpt==kA1n || fExpt==kTDIS || fExpt==kDVCS){
      SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
      SetupDetBranch(Harm_SBSGEM_Track, "Harm.SBSGEM.Track");
 

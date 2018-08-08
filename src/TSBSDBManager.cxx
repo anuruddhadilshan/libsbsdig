@@ -259,8 +259,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(gain->size()!=detinfo.fNChan){
       cout << "warning: number of gains in input (" << gain->size() 
 	   << ") does not match number of channels (" << detinfo.fNChan
-	   << "): check you database! " << endl;
-      cout << "use first gain as default for all channels" << endl;
+	   << ")" << endl;
+      cout << "First gain entry used for all channels. " << endl
+	   << "If you want one gain value per channel, fix your DB" << endl<< endl;
       detinfo.fDigInfo.fGain.push_back(gain->at(0));
     }else{
       for(uint i__ = 0; i__<gain->size(); i__++){
@@ -270,8 +271,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(pedestal->size()!=detinfo.fNChan){
       cout << "warning: number of pedestals in input (" << pedestal->size() 
 	   << ") does not match number of channels (" << detinfo.fNChan
-	   << "): check you database! " << endl;
-      cout << "use first pedestals as default for all channels" << endl;
+	   << ")" << endl;
+      cout << "First pedestal entry used for all channels. " << endl
+	   << "If you want one pedestal value per channel, fix your DB" << endl<< endl;
       detinfo.fDigInfo.fPedestal.push_back(pedestal->at(0));
     }else{
       for(uint i__ = 0; i__<pedestal->size(); i__++){
@@ -281,8 +283,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(pednoise->size()!=detinfo.fNChan){
       cout << "warning: number of pedestal noises in input (" << pednoise->size() 
 	   << ") does not match number of channels (" << detinfo.fNChan
-	   << "): check you database! " << endl;
-      cout << "use first pedestal noise as default for all channels" << endl;
+	   << ")" << endl;
+      cout << "First pedestal noise entry used for all channels. " << endl
+	   << "If you want one pedestal noise value per channel, fix your DB" << endl<< endl;
       detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(0));
     }else{
       for(uint i__ = 0; i__<pednoise->size(); i__++){
@@ -293,8 +296,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(threshold->size()!=detinfo.fNChan){
       cout << "warning: number of thresholds in input (" << gain->size() 
 	   << ") does not match number of channels (" << detinfo.fNChan
-	   << "): check you database! " << endl;
-      cout << "use first threshold as default for all channels" << endl;
+	   << ")" << endl;
+      cout << "First threshold entry used for all channels. " << endl
+	   << "If you want one threshold value per channel, fix your DB" << endl<< endl;
       detinfo.fDigInfo.fThreshold.push_back(threshold->at(0));
     }else{
       for(uint i__ = 0; i__<threshold->size(); i__++){

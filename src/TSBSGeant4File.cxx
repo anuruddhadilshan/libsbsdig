@@ -7,7 +7,7 @@
 
 // Set following variables to 1 (and recompile) t get some useful printouts
 #ifndef D_FLAG
-#define D_FLAG 1 //0: nothing; 1: warning; 2: debug;
+#define D_FLAG 0 //0: nothing; 1: warning; 2: debug;
 #endif
 
 //List of detector unique IDs: 
@@ -66,24 +66,15 @@ Int_t TSBSGeant4File::Open(){
     }
     
     TChain* C1 = (TChain*)fFile->Get("T");//Get the tree from the file
-    
-    /*
+
 #if D_FLAG>1 
-    cout << "Detector option " << fManager->Getg4sbsDetType() << endl;
+    cout << "Been there, done that" << endl;
 #endif
     
-    // Detector flag. See the printout content below.
-    if(fManager->Getg4sbsDetType()<1 && fManager->Getg4sbsDetType()>2){
-      cout << "Invalid detector option: Set correct option in db_generalinfo.dat" << endl;
-      cout << "(remider: 1 - GRINCH; 2 - RICH)" << endl;
-      return 0;
-    }
-    
-    fTree = new g4sbs_tree(C1, fManager->Getg4sbsExpType());
+    fTree = new g4sbs_tree(C1, fManager->GetExpType());
     // g4sbs_tree declare all variables, branches, etc... 
     // to read, event by event, the varaibles stored in the tree. 
     // See comments in g4sbs_tree for more details...
-    */
     
     fEvNum = -1;
  
@@ -158,6 +149,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Electron Arm
   
   // Process GRINCH data
+  
   if(fTree->Earm_GRINCH.nhits){
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
       g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 4);
