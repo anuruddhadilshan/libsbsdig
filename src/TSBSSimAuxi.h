@@ -8,77 +8,56 @@
 #include "TF1.h"
 #include "TF1Convolution.h"
 
-class TNPEModel : public TObject {
+class TSPEModel : public TObject {
  public:
-  TNPEModel(DigInfo diginfo, const char* detname, int npe = 1);
-  double GetNpe(){return fNpe;};
-  void   SetNpe(double npe){fNpe = npe;};
-  double GetStartTime(){return fStartTime;};
-  void   SetStartTime(double t){fStartTime = t;};
-  double GetADCconversion(){return fDigInfo.fADCconversion;};
-  double GetTDCconversion(){return fDigInfo.fTDCconversion;};
-
-  double Eval(int chan, double t);
-  void   FindLeadTrailTime(int chan, double &t_lead, double &t_trail);
-  bool   PulseOverThr(int chan = 0);
-    
-  ~TNPEModel(){};
+  TSPEModel(const char* detname, double tau, double sigma, double tmin = -100, double tmax = +100);
+  double Eval(double t){return fPulseModel->Eval(t);};
+  bool   PulseOverThr(double charge, double thr);
+  void   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
   
  private:
-  DigInfo fDigInfo;
-  TF1 *fModel;
-  double fScale;
-  double fNpe;
-  double fStartTime;
-  
-  /*
-  double gain_pmt;
-  double resistance; //ohm
-  double qe; //
-  double unit;
-  double scale;
-  TF1 *fFunc1;
-  TF1 *fFunc2;
-  TF1Convolution *fConvolution;
-  double mint;
-  double start_t;
-  double maxt;
-  double tau;
-  double sig;
-  double t0;
-  */
-  ClassDef(TNPEModel,1);
+  TF1 *fPulseModel;
+  ClassDef(TSPEModel,1);
 };
 
 class TPMTSignal : public TObject {
  public:
-  /*
-    std::vector<double> samples;
-    std::vector<double> samples_raw;
-    double sumedep;
-    double mint;
-    double maxt;
-    int nbins;
-    int nbins_raw;
-    int npe;
-    int sum;
-    int dnraw;
-    double dx_samples;
-    double dx_raw;
-  */
+  TPMTSignal();
+  void Fill(TSPEModel *model, double thr, double toffset = 0.0);
+  void Digitize(DigInfo diginfo);
+  void Clear();
+  ~TPMTSignal();
+  
+  void SetSumedep(double sumedep){fSumedep = sumedep;};
+  void SetNpe(UInt_t npe){fNpe = npe;};
+  void SetCharge(double charge){fCharge = charge;}; 
+  void SetEventTime(double evttime){fEventTime = evttime;};
+  
+  double Sumedep(){return fSumedep;};
+  UInt_t Npe(){return fNpe;};
+  double Charge(){return fCharge;};
+  UInt_t ADC(){return fADC;};
+
+  double EventTime(){return fEventTime;};
+  UInt_t LeadTimesSize(){return fLeadTimes.size();};
+  double LeadTime(int i){return fLeadTimes.at(i);};
+  UInt_t TrailTimesSize(){return fTrailTimes.size();};
+  double TrailTime(int i){return fTrailTimes.at(i);};
+  UInt_t TDCSize(){return fTDCs.size();};
+  UInt_t TDC(int i){return fTDCs.at(i);};
+  
+  
+ private:
   double fSumedep;//Not forced to use it for everything
-  //double fADC;
-  int fNpe;
-  int fADC;// One unique ADC value ?
+  UInt_t fNpe;
+  UInt_t fCharge;
+  UInt_t fADC;// One unique ADC value ?
+
+  double fEventTime;
   //TDCs: multiple values possible.
   std::vector<double> fLeadTimes;
   std::vector<double> fTrailTimes;
-  
-  TPMTSignal();
-  void Fill(int chan, TNPEModel *model, double t, double toffset = 0.0);
-  void Digitize();
-  void Clear();
-  ~TPMTSignal();
+  std::vector<UInt_t> fTDCs;
   
   ClassDef(TPMTSignal,1);
 };
@@ -222,6 +201,56 @@ struct DetInfo{
 
 };
 */
+
+/*
+//
+// That class was too complicated... about to scrap...
+//
+class TNPEModel : public TObject {
+ public:
+  TNPEModel(DigInfo diginfo, const char* detname, int npe = 1);
+  //TNPEModel(const char* detname, double);
+  double GetNpe(){return fNpe;};
+  double GetCharge(int chan);
+  void   SetNpe(double npe){fNpe = npe;};
+  double GetStartTime(){return fStartTime;};
+  void   SetStartTime(double t){fStartTime = t;};
+  // double GetADCconversion(){return fDigInfo.fADCconversion;};
+  // double GetTDCconversion(){return fDigInfo.fTDCconversion;};
+
+  double Eval(int chan, double t);
+  void   FindLeadTrailTime(int chan, double &t_lead, double &t_trail);
+  bool   PulseOverThr(int chan = 0);
+    
+  ~TNPEModel(){};
+  
+ private:
+  DigInfo fDigInfo;// too much info/memory - better off not having it - 
+  // specially since it will be used in detector classes which have the info.
+  TF1 *fModel;
+  double fScale;// Npe charge scale.
+  double fNpe;
+  double fStartTime;
+  
+
+  double gain_pmt;
+  double resistance; //ohm
+  double qe; //
+  double unit;
+  double scale;
+  TF1 *fFunc1;
+  TF1 *fFunc2;
+  TF1Convolution *fConvolution;
+  double mint;
+  double start_t;
+  double maxt;
+  double tau;
+  double sig;
+  double t0;
+  ClassDef(TNPEModel,1);
+};
+*/
+
 
 #endif // _TSBSSIMAUXI_H
 

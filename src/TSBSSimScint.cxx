@@ -57,13 +57,13 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       type = ev->GetData(1);
       time = ev->GetData(2);
       data = ev->GetData(3);
-      fNPE->SetNpe(data);
       
       if(type == 0) {
         //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
+	fNPE->SetNpe(data);
         fSignals[mod].Fill(mod, fNPE, data);//
       } else if (type == 1) { // sumedep data
         fSignals[mod].fSumedep = data;

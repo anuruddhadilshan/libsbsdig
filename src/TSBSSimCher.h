@@ -35,12 +35,12 @@ public:
     double dx_samples;
     double dx_raw;
     Signal();
-    void Fill(TNPEModel *model,double t, double toffset = 0.0);
+    void Fill(TSPEModel *model,double t, double toffset = 0.0);
     void Digitize();
     void Clear();
   };
 private:
-  TNPEModel *fNPE;
+  TSPEModel *fSPE;
   std::vector<Signal> fSignals;
   
   ClassDef(TSBSSimCher,1)

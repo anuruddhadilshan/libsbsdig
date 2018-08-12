@@ -1,5 +1,116 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
+
+//
+// Class TNPEModel
+//
+TSPEModel::TSPEModel(const char* detname, 
+		     double tau, double sigma, 
+		     double tmin, double tmax)
+{
+  double t0 = 0.0;
+  TF1 fFunc1(Form("fFunc1%s",detname),
+	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
+			     tau*tau, tau),
+	     tmin ,tmax);
+  TF1 fFunc2(Form("fFunc2%s",detname),
+	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))", 
+			     1./TMath::Sqrt(2*TMath::Pi()*sigma), t0, sigma*sigma),
+	     tmin, tmax);
+  TF1Convolution fConvolution(&fFunc1, &fFunc2);
+  
+  fPulseModel = new TF1(Form("fSignal%s",detname), fConvolution, tmin, tmax, fConvolution.GetNpar());
+  
+}
+
+bool TSPEModel::PulseOverThr(double charge, double thr)
+{
+  if(fPulseModel->GetMaximum()<thr/charge){
+    return false;
+  }else{
+    return true;
+  }
+};
+
+//
+// Class TPMTSignal
+//
+TPMTSignal::TPMTSignal()
+  : fSumedep(0), fNpe(0), fCharge(0), fADC(0), fEventTime(0)
+{ 
+  
+  fLeadTimes.clear();
+  fTrailTimes.clear();
+  fTDCs.clear();
+}
+
+void TPMTSignal::Fill(TSPEModel *model, double thr, double toffset)
+{
+  //
+  //fNpe = model->GetNpe();
+  //if(model->PulseOverThr(chan))fADC = model->GetCharge()*model->GetADCconversion();
+  
+  //determine lead and trail times
+  // double t_lead, t_trail;
+  // model->FindLeadTrailTime(fCharge, t_lead, t_trail);
+  // fLeadTimes.push_back(t_lead);
+  // fTrailTimes.push_back(t_trail);
+  
+}
+
+void TPMTSignal::Digitize(DigInfo diginfo)
+{
+  if(fNpe<=0)
+    return;
+  
+  //fADC = diginfo-;
+  
+  /*
+  int braw = 0;
+  double max = 0;
+  sum = 0;
+  for(int bs = 0; bs < nbins; bs++) {
+    max = 0;
+    for(int br = 0; br < dnraw; br++) {
+      if(samples_raw[br+braw] > max)
+        max = samples_raw[br+braw];
+    }
+    if(max>2)
+      max = 2;
+    //samples[bs] =int((max/2.);// *4095);
+    samples[bs] =int((max/2.)*4095);
+    //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
+    braw += dnraw;
+    sum += samples[bs];
+  }
+
+  // Also digitize the sumedep
+  sumedep *= 1e9; // To store in eV
+  */
+}
+
+void TPMTSignal::Clear()
+{
+  fSumedep = 0;
+  fNpe = 0;
+  fCharge = 0;
+  fADC = 0;
+  
+  fEventTime = 0;
+  fLeadTimes.clear();
+  fTrailTimes.clear();
+  fTDCs.clear();
+}
+ 
+TPMTSignal::~TPMTSignal()
+{
+  Clear();
+}
+
+
+
+
+/*
 //
 // Class TNPEModel
 //
@@ -33,6 +144,22 @@ TNPEModel::TNPEModel(DigInfo diginfo, const char* detname, int npe)
   fModel = new TF1(Form("fSignal%s",detname),fConvolution,mint,maxt, fConvolution.GetNpar());
 }
 
+// return the total charge: comes in handy to evaluate ADC value quickly.
+double TNPEModel::GetCharge(int chan)
+{
+  double totalcharge = fNpe*fScale;
+  if(fDigInfo.fGain.size()>1){//if not, fScale already includes the gain
+    if(fDigInfo.fGain.size()<=chan){
+      cout << "warning: requested channel number " << chan << "larger than number of channel size " << fDigInfo.fGain.size() << " check your code ! " << endl;
+      exit(-1);
+    }
+    totalcharge*= fDigInfo.fGain[chan];
+  }
+  
+  return totalcharge;
+}
+
+//
 double TNPEModel::Eval(int chan, double t)
 {
   double totalscale = fNpe*fScale;
@@ -47,6 +174,7 @@ double TNPEModel::Eval(int chan, double t)
   return totalscale*fModel->Eval(t);
 }
 
+// 
 void TNPEModel::FindLeadTrailTime(int chan, double &t_lead, double &t_trail)
 {
   double thresh = fDigInfo.fThreshold[0];
@@ -75,6 +203,7 @@ void TNPEModel::FindLeadTrailTime(int chan, double &t_lead, double &t_trail)
   }
 }
 
+// 
 bool TNPEModel::PulseOverThr(int chan)
 {
   double thresh = fDigInfo.fThreshold[0];
@@ -98,38 +227,4 @@ bool TNPEModel::PulseOverThr(int chan)
     return true;
   }
 };
-
-//
-// Class TPMTSignal
-//
-
-TPMTSignal::TPMTSignal()
-  : fNpe(0), fADC(0)
-{  
-  fLeadTimes.clear();
-  fTrailTimes.clear();
-}
-
-void TPMTSignal::Fill(int chan, TNPEModel *model,double t, double toffset)
-{
-  //
-  fNpe = model->GetNpe();
-  if(model->PulseOverThr(chan))fADC = fNpe*model->GetADCconversion();
-  
-  //determine lead and trail times
-  double t_lead, t_trail;
-  model->FindLeadTrailTime(chan, t_lead, t_trail);
-}
-
-void TPMTSignal::Clear()
-{
-  fNpe = 0;
-  fADC = 0;
-  fLeadTimes.clear();
-  fTrailTimes.clear();
-}
- 
-TPMTSignal::~TPMTSignal()
-{
-  Clear();
-}
+*/

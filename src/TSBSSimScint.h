@@ -24,7 +24,7 @@ public:
   
  private:
   
-  TNPEModel *fNPE;
+  TSPEModel *fSPE;
   std::vector<TPMTSignal> fSignals;
   
   ClassDef(TSBSSimScint,1)
