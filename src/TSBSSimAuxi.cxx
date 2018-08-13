@@ -30,6 +30,18 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
     return true;
   }
 };
+ 
+void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail)
+{
+  if(!PulseOverThr(charge, thr)){
+    t_lead = 1.0e38;
+    t_trail = 1.0e38;
+  }else{
+    double xmax = fPulseModel->GetMaximumX();
+    t_lead = fPulseModel->GetX(thr/charge, fPulseModel->GetXmin(), xmax);
+    t_trail = fPulseModel->GetX(thr/charge, xmax, fPulseModel->GetXmax());
+  }
+}
 
 //
 // Class TPMTSignal
@@ -70,7 +82,9 @@ void TPMTSignal::Digitize(DigInfo diginfo)
   if(fNpe<=0)
     return;
   
-  //fADC = diginfo-;
+  fADC = fNpe*fNpeChargeConv*diginfo.fADCconversion;
+  //for(
+  
   
   /*
   int braw = 0;
