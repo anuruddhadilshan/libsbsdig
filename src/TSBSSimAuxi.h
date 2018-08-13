@@ -25,7 +25,7 @@ class TPMTSignal : public TObject {
   TPMTSignal();
   TPMTSignal(double npechargeconv);
   void Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal);
-  void Digitize(DigInfo diginfo);
+  void Digitize(DigInfo diginfo, int chan);
   void Clear();
   ~TPMTSignal();
   
@@ -201,6 +201,7 @@ struct DetInfo{
 };
 */
 
+/*
 //
 // That class was too complicated... about to scrap...
 //
@@ -230,7 +231,7 @@ class TNPEModel : public TObject {
   double fNpe;
   double fStartTime;
   
-/*
+  / *
   double gain_pmt;
   double resistance; //ohm
   double qe; //
@@ -245,10 +246,10 @@ class TNPEModel : public TObject {
   double tau;
   double sig;
   double t0;
-  */
+  * /
   ClassDef(TNPEModel,1);
 };
-
+*/
 
 
 #endif // _TSBSSIMAUXI_H

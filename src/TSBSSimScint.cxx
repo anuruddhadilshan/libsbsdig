@@ -68,7 +68,8 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
-      time = ev->GetData(3);
+      time = ev->GetData(3)+
+	fDetInfo.fDigInfo.fSPEtransittime-fDetInfo.fDigInfo.fTriggerOffset+fDetInfo.fDigInfo.fTriggerJitter;//add 
       data = ev->GetData(4);
       
       if(type == 0) {
@@ -87,66 +88,40 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   //std::cout << "Mint = " << mint << std::endl;
 }
 
-/*
-void TSBSSimScint::Signal::Digitize()
-{
-  if(npe <= 0)
-    return;
-
-  int braw = 0;
-  double max = 0;
-  sum = 0;
-  for(int bs = 0; bs < nbins; bs++) {
-    max = 0;
-    for(int br = 0; br < dnraw; br++) {
-      if(samples_raw[br+braw] > max)
-        max = samples_raw[br+braw];
-    }
-    if(max>2)
-      max = 2;
-    //samples[bs] =int((max/2.);// *4095);
-    samples[bs] =int((max/2.)*4095);
-    //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
-    braw += dnraw;
-    sum += samples[bs];
-  }
-
-  // Also digitize the sumedep
-  sumedep *= 1e9; // To store in eV
-}
-*/
-
 void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
-  /*
+  
   bool any_events = false;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    fSignals[m].Digitize();
-    if(fSignals[m].npe > 0) {
+    fSignals[m].Digitize(fDetInfo.fDigInfo, m);
+    if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
-      data.fDetID = 2; // 2 for fADC data
+      data.fDetID = 30;//need 
       data.fChannel = m;
-      //data.fData.push_back(data.fChannel);
+      //for scintillators, we only need to 
+      data.fData.push_back(0);//Digitized data
+      data.fData.push_back(fSignals[m].TDCSize());
+      for(int i = 0; i<fSignals[m].TDCSize(); i++)data.fData.push_back(fSignals[m].TDC(i));
       //data.fData.push_back(m);
-      data.fData.push_back(0); // For samples data
-      data.fData.push_back(fSignals[m].samples.size());
+      //data.fData.push_back(0); // For samples data
+      //data.fData.push_back(fSignals[m].samples.size());
       //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
-      for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
-        //std::cout << " " << fSignals[m].samples[j];
-        data.fData.push_back(fSignals[m].samples[j]);
-      }
+      // for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
+      //   //std::cout << " " << fSignals[m].samples[j];
+      //   data.fData.push_back(fSignals[m].samples[j]);
+      // }
       event.fDetectorData.push_back(data);
       data.fData.clear();
-      //data.fData.push_back(m);
+      // //data.fData.push_back(m);
       data.fData.push_back(1);
       data.fData.push_back(1);
-      data.fData.push_back(fSignals[m].sumedep);
-      event.fDetectorData.push_back(data);
+      data.fData.push_back(fSignals[m].Sumedep());
+      // event.fDetectorData.push_back(data);
     }
   }
   SetHasDataFlag(any_events);
-  */
+  
 }
 
 /*

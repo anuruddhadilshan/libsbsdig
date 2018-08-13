@@ -9,6 +9,7 @@
 #include "TROOT.h"
 #include "TFile.h"
 #include "TChain.h"
+#include "TRandom3.h"
 #include "g4sbs_tree.h"
 //#include "TSBSCherData.h"
 #include "TSBSDBManager.h"
@@ -71,7 +72,7 @@ class TSBSGeant4File {
   TFile *fFile;
   g4sbs_tree *fTree;// needed to easily unfold root file data
   Int_t fSource;   // User-defined source ID (e.g. MC run number)  
-  
+  TRandom3 *fRN;
   //hit data arrays
   vector<g4sbshitdata *> fg4sbsHitData;
   vector<g4sbsgendata *> fg4sbsGenData;

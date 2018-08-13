@@ -77,37 +77,72 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   
 }
 
-void TPMTSignal::Digitize(DigInfo diginfo)
+void TPMTSignal::Digitize(DigInfo diginfo, int chan)
 {
   if(fNpe<=0)
     return;
   
-  fADC = fNpe*fNpeChargeConv*diginfo.fADCconversion;
-  //for(
+  fADC = fNpe*fNpeChargeConv*diginfo.fADCconversion+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
   
+  // For the sake of going forward, we assume that the signal is the first entry of each vector
+  fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.fTDCconversion);
+  fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.fTDCconversion);
   
   /*
-  int braw = 0;
-  double max = 0;
-  sum = 0;
-  for(int bs = 0; bs < nbins; bs++) {
-    max = 0;
-    for(int br = 0; br < dnraw; br++) {
-      if(samples_raw[br+braw] > max)
-        max = samples_raw[br+braw];
+  // TDCs: select only lead and trail times not between a lead and a trail time.
+  // too complicated for the moment. 
+  int minsize = min(fLeadTimes.size(), fTrailTimes.size());
+  UInt_t LeadTDC;
+  UInt_t TrailTDC;
+  for(int i = 1; i<minsize; i++){
+    LeadTimeBoxed = false;
+    TrailTimeBoxed = false;
+    LeadTDC = fLeadTimes.at(i)*diginfo.fTDCconversion;
+    TrailTDC = fTrailTimes.at(i)*diginfo.fTDCconversion;
+    
+    for(j = 0; j<fTDCs.size(); j+=2){
+      //if(fTDCs.at(j)<=LeadTDC && LeadTDC<=fTDCs.at(j+1))LeadTimeBoxed = true;
+      //if(fTDCs.at(j)<=TrailTDC && TrailTDC<=fTDCs.at(j+1))TrailTimeBoxed = true;
+      
+      if(LeadTDC<fTDCs.at(j)){//current leading time before "recorded" TDC leading time
+	if(TrailTDC>=fTDCs.at(j)){//current trailing time after: replace leading time with current
+	  fTDCs.erase(fTDCs.begin()+j);
+	  fTDCs.insert(fTDCs.begin()+j, LeadTDC);
+	}else{// current trailing time before: insert a new "pair"
+	  fTDCs.insert(fTDCs.begin()+j, LeadTDC);
+	  fTDCs.insert(fTDCs.begin()+j+1, TrailTDC);
+	}
+	break;
+      }
+      if(fTDCs.at(j)<=LeadTDC && LeadTDC<=fTDCs.at(j+1)){
+	if(fTDCs.at(j)<=TrailTDC && TrailTDC<=fTDCs.at(j+1)){
+	  break;
+	}else{
+	  fTDCs.erase(fTDCs.begin()+j+1);
+	  fTDCs.insert(fTDCs.begin()+j+1, TrailTDC);
+	}
+      }
+      //   if(LeadTDC<fTDCs.at(j)){
+    // 	fTDCs.insert(fTDCs.begin()+j-1);
+    // 	if(TrailTDC>=fTDCs.at(j)){
+	  
+    // 	}
+    //   }
+    // 	&& TrailTDC>=fTDCs.at(j)){
+    // 	fTDCs.erase(fTDCs.begin()+j);
+    // 	fTDCs.insert(fTDCs.begin()+j);
+    //   }
+      
+      // 
     }
-    if(max>2)
-      max = 2;
-    //samples[bs] =int((max/2.);// *4095);
-    samples[bs] =int((max/2.)*4095);
-    //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
-    braw += dnraw;
-    sum += samples[bs];
+    //fTDCs.push_back(TMath::Nint(fLeadTimes.at(i)*diginfo.fTDCconversion));
   }
-
-  // Also digitize the sumedep
-  sumedep *= 1e9; // To store in eV
+  // for(int i = 0; i<fLeadTimes.size(); i++){
+  //   fTDCs.push_back(TMath::Nint(fLeadTimes.at(i)*diginfo.fTDCconversion));
+  // }
   */
+  
+  fSumEdep*=1.0e9;// store in eV.
 }
 
 void TPMTSignal::Clear()
@@ -129,6 +164,16 @@ TPMTSignal::~TPMTSignal()
 }
 
 
+
+
+
+
+
+
+
+
+
+/*
 //
 // Class TNPEModel
 //
@@ -245,3 +290,4 @@ bool TNPEModel::PulseOverThr(int chan)
     return true;
   }
 };
+*/

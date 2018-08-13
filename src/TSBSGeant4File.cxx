@@ -36,7 +36,7 @@ TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
   //TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
   SetFilename(f);
   fManager = TSBSDBManager::GetInstance();
-  
+  fRN = new TRandom3(0);
   //Filling the table that will be used to calculate the low energy electron range in the gas. 
 #if D_FLAG>1
   cout << "Initialization completed" << endl;
@@ -174,7 +174,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(hodoscinthit);
       
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	Npe = 1.0e7*fTree->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24;
+	Npe = fRN.Poisson(1.0e7*fTree->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24);
 	t = fTree->Earm_BBHodoScint.tavg->at(i)+(0.55+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/0.15;
 	g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
 	hodopmthit->SetData(0, fSource);
