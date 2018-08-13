@@ -23,19 +23,18 @@ class TSPEModel : public TObject {
 class TPMTSignal : public TObject {
  public:
   TPMTSignal();
-  void Fill(TSPEModel *model, double thr, double toffset = 0.0);
+  TPMTSignal(double npechargeconv);
+  void Fill(TSPEModel *model, double evttime, int npe, double thr);
   void Digitize(DigInfo diginfo);
   void Clear();
   ~TPMTSignal();
   
-  void SetSumedep(double sumedep){fSumedep = sumedep;};
-  void SetNpe(UInt_t npe){fNpe = npe;};
-  void SetCharge(double charge){fCharge = charge;}; 
-  void SetEventTime(double evttime){fEventTime = evttime;};
+  void AddSumEdep(double edep){fSumEdep+= edep;};
+  void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
   
-  double Sumedep(){return fSumedep;};
+  double Sumedep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
-  double Charge(){return fCharge;};
+  double Charge(){return fNpe*fNpeChargeConv;};
   UInt_t ADC(){return fADC;};
 
   double EventTime(){return fEventTime;};
@@ -48,9 +47,9 @@ class TPMTSignal : public TObject {
   
   
  private:
-  double fSumedep;//Not forced to use it for everything
+  double fSumEdep;//Not forced to use it for everything
   UInt_t fNpe;
-  UInt_t fCharge;
+  double fNpeChargeConv;
   UInt_t fADC;// One unique ADC value ?
 
   double fEventTime;
@@ -202,7 +201,6 @@ struct DetInfo{
 };
 */
 
-/*
 //
 // That class was too complicated... about to scrap...
 //
@@ -232,7 +230,7 @@ class TNPEModel : public TObject {
   double fNpe;
   double fStartTime;
   
-
+/*
   double gain_pmt;
   double resistance; //ohm
   double qe; //
@@ -247,9 +245,10 @@ class TNPEModel : public TObject {
   double tau;
   double sig;
   double t0;
+  */
   ClassDef(TNPEModel,1);
 };
-*/
+
 
 
 #endif // _TSBSSIMAUXI_H

@@ -36,19 +36,25 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
 // Class TPMTSignal
 //
 TPMTSignal::TPMTSignal()
-  : fSumedep(0), fNpe(0), fCharge(0), fADC(0), fEventTime(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0)
 { 
-  
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
 }
 
-void TPMTSignal::Fill(TSPEModel *model, double thr, double toffset)
+TPMTSignal::TPMTSignal(double npechargeconv)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0)
+{ 
+  fLeadTimes.clear();
+  fTrailTimes.clear();
+  fTDCs.clear();
+}
+
+void TPMTSignal::Fill(TSPEModel *model, double evttime, int npe, double thr)
 {
-  //
-  //fNpe = model->GetNpe();
-  //if(model->PulseOverThr(chan))fADC = model->GetCharge()*model->GetADCconversion();
+  
+  //if(model->PulseOverThr(fCharge, thr))fADC = model->GetCharge()*model->GetADCconversion();
   
   //determine lead and trail times
   // double t_lead, t_trail;
@@ -91,9 +97,9 @@ void TPMTSignal::Digitize(DigInfo diginfo)
 
 void TPMTSignal::Clear()
 {
-  fSumedep = 0;
+  fSumEdep = 0;
   fNpe = 0;
-  fCharge = 0;
+  fNpeChargeConv = 0;
   fADC = 0;
   
   fEventTime = 0;
@@ -108,9 +114,6 @@ TPMTSignal::~TPMTSignal()
 }
 
 
-
-
-/*
 //
 // Class TNPEModel
 //
@@ -227,4 +230,3 @@ bool TNPEModel::PulseOverThr(int chan)
     return true;
   }
 };
-*/
