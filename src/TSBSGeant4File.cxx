@@ -152,11 +152,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   if(fTree->Earm_GRINCH.nhits){
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
-      g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 4);
-      grinchhit->SetData(0, fTree->Earm_GRINCH.PMT->at(i));
-      grinchhit->SetData(1, 1);
-      grinchhit->SetData(2, fTree->Earm_GRINCH.Time_avg->at(i));
-      grinchhit->SetData(3, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
+      g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 5);
+      grinchhit->SetData(0, fSource);
+      grinchhit->SetData(1, fTree->Earm_GRINCH.PMT->at(i));
+      grinchhit->SetData(2, 1);
+      grinchhit->SetData(3, fTree->Earm_GRINCH.Time_avg->at(i));
+      grinchhit->SetData(4, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(grinchhit);
     }
   }
@@ -164,21 +165,23 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Process hodoscope data
   if(fTree->Earm_BBHodoScint.nhits){
     for(int i = 0; i<fTree->Earm_BBHodoScint.nhits; i++){
-      g4sbshitdata *hodoscinthit = new g4sbshitdata(HODO_UNIQUE_DETID, 4);
-      hodoscinthit->SetData(0, fTree->Earm_BBHodoScint.cell->at(i));
-      hodoscinthit->SetData(1, 1);
-      hodoscinthit->SetData(2, fTree->Earm_BBHodoScint.tavg->at(i));
-      hodoscinthit->SetData(3, fTree->Earm_BBHodoScint.sumedep->at(i));
+      g4sbshitdata *hodoscinthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
+      hodoscinthit->SetData(0, fSource);
+      hodoscinthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i));
+      hodoscinthit->SetData(2, 1);
+      hodoscinthit->SetData(3, fTree->Earm_BBHodoScint.tavg->at(i));
+      hodoscinthit->SetData(4, fTree->Earm_BBHodoScint.sumedep->at(i));
       fg4sbsHitData.push_back(hodoscinthit);
       
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	Npe = 1.0e7*fTree->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24;
 	t = fTree->Earm_BBHodoScint.tavg->at(i)+(0.55+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/0.15;
-	g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 4);
-	hodopmthit->SetData(0, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
-	hodopmthit->SetData(1, 0);
-	hodopmthit->SetData(2, t);
-	hodopmthit->SetData(3, Npe*0.24);
+	g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
+	hodopmthit->SetData(0, fSource);
+	hodopmthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
+	hodopmthit->SetData(2, 0);
+	hodopmthit->SetData(3, t);
+	hodopmthit->SetData(4, Npe*0.24);
 	fg4sbsHitData.push_back(hodopmthit);
       }
     }
@@ -187,22 +190,24 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Process BB PS data
   if(fTree->Earm_BBPSTF1.nhits){
     for(int i = 0; i<fTree->Earm_BBPSTF1.nhits; i++){
-      g4sbshitdata *bbpstf1hit = new g4sbshitdata(BBPS_UNIQUE_DETID, 4);
-      bbpstf1hit->SetData(0, fTree->Earm_BBPSTF1.cell->at(i));
-      bbpstf1hit->SetData(1, 1);
-      bbpstf1hit->SetData(2, fTree->Earm_BBPSTF1.tavg->at(i));
-      bbpstf1hit->SetData(3, fTree->Earm_BBPSTF1.sumedep->at(i));
+      g4sbshitdata *bbpstf1hit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
+      bbpstf1hit->SetData(0, fSource);
+      bbpstf1hit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
+      bbpstf1hit->SetData(2, 1);
+      bbpstf1hit->SetData(3, fTree->Earm_BBPSTF1.tavg->at(i));
+      bbpstf1hit->SetData(4, fTree->Earm_BBPSTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbpstf1hit);
     }
   }
   
   if(fTree->Earm_BBPS.nhits){
     for(int i = 0; i<fTree->Earm_BBPS.nhits; i++){
-      g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 4);
-      bbpshit->SetData(0, fTree->Earm_BBPS.PMT->at(i));
-      bbpshit->SetData(1, 0);
-      bbpshit->SetData(2, fTree->Earm_BBPS.Time_avg->at(i));
-      bbpshit->SetData(3, fTree->Earm_BBPS.NumPhotoelectrons->at(i));
+      g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
+      bbpshit->SetData(0, fSource);
+      bbpshit->SetData(1, fTree->Earm_BBPS.PMT->at(i));
+      bbpshit->SetData(2, 0);
+      bbpshit->SetData(3, fTree->Earm_BBPS.Time_avg->at(i));
+      bbpshit->SetData(4, fTree->Earm_BBPS.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(bbpshit);
     }
   }
@@ -210,22 +215,24 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Process BB SH data
   if(fTree->Earm_BBSHTF1.nhits){
     for(int i = 0; i<fTree->Earm_BBSHTF1.nhits; i++){
-      g4sbshitdata *bbshtf1hit = new g4sbshitdata(BBSH_UNIQUE_DETID, 4);
-      bbshtf1hit->SetData(0, fTree->Earm_BBSHTF1.cell->at(i));
-      bbshtf1hit->SetData(1, 1);
-      bbshtf1hit->SetData(2, fTree->Earm_BBSHTF1.tavg->at(i));
-      bbshtf1hit->SetData(3, fTree->Earm_BBSHTF1.sumedep->at(i));
+      g4sbshitdata *bbshtf1hit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
+      bbshtf1hit->SetData(0, fSource);
+      bbshtf1hit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
+      bbshtf1hit->SetData(2, 1);
+      bbshtf1hit->SetData(3, fTree->Earm_BBSHTF1.tavg->at(i));
+      bbshtf1hit->SetData(4, fTree->Earm_BBSHTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbshtf1hit);
     }
   }
   
   if(fTree->Earm_BBSH.nhits){
     for(int i = 0; i<fTree->Earm_BBSH.nhits; i++){
-      g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 4);
-      bbshhit->SetData(0, fTree->Earm_BBSH.PMT->at(i));
-      bbshhit->SetData(1, 0);
-      bbshhit->SetData(2, fTree->Earm_BBSH.Time_avg->at(i));
-      bbshhit->SetData(3, fTree->Earm_BBSH.NumPhotoelectrons->at(i));
+      g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
+      bbshhit->SetData(0, fSource);
+      bbshhit->SetData(1, fTree->Earm_BBSH.PMT->at(i));
+      bbshhit->SetData(2, 0);
+      bbshhit->SetData(3, fTree->Earm_BBSH.Time_avg->at(i));
+      bbshhit->SetData(4, fTree->Earm_BBSH.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(bbshhit);
     }
   }
@@ -235,11 +242,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Process CDet data
   if(fTree->Harm_CDET_Scint.nhits){
     for(int i = 0; i<fTree->Harm_CDET_Scint.nhits; i++){
-      g4sbshitdata *cdetscinthit = new g4sbshitdata(CDET_UNIQUE_DETID, 4);
-      cdetscinthit->SetData(0, fTree->Harm_CDET_Scint.cell->at(i));
-      cdetscinthit->SetData(1, 1);
-      cdetscinthit->SetData(2, fTree->Harm_CDET_Scint.tavg->at(i));
-      cdetscinthit->SetData(3, fTree->Harm_CDET_Scint.sumedep->at(i));
+      g4sbshitdata *cdetscinthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
+      cdetscinthit->SetData(0, fSource);
+      cdetscinthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));
+      cdetscinthit->SetData(2, 1);
+      cdetscinthit->SetData(3, fTree->Harm_CDET_Scint.tavg->at(i));
+      cdetscinthit->SetData(4, fTree->Harm_CDET_Scint.sumedep->at(i));
       fg4sbsHitData.push_back(cdetscinthit);
     }
   }
@@ -247,11 +255,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // (the p.e. yield for cosmics form g4sbs is about 5 times more the one measured)
   if(fTree->Harm_CDET.nhits){
     for(int i = 0; i<fTree->Harm_CDET.nhits; i++){
-      g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 4);
-      cdetpmthit->SetData(0, fTree->Harm_CDET.PMT->at(i));
-      cdetpmthit->SetData(1, 0);
-      cdetpmthit->SetData(2, fTree->Harm_CDET.Time_avg->at(i));
-      cdetpmthit->SetData(3, round(fTree->Harm_CDET.NumPhotoelectrons->at(i)/5.0) );
+      g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
+      cdetpmthit->SetData(0, fSource);
+      cdetpmthit->SetData(1, fTree->Harm_CDET.PMT->at(i));
+      cdetpmthit->SetData(2, 0);
+      cdetpmthit->SetData(3, fTree->Harm_CDET.Time_avg->at(i));
+      cdetpmthit->SetData(4, round(fTree->Harm_CDET.NumPhotoelectrons->at(i)/5.0) );
       fg4sbsHitData.push_back(cdetpmthit);
     }
   }

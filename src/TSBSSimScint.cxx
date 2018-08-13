@@ -25,10 +25,21 @@ void TSBSSimScint::Init()
   //fSignals.resize(180); // TODO: Don't hard code this!!!
   
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
+  //fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
   //fNPE->DigInfo = fDetInfo.fDigInfo;
   
+  double tau = fDetInfo.fDigInfo.fSPEtau;
+  double sigma = fDetInfo.fDigInfo.fSPEsig;
+  double tmin = -fDetInfo.fDigInfo.fGateWidth/2.0;
+  double tmax = +fDetInfo.fDigInfo.fGateWidth/2.0;
+  double t0 = +fDetInfo.fDigInfo.fSPEtransittime-fDetInfo.fDigInfo.fTriggerOffset;
+  
+  fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
+  
   fSignals.resize(fDetInfo.fNChan);
+  for(int i_ch = 0; i_ch<fDetInfo.fNChan; i_ch++){
+    fSignals[i_ch].SetNpeChargeConv(fDetInfo.fDigInfo.NpeChargeConv(i_ch));
+  }
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {
@@ -44,7 +55,8 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
   
-  int mod = 0;
+  bool signal = false;
+  int chan = 0;
   int type = 0;
   double time = 0;
   double data = 0;
@@ -53,20 +65,22 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     // Only get detector data for Scintillator
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
     if(ev->GetDetType() == kScint) {
-      mod  = ev->GetData(0);
-      type = ev->GetData(1);
-      time = ev->GetData(2);
-      data = ev->GetData(3);
+      signal = (ev->GetData(0)==0);
+      chan = ev->GetData(1);
+      type = ev->GetData(2);
+      time = ev->GetData(3);
+      data = ev->GetData(4);
       
       if(type == 0) {
-        //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
+        //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-	fNPE->SetNpe(data);
-        fSignals[mod].Fill(mod, fNPE, data);//
+	//fSPE->SetNpe(data);
+        //fSignals[chan].Fill(chan, fNPE, data);//
+	fSignals[chan].Fill(fSPE, data, fDetInfo.fDigInfo.Threshold(chan), time, 1);//
       } else if (type == 1) { // sumedep data
-        fSignals[mod].fSumedep = data;
+        fSignals[chan].AddSumEdep(data);
       }
     }
   }

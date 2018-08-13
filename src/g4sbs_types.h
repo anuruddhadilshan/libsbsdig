@@ -98,6 +98,60 @@ struct DigInfo{
   double  fSPEtau;            // tau param for SPE
   double  fSPEsig;           // sigma param for SPE
   double  fSPEtransittime; // pmt transit time param for SPE
+  // just for all those, clearly, we'll have to switch to a class... TODO :S
+  double NpeChargeConv(int chan){return Gain(chan)*fROImpedance*qe/spe_unit;}
+  double Gain(int chan){
+    if(fGain.size()>1){
+      if(fGain.size()<=chan){
+	printf("warning: requested channel number %d larger than channel size %d. Check code where this method (DigInfo.Gain(int)) is employed and /or database!\n", 
+	       chan, fGain.size());
+	exit(-1);
+      }
+      return fGain.at(chan);
+    }else{
+      return fGain.at(0);
+    }
+  };
+  //
+  double Pedestal(int chan){
+    if(fPedestal.size()>1){
+      if(fPedestal.size()<=chan){
+	printf("warning: requested channel number %d larger than channel size %d. Check code where this method (DigInfo.Pedestal(int)) is employed and /or database!\n", 
+	       chan, fPedestal.size());
+	exit(-1);
+      }
+      return fPedestal.at(chan);
+    }else{
+      return fPedestal.at(0);
+    }
+  };
+  double PedestalNoise(int chan){
+    if(fPedNoise.size()>1){
+      if(fPedNoise.size()<=chan){
+	printf("warning: requested channel number %d larger than channel size %d. Check code where this method (DigInfo.PedestalNoise(int)) is employed and /or database!\n", 
+	       chan, fPedNoise.size());
+	exit(-1);
+      }
+      return fPedNoise.at(chan);
+    }else{
+      return fPedNoise.at(0);
+    }
+  };
+  double Threshold(int chan){
+    if(fThreshold.size()>1){
+      if(fThreshold.size()<=chan){
+	printf("warning: requested channel number %d larger than channel size %d. Check code where this method (DigInfo.ThresholdNoise(int)) is employed and /or database!\n", 
+	       chan, fThreshold.size());
+	exit(-1);
+      }
+      return fThreshold.at(chan);
+    }else{
+      return fThreshold.at(0);
+    }
+  };
+  
+  
+  
 };
 
 struct DetInfo{

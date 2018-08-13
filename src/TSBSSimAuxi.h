@@ -10,7 +10,7 @@
 
 class TSPEModel : public TObject {
  public:
-  TSPEModel(const char* detname, double tau, double sigma, double tmin = -100, double tmax = +100);
+  TSPEModel(const char* detname, double tau, double sigma, double t0 = 0, double tmin = -100, double tmax = +100);
   double Eval(double t){return fPulseModel->Eval(t);};
   bool   PulseOverThr(double charge, double thr);
   void   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
@@ -24,7 +24,7 @@ class TPMTSignal : public TObject {
  public:
   TPMTSignal();
   TPMTSignal(double npechargeconv);
-  void Fill(TSPEModel *model, double evttime, int npe, double thr);
+  void Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal);
   void Digitize(DigInfo diginfo);
   void Clear();
   ~TPMTSignal();

@@ -6,9 +6,8 @@
 //
 TSPEModel::TSPEModel(const char* detname, 
 		     double tau, double sigma, 
-		     double tmin, double tmax)
+		     double t0, double tmin, double tmax)
 {
-  double t0 = 0.0;
   TF1 fFunc1(Form("fFunc1%s",detname),
 	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
 			     tau*tau, tau),
@@ -51,16 +50,18 @@ TPMTSignal::TPMTSignal(double npechargeconv)
   fTDCs.clear();
 }
 
-void TPMTSignal::Fill(TSPEModel *model, double evttime, int npe, double thr)
+void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal)
 {
-  
-  //if(model->PulseOverThr(fCharge, thr))fADC = model->GetCharge()*model->GetADCconversion();
+  if(signal)fEventTime = evttime;
+  fNpe+= npe;
+  //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
   //determine lead and trail times
-  // double t_lead, t_trail;
-  // model->FindLeadTrailTime(fCharge, t_lead, t_trail);
-  // fLeadTimes.push_back(t_lead);
-  // fTrailTimes.push_back(t_trail);
+  double t_lead, t_trail;
+  // find the lead and trail time for *this* pulse, not the total pulse
+  model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  fLeadTimes.push_back(evttime+t_lead);
+  fTrailTimes.push_back(evttime+t_trail);
   
 }
 
