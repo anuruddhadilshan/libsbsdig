@@ -71,8 +71,8 @@ class TSignalInfo : public TObject {
  TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
   ~TSignalInfo() {};
   
-  double GetPID(){return fPID;};
-  double GetTID(){return fTID;};
+  double PID(){return fPID;};
+  double TID(){return fTID;};
 
   void SetPID(int apid){fPID = apid;};
   void SetTID(int atid){fTID = atid;};
@@ -89,9 +89,16 @@ class TSpectroInfo : public TObject{
   TSpectroInfo() {};
   TSpectroInfo(int ndets):fNDets(ndets) {};
   ~TSpectroInfo() {};
-
-  //TSignalInfo
   
+  double MCAngle(){return fMCangle;};
+  int    NDets(){return fNDets;};
+  TSignalInfo MCSignalInfo(int i){return fMCsignalInfo.at(i);};
+  std::string DetName(int i){return fDetNames.at(i);};
+  
+  void SetMCAngle(double ang){fMCangle = ang;};
+  void SetNDets(double ndets){fNDets = ndets;};
+  void AddMCSignalInfo(TSignalInfo siginfo){fMCsignalInfo.push_back(siginfo);};
+  void AddDetName(std::string detname){fDetNames.push_back(detname);};
   
  private:
   
@@ -123,33 +130,6 @@ class  : public TObject{
 };
 */
 /*
-struct TSignalInfo{
-  int pid;
-  int tid;
-  
-  // Int_t fillBitsGEM;
-  // Int_t fillBitsEC;
-  // Int_t signalSector; //used if map sector
-  // Double_t ECEDep;
-  // Double_t momentum;
-  // Double_t R;
-  
-  SignalInfo() {}
-  SignalInfo(int apid, int atid):pid(apid), tid(atid) {}
-  ~SignalInfo() {}
-};
-
-struct SpectroInfo{
-  double fMCangle;
-  std::vector<SignalInfo> MCsignalInfo;
-  int fNDets;
-  std::vector<std::string> fDetNames;
-  
-  SpectroInfo() {}
-  SpectroInfo(int ndets):fNDets(ndets) {}
-  ~SpectroInfo() {}
-};
-
 struct GeoInfo{
   // I don't think this can fit all detectors. 
   // Might have to do a class or something so it can be inherited ?

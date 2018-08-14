@@ -31,6 +31,7 @@ void digi_scint_test(int nentries = 100)
   ////////////////////////////////////////////////////////////////
 
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
+  manager->SetDebug(3);
   //manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
   //manager->LoadGeoInfo("g4sbs_grinch");
   manager->LoadGenInfo("db_geninfo_gmn.dat");

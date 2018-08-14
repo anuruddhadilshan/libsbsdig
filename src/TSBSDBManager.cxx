@@ -78,7 +78,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   
   //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
   for(int i_spec = 0; i_spec<fNSpecs; i_spec++){
-    SpectroInfo specinfo;
+    TSpectroInfo specinfo;
     double mcangle;
     int ndets;
     string dets_str;
@@ -116,17 +116,20 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 	return kInitError;
       }
       
-      specinfo.fMCangle = mcangle;
-      specinfo.fNDets = ndets;
-      specinfo.fDetNames = vsplit(dets_str);
+      specinfo.SetMCAngle(mcangle);
+      specinfo.SetNDets(ndets);
+      std::vector<std::string> detnames = vsplit(dets_str);
+      for(int i_str = 0; i_str<detnames.size(); i_str++){
+	specinfo.AddDetName(detnames.at(i_str));
+      }
       
       if(fDebug>=3){
-	cout << specinfo.fNDets << endl;
+	cout << specinfo.NDets() << endl;
       }
       
       for(int i_sig = 0; i_sig<nsig; i_sig++){
-	SignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
-	specinfo.MCsignalInfo.push_back(siginfo);
+	TSignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
+	specinfo.AddMCSignalInfo(siginfo);
       }
       fSpectroInfo.push_back(specinfo);
 	
@@ -141,12 +144,12 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     }//end try / catch
     
     if(fDebug>=3){
-      cout << specinfo.fNDets << endl;
+      cout << specinfo.NDets() << endl;
     }
     
     // then loop on detectors
-    for(int i_det = 0; i_det<specinfo.fNDets; i_det++){
-      LoadDetInfo(fSpecNames.at(i_spec), specinfo.fDetNames.at(i_det));
+    for(int i_det = 0; i_det<specinfo.NDets(); i_det++){
+      LoadDetInfo(fSpecNames.at(i_spec), specinfo.DetName(i_det));
     }
     
   }// end spectrometer loop

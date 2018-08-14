@@ -11,6 +11,7 @@
 #include "VarDef.h"
 #include "TMath.h"
 #include "g4sbs_types.h"
+#include "TSBSSimAuxi.h"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ public:
   exp_type fSBSExpType;
   int fNSpecs;
   std::vector<string> fSpecNames;
-  std::vector<SpectroInfo> fSpectroInfo;
+  std::vector<TSpectroInfo> fSpectroInfo;
   std::vector<DetInfo> fDetInfo;
 
   // int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);

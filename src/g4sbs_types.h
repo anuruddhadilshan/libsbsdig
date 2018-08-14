@@ -46,6 +46,7 @@ enum det_type{
 #define qe 1.602e-19
 #define spe_unit 1.0e-9
 
+/*
 struct SignalInfo{
   int pid;
   int tid;
@@ -70,6 +71,7 @@ struct SpectroInfo{
   SpectroInfo(int ndets):fNDets(ndets) {}
   ~SpectroInfo() {}
 };
+*/
 
 struct GeoInfo{
   // I don't think this can fit all detectors. 
