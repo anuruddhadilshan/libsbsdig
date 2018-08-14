@@ -157,12 +157,28 @@ void TPMTSignal::Clear()
   fTrailTimes.clear();
   fTDCs.clear();
 }
- 
-TPMTSignal::~TPMTSignal()
+
+//
+// Class TDetInfo
+//
+TDetInfo::TDetInfo()
 {
-  Clear();
+  fNmodules.clear();
+  fGeoInfo.clear();
 }
 
+TDetInfo::TDetInfo(const std::string detname)
+{
+  fDetName = detname;
+  fNmodules.clear();
+  fGeoInfo.clear();
+}
+
+TDetInfo::~TDetInfo()
+{
+  fNmodules.clear();
+  fGeoInfo.clear();
+}
 
 
 

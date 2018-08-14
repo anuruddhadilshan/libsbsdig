@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "g4sbs_types.h"
+#include "TSBSSimAuxi.h"
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
@@ -23,7 +24,7 @@ protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
 
   TSBSDBManager* fDBmanager;
-  DetInfo fDetInfo;
+  TDetInfo fDetInfo;
 private:
   bool fHasData;
 

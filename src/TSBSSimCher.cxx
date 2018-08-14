@@ -23,7 +23,7 @@ void TSBSSimCher::Init()
   //fSPE = new TSPEModel(fDetInfo.fDigInfo, fName.Data());
   //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
-  fSignals.resize(fDetInfo.fNChan);
+  fSignals.resize(fDetInfo.NChan());
   
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");

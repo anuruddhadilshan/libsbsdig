@@ -36,8 +36,8 @@ void TSBSSimScint::Init()
   
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
-  fSignals.resize(fDetInfo.fNChan);
-  for(int i_ch = 0; i_ch<fDetInfo.fNChan; i_ch++){
+  fSignals.resize(fDetInfo.NChan());
+  for(int i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
     fSignals[i_ch].SetNpeChargeConv(fDetInfo.fDigInfo.NpeChargeConv(i_ch));
   }
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");

@@ -71,7 +71,6 @@ struct SpectroInfo{
   SpectroInfo(int ndets):fNDets(ndets) {}
   ~SpectroInfo() {}
 };
-*/
 
 struct GeoInfo{
   // I don't think this can fit all detectors. 
@@ -82,6 +81,7 @@ struct GeoInfo{
   double  fYsize;      // detector Y size (in transport coordinates)
   double  fZpos;       // detector position on spectrometer axis
 };
+*/
 
 struct DigInfo{
   // same remark as for GeoInfo
@@ -156,6 +156,7 @@ struct DigInfo{
   
 };
 
+/*
 struct DetInfo{
   std::string fDetName;      // Detector name
   det_type     fDetType;      // DetectorType
@@ -181,5 +182,6 @@ struct DetInfo{
   ~DetInfo(){}
 
 };
+*/
 
 #endif//__GEMC_TYPES_H

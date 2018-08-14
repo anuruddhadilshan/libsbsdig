@@ -161,7 +161,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 //______________________________________________________________
 Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 {
-  DetInfo detinfo(detname);
+  TDetInfo detinfo(detname);
   // Include DB_DIR (standard Hall A analyzer DB path in the search)
   std::string path = "";
   if(std::getenv("DB_DIR")) {
@@ -196,23 +196,23 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   
   Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
   
-  if(dettype_str.compare("HCal")==0)detinfo.fDetType = kHCal;
-  if(dettype_str.compare("ECal")==0)detinfo.fDetType = kECal;
-  if(dettype_str.compare("Cher")==0) detinfo.fDetType = kCher;
-  if(dettype_str.compare("Scint")==0) detinfo.fDetType = kScint;
-  if(dettype_str.compare("GEM")==0) detinfo.fDetType = kGEM;
+  if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
+  if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
+  if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
+  if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
+  if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
   
-  detinfo.fNChan = nchan;
-  detinfo.fChanPerSlot = chan_per_slot;
-  detinfo.fSlotPerCrate = slot_per_crate;
+  detinfo.SetNChan(nchan);
+  detinfo.SetChanPerSlot(chan_per_slot);
+  detinfo.SetSlotPerCrate(slot_per_crate);
 
   const string digprefix = "dig."+prefix;
   
   bool ignore_pmt = false;
-  if(detinfo.fDetType==kGEM) ignore_pmt = true;
+  if(detinfo.DetType()==kGEM) ignore_pmt = true;
 
   bool ignore_adc = false;
-  if(detinfo.fDetType==kScint || detinfo.fDetType==kCher) ignore_adc = true;
+  if(detinfo.DetType()==kScint || detinfo.DetType()==kCher) ignore_adc = true;
   ignore_adc = (ignore_pmt || ignore_adc);
 
   bool ignore_tdc = false;
@@ -259,9 +259,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       return kInitError;
     }
     
-    if(gain->size()!=detinfo.fNChan){
+    if(gain->size()!=detinfo.NChan()){
       cout << "warning: number of gains in input (" << gain->size() 
-	   << ") does not match number of channels (" << detinfo.fNChan
+	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First gain entry used for all channels. " << endl
 	   << "If you want one gain value per channel, fix your DB" << endl<< endl;
@@ -271,9 +271,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	detinfo.fDigInfo.fGain.push_back(gain->at(i__));
       }
     }
-    if(pedestal->size()!=detinfo.fNChan){
+    if(pedestal->size()!=detinfo.NChan()){
       cout << "warning: number of pedestals in input (" << pedestal->size() 
-	   << ") does not match number of channels (" << detinfo.fNChan
+	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First pedestal entry used for all channels. " << endl
 	   << "If you want one pedestal value per channel, fix your DB" << endl<< endl;
@@ -283,9 +283,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	detinfo.fDigInfo.fPedestal.push_back(pedestal->at(i__));
       }
     }
-    if(pednoise->size()!=detinfo.fNChan){
+    if(pednoise->size()!=detinfo.NChan()){
       cout << "warning: number of pedestal noises in input (" << pednoise->size() 
-	   << ") does not match number of channels (" << detinfo.fNChan
+	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First pedestal noise entry used for all channels. " << endl
 	   << "If you want one pedestal noise value per channel, fix your DB" << endl<< endl;
@@ -296,9 +296,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       }
     }
     
-    if(threshold->size()!=detinfo.fNChan){
+    if(threshold->size()!=detinfo.NChan()){
       cout << "warning: number of thresholds in input (" << gain->size() 
-	   << ") does not match number of channels (" << detinfo.fNChan
+	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First threshold entry used for all channels. " << endl
 	   << "If you want one threshold value per channel, fix your DB" << endl<< endl;
@@ -325,7 +325,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     
   const string geoprefix = "geo."+prefix;
   
-  if(detinfo.fDetType==kGEM || detinfo.fDetType==kScint){
+  if(detinfo.DetType()==kGEM || detinfo.DetType()==kScint){
     int nplanes;
     std::vector<int>* nmodules = 0;
     
@@ -350,27 +350,33 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	return kInitError;
       }
       
-      detinfo.fNPlanes = nplanes;
+      detinfo.SetNPlanes(nplanes);
       
       
       for(int i_pl = 0; i_pl<nplanes; i_pl++){
-	detinfo.fNModules.push_back(nmodules->at(i_pl));
+	detinfo.AddNModules(nmodules->at(i_pl));
 	
 	for(int i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
-	  GeoInfo thisGeo;
+	  TGeoInfo thisGeo;
+	  int nrows;
+	  int ncols;
+	  double xsize;
+	  double ysize;
+	  double zpos;
 	  
 	  DBRequest request_geo[] = {
-	    {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
-	    {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
-	    {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
-	    {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
-	    {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
+	    {"nrows",     &nrows,      kInt,    0, 1},
+	    {"ncols",     &ncols,      kInt,    0, 1},
+	    {"xsize",     &xsize,      kDouble, 0, 1},
+	    {"ysize",     &ysize,      kDouble, 0, 1},
+	    {"zpos",      &zpos,       kDouble, 0, 1},
 	    { 0 }
 	  };
 	  
 	  if(fDebug>=3){
 	    cout << geoprefix.c_str() << endl;
 	  }
+	  
 	  string geoprefix_ii = geoprefix;
 	  if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
 	  if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
@@ -387,7 +393,14 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	    return kInitError;
 	  }
 	  
-	  detinfo.fGeoInfo.push_back(thisGeo);
+	  
+	  thisGeo.SetNRows(nrows);
+	  thisGeo.SetNCols(ncols);
+	  thisGeo.SetXSize(xsize);
+	  thisGeo.SetYSize(ysize);
+	  thisGeo.SetZPos(zpos);
+	  
+	  //detinfo.fGeoInfo.push_back(thisGeo);
 	}
       }//end 
       delete nmodules;
@@ -399,14 +412,19 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     }//end try / catch
     
   }else{
-    GeoInfo thisGeo;
+    TGeoInfo thisGeo;
+    int nrows;
+    int ncols;
+    double xsize;
+    double ysize;
+    double zpos;
     
     DBRequest request_geo[] = {
-      {"nrows",     &thisGeo.fNrows,      kInt,    0, 1},
-      {"ncols",     &thisGeo.fNcols,      kInt,    0, 1},
-      {"xsize",     &thisGeo.fXsize,      kDouble, 0, 1},
-      {"ysize",     &thisGeo.fYsize,      kDouble, 0, 1},
-      {"zpos",      &thisGeo.fZpos,       kDouble, 0, 1},
+      {"nrows",     &nrows,      kInt,    0, 1},
+      {"ncols",     &ncols,      kInt,    0, 1},
+      {"xsize",     &xsize,      kDouble, 0, 1},
+      {"ysize",     &ysize,      kDouble, 0, 1},
+      {"zpos",      &zpos,       kDouble, 0, 1},
       { 0 }
     };
     
@@ -417,7 +435,13 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       return kInitError;
     }
     
-    detinfo.fGeoInfo.push_back(thisGeo);
+    thisGeo.SetNRows(nrows);
+    thisGeo.SetNCols(ncols);
+    thisGeo.SetXSize(xsize);
+    thisGeo.SetYSize(ysize);
+    thisGeo.SetZPos(zpos);
+        
+    //detinfo.fGeoInfo.push_back(thisGeo);
   }
   
    
@@ -429,7 +453,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 }
 
 //function to retrieve the coorect detector information from the detector name
-const DetInfo & TSBSDBManager::GetDetInfo(const char* detname)
+const TDetInfo & TSBSDBManager::GetDetInfo(const char* detname)
 {
   //check if the detectors databases is loaded in the first place
   if(fDetInfo.size()==0){
@@ -440,7 +464,7 @@ const DetInfo & TSBSDBManager::GetDetInfo(const char* detname)
   
   // if so, loop on list of detectors.
   for(int i = 0; i<fDetInfo.size(); i++){
-    if(fDetInfo.at(i).fDetName.compare(detname)==0){
+    if(fDetInfo.at(i).DetName().compare(detname)==0){
       return fDetInfo.at(i);
     }
   }

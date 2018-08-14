@@ -33,7 +33,7 @@ public:
   const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
   const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
   
-  const DetInfo & GetDetInfo(const char* detname);
+  const TDetInfo & GetDetInfo(const char* detname);
   
  protected:
   TSBSDBManager();
@@ -43,7 +43,7 @@ public:
   int fNSpecs;
   std::vector<string> fSpecNames;
   std::vector<TSpectroInfo> fSpectroInfo;
-  std::vector<DetInfo> fDetInfo;
+  std::vector<TDetInfo> fDetInfo;
 
   // int    LoadDB(ifstream& inp, DBRequest* request, const string& prefix);
   // string FindKey( ifstream& inp, const string& key );
