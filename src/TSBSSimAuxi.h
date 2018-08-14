@@ -8,6 +8,200 @@
 #include "TF1.h"
 #include "TF1Convolution.h"
 
+//
+// Classes for DB information
+//
+//__________________________________
+class TSignalInfo : public TObject {
+ public:
+  TSignalInfo() {};
+ TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
+  ~TSignalInfo() {};
+  
+  double PID(){return fPID;};
+  double TID(){return fTID;};
+
+  void SetPID(int apid){fPID = apid;};
+  void SetTID(int atid){fTID = atid;};
+  
+ private:
+  int fPID;
+  int fTID;
+  
+  ClassDef(TSignalInfo, 1);
+};
+
+//__________________________________
+class TSpectroInfo : public TObject{
+ public:
+  TSpectroInfo() {};
+  TSpectroInfo(int ndets):fNDets(ndets) {};
+  ~TSpectroInfo() {
+    fMCsignalInfo.clear();
+    fDetNames.clear();
+  };
+  
+  double MCAngle(){return fMCangle;};
+  int    NDets(){return fNDets;};
+  
+  TSignalInfo MCSignalInfo(int i){return fMCsignalInfo.at(i);};
+  std::string DetName(int i){return fDetNames.at(i);};
+  
+  void SetMCAngle(double ang){fMCangle = ang;};
+  void SetNDets(double ndets){fNDets = ndets;};
+  void AddMCSignalInfo(TSignalInfo siginfo){fMCsignalInfo.push_back(siginfo);};
+  void AddDetName(std::string detname){fDetNames.push_back(detname);};
+  
+ private:
+  double fMCangle;
+  int fNDets;
+  std::vector<TSignalInfo> fMCsignalInfo;
+  std::vector<std::string> fDetNames;
+  
+  ClassDef(TSpectroInfo, 1);
+};
+
+//______________________________
+class TGeoInfo : public TObject{
+ public:
+  TGeoInfo() {};
+  ~TGeoInfo() {};
+  
+  int    NRows(){return fNrows;};
+  int    NCols(){return fNcols;};
+  double XSize(){return fXsize;};
+  double YSize(){return fYsize;};
+  double ZPos(){return fZpos;};
+  
+  void SetNRows(int nrows){fNrows = nrows;};
+  void SetNCols(int ncols){fNcols = ncols;};
+  void SetXSize(double xsize){fXsize = xsize;};
+  void SetYSize(double ysize){fYsize = ysize;};
+  void SetZPos(double zpos){fZpos = zpos;};
+  
+ private:
+  int     fNrows;      // number of rows
+  int     fNcols;      // number of columns
+  double  fXsize;      // detector X size (in transport coordinates)
+  double  fYsize;      // detector Y size (in transport coordinates)
+  double  fZpos;       // detector position on spectrometer axis
+  
+  ClassDef(TGeoInfo, 1);
+};
+
+//______________________________
+class TDigInfo : public TObject{
+ public:
+  TDigInfo();
+  ~TDigInfo();
+
+  double ROImpedance(){return fROimpedance;};
+  double ADCConversion(){return fADCconversion;};
+  int    ADCBits(){return fADCbits;};
+  double TDCConversion(){return fTDCconversion;};
+  int    TDCBits(){return fTDCbits;};
+  int    SizeGain(){return fGain.size();};
+  double Gain(uint chan);
+  int    PedestalSize(){return fPedestal.size();};
+  double Pedestal(uint chan);
+  int    PedestalNoiseSize(){return fPedNoise.size();};
+  double PedestalNoise(uint chan);
+  int    ThresholdSize(){return fThreshold.size();};
+  double Threshold(uint chan);
+  double TriggerJitter(){return fTriggerJitter;};
+  double TriggerOffset(){return fTriggerOffset;};
+  double GateWidth(){return fGateWidth;};
+  double SPE_Tau(){return fSPE_tau;};
+  double SPE_Sigma(){return fSPE_sigma;};
+  double SPE_TransitTime(){return fSPE_transittime;};
+    
+  double NpeChargeConv(int chan){return Gain(chan)*fROimpedance*qe/spe_unit;};
+  
+  void SetROImpedance(double roimp){fROimpedance = roimp;};
+  void SetADCConversion(double adcconv){fADCconversion = adcconv;};
+  void SetADCBits(int adcbits){fADCbits = adcbits;};
+  void SetTDCConversion(double tdcconv){fTDCconversion = tdcconv;};
+  void SetTDCBits(int tdcbits){fTDCbits = tdcbits;};
+  void AddGain(double gain){fGain.push_back(gain);};
+  void AddPedestal(double ped){fPedestal.push_back(ped);};
+  void AddPedestalNoise(double pednoise){fPedNoise.push_back(pednoise);};
+  void AddThreshold(double thr){fThreshold.push_back(thr);};
+  void SetTriggerJitter(double triggerjitter){fTriggerJitter = triggerjitter;};
+  void SetTriggerOffset(double triggeroffset){fTriggerOffset = triggeroffset;};
+  void SetGateWidth(double gatewidth){fGateWidth = gatewidth;};
+  void SetSPE_Tau(double spe_tau){fSPE_tau = spe_tau;};
+  void SetSPE_Sigma(double spe_sig){fSPE_sigma = spe_sig;};
+  void SetSPE_TransitTime(double spe_transit){fSPE_transittime = spe_transit;};
+
+ private:
+  double  fROimpedance;     // readout impedance
+  double  fADCconversion;    // charge/ADC channel conversion
+  int     fADCbits;           // number of bits in ADC
+  double  fTDCconversion;      // time/TDC channel conversion
+  int     fTDCbits;             // number of bits in ADC
+  std::vector<double>  fGain;    // Gain 
+  std::vector<double>  fPedestal; // Pedestal value (adc value)
+  std::vector<double>  fPedNoise;  // Pedestal noise (adc value)
+  std::vector<double>  fThreshold; //Channel threshold
+  double  fTriggerJitter;         // trigger jitter (ns)
+  double  fTriggerOffset;        // trigger offset (ns)
+  double  fGateWidth;           // gate width (ns)
+  double  fSPE_tau;             // tau param for SPE
+  double  fSPE_sigma;          // sigma param for SPE
+  double  fSPE_transittime;   // pmt transit time param for SPE
+  
+  ClassDef(TDigInfo, 1);
+};
+
+//______________________________
+class TDetInfo : public TObject{
+ public:
+  TDetInfo();
+  TDetInfo(const std::string detname);
+  ~TDetInfo();
+  
+  std::string DetName(){return fDetName;};
+  det_type   DetType(){return fDetType;};
+  int       NChan(){return fNchan;};
+  int      ChanPerSlot(){return fChanPerSlot;};
+  int     SlotPerCrate(){return fSlotPerCrate;};
+  int    NPlanes(){return fNplanes;};
+  int   NModules(int i){return fNmodules.at(i);};
+  
+  int GeoInfoSize(){return fGeoInfo.size();};
+  TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
+  TDigInfo DigInfo(){return fDigInfo;};
+  
+  void SetDetName(std::string detname){fDetName = detname;};
+  void SetDetType(det_type type){fDetType = type;};
+  void SetNChan(int nchan){fNchan = nchan;};
+  void SetChanPerSlot(int chanperslot){fChanPerSlot = chanperslot;};
+  void SetSlotPerCrate(int slotpercrate){fSlotPerCrate = slotpercrate;};
+  void SetNPlanes(int nplanes){fNplanes = nplanes;};
+  void AddNModules(int nmodules){fNmodules.push_back(nmodules);};
+  
+  void AddGeoInfo(TGeoInfo geoinfo){fGeoInfo.push_back(geoinfo);};
+  void SetDigInfo(TDigInfo diginfo){fDigInfo = diginfo;};
+  
+ private:
+  std::string fDetName;      // Detector name
+  det_type     fDetType;      // DetectorType
+  int           fNchan;        // Total number of channels over all detector
+  int            fChanPerSlot;  // Number of channels per slot
+  int             fSlotPerCrate; // Number of slots per crate
+  int              fNplanes;      // Number of planes // useful e.g. GEM, CDet
+  std::vector<int>  fNmodules;     // Number of modules per plane // useful e.g. GEM, CDet
+  
+  std::vector<TGeoInfo> fGeoInfo;
+  TDigInfo fDigInfo;
+  
+  ClassDef(TDetInfo, 1);
+};
+
+//
+// classes for signal digitization
+//
+//________________________________
 class TSPEModel : public TObject {
  public:
   TSPEModel(const char* detname, double tau, double sigma, double t0 = 0, double tmin = -100, double tmax = +100);
@@ -20,12 +214,13 @@ class TSPEModel : public TObject {
   ClassDef(TSPEModel,1);
 };
 
+//_________________________________
 class TPMTSignal : public TObject {
  public:
   TPMTSignal();
   TPMTSignal(double npechargeconv);
   void Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal);
-  void Digitize(DigInfo diginfo, int chan);
+  void Digitize(TDigInfo diginfo, int chan);
   void Clear();
   ~TPMTSignal(){Clear();};
   
@@ -61,138 +256,6 @@ class TPMTSignal : public TObject {
   ClassDef(TPMTSignal,1);
 };
 
-//
-// Classes for DB information: TO BE COMPLETED LATER! 
-// structs already exist for DB and code is functional. 
-//
-class TSignalInfo : public TObject {
- public:
-  TSignalInfo() {};
- TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
-  ~TSignalInfo() {};
-  
-  double PID(){return fPID;};
-  double TID(){return fTID;};
-
-  void SetPID(int apid){fPID = apid;};
-  void SetTID(int atid){fTID = atid;};
-  
- private:
-  int fPID;
-  int fTID;
-  
-  ClassDef(TSignalInfo, 1);
-};
-
-class TSpectroInfo : public TObject{
- public:
-  TSpectroInfo() {};
-  TSpectroInfo(int ndets):fNDets(ndets) {};
-  ~TSpectroInfo() {
-    fMCsignalInfo.clear();
-    fDetNames.clear();
-  };
-  
-  double MCAngle(){return fMCangle;};
-  int    NDets(){return fNDets;};
-  
-  TSignalInfo MCSignalInfo(int i){return fMCsignalInfo.at(i);};
-  std::string DetName(int i){return fDetNames.at(i);};
-  
-  void SetMCAngle(double ang){fMCangle = ang;};
-  void SetNDets(double ndets){fNDets = ndets;};
-  void AddMCSignalInfo(TSignalInfo siginfo){fMCsignalInfo.push_back(siginfo);};
-  void AddDetName(std::string detname){fDetNames.push_back(detname);};
-  
- private:
-  double fMCangle;
-  int fNDets;
-  std::vector<TSignalInfo> fMCsignalInfo;
-  std::vector<std::string> fDetNames;
-  
-  ClassDef(TSpectroInfo, 1);
-};
-
-class TGeoInfo : public TObject{
- public:
-  TGeoInfo() {};
-  ~TGeoInfo() {};
-  
-  int    NRows(){return fNrows;};
-  int    NCols(){return fNcols;};
-  double XSize(){return fXsize;};
-  double YSize(){return fYsize;};
-  double ZPos(){return fZpos;};
-  
-  void SetNRows(int nrows){fNrows = nrows;};
-  void SetNCols(int ncols){fNcols = ncols;};
-  void SetXSize(double xsize){fXsize = xsize;};
-  void SetYSize(double ysize){fYsize = ysize;};
-  void SetZPos(double zpos){fZpos = zpos;};
-  
- private:
-  int     fNrows;      // number of rows
-  int     fNcols;      // number of columns
-  double  fXsize;      // detector X size (in transport coordinates)
-  double  fYsize;      // detector Y size (in transport coordinates)
-  double  fZpos;       // detector position on spectrometer axis
-  
-  ClassDef(TGeoInfo, 1);
-};
-
-class TDigInfo : public TObject{
- public:
-  TDigInfo(){};
-  ~TDigInfo(){};
-  
-  ClassDef(TDigInfo, 1);
-};
-
-
-class TDetInfo : public TObject{
- public:
-  TDetInfo();
-  TDetInfo(const std::string detname);
-  ~TDetInfo();
-  
-  std::string DetName(){return fDetName;};
-  det_type   DetType(){return fDetType;};
-  int       NChan(){return fNchan;};
-  int      ChanPerSlot(){return fChanPerSlot;};
-  int     SlotPerCrate(){return fSlotPerCrate;};
-  int    NPlanes(){return fNplanes;};
-  int   NModules(int i){return fNmodules.at(i);};
-
-  TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
-  TDigInfo _DigInfo(){return fDigInfo__;};
-  
-  void SetDetName(std::string detname){fDetName = detname;};
-  void SetDetType(det_type type){fDetType = type;};
-  void SetNChan(int nchan){fNchan = nchan;};
-  void SetChanPerSlot(int chanperslot){fChanPerSlot = chanperslot;};
-  void SetSlotPerCrate(int slotpercrate){fSlotPerCrate = slotpercrate;};
-  void SetNPlanes(int nplanes){fNplanes = nplanes;};
-  void AddNModules(int nmodules){fNmodules.push_back(nmodules);};
-  
-  void AddGeoInfo(TGeoInfo geoinfo){fGeoInfo.push_back(geoinfo);};
-  void SetDigInfo(TDigInfo diginfo){fDigInfo__ = diginfo;};
-  
-  DigInfo fDigInfo;
-  
- private:
-  std::string fDetName;      // Detector name
-  det_type     fDetType;      // DetectorType
-  int           fNchan;        // Total number of channels over all detector
-  int            fChanPerSlot;  // Number of channels per slot
-  int             fSlotPerCrate; // Number of slots per crate
-  int              fNplanes;      // Number of planes // useful e.g. GEM, CDet
-  std::vector<int>  fNmodules;     // Number of modules per plane // useful e.g. GEM, CDet
-  
-  std::vector<TGeoInfo> fGeoInfo;
-  TDigInfo fDigInfo__;
-  
-  ClassDef(TDetInfo, 1);
-};
 
 /*
 class  : public TObject{

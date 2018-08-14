@@ -28,17 +28,17 @@ void TSBSSimScint::Init()
   //fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
   //fNPE->DigInfo = fDetInfo.fDigInfo;
   
-  double tau = fDetInfo.fDigInfo.fSPEtau;
-  double sigma = fDetInfo.fDigInfo.fSPEsig;
-  double tmin = -fDetInfo.fDigInfo.fGateWidth/2.0;
-  double tmax = +fDetInfo.fDigInfo.fGateWidth/2.0;
-  double t0 = +fDetInfo.fDigInfo.fSPEtransittime-fDetInfo.fDigInfo.fTriggerOffset;
+  double tau = fDetInfo.DigInfo().SPE_Tau();
+  double sigma = fDetInfo.DigInfo().SPE_Sigma();
+  double tmin = -fDetInfo.DigInfo().GateWidth()/2.0;
+  double tmax = +fDetInfo.DigInfo().GateWidth()/2.0;
+  double t0 = +fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
   
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
   fSignals.resize(fDetInfo.NChan());
   for(int i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
-    fSignals[i_ch].SetNpeChargeConv(fDetInfo.fDigInfo.NpeChargeConv(i_ch));
+    fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));
   }
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
@@ -69,7 +69,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       chan = ev->GetData(1);
       type = ev->GetData(2);
       time = ev->GetData(3)+
-	fDetInfo.fDigInfo.fSPEtransittime-fDetInfo.fDigInfo.fTriggerOffset+fDetInfo.fDigInfo.fTriggerJitter;//add 
+	fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
       data = ev->GetData(4);
       
       if(type == 0) {
@@ -79,7 +79,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         //  mint = ev->GetData(1);
 	//fSPE->SetNpe(data);
         //fSignals[chan].Fill(chan, fNPE, data);//
-	fSignals[chan].Fill(fSPE, data, fDetInfo.fDigInfo.Threshold(chan), time, 1);//
+	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, 1);//
       } else if (type == 1) { // sumedep data
         fSignals[chan].AddSumEdep(data);
       }
@@ -93,7 +93,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
   
   bool any_events = false;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    fSignals[m].Digitize(fDetInfo.fDigInfo, m);
+    fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;

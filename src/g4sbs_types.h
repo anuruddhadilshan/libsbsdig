@@ -81,7 +81,7 @@ struct GeoInfo{
   double  fYsize;      // detector Y size (in transport coordinates)
   double  fZpos;       // detector position on spectrometer axis
 };
-*/
+
 
 struct DigInfo{
   // same remark as for GeoInfo
@@ -156,7 +156,7 @@ struct DigInfo{
   
 };
 
-/*
+
 struct DetInfo{
   std::string fDetName;      // Detector name
   det_type     fDetType;      // DetectorType

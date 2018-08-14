@@ -216,11 +216,22 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   ignore_adc = (ignore_pmt || ignore_adc);
 
   bool ignore_tdc = false;
-
+  
+  double roimp;
+  double adcconv;
+  int    adcbits;
+  double tdcconv;
+  int    tdcbits;
   std::vector<double>* gain = 0;
   std::vector<double>* pedestal = 0;
   std::vector<double>* pednoise = 0;
   std::vector<double>* threshold = 0;
+  double triggerjitter;
+  double triggeroffset;
+  double gatewidth;
+  double spe_tau;
+  double spe_sig;
+  double spe_transit;
   
   try{
     gain = new vector<double>;
@@ -229,21 +240,21 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     threshold = new vector<double>;
     
     DBRequest request_dig[] = {
-      {"roimpedance",   &detinfo.fDigInfo.fROImpedance,    kDouble, 0,  ignore_pmt},
-      {"adcconversion", &detinfo.fDigInfo.fADCconversion,  kDouble, 0,  ignore_adc},
-      {"adcbits",       &detinfo.fDigInfo.fADCbits,        kInt,    0,  ignore_adc},
-      {"tdcconversion", &detinfo.fDigInfo.fTDCconversion,  kDouble, 0,  ignore_tdc},
-      {"tdcbits",       &detinfo.fDigInfo.fTDCbits,        kInt,    0,  ignore_tdc},
-      {"gain",          gain,             kDoubleV, 0, 0},
-      {"pedestal",      pedestal,         kDoubleV, 0, 0},
-      {"pednoise",      pednoise,         kDoubleV, 0, 0},
-      {"threshold",     threshold,        kDoubleV, 0, 0},
-      {"triggerjitter", &detinfo.fDigInfo.fTriggerJitter,  kDouble, 0,  0},
-      {"triggeroffset", &detinfo.fDigInfo.fTriggerOffset,  kDouble,  0, 0},
-      {"gatewidth",     &detinfo.fDigInfo.fGateWidth,      kDouble, 0,  0},
-      {"spe_tau",       &detinfo.fDigInfo.fSPEtau,         kDouble,  0, ignore_pmt},
-      {"spe_sigma",     &detinfo.fDigInfo.fSPEsig,         kDouble, 0,  ignore_pmt},
-      {"spe_transit",   &detinfo.fDigInfo.fSPEtransittime, kDouble,  0, ignore_pmt},
+      {"roimpedance",   &roimp,          kDouble,  0, ignore_pmt},
+      {"adcconversion", &adcconv,        kDouble,  0, ignore_adc},
+      {"adcbits",       &adcbits,        kInt,     0, ignore_adc},
+      {"tdcconversion", &tdcconv,        kDouble,  0, ignore_tdc},
+      {"tdcbits",       &tdcbits,        kInt,     0, ignore_tdc},
+      {"gain",          gain,            kDoubleV, 0, 0},
+      {"pedestal",      pedestal,        kDoubleV, 0, 0},
+      {"pednoise",      pednoise,        kDoubleV, 0, 0},
+      {"threshold",     threshold,       kDoubleV, 0, 0},
+      {"triggerjitter", &triggerjitter,  kDouble,  0, 0},
+      {"triggeroffset", &triggeroffset,  kDouble,  0, 0},
+      {"gatewidth",     &gatewidth,      kDouble,  0, 0},
+      {"spe_tau",       &spe_tau,        kDouble,  0, ignore_pmt},
+      {"spe_sigma",     &spe_sig,        kDouble,  0, ignore_pmt},
+      {"spe_transit",   &spe_transit,    kDouble,  0, ignore_pmt},
       { 0 }
     };
     
@@ -259,16 +270,28 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       return kInitError;
     }
     
+    detinfo.DigInfo().SetROImpedance(roimp);
+    detinfo.DigInfo().SetADCConversion(adcconv);
+    detinfo.DigInfo().SetADCBits(adcbits);
+    detinfo.DigInfo().SetTDCConversion(tdcconv);
+    detinfo.DigInfo().SetTDCBits(tdcbits);
+    detinfo.DigInfo().SetTriggerJitter(triggerjitter);
+    detinfo.DigInfo().SetTriggerOffset(triggeroffset);
+    detinfo.DigInfo().SetGateWidth(gatewidth);
+    detinfo.DigInfo().SetSPE_Tau(spe_tau);
+    detinfo.DigInfo().SetSPE_Sigma(spe_sig);
+    detinfo.DigInfo().SetSPE_TransitTime(spe_transit);
+        
     if(gain->size()!=detinfo.NChan()){
       cout << "warning: number of gains in input (" << gain->size() 
 	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First gain entry used for all channels. " << endl
 	   << "If you want one gain value per channel, fix your DB" << endl<< endl;
-      detinfo.fDigInfo.fGain.push_back(gain->at(0));
+      detinfo.DigInfo().AddGain(gain->at(0));
     }else{
       for(uint i__ = 0; i__<gain->size(); i__++){
-	detinfo.fDigInfo.fGain.push_back(gain->at(i__));
+	detinfo.DigInfo().AddGain(gain->at(i__));
       }
     }
     if(pedestal->size()!=detinfo.NChan()){
@@ -277,10 +300,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First pedestal entry used for all channels. " << endl
 	   << "If you want one pedestal value per channel, fix your DB" << endl<< endl;
-      detinfo.fDigInfo.fPedestal.push_back(pedestal->at(0));
+      detinfo.DigInfo().AddPedestal(pedestal->at(0));
     }else{
       for(uint i__ = 0; i__<pedestal->size(); i__++){
-	detinfo.fDigInfo.fPedestal.push_back(pedestal->at(i__));
+	detinfo.DigInfo().AddPedestal(pedestal->at(i__));
       }
     }
     if(pednoise->size()!=detinfo.NChan()){
@@ -289,10 +312,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First pedestal noise entry used for all channels. " << endl
 	   << "If you want one pedestal noise value per channel, fix your DB" << endl<< endl;
-      detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(0));
+      detinfo.DigInfo().AddPedestalNoise(pednoise->at(0));
     }else{
       for(uint i__ = 0; i__<pednoise->size(); i__++){
-	detinfo.fDigInfo.fPedNoise.push_back(pednoise->at(i__));
+	detinfo.DigInfo().AddPedestalNoise(pednoise->at(i__));
       }
     }
     
@@ -302,10 +325,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First threshold entry used for all channels. " << endl
 	   << "If you want one threshold value per channel, fix your DB" << endl<< endl;
-      detinfo.fDigInfo.fThreshold.push_back(threshold->at(0));
+      detinfo.DigInfo().AddThreshold(threshold->at(0));
     }else{
       for(uint i__ = 0; i__<threshold->size(); i__++){
-	detinfo.fDigInfo.fGain.push_back(threshold->at(i__));
+	detinfo.DigInfo().AddThreshold(threshold->at(i__));
       }
     }
     

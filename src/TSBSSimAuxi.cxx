@@ -77,16 +77,16 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   
 }
 
-void TPMTSignal::Digitize(DigInfo diginfo, int chan)
+void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 {
   if(fNpe<=0)
     return;
   
-  fADC = fNpe*fNpeChargeConv*diginfo.fADCconversion+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
+  fADC = fNpe*fNpeChargeConv*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
-  fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.fTDCconversion);
-  fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.fTDCconversion);
+  fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.TDCConversion());
+  fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.TDCConversion());
   
   /*
   // TDCs: select only lead and trail times not between a lead and a trail time.
@@ -180,9 +180,80 @@ TDetInfo::~TDetInfo()
   fGeoInfo.clear();
 }
 
+//
+// Class TDigInfo
+//
+TDigInfo::TDigInfo()
+{
+  fGain.clear();
+  fPedestal.clear();
+  fPedNoise.clear();
+  fThreshold.clear();
+}
 
+TDigInfo::~TDigInfo()
+{
+  fGain.clear();
+  fPedestal.clear();
+  fPedNoise.clear();
+  fThreshold.clear();
+}
 
+double TDigInfo::Gain(uint chan)
+{
+  if(fGain.size()>1){
+    if(fGain.size()<=chan){
+      printf("warning: requested channel number %ud larger than channel size %ld. Check code where this method (DigInfo.Gain(int)) is employed and /or database!\n", 
+	     chan, fGain.size());
+      exit(-1);
+    }
+    return fGain.at(chan);
+  }else{
+    return fGain.at(0);
+  }
+};
 
+double TDigInfo::Pedestal(uint chan)
+{
+  if(fPedestal.size()>1){
+    if(fPedestal.size()<=chan){
+      printf("warning: requested channel number %ud larger than channel size %ld. Check code where this method (DigInfo.Pedestal(int)) is employed and /or database!\n", 
+	     chan, fPedestal.size());
+      exit(-1);
+    }
+    return fPedestal.at(chan);
+  }else{
+    return fPedestal.at(0);
+  }
+};
+
+double TDigInfo::PedestalNoise(uint chan)
+{
+  if(fPedNoise.size()>1){
+    if(fPedNoise.size()<=chan){
+      printf("warning: requested channel number %ud larger than channel size %ld. Check code where this method (DigInfo.PedestalNoise(int)) is employed and /or database!\n", 
+	     chan, fPedNoise.size());
+      exit(-1);
+    }
+    return fPedNoise.at(chan);
+  }else{
+    return fPedNoise.at(0);
+  }
+};
+
+double TDigInfo::Threshold(uint chan)
+{
+  if(fThreshold.size()>1){
+    if(fThreshold.size()<=chan){
+      printf("warning: requested channel number %ud larger than channel size %ld. Check code where this method (DigInfo.ThresholdNoise(int)) is employed and /or database!\n", 
+	     chan, fThreshold.size());
+      exit(-1);
+    }
+    return fThreshold.at(chan);
+  }else{
+    return fThreshold.at(0);
+  }
+};
 
 
 
