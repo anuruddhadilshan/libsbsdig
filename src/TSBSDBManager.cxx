@@ -57,7 +57,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   int err = LoadDB(file, GetInitDate(), request,  prefix.c_str());
   
   if(fDebug>=2){
-    cout << "err: " << err << endl;
+    cout << "err " << err << endl;
     cout << "nspecs "<< fNSpecs << endl;
     cout << specs_str.c_str() << endl;
   }
@@ -87,7 +87,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     string prefix2 = prefix+fSpecNames.at(i_spec)+".";
     
     if(fDebug>=3){
-      cout << prefix2.c_str() << endl;
+      cout << "spec info prefix " << prefix2.c_str() << endl;
     }
     
     std::vector<int>* pid = 0;
@@ -124,7 +124,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       }
       
       if(fDebug>=3){
-	cout << specinfo.NDets() << endl;
+	cout << " spec " << i_spec << ": ndetectors = " << specinfo.NDets() << endl;
       }
       
       for(int i_sig = 0; i_sig<nsig; i_sig++){
@@ -144,7 +144,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     }//end try / catch
     
     if(fDebug>=3){
-      cout << specinfo.NDets() << endl;
+      cout << "after 'try': spec " << i_spec << ": ndetectors = " << specinfo.NDets() << endl;
     }
     
     // then loop on detectors
@@ -217,6 +217,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 
   bool ignore_tdc = false;
   
+  TDigInfo diginfo;
+  
   double roimp;
   double adcconv;
   int    adcbits;
@@ -259,7 +261,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     };
     
     if(fDebug>=3){
-      cout << digprefix.c_str() << endl;
+      cout << "spec " << specname.c_str() << " detector " << detname.c_str() << " dig prefix " << digprefix.c_str() << endl;
     }
     
     //err = LoadDB (input, request_dig, digprefix);
@@ -270,28 +272,36 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       return kInitError;
     }
     
-    detinfo.DigInfo().SetROImpedance(roimp);
-    detinfo.DigInfo().SetADCConversion(adcconv);
-    detinfo.DigInfo().SetADCBits(adcbits);
-    detinfo.DigInfo().SetTDCConversion(tdcconv);
-    detinfo.DigInfo().SetTDCBits(tdcbits);
-    detinfo.DigInfo().SetTriggerJitter(triggerjitter);
-    detinfo.DigInfo().SetTriggerOffset(triggeroffset);
-    detinfo.DigInfo().SetGateWidth(gatewidth);
-    detinfo.DigInfo().SetSPE_Tau(spe_tau);
-    detinfo.DigInfo().SetSPE_Sigma(spe_sig);
-    detinfo.DigInfo().SetSPE_TransitTime(spe_transit);
-        
+    //detinfo.DigInfo()
+    diginfo.SetROImpedance(roimp);
+    diginfo.SetADCConversion(adcconv);
+    diginfo.SetADCBits(adcbits);
+    diginfo.SetTDCConversion(tdcconv);
+    diginfo.SetTDCBits(tdcbits);
+    diginfo.SetTriggerJitter(triggerjitter);
+    diginfo.SetTriggerOffset(triggeroffset);
+    diginfo.SetGateWidth(gatewidth);
+    diginfo.SetSPE_Tau(spe_tau);
+    diginfo.SetSPE_Sigma(spe_sig);
+    diginfo.SetSPE_TransitTime(spe_transit);
+    
+    
+    if(fDebug>=3){
+      cout << "roimp " << roimp << ", DigInfo ROinmpedance " << diginfo.ROImpedance() << endl;
+      cout << "DigInfo Gain size " << diginfo.GainSize() << endl;
+    }
+   
     if(gain->size()!=detinfo.NChan()){
       cout << "warning: number of gains in input (" << gain->size() 
 	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First gain entry used for all channels. " << endl
 	   << "If you want one gain value per channel, fix your DB" << endl<< endl;
-      detinfo.DigInfo().AddGain(gain->at(0));
+      diginfo.AddGain(gain->at(0));
+      if(fDebug>=3)cout << "Gain size (right after 'AddGain') = "<< diginfo.GainSize() << endl;
     }else{
       for(uint i__ = 0; i__<gain->size(); i__++){
-	detinfo.DigInfo().AddGain(gain->at(i__));
+	diginfo.AddGain(gain->at(i__));
       }
     }
     if(pedestal->size()!=detinfo.NChan()){
@@ -300,10 +310,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First pedestal entry used for all channels. " << endl
 	   << "If you want one pedestal value per channel, fix your DB" << endl<< endl;
-      detinfo.DigInfo().AddPedestal(pedestal->at(0));
+      diginfo.AddPedestal(pedestal->at(0));
     }else{
       for(uint i__ = 0; i__<pedestal->size(); i__++){
-	detinfo.DigInfo().AddPedestal(pedestal->at(i__));
+	diginfo.AddPedestal(pedestal->at(i__));
       }
     }
     if(pednoise->size()!=detinfo.NChan()){
@@ -312,10 +322,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First pedestal noise entry used for all channels. " << endl
 	   << "If you want one pedestal noise value per channel, fix your DB" << endl<< endl;
-      detinfo.DigInfo().AddPedestalNoise(pednoise->at(0));
+      diginfo.AddPedestalNoise(pednoise->at(0));
     }else{
       for(uint i__ = 0; i__<pednoise->size(); i__++){
-	detinfo.DigInfo().AddPedestalNoise(pednoise->at(i__));
+	diginfo.AddPedestalNoise(pednoise->at(i__));
       }
     }
     
@@ -325,13 +335,26 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	   << ")" << endl;
       cout << "First threshold entry used for all channels. " << endl
 	   << "If you want one threshold value per channel, fix your DB" << endl<< endl;
-      detinfo.DigInfo().AddThreshold(threshold->at(0));
+      diginfo.AddThreshold(threshold->at(0));
     }else{
       for(uint i__ = 0; i__<threshold->size(); i__++){
-	detinfo.DigInfo().AddThreshold(threshold->at(i__));
+	diginfo.AddThreshold(threshold->at(i__));
       }
     }
     
+    if(fDebug>=3){
+      cout << "Dig vectors sizes: gain " << gain->size() 
+	   << " DigInfo.GainSize() " << diginfo.GainSize() << endl
+	   << ", pedestal " << pedestal->size() 
+	   << " DigInfo.PedestalSize() " << diginfo.PedestalSize() << endl
+	   << ", pedestal noise " << pednoise->size() 
+	   << " DigInfo.PedestalNoiseSize() " << diginfo.PedestalNoiseSize() << endl
+	   << ", threshold " << threshold->size() 
+	   << " DigInfo.ThresholdSize() " << diginfo.ThresholdSize() << endl
+	   << endl;
+    }
+    detinfo.SetDigInfo(diginfo);
+
     delete gain;
     delete pedestal;
     delete pednoise;
@@ -345,6 +368,14 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     fclose(file);
     throw;
   }//end try / catch
+
+  if(fDebug>=3){
+    cout << "After try: Dig vectors sizes: DigInfo.GainSize() " << detinfo.DigInfo().GainSize() << endl
+	 << ", DigInfo.PedestalSize() " << detinfo.DigInfo().PedestalSize() << endl
+	 << ", DigInfo.PedestalNoiseSize() " << detinfo.DigInfo().PedestalNoiseSize() << endl
+	 << ", DigInfo.ThresholdSize() " << detinfo.DigInfo().ThresholdSize() << endl
+	 << endl;
+  }
     
   const string geoprefix = "geo."+prefix;
   
@@ -361,7 +392,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       };
        
       if(fDebug>=3){
-	cout << prefix.c_str() << endl;
+	cout << " prefix.c_str() " << prefix.c_str() << endl;
       }
       
       //Int_t err = LoadDB (input, request, prefix);
@@ -397,7 +428,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	  };
 	  
 	  if(fDebug>=3){
-	    cout << geoprefix.c_str() << endl;
+	    cout << " geoprefix.c_str() " << geoprefix.c_str() << endl;
 	  }
 	  
 	  string geoprefix_ii = geoprefix;
@@ -405,7 +436,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	  if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
 	  
 	  if(fDebug>=3){
-	    cout << geoprefix_ii.c_str() << endl;
+	    cout << " geoprefix_ii.c_str() " << geoprefix_ii.c_str() << endl;
 	  }
 	  
 	  //err = LoadDB (input, request_geo, geoprefix+"."+std::to_string(i_pl));
@@ -416,13 +447,14 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	    return kInitError;
 	  }
 	  
-	  
 	  thisGeo.SetNRows(nrows);
 	  thisGeo.SetNCols(ncols);
 	  thisGeo.SetXSize(xsize);
 	  thisGeo.SetYSize(ysize);
 	  thisGeo.SetZPos(zpos);
 	  
+	  detinfo.AddGeoInfo(thisGeo);
+	  if(fDebug>=3)cout << "GeoInfo size " << detinfo.GeoInfoSize() << endl;
 	  //detinfo.fGeoInfo.push_back(thisGeo);
 	}
       }//end 
@@ -433,6 +465,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       fclose(file);
       throw;
     }//end try / catch
+    
+    if(fDebug>=3){
+      cout << "NModules size " << detinfo.NModulesSize() << endl;
+    }
     
   }else{
     TGeoInfo thisGeo;
@@ -463,10 +499,19 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     thisGeo.SetXSize(xsize);
     thisGeo.SetYSize(ysize);
     thisGeo.SetZPos(zpos);
-        
+    
+    detinfo.AddGeoInfo(thisGeo);
+    if(fDebug>=3)cout << "GeoInfo size " << detinfo.GeoInfoSize() << endl;
     //detinfo.fGeoInfo.push_back(thisGeo);
   }
   
+  
+  if(fDebug>=3){
+    cout << "GeoInfo size " << detinfo.GeoInfoSize() << endl;
+    cout << "GeoInfo ZPos " << detinfo.GeoInfo(0).ZPos() << endl;
+    cout << "DigInfo ROinmpedance " << detinfo.DigInfo().ROImpedance() << endl;
+    cout << "DigInfo Gain size " << detinfo.DigInfo().GainSize() << endl;
+  }
    
   fDetInfo.push_back(detinfo);
   

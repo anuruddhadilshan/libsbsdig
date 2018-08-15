@@ -100,7 +100,7 @@ class TDigInfo : public TObject{
   int    ADCBits(){return fADCbits;};
   double TDCConversion(){return fTDCconversion;};
   int    TDCBits(){return fTDCbits;};
-  int    SizeGain(){return fGain.size();};
+  int    GainSize(){return fGain.size();};
   double Gain(uint chan);
   int    PedestalSize(){return fPedestal.size();};
   double Pedestal(uint chan);
@@ -146,9 +146,9 @@ class TDigInfo : public TObject{
   double  fTriggerJitter;         // trigger jitter (ns)
   double  fTriggerOffset;        // trigger offset (ns)
   double  fGateWidth;           // gate width (ns)
-  double  fSPE_tau;             // tau param for SPE
-  double  fSPE_sigma;          // sigma param for SPE
-  double  fSPE_transittime;   // pmt transit time param for SPE
+  double  fSPE_tau;            // tau param for SPE
+  double  fSPE_sigma;         // sigma param for SPE
+  double  fSPE_transittime;  // pmt transit time param for SPE
   
   ClassDef(TDigInfo, 1);
 };
@@ -166,7 +166,8 @@ class TDetInfo : public TObject{
   int      ChanPerSlot(){return fChanPerSlot;};
   int     SlotPerCrate(){return fSlotPerCrate;};
   int    NPlanes(){return fNplanes;};
-  int   NModules(int i){return fNmodules.at(i);};
+  int   NModulesSize(){return fNmodules.size();};
+  int  NModules(int i){return fNmodules.at(i);};
   
   int GeoInfoSize(){return fGeoInfo.size();};
   TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
@@ -256,68 +257,6 @@ class TPMTSignal : public TObject {
   ClassDef(TPMTSignal,1);
 };
 
-
-/*
-class  : public TObject{
- public:
-
-  ClassDef(, 1);
-};
-
-class  : public TObject{
- public:
-
-  ClassDef(, 1);
-};
-
-class  : public TObject{
- public:
-
-  ClassDef(, 1);
-};
-*/
-/*
-
-struct DigInfo{
-  // same remark as for GeoInfo
-  double  fROImpedance;          // readout impedance
-  std::vector<double>  fGain;     // Gain 
-  std::vector<double>  fPedestal; // Pedestal value (adc value)
-  std::vector<double>  fPedNoise; // Pedestal noise (adc value)
-  double  fTriggerJitter;         // trigger jitter (ns)
-  double  fTriggerOffset;        // trigger offset (ns)
-  double  fGateWidth;           // gate width (ns)
-  double  fSPEtau;            // tau param for SPE
-  double  fSPEsig;           // sigma param for SPE
-  double  fSPEtransittime; // pmt transit time param for SPE
-};
-
-struct DetInfo{
-  std::string fDetName;      // Detector name
-  det_type     fDetType;      // DetectorType
-  int           fNChan;        // Total number of channels over all detector
-  int            fChanPerSlot;  // Number of channels per slot
-  int             fSlotPerCrate; // Number of slots per crate
-  int              fNPlanes;      // Number of planes // useful e.g. GEM, CDet
-  std::vector<int>  fNModules;     // Number of modules per plane // useful e.g. GEM, CDet
-  
-  std::vector<GeoInfo> fGeoInfo;
-  DigInfo fDigInfo;
-  DetInfo()
-  {
-    fNModules.clear();
-    fGeoInfo.clear();
-  }
-  DetInfo(const std::string detname)
-  {
-    fDetName = detname;
-    fNModules.clear();
-    fGeoInfo.clear();
-  }
-  ~DetInfo(){}
-
-};
-*/
 
 /*
 //
