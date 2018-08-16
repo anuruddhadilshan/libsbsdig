@@ -11,7 +11,7 @@ class TFile;
 
 class TSBSSimScint : public TSBSSimDetector {
 public:
-  TSBSSimScint(const char* name);
+  TSBSSimScint(const char* name, short id);
   virtual ~TSBSSimScint();
   // This loads the simulation event data
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer);

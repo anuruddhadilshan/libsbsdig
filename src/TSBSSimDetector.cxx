@@ -7,12 +7,6 @@ TSBSSimDetector::TSBSSimDetector() : fHasData(false)
   
 }
 
-TSBSSimDetector::TSBSSimDetector(int uniqueid) : fUniqueID(uniqueid), fHasData(false)
-{
-  fDBmanager = TSBSDBManager::GetInstance();
-  
-}
-
 TSBSSimDetector::~TSBSSimDetector()
 {
   fDBmanager->Delete();

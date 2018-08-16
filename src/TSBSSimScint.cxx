@@ -8,9 +8,10 @@
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
 
-TSBSSimScint::TSBSSimScint(const char* name)
+TSBSSimScint::TSBSSimScint(const char* name, short id)
 {
   fName = name;
+  SetUniqueID(id);
   Init();
 }
 
@@ -23,7 +24,6 @@ void TSBSSimScint::Init()
   //fNPE = new NPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
   //fSignals.resize(180); // TODO: Don't hard code this!!!
-  
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
   //fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
   //fNPE->DigInfo = fDetInfo.fDigInfo;
@@ -99,12 +99,16 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
     if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
+      cout << UniqueID() << endl;
       data.fDetID = UniqueID();//need 
       data.fChannel = m;
       //for scintillators, we only need to 
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
-      for(int i = 0; i<fSignals[m].TDCSize(); i++)data.fData.push_back(fSignals[m].TDC(i));
+      for(int i = 0; i<fSignals[m].TDCSize(); i++){
+	data.fData.push_back(fSignals[m].TDC(i));
+	if(fDebug>=3)cout << i << " " << fSignals[m].TDC(i) << endl;
+      }
       //data.fData.push_back(m);
       //data.fData.push_back(0); // For samples data
       //data.fData.push_back(fSignals[m].samples.size());
@@ -114,12 +118,18 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       //   data.fData.push_back(fSignals[m].samples[j]);
       // }
       event.fDetectorData.push_back(data);
-      data.fData.clear();
-      // //data.fData.push_back(m);
-      data.fData.push_back(1);
-      data.fData.push_back(1);
+      TSBSSimEvent::SimDetectorData simdata;
+      simdata.fDetID = UniqueID();//need 
+      simdata.fChannel = m;
+      simdata.fData.push_back(1+fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
       data.fData.push_back(fSignals[m].Sumedep());
-      // event.fDetectorData.push_back(data);
+      for(int i = 0; i<fSignals[m].LeadTimesSize(); i++){
+	simdata.fData.push_back(fSignals[m].LeadTime(i));
+      }
+      for(int i = 0; i<fSignals[m].TrailTimesSize(); i++){
+	simdata.fData.push_back(fSignals[m].TrailTime(i));
+      }
+      event.fSimDetectorData.push_back(simdata);
     }
   }
   SetHasDataFlag(any_events);

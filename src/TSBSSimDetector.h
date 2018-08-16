@@ -16,22 +16,23 @@ class TSBSDBManager;
 class TSBSSimDetector : public THaAnalysisObject {
 public:
   TSBSSimDetector();
-  TSBSSimDetector(int uniqueid);
   virtual ~TSBSSimDetector();
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer) = 0;
   virtual void Digitize(TSBSSimEvent &event) = 0;
   virtual bool HasData() { return fHasData; }
-  virtual int  UniqueID() {return fUniqueID; };
-  virtual det_type GetDetType() {return (det_type)((fUniqueID-fUniqueID%10)/10); };
-  virtual int  GetDetID() {return fUniqueID%10;};
+  virtual void SetUniqueID(short id){fUniqueID = id;};
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
-
+  virtual short  UniqueID() {return fUniqueID; };
+  virtual det_type GetDetType() {return (det_type)((fUniqueID-fUniqueID%10)/10); };
+  virtual short  GetDetID() {return fUniqueID%10;};
+  //void SetUniqueID();
+  
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
 private:
   bool fHasData;
-  bool fUniqueID;
+  short fUniqueID;
   
   ClassDef(TSBSSimDetector,1)
 };

@@ -79,7 +79,7 @@ public:
   //std::vector< std::pair< Int_t, std::vector<Short_t> > > fMCClusterHitID;
   // collections of hit IDs coming from the same MC track ID
   // save only clusters with size >= 2
-
+  
   struct PMTHit {
     // MC hit data
     Short_t  fID;          // Hit number
@@ -103,12 +103,18 @@ public:
   };
   std::vector<PMTHit> fPMTHits;  // All MC-generated clusters in the GEMs
 
+  struct SimDetectorData {
+    Short_t fDetID;  // Source detector number
+    Short_t fChannel; // Channel number for this hit
+    std::vector<double> fData;
+  };
   struct DetectorData {
     Short_t fDetID;  // Source detector number
     Short_t fChannel; // Channel number for this hit
     std::vector<uint32_t> fData;
   };
   std::vector<DetectorData> fDetectorData;
+  std::vector<SimDetectorData> fSimDetectorData;
 
   ClassDef(TSBSSimEvent, 6) // Simulated data for one event
 };

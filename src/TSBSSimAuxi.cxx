@@ -72,9 +72,10 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
-  fLeadTimes.push_back(evttime+t_lead);
-  fTrailTimes.push_back(evttime+t_trail);
-  
+  if(t_lead<1e30 && t_trail<1e30){
+    fLeadTimes.push_back(evttime+t_lead);
+    fTrailTimes.push_back(evttime+t_trail);
+  }
 }
 
 void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
@@ -85,8 +86,12 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   fADC = fNpe*fNpeChargeConv*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
-  fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.TDCConversion());
-  fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.TDCConversion());
+  if(fLeadTimes.size() && fTrailTimes.size()){
+    cout << fLeadTimes.at(0) << " " << fTDCs.at(1) << " " << fTrailTimes.at(0) << " " << fTDCs.at(1) << endl;
+    
+    fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.TDCConversion());
+    fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.TDCConversion());
+  }
   
   /*
   // TDCs: select only lead and trail times not between a lead and a trail time.
