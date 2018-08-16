@@ -43,7 +43,7 @@ void digi_scint_test(int nentries = 100)
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
 
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  //hodo->SetDebug(3);
+  hodo->SetDebug(3);
   digitizer->Add(hodo);
 
   digitizer->Process(f, nentries);

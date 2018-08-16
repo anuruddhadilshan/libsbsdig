@@ -99,15 +99,14 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
     if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
-      cout << UniqueID() << endl;
-      data.fDetID = UniqueID();//need 
+      data.fDetID = UniqueID();
       data.fChannel = m;
       //for scintillators, we only need to 
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
 	data.fData.push_back(fSignals[m].TDC(i));
-	if(fDebug>=3)cout << i << " " << fSignals[m].TDC(i) << endl;
+	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
       }
       //data.fData.push_back(m);
       //data.fData.push_back(0); // For samples data
@@ -121,13 +120,19 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       TSBSSimEvent::SimDetectorData simdata;
       simdata.fDetID = UniqueID();//need 
       simdata.fChannel = m;
-      simdata.fData.push_back(1+fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
-      data.fData.push_back(fSignals[m].Sumedep());
+      simdata.fData.push_back(2+fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
+      if(fDebug>=3){
+	cout << "SumEdep = " << fSignals[m].SumEdep() << ", Npe = " << fSignals[m].Npe() << endl;
+      }
+      data.fData.push_back(fSignals[m].SumEdep());
+      data.fData.push_back(fSignals[m].Npe());
       for(int i = 0; i<fSignals[m].LeadTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].LeadTime(i));
+	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;
       }
       for(int i = 0; i<fSignals[m].TrailTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].TrailTime(i));
+	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
       event.fSimDetectorData.push_back(simdata);
     }
