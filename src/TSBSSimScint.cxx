@@ -72,6 +72,8 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 	fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
       data = ev->GetData(4);
       
+      if(fDebug>=3)cout << "Evt Time: "<< ev->GetData(3) << " " << time << endl;
+      
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
@@ -97,7 +99,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
     if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
-      data.fDetID = 30;//need 
+      data.fDetID = UniqueID();//need 
       data.fChannel = m;
       //for scintillators, we only need to 
       data.fData.push_back(0);//Digitized data
