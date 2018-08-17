@@ -82,6 +82,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   fNSignal = 0;
   fPMTHits.clear();
   fDetectorData.clear();
+  fSimDetectorData.clear();
   //fMCClusterHitID.clear();
 }
 

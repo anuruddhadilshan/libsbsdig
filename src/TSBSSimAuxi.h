@@ -227,7 +227,7 @@ class TPMTSignal : public TObject {
   
   void AddSumEdep(double edep){fSumEdep+= edep;};
   void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
-  
+    
   double SumEdep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
   double Charge(){return fNpe*fNpeChargeConv;};

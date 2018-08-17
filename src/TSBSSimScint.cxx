@@ -21,6 +21,8 @@ TSBSSimScint::~TSBSSimScint()
 
 void TSBSSimScint::Init()
 {
+  cout << " TSBSSimScint::Init() " << endl;
+  
   //fNPE = new NPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
   //    fConvolution->GetNpar()));
   //fSignals.resize(180); // TODO: Don't hard code this!!!
@@ -32,7 +34,7 @@ void TSBSSimScint::Init()
   double sigma = fDetInfo.DigInfo().SPE_Sigma();
   double tmin = -fDetInfo.DigInfo().GateWidth()/2.0;
   double tmax = +fDetInfo.DigInfo().GateWidth()/2.0;
-  double t0 = +fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
+  double t0 = 0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
   
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
@@ -68,11 +70,11 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
-      time = ev->GetData(3)+
-	fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
+      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
       data = ev->GetData(4);
       
-      if(fDebug>=3)cout << "Evt Time: "<< ev->GetData(3) << " " << time << endl;
+      if(fDebug>=3)
+	cout << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
@@ -84,6 +86,9 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, 1);//
       } else if (type == 1) { // sumedep data
         fSignals[chan].AddSumEdep(data);
+	if(fDebug>=3)
+	  cout << "chan " << chan << " data " << data 
+	       << " fSignals[chan].SumEdep() " << fSignals[chan].SumEdep() << endl;
       }
     }
   }
@@ -104,6 +109,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       //for scintillators, we only need to 
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
+      if(fDebug>=3)cout << "TSBSSimScint::Digitize() = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
 	data.fData.push_back(fSignals[m].TDC(i));
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
@@ -118,14 +124,17 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       // }
       event.fDetectorData.push_back(data);
       TSBSSimEvent::SimDetectorData simdata;
-      simdata.fDetID = UniqueID();//need 
+      simdata.fDetID = UniqueID();
       simdata.fChannel = m;
-      simdata.fData.push_back(2+fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
+      simdata.fData.push_back(1);
+      simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
       if(fDebug>=3){
-	cout << "SumEdep = " << fSignals[m].SumEdep() << ", Npe = " << fSignals[m].Npe() << endl;
+	cout << "SumEdep = " << fSignals[m].SumEdep() 
+	     << ", Charge " << fSignals[m].Charge() 
+	     << ", Npe = " << fSignals[m].Npe() << endl;
       }
-      data.fData.push_back(fSignals[m].SumEdep());
-      data.fData.push_back(fSignals[m].Npe());
+      //data.fData.push_back(fSignals[m].SumEdep());
+      //data.fData.push_back(fSignals[m].Npe());
       for(int i = 0; i<fSignals[m].LeadTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].LeadTime(i));
 	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;

@@ -3,7 +3,7 @@
 bb.hodo.dettype = Scint
 bb.hodo.nchan = 180
 bb.hodo.chan_per_slot = 128
-bb.hodo.slot_per_crate = 16
+bb.hodo.slot_per_crate = 12
 bb.hodo.nplanes = 1
 bb.hodo.nmodules = 1
 
@@ -16,8 +16,8 @@ geo.bb.hodo.zpos =  2.59241 #m
 
 #hodoscope digitization info
 dig.bb.hodo.roimpedance = 50 # ohm
-dig.bb.hodo.tdcconversion = 1.0 #ns
-dig.bb.hodo.tdcbits = 16
+dig.bb.hodo.tdcconversion = 5.0 #tdc channel/ns
+dig.bb.hodo.tdcbits = 19
 dig.bb.hodo.triggerjitter = 3.0  # ns
 dig.bb.hodo.triggeroffset = 30.  # ns 
 dig.bb.hodo.gatewidth = 100. #ns

@@ -29,7 +29,7 @@ void digi_scint_test(int nentries = 100)
   gSystem->Load("../libsbsdig.so");
 
   ////////////////////////////////////////////////////////////////
-
+  
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
   manager->SetDebug(1);
   //manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
@@ -41,9 +41,9 @@ void digi_scint_test(int nentries = 100)
   
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
-
+  
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  hodo->SetDebug(3);
+  //hodo->SetDebug(3);
   digitizer->Add(hodo);
 
   digitizer->Process(f, nentries);

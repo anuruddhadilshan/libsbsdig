@@ -68,6 +68,8 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
+  //cout << "TPMTSignal::Fill : fNpeChargeConv = " << fNpeChargeConv << endl;
+  
   //determine lead and trail times
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
@@ -85,12 +87,16 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   
   fADC = fNpe*fNpeChargeConv*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
   
+  //cout << "TPMTSignal::Digitize():  " << fLeadTimes.size() << " - " << fTrailTimes.size() << endl;
+  
   // For the sake of going forward, we assume that the signal is the first entry of each vector
   if(fLeadTimes.size() && fTrailTimes.size()){
-    cout << fLeadTimes.at(0) << " " << fTDCs.at(1) << " " << fTrailTimes.at(0) << " " << fTDCs.at(1) << endl;
+    //cout << fLeadTimes.at(0) << " " << fTrailTimes.at(0) << endl;
     
-    fTDCs.insert(fTDCs.begin()+0, fLeadTimes.at(0)*diginfo.TDCConversion());
-    fTDCs.insert(fTDCs.begin()+1, fTrailTimes.at(0)*diginfo.TDCConversion());
+    fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));
+    fTDCs.insert(fTDCs.begin()+1, TMath::Nint(fTrailTimes.at(0)*diginfo.TDCConversion()));
+    
+    //cout << fTDCs.at(0) << " " << fTDCs.at(1) << endl;
   }
   
   /*
@@ -152,9 +158,11 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 
 void TPMTSignal::Clear()
 {
+  //cout << " TPMTSignal::Clear() " << endl;
+  
   fSumEdep = 0;
   fNpe = 0;
-  fNpeChargeConv = 0;
+  //fNpeChargeConv = 0;// we don't want to clear that
   fADC = 0;
   
   fEventTime = 0;
