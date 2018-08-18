@@ -163,7 +163,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	hodopmthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
 	hodopmthit->SetData(2, 0);
 	hodopmthit->SetData(3, t);
-	hodopmthit->SetData(4, Npe*0.24);
+	hodopmthit->SetData(4, Npe);
 	fg4sbsHitData.push_back(hodopmthit);
       }
     }
@@ -231,8 +231,19 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       cdetscinthit->SetData(3, fTree->Harm_CDET_Scint.tavg->at(i));
       cdetscinthit->SetData(4, fTree->Harm_CDET_Scint.sumedep->at(i));
       fg4sbsHitData.push_back(cdetscinthit);
+      
+      Npe = fRN->Poisson( fTree->Harm_CDET_Scint.sumedep->at(i)*5.634e3 );
+      t = fTree->Harm_CDET_Scint.tavg->at(i);//+(0.55+pow(-1, j)*fTree->Earm_Harm_CDET_Scint.xhit->at(i))/0.15;
+      g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
+      cdetpmthit->SetData(0, fSource);
+      cdetpmthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));
+      cdetpmthit->SetData(2, 0);
+      cdetpmthit->SetData(3, t);
+      cdetpmthit->SetData(4, Npe);
+      fg4sbsHitData.push_back(cdetpmthit);
     }
   }
+  /*
   // For the time being, use the g4sbs npe estimation for CDET, divided by 5.
   // (the p.e. yield for cosmics form g4sbs is about 5 times more the one measured)
   if(fTree->Harm_CDET.nhits){
@@ -246,6 +257,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(cdetpmthit);
     }
   }
+  */
   
   // Now process HCAL data
   if(fTree->hcalpart.E) {
