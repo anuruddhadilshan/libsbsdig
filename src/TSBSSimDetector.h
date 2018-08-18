@@ -12,6 +12,7 @@
 class g4sbshitdata;
 class TSBSSimEvent;
 class TSBSDBManager;
+class THaAnalysisObject;
 
 class TSBSSimDetector : public THaAnalysisObject {
 public:
@@ -20,19 +21,18 @@ public:
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer) = 0;
   virtual void Digitize(TSBSSimEvent &event) = 0;
   virtual bool HasData() { return fHasData; }
-  virtual void SetUniqueID(short id){fUniqueID = id;};
+  void SetUniqueDetID(short id){fUniqueDetID = id;};
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
-  virtual short  UniqueID() {return fUniqueID; };
-  virtual det_type GetDetType() {return (det_type)((fUniqueID-fUniqueID%10)/10); };
-  virtual short  GetDetID() {return fUniqueID%10;};
-  //void SetUniqueID();
-  
+  short  UniqueDetID() {return fUniqueDetID; };
+  det_type GetDetType() {return (det_type)((fUniqueDetID-fUniqueDetID%10)/10); };
+  short  GetDetID() {return fUniqueDetID%10;};
+    
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
 private:
   bool fHasData;
-  short fUniqueID;
+  short fUniqueDetID;
   
   ClassDef(TSBSSimDetector,1)
 };

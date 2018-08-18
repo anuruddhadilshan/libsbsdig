@@ -12,6 +12,7 @@ TSBSSimDetector::~TSBSSimDetector()
   fDBmanager->Delete();
 }
 
+ClassImp(TSBSSimDetector)
 /*
 //
 // Class TSPEModel

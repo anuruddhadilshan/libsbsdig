@@ -30,4 +30,4 @@ public:
   ClassDef(TSBSSimScint,1)
 };
 
-#endif //_TSBSSIMHCAL_H
+#endif //_TSBSSIMSCINT_H

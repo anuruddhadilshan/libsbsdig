@@ -11,7 +11,7 @@
 TSBSSimScint::TSBSSimScint(const char* name, short id)
 {
   fName = name;
-  SetUniqueID(id);
+  SetUniqueDetID(id);
   Init();
 }
 
@@ -21,20 +21,16 @@ TSBSSimScint::~TSBSSimScint()
 
 void TSBSSimScint::Init()
 {
-  cout << " TSBSSimScint::Init() " << endl;
+  if(fDebug>=1)
+    cout << "Scintillator detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimScint::Init() " << endl;
   
-  //fNPE = new NPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
-  //    fConvolution->GetNpar()));
-  //fSignals.resize(180); // TODO: Don't hard code this!!!
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
-  //fNPE = new TNPEModel(fDetInfo.fDigInfo, fName.Data());
-  //fNPE->DigInfo = fDetInfo.fDigInfo;
   
   double tau = fDetInfo.DigInfo().SPE_Tau();
   double sigma = fDetInfo.DigInfo().SPE_Sigma();
   double tmin = -fDetInfo.DigInfo().GateWidth()/2.0;
   double tmax = +fDetInfo.DigInfo().GateWidth()/2.0;
-  double t0 = 0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
+  double t0 = 0.0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
   
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
@@ -42,14 +38,6 @@ void TSBSSimScint::Init()
   for(int i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
     fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));
   }
-  //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
-  //fTreeOut = new TTree("TTest","");
-  /*for(int m = 0; m < int(fSignals.size()); m++) {
-    fTreeOut->Branch(TString::Format("m%d.npe",m),&(fSignals[m].npe));
-    fTreeOut->Branch(TString::Format("m%d.sum",m),&(fSignals[m].sum));
-    fTreeOut->Branch(TString::Format("m%d.samples",m),&(fSignals[m].samples));
-  }
-  */
 }
 
 
@@ -92,21 +80,19 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       }
     }
   }
-  //std::cout << "Mint = " << mint << std::endl;
 }
 
 void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
-  
   bool any_events = false;
   for(size_t m = 0; m < fSignals.size(); m++) {
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
-      data.fDetID = UniqueID();
+      data.fDetID = UniqueDetID();
       data.fChannel = m;
-      //for scintillators, we only need to 
+      
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
       if(fDebug>=3)cout << "TSBSSimScint::Digitize() = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
@@ -124,7 +110,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       // }
       event.fDetectorData.push_back(data);
       TSBSSimEvent::SimDetectorData simdata;
-      simdata.fDetID = UniqueID();
+      simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
       simdata.fData.push_back(1);
       simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
@@ -150,58 +136,11 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
   
 }
 
-/*
-TSBSSimScint::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
-  dnraw(10), sumedep(0.0)
-  //mint(0.0), maxt(50.), nbins(50),
-{
-  nbins = (maxt-mint)/dx_samples;
-  dx_raw = dx_samples/double(dnraw);
-  nbins_raw= (maxt-mint)/dx_raw;
-  samples.resize(nbins);
-  samples_raw.resize(nbins_raw);
-}
-*/
-
-/*
-void TSBSSimScint::Signal::Fill(NPEModel *model,double t, double toffset)
-{
-  int start_bin = 0;
-  if( mint > t )
-    toffset -= (mint-t);
-  else
-    start_bin = (t-mint)/dx_raw;
-
-  if(start_bin > nbins_raw)
-    return; // Way outside our window anyways
-
-  // Now digitize this guy into the raw_bin (scope)
-  double tt = model->start_t-toffset;
-  //std::cout << "t=" << t << ", tt=" << tt << std::endl;
-  for(int bin = start_bin; bin < nbins_raw; bin++) {
-    samples_raw[bin] += model->Eval(tt);
-    tt += dx_raw;
-  }
-  npe++;
-}
-*/
-
-
+// Clear signals in array
 void TSBSSimScint::Clear()
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();
   }
 }
-/*
-void TSBSSimScint::Signal::Clear()
-{
-  // for(size_t i = 0; i < samples.size(); i++) {
-  //   samples[i] = 0;
-  // }
-  // for(size_t i = 0; i < samples_raw.size(); i++) {
-  //   samples_raw[i] = 0;
-  // }
-  npe = 0;
-}
-*/
+
