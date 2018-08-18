@@ -1,9 +1,9 @@
 950101
 #grinch general info
 bb.grinch.dettype = Cher
+bb.grinch.nchan = 510
 bb.grinch.chan_per_slot = 128
 bb.grinch.slot_per_crate = 16
-bb.grinch.nchan = 510
 
 #grinch geometry info
 geo.bb.grinch.nrows = 60
@@ -11,43 +11,27 @@ geo.bb.grinch.ncols = 9
 geo.bb.grinch.xsize = 1.86
 geo.bb.grinch.ysize = 0.279
 geo.bb.grinch.zpos = 1.3824 #m
+geo.bb.grinch.xoffset = 0.0 #m
+geo.bb.grinch.yoffset = 0.0 #m
 
-#grinch geometry info
-geo.bb.grinch.z_in = 1.3824 #m
-geo.bb.grinch.n_radiator = 1.00137
-geo.bb.grinch.l_radiator = 0.66 #m
-geo.bb.grinch.nrows = 60
-geo.bb.grinch.ncolsmax = 9
-geo.bb.grinch.pmtdistx = 0.03100 #m
-geo.bb.grinch.pmtdisty = 0.03100 #m
-geo.bb.grinch.x_tcpmt = -0.914500 #m
-geo.bb.grinch.y_tcpmt = -0.124000 #m
-
-#grinch PMT info
-dig.bb.grinch.pmtgain = 7.0e6
-dig.bb.grinch.pmttransittime = 33.0  # ns
-#bb.grinch.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
-#bb.grinch.pmtrisetime = 4.5 # ns
-#bb.grinch.pmtjitter = 4.0 # ns
-#bb.grinch.pmtfwhm = 7.5 # ns
-#bb.grinch.pmtpulseshapetau = 38.3  # ns
-
-# Electronics parameters:
-dig.bb.grinch.triggeroffset = 30.  # ns 
-dig.bb.grinch.triggerjitter = 3.0  # ns
-dig.bb.grinch.gatewidth = 100. #ns
-dig.bb.grinch.tdctimeconversion = 1.0 #ns
+#hodoscope digitization info
+dig.bb.grinch.roimpedance = 50 # ohm
+dig.bb.grinch.tdcconversion = 1.0 #tdc channel/ns
 dig.bb.grinch.tdcbits = 16
-dig.bb.grinch.tdcthreshold = 0.003 # V
-dig.bb.grinch.tdcresolution = 1.0 # ns
-dig.bb.grinch.readoutimpedance = 50 # ohm
+dig.bb.grinch.triggerjitter = 3.0  # ns
+dig.bb.grinch.triggeroffset = 30.  # ns 
+dig.bb.grinch.gatewidth = 100. #ns
+dig.bb.grinch.gain = 7.0e6
+dig.bb.grinch.pedestal = 0.0
+dig.bb.grinch.pednoise = 0.0
+dig.bb.grinch.threshold = 0.003 #V
 
-# pedestal noise 
-#dig.bb.grinch.pulsenoiseconst = 30.   #ADC values
-#dig.bb.grinch.pulsenoisesigma = 7.    #ADC values
+dig.bb.grinch.spe_tau = 2.08  # ns
+dig.bb.grinch.spe_sigma = 2.20  # ns
+dig.bb.grinch.spe_transit = 33.0  # ns
 
 #NINO cross talk parameter
-#bb.grinch.do_crosstalk = 0
-#bb.grinch.crosstalk_mean = 0.1
-#bb.grinch.crosstalk_sigma = 0.03
-#bb.grinch.crosstalk_chan_apart = 8
+#dig.bb.grinch.do_crosstalk = 0
+#dig.bb.grinch.crosstalk_mean = 0.1
+#dig.bb.grinch.crosstalk_sigma = 0.03
+#dig.bb.grinch.crosstalk_chan_apart = 8

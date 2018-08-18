@@ -13,6 +13,8 @@ geo.bb.hodo.ncols = 2
 geo.bb.hodo.xsize = 2.25 #m
 geo.bb.hodo.ysize = 0.6 #m
 geo.bb.hodo.zpos =  2.59241 #m
+geo.bb.hodo.xoffset = 0.0 #m
+geo.bb.hodo.yoffset = 0.0 #m
 
 #hodoscope digitization info
 dig.bb.hodo.roimpedance = 50 # ohm
@@ -30,17 +32,7 @@ dig.bb.hodo.spe_tau = 0.65  # ns
 dig.bb.hodo.spe_sigma = 1.05  # ns
 dig.bb.hodo.spe_transit = 19.0  # ns
 
-# Electronics parameters:
-#bb.hodo.tdctimeconversion = 1.0 #ns
-#bb.hodo.tdcbits = 16
-#bb.hodo.tdcthreshold = 0.003 # V
-#bb.hodo.tdcresolution = 1.0 # ns
-
-# pedestal noise 
-#dig.bb.hodo.pulsenoiseconst = 30.   #ADC values
-#dig.bb.hodo.pulsenoisesigma = 7.    #ADC values
-
-#bb.hodo.do_crosstalk = 0
-#bb.hodo.crosstalk_mean = 0.1
-#bb.hodo.crosstalk_sigma = 0.03
-#bb.hodo.crosstalk_chan_apart = 8
+#dig.bb.hodo.do_crosstalk = 0
+#dig.bb.hodo.crosstalk_mean = 0.1
+#dig.bb.hodo.crosstalk_sigma = 0.03
+#dig.bb.hodo.crosstalk_chan_apart = 8

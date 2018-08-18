@@ -10,28 +10,68 @@ sbs.cdet.nmodules = 3 3
 #cdet geometry info
 geo.sbs.cdet.1.1.nrows = 196 #m
 geo.sbs.cdet.1.1.ncols = 2 
-geo.sbs.cdet.1.1.xsize = 2.25 #m
-geo.sbs.cdet.1.1.ysize = 2.25 #m
-geo.sbs.cdet.1.1.zpos = 15.0 #m
+geo.sbs.cdet.1.1.xsize = 0.98125 #m
+geo.sbs.cdet.1.1.ysize = 1.02 #m
+geo.sbs.cdet.1.1.zpos = 16.88 #m
+geo.sbs.cdet.1.1.xoffset = -1.0 #m
+geo.sbs.cdet.1.1.yoffset =  0.0 #m
 
-#cdet PMT info
-dig.sbs.cdet.pmtgain = 7.0e6
-dig.sbs.cdet.pmttransittime = 33.0  # ns
-#sbs.cdet.pmttimesdatafilenames = Table_9125B_tr_tf_pulse_Thr3mV.txt
-#dig.sbs.cdet.pmtrisetime = 4.5 # ns
-#dig.sbs.cdet.pmtjitter = 4.0 # ns
-#dig.sbs.cdet.pmtfwhm = 7.5 # ns
-#dig.sbs.cdet.pmtpulseshapetau = 38.3  # ns
+geo.sbs.cdet.1.2.nrows = 196 #m
+geo.sbs.cdet.1.2.ncols = 2 
+geo.sbs.cdet.1.2.xsize = 0.98125 #m
+geo.sbs.cdet.1.2.ysize = 1.02 #m
+geo.sbs.cdet.1.2.zpos = 16.88 #m
+geo.sbs.cdet.1.2.xoffset =  0.0 #m
+geo.sbs.cdet.1.2.yoffset = -0.05 #m
 
-# Electronics parameters:
-dig.sbs.cdet.triggeroffset = 30.  # ns 
+geo.sbs.cdet.1.3.nrows = 196 #m
+geo.sbs.cdet.1.3.ncols = 2 
+geo.sbs.cdet.1.3.xsize = 0.98125 #m
+geo.sbs.cdet.1.3.ysize = 1.02 #m
+geo.sbs.cdet.1.3.zpos = 16.88 #m
+geo.sbs.cdet.1.3.xoffset = +1.0 #m
+geo.sbs.cdet.1.3.yoffset =  0.0 #m
+
+geo.sbs.cdet.2.1.nrows = 196 #m
+geo.sbs.cdet.2.1.ncols = 2 
+geo.sbs.cdet.2.1.xsize = 0.98125 #m
+geo.sbs.cdet.2.1.ysize = 1.02 #m
+geo.sbs.cdet.2.1.zpos = 16.92 #m
+geo.sbs.cdet.2.1.xoffset = -1.0 #m
+geo.sbs.cdet.2.1.yoffset =  0.0 #m
+
+geo.sbs.cdet.2.2.nrows = 196 #m
+geo.sbs.cdet.2.2.ncols = 2 
+geo.sbs.cdet.2.2.xsize = 0.98125 #m
+geo.sbs.cdet.2.2.ysize = 1.02 #m
+geo.sbs.cdet.2.2.zpos = 16.92 #m
+geo.sbs.cdet.2.2.xoffset =  0.0 #m
+geo.sbs.cdet.2.2.yoffset = -0.2 #m
+
+geo.sbs.cdet.2.3.nrows = 196 #m
+geo.sbs.cdet.2.3.ncols = 2 
+geo.sbs.cdet.2.3.xsize = 0.98125 #m
+geo.sbs.cdet.2.3.ysize = 1.02 #m
+geo.sbs.cdet.2.3.zpos = 16.92 #m
+geo.sbs.cdet.2.3.xoffset = +1.0 #m
+geo.sbs.cdet.2.3.yoffset =  0.0 #m
+
+#cdet digitization info
+dig.sbs.cdet.roimpedance = 50 # ohm
+dig.sbs.cdet.tdcconversion = 5.0 #tdc channel/ns
+dig.sbs.cdet.tdcbits = 19
 dig.sbs.cdet.triggerjitter = 3.0  # ns
+dig.sbs.cdet.triggeroffset = 0.  # ns 
 dig.sbs.cdet.gatewidth = 100. #ns
-dig.sbs.cdet.tdctimeconversion = 1.0 #ns
-dig.sbs.cdet.tdcbits = 16
-dig.sbs.cdet.tdcthreshold = 0.003 # V
-dig.sbs.cdet.tdcresolution = 1.0 # ns
-dig.sbs.cdet.readoutimpedance = 50 # ohm
+dig.sbs.cdet.gain = 1.0e5
+dig.sbs.cdet.pedestal = 0.0
+dig.sbs.cdet.pednoise = 0.0
+dig.sbs.cdet.threshold = 0.003 #V
+
+dig.sbs.cdet.spe_tau = 0.65  # ns
+dig.sbs.cdet.spe_sigma = 1.05  # ns
+dig.sbs.cdet.spe_transit = 19.0  # ns
+
 
 # pedestal noise 
 #dig.sbs.cdet.pulsenoiseconst = 30.   #ADC values
