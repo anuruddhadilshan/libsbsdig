@@ -4,8 +4,10 @@
 #include "TDatime.h"
 #include "TSBSGeant4File.h"
 #include "TSBSSimHCal.h"
+#include "TSBSSimScint.h"
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
+#include "THaAnalysisObject.h"
 
 /*
 #include "TSBSCher.h"
@@ -57,8 +59,9 @@ void digi_scint_test(int nentries = 100)
 
 
   delete hcal;
-  
   */
   
-  delete hodo; 
+  cout << "delete hodoscope" << endl;
+  
+  delete hodo;
 }

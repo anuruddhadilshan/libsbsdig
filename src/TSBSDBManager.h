@@ -14,6 +14,7 @@
 #include "TSBSSimAuxi.h"
 
 using namespace std;
+class THaAnalysisObject;
 
 class TSBSDBManager : public THaAnalysisObject {
 public:

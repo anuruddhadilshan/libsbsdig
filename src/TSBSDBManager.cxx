@@ -417,6 +417,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	  double xsize;
 	  double ysize;
 	  double zpos;
+	  double xoffset;
+	  double yoffset;
 	  
 	  DBRequest request_geo[] = {
 	    {"nrows",     &nrows,      kInt,    0, 1},
@@ -424,6 +426,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	    {"xsize",     &xsize,      kDouble, 0, 1},
 	    {"ysize",     &ysize,      kDouble, 0, 1},
 	    {"zpos",      &zpos,       kDouble, 0, 1},
+	    {"xoffset",   &xoffset,    kDouble, 0, 1},
+	    {"yoffset",   &yoffset,    kDouble, 0, 1},
 	    { 0 }
 	  };
 	  
@@ -452,6 +456,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	  thisGeo.SetXSize(xsize);
 	  thisGeo.SetYSize(ysize);
 	  thisGeo.SetZPos(zpos);
+	  thisGeo.SetXOffset(xoffset);
+	  thisGeo.SetYOffset(yoffset);
 	  
 	  detinfo.AddGeoInfo(thisGeo);
 	  if(fDebug>=3)cout << "GeoInfo size " << detinfo.GeoInfoSize() << endl;
@@ -541,6 +547,8 @@ const TDetInfo & TSBSDBManager::GetDetInfo(const char* detname)
   cout << "No detector corresponding to " << detname << " found in database. Check program or database" << endl;
   exit(2);
 }
+
+ClassImp(TSBSDBManager)
 
 /*
 //______________________________________________________________

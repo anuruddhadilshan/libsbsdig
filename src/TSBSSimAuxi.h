@@ -72,12 +72,16 @@ class TGeoInfo : public TObject{
   double XSize(){return fXsize;};
   double YSize(){return fYsize;};
   double ZPos(){return fZpos;};
+  double XOffset(){return fXoffset;};
+  double YOffset(){return fYoffset;};
   
   void SetNRows(int nrows){fNrows = nrows;};
   void SetNCols(int ncols){fNcols = ncols;};
   void SetXSize(double xsize){fXsize = xsize;};
   void SetYSize(double ysize){fYsize = ysize;};
   void SetZPos(double zpos){fZpos = zpos;};
+  void SetXOffset(double xoffset){fXoffset = xoffset;};
+  void SetYOffset(double yoffset){fYoffset = yoffset;};
   
  private:
   int     fNrows;      // number of rows
@@ -85,6 +89,8 @@ class TGeoInfo : public TObject{
   double  fXsize;      // detector X size (in transport coordinates)
   double  fYsize;      // detector Y size (in transport coordinates)
   double  fZpos;       // detector position on spectrometer axis
+  double  fXoffset;    // detector X offset - handy for detectors with many modules (in transport coordinates)
+  double  fYoffset;    // detector Y offset - handy for detectors with many modules (in transport coordinates)
   
   ClassDef(TGeoInfo, 1);
 };
