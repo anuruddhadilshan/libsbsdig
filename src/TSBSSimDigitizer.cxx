@@ -50,12 +50,12 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
     
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      cout << "load event for det " << det << endl;
+      //cout << "load event for det " << det << endl;
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
     // Now digitize all detectors
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      cout << "digitize det " << det << endl;
+      //cout << "digitize det " << det << endl;
       fDetectors[det]->Digitize(*fEvent);
     }
     fEvent->fEvtID = nevent;
