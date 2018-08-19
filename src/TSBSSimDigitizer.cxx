@@ -7,6 +7,7 @@
 
 TSBSSimDigitizer::TSBSSimDigitizer()
 {
+  if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
   fEvent = new TSBSSimEvent(5);
   fOutFile = new TFile("rootfiles/simout_test.root","RECREATE");
   //fOutTree = new TTree("TSBSDigi","");
@@ -44,18 +45,18 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
   int ngood = 0;
   bool has_data;
   while( f->ReadNextEvent(d_flag_readevent) && nevent<max_events ) {
-    //cout << "clear event " << endl;
+    if(fDebug>=3)cout << "clear event " << endl;
     fEvent->Clear();
     has_data = false;
     
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      //cout << "load event for det " << det << endl;
+      if(fDebug>=3)cout << "load event for det " << det << endl;
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
     // Now digitize all detectors
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      //cout << "digitize det " << det << endl;
+      if(fDebug>=3)cout << "digitize det " << det << endl;
       fDetectors[det]->Digitize(*fEvent);
     }
     fEvent->fEvtID = nevent;
@@ -67,13 +68,13 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
     if(has_data) {
       // Write to the tree
       fOutTree->Fill();
-      std::cout << "Have data for event: " << nevent << std::endl;
+      if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
     }
 
     nevent++;
   }
   
-  cout << "write output file " << endl;
+  if(fDebug>=1)cout << "write output file " << endl;
   fOutFile->Write();
   // Close files
   
@@ -83,7 +84,7 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
   //cout << "close geeant 4 file " << endl;
   //f->Close();
   
-  cout << "Done closing files " << endl;
+  if(fDebug>=1)cout << "Done closing files " << endl;
 
   return 0;
 }
@@ -92,3 +93,5 @@ int TSBSSimDigitizer::Add(TSBSSimDetector* detector)
 {
   fDetectors.push_back(detector);
 }
+
+ClassImp(TSBSSimDigitizer)

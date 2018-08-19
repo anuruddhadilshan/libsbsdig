@@ -1,6 +1,7 @@
 #ifndef _TSBSSIMDIGITIZER_H
 #define _TSBSSIMDIGITIZER_H
 
+#include "THaAnalysisObject.h"
 #include <vector>
 
 class TSBSGeant4File;
@@ -8,8 +9,9 @@ class TSBSSimDetector;
 class TSBSSimEvent;
 class TFile;
 class TTree;
+class THaAnalysisObject;
 
-class TSBSSimDigitizer {
+class TSBSSimDigitizer : public THaAnalysisObject {
 public:
   TSBSSimDigitizer();
   virtual ~TSBSSimDigitizer();
@@ -24,6 +26,8 @@ private:
   TSBSSimEvent *fEvent;
   TFile *fOutFile;
   TTree *fOutTree;
+  
+  ClassDef(TSBSSimDigitizer,1)
 };
 
 #endif // _TSBSSIMDIGITIZER_H

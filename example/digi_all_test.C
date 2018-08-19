@@ -41,6 +41,7 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   // Create the SBS Digitizer (will control the digitization process)
   TSBSSimDigitizer *digitizer = new TSBSSimDigitizer();
+  digitizer->SetDebug(debuglevel);
   
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
@@ -51,14 +52,15 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   hodo->SetDebug(debuglevel);
   digitizer->Add(hodo);
   
+  /*
   TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  //hodo->SetDebug(debuglevel);
+  hodo->SetDebug(debuglevel);
   digitizer->Add(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
-  //hodo->SetDebug(debuglevel);
+  hodo->SetDebug(debuglevel);
   digitizer->Add(grinch);
-  /**/
+  */
 
   digitizer->Process(f, nentries);
   

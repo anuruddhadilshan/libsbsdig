@@ -8,56 +8,17 @@ geninfo.sbs.mcangle = 14.8
 geninfo.sbs.nsignal = 2
 geninfo.sbs.signal.pid = 2112 2212
 geninfo.sbs.signal.tid = 2 2
-geninfo.sbs.ndets = 2
-geninfo.sbs.detnames = hcal cdet
+geninfo.sbs.ndets = 1 #2
+geninfo.sbs.detnames = cdet #hcal cdet
 
 #bb spectrometer MC signal info
 geninfo.bb.mcangle = 33.0
 geninfo.bb.nsignal = 1
 geninfo.bb.signal.pid = 11
 geninfo.bb.signal.tid = 1
-geninfo.bb.ndets = 4
-geninfo.bb.detnames = sh ps hodo grinch 
+geninfo.bb.ndets = 2 #4
+geninfo.bb.detnames = hodo grinch #sh ps hodo grinch 
 #gem 
 # For the moment GEM has its own thing. 
 # While we should be thoughtful of how to include it in the future, 
 # this is not the priority right now...
-
-
-#probably won't use all the following; leave it here ftm
-#hcal general info 
-geninfo.sbs.hcal.dettype = HCal
-geninfo.sbs.hcal.chan_per_slot = 128
-geninfo.sbs.hcal.slot_per_crate = 16
-geninfo.sbs.hcal.nchan = 288
-
-#cdet general info 
-geninfo.sbs.cdet.dettype = Scint
-geninfo.sbs.cdet.chan_per_slot = 128
-geninfo.sbs.cdet.slot_per_crate = 16
-geninfo.sbs.cdet.nchan = 2352
-
-#shower general info 
-geninfo.bb.sh.dettype = ECal
-geninfo.bb.sh.chan_per_slot = 128
-geninfo.bb.sh.slot_per_crate = 16
-geninfo.bb.sh.nchan = 189
-
-#preshower general info 
-geninfo.bb.ps.dettype = ECal
-geninfo.bb.ps.chan_per_slot = 128
-geninfo.bb.ps.slot_per_crate = 16
-geninfo.bb.ps.nchan = 54
-
-#hodoscope general info 
-geninfo.bb.hodo.dettype = Scint
-geninfo.bb.hodo.chan_per_slot = 128
-geninfo.bb.hodo.slot_per_crate = 16
-geninfo.bb.hodo.nchan = 180
-
-#grinch general info 
-geninfo.bb.grinch.dettype = Cher
-geninfo.bb.grinch.chan_per_slot = 128
-geninfo.bb.grinch.slot_per_crate = 16
-geninfo.bb.grinch.nchan = 510
-

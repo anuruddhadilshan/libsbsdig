@@ -57,7 +57,7 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for Cherenkov
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
-    if(ev->GetDetType() == kCher) {
+    if(ev->GetDetUniqueID() == UniqueDetID()) {
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
@@ -92,7 +92,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       data.fChannel = m;
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
-      if(fDebug>=3)cout << "TSBSSimScint::Digitize() = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
+      if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
+			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
 	data.fData.push_back(fSignals[m].TDC(i));
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
