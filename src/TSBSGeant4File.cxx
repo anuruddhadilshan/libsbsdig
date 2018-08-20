@@ -136,8 +136,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
       g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 5);
       grinchhit->SetData(0, fSource);
-      grinchhit->SetData(1, fTree->Earm_GRINCH.PMT->at(i));
-      grinchhit->SetData(2, 1);
+      grinchhit->SetData(1, int(fTree->Earm_GRINCH.PMT->at(i)/5));
+      grinchhit->SetData(2, 0);
       grinchhit->SetData(3, fTree->Earm_GRINCH.Time_avg->at(i));
       grinchhit->SetData(4, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(grinchhit);
@@ -233,7 +233,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(cdetscinthit);
       
       Npe = fRN->Poisson( fTree->Harm_CDET_Scint.sumedep->at(i)*5.634e3 );
-      t = fTree->Harm_CDET_Scint.tavg->at(i);//+(0.55+pow(-1, j)*fTree->Earm_Harm_CDET_Scint.xhit->at(i))/0.15;
+      t = fTree->Harm_CDET_Scint.tavg->at(i)+5.75+fTree->Harm_CDET_Scint.xhit->at(i)/0.16;
       g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
       cdetpmthit->SetData(0, fSource);
       cdetpmthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));

@@ -18,7 +18,7 @@ geo.bb.hodo.yoffset = 0.0 #m
 
 #hodoscope digitization info
 dig.bb.hodo.roimpedance = 50 # ohm
-dig.bb.hodo.tdcconversion = 5.0 #tdc channel/ns
+dig.bb.hodo.tdcconversion = 10.0 #tdc channel/ns
 dig.bb.hodo.tdcbits = 19
 dig.bb.hodo.triggerjitter = 3.0  # ns
 dig.bb.hodo.triggeroffset = 30.  # ns 

@@ -51,31 +51,26 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
   hodo->SetDebug(debuglevel);
   digitizer->Add(hodo);
-  
-  /*
+    
   TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  hodo->SetDebug(debuglevel);
+  cdet->SetDebug(debuglevel);
   digitizer->Add(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
-  hodo->SetDebug(debuglevel);
+  grinch->SetDebug(debuglevel);
   digitizer->Add(grinch);
-  */
-
+  
   digitizer->Process(f, nentries);
   
   /*
-
-  TSBSSimHCal *hcal = new TSBSSimHCal();
-  digitizer->Add(hcal);
-
-  // Now start the digitization on this file
-
-
-  delete hcal;
+    TSBSSimHCal *hcal = new TSBSSimHCal();
+    digitizer->Add(hcal);
+    // Now start the digitization on this file
+    delete hcal;
   */
   
-  cout << "delete hodoscope" << endl;
-  
-  delete hodo;
+  //cout << "delete detectors" << endl;
+  //delete hodo;
+  //delete cdet;
+  //delete grinch;
 }
