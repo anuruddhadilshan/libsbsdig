@@ -21,12 +21,12 @@ dig.bb.hodo.roimpedance = 50 # ohm
 dig.bb.hodo.tdcconversion = 10.0 #tdc channel/ns
 dig.bb.hodo.tdcbits = 19
 dig.bb.hodo.triggerjitter = 3.0  # ns
-dig.bb.hodo.triggeroffset = 30.  # ns 
+dig.bb.hodo.triggeroffset = 0.  # ns 
 dig.bb.hodo.gatewidth = 100. #ns
 dig.bb.hodo.gain = 1.0e5
 dig.bb.hodo.pedestal = 0.0
 dig.bb.hodo.pednoise = 0.0
-dig.bb.hodo.threshold = 0.003 #V
+dig.bb.hodo.threshold = 0.006 #V
 
 dig.bb.hodo.spe_tau = 0.65  # ns
 dig.bb.hodo.spe_sigma = 1.05  # ns

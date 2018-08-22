@@ -62,7 +62,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       data = ev->GetData(4);
       
       if(fDebug>=3)
-	cout << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
@@ -85,11 +85,31 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
+  
+  TSBSSimEvent::DetectorData data;
+  TSBSSimEvent::SimDetectorData simdata;
+
+  UInt_t TDCword;
+  
+  bool header[8] = {0, 0, 0, 0, 0, 0, 0, 0};//bits ...-31 
+  // we ignore (for the moment) all other informations for the ADC.
+  bool channel[7];//Common features between V1190A and 1877: 7 digit channel
+  bool tdc[19];
+  bool trail;
+  //hardcoded, but add all ADC/TDC bit coding in DB shall be cumbersome
+  short edgebitpos = 16;
+  short nheaderbits = 32-8-fDetInfo.DigInfo().TDCBits();
+  if(UniqueDetID()==30){
+    edgebitpos = 26;
+  }
+  short chanfirstbit = fDetInfo.DigInfo().TDCBits()+Short_t(edgebitpos==fDetInfo.DigInfo().TDCBits());
+
   for(size_t m = 0; m < fSignals.size(); m++) {
+    data.fData.clear();
+    simdata.fData.clear();
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
-      TSBSSimEvent::DetectorData data;
       data.fDetID = UniqueDetID();
       data.fChannel = m;
       
@@ -98,19 +118,49 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
-	data.fData.push_back(fSignals[m].TDC(i));
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
+	
+	// Build here the TDC word:
+	//code bits one by one... a bit tedious (and slow...)
+	for(int j = 0; j<fDetInfo.DigInfo().TDCBits(); j++){
+	  if(j<nheaderbits){
+	    //cout << j+24 << " " << header[j] << endl;
+	    //cout << j+16 << " " << channel[j] << endl;
+	    TDCword ^= (-header[j] ^ TDCword) & (1 << (j+32-nheaderbits));
+	  }
+	  if(j<7){
+	    channel[j] = (m >> j) & 1;
+	    TDCword ^= (-channel[j] ^ TDCword) & (1 << (j+chanfirstbit));
+	  }
+	  tdc[j] = (fSignals[m].TDC(i) >> j) & 1;
+	  //cout << j << " " << tdc[j] << endl;
+	  TDCword ^= (-tdc[j] ^ TDCword) & (1UL << j);
+	}
+	trail  = (fSignals[m].TDC(i) >> 31) & 1;
+	TDCword ^= (-trail ^ TDCword) & (1UL << edgebitpos);
+	//data.fData.push_back(fSignals[m].TDC(i));
+	if(fDebug>=3){
+	  cout << "channel " << m << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
+	  if(fDebug>=5){
+	    cout << "signal tdc: " << endl;
+	    for(int j = 31; j>=0; j--){
+	      bool bit = (fSignals[m].TDC(i) >> j) & 1;
+	      cout << bit;
+	    }
+	    cout << endl << "vetroc word: " << endl;
+	    for(int j = 31; j>=0; j--){
+	      bool bit = (TDCword >> j) & 1;
+	      cout << bit;
+	    }
+	    cout << endl;
+	  }
+	}
+	//Then feed here the TDC word to the data vector
+	data.fData.push_back(TDCword);
       }
-      //data.fData.push_back(m);
-      //data.fData.push_back(0); // For samples data
-      //data.fData.push_back(fSignals[m].samples.size());
-      //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
-      // for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
-      //   //std::cout << " " << fSignals[m].samples[j];
-      //   data.fData.push_back(fSignals[m].samples[j]);
-      // }
       event.fDetectorData.push_back(data);
-      TSBSSimEvent::SimDetectorData simdata;
+      
+      //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
       simdata.fData.push_back(1);

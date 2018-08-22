@@ -58,19 +58,19 @@ geo.sbs.cdet.2.3.yoffset =  0.0 #m
 
 #cdet digitization info
 dig.sbs.cdet.roimpedance = 50 # ohm
-dig.sbs.cdet.tdcconversion = 5.0 #tdc channel/ns
-dig.sbs.cdet.tdcbits = 19
+dig.sbs.cdet.tdcconversion = 2.0 #tdc channel/ns
+dig.sbs.cdet.tdcbits = 16
 dig.sbs.cdet.triggerjitter = 3.0  # ns
-dig.sbs.cdet.triggeroffset = 0.  # ns 
+dig.sbs.cdet.triggeroffset = 0.0  # ns 
 dig.sbs.cdet.gatewidth = 100. #ns
 dig.sbs.cdet.gain = 1.0e5
 dig.sbs.cdet.pedestal = 0.0
 dig.sbs.cdet.pednoise = 0.0
 dig.sbs.cdet.threshold = 0.003 #V
 
-dig.sbs.cdet.spe_tau = 0.65  # ns
-dig.sbs.cdet.spe_sigma = 1.05  # ns
-dig.sbs.cdet.spe_transit = 19.0  # ns
+dig.sbs.cdet.spe_tau = 0.57  # ns
+dig.sbs.cdet.spe_sigma = 0.37  # ns
+dig.sbs.cdet.spe_transit = 12.0  # ns
 
 
 # pedestal noise 

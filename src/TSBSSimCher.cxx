@@ -65,7 +65,7 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       data = ev->GetData(4);
       
       if(fDebug>=3)
-	cout << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
@@ -83,31 +83,73 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 void TSBSSimCher::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
+
+  TSBSSimEvent::DetectorData data;
+  TSBSSimEvent::SimDetectorData simdata;
+  
+  UInt_t TDCvetrocWord;
+  
+  bool header[8] = {0, 0, 0, 0, 0, 0, 1, 1};
+  bool channel[8];
+  bool tdc[16];
+  bool trail;
+  short edgebitpos = 26;
+  
   for(size_t m = 0; m < fSignals.size(); m++) {
+    data.fData.clear();
+    simdata.fData.clear();
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
-      TSBSSimEvent::DetectorData data;
       data.fDetID = UniqueDetID();
       data.fChannel = m;
       data.fData.push_back(0);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
-      if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
+      if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
-	data.fData.push_back(fSignals[m].TDC(i));
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
+	// Build here the vetroc word:
+	// we can afford to do very ad-hoc code because 
+	// all Cherenkov detectors are presumably going to use this.
+	// code bits one by one... a bit tedious (and slow...)
+	for(int j = 0; j<fDetInfo.DigInfo().TDCBits(); j++){
+	  if(j<8){
+	    //cout << j+24 << " " << header[j] << endl;
+	    //cout << j+16 << " " << channel[j] << endl;
+	    TDCvetrocWord ^= (-header[j] ^ TDCvetrocWord) & (1 << (j+24));
+	    channel[j] = (m >> j) & 1;
+	    TDCvetrocWord ^= (-channel[j] ^ TDCvetrocWord) & (1 << (j+16));
+	  }
+	  tdc[j] = (fSignals[m].TDC(i) >> j) & 1;
+	  //cout << j << " " << tdc[j] << endl;
+	  TDCvetrocWord ^= (-tdc[j] ^ TDCvetrocWord) & (1UL << j);
+	}
+	trail  = (fSignals[m].TDC(i) >> 31) & 1;
+	TDCvetrocWord ^= (-trail ^ TDCvetrocWord) & (1UL << edgebitpos);
+	//data.fData.push_back(fSignals[m].TDC(i));
+	if(fDebug>=3){
+	  cout << "channel " << m << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
+	  if(fDebug>=5){
+	    cout << "signal tdc: " << endl;
+	    for(int j = 31; j>=0; j--){
+	      bool bit = (fSignals[m].TDC(i) >> j) & 1;
+	      cout << bit;
+	    }
+	    cout << endl << "vetroc word: " << endl;
+	    for(int j = 31; j>=0; j--){
+	      bool bit = (TDCvetrocWord >> j) & 1;
+	      cout << bit;
+	    }
+	    cout << endl;
+	  }
+	}
+	//Then feed here the vetroc word to the data vector
+	data.fData.push_back(TDCvetrocWord);
       }
-      //data.fData.push_back(m);
-      //data.fData.push_back(0); // For samples data
-      //data.fData.push_back(fSignals[m].samples.size());
-      //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
-      // for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
-      //   //std::cout << " " << fSignals[m].samples[j];
-      //   data.fData.push_back(fSignals[m].samples[j]);
-      // }
       event.fDetectorData.push_back(data);
-      TSBSSimEvent::SimDetectorData simdata;
+      
+      //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
       simdata.fData.push_back(1);
