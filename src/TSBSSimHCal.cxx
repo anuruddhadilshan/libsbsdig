@@ -7,6 +7,8 @@
 #include <TFile.h>
 #include <TSBSSimEvent.h>
 
+#define HCAL_TDC_THRESH 0.1
+
 TSBSSimHCal::TSBSSimHCal()
 {
   Init();
@@ -76,6 +78,12 @@ void TSBSSimHCal::Signal::Digitize()
     for(int br = 0; br < dnraw; br++) {
       if(samples_raw[br+braw] > max)
         max = samples_raw[br+braw];
+      if( !met_tdc_thresh) {
+        tdc_time += dx_raw;
+        if(samples_raw[br+braw] >= HCAL_TDC_THRESH ) {
+          met_tdc_thresh = true;
+        }
+      }
     }
     if(max>2)
       max = 2;
@@ -88,6 +96,15 @@ void TSBSSimHCal::Signal::Digitize()
 
   // Also digitize the sumedep
   sumedep *= 1e9; // To store in eV
+
+  // If we have TDC threshold met, let's set the time in a format
+  // suitable for the F1 TDC
+  // The F1 TDC in high resolution mode has a resolution of 60 ps LSB
+  // and a range of 3.9 us (16 bits).
+  if(met_tdc_thresh) {
+    tdc_time -= mint; // Make sure tdc_time is always positive
+    tdc_time = int((tdc_time/3.9e3)*65535);
+  }
 }
 
 void TSBSSimHCal::Digitize(TSBSSimEvent &event)
@@ -110,12 +127,21 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
         data.fData.push_back(fSignals[m].samples[j]);
       }
       event.fDetectorData.push_back(data);
+      // Now add the sum (or edep)
       data.fData.clear();
       //data.fData.push_back(m);
       data.fData.push_back(1);
       data.fData.push_back(1);
       data.fData.push_back(fSignals[m].sumedep);
       event.fDetectorData.push_back(data);
+      // Now add the TDC if the threshold was met
+      if( fSignals[m].met_tdc_thresh && false) {
+        data.fData.clear();
+        data.fData.push_back(2);
+        data.fData.push_back(1);
+        data.fData.push_back(fSignals[m].tdc_time);
+        event.fDetectorData.push_back(data);
+      }
     }
   }
   SetHasDataFlag(any_events);
@@ -201,4 +227,6 @@ void TSBSSimHCal::Signal::Clear()
     samples_raw[i] = 0;
   }
   npe = 0;
+  met_tdc_thresh = false;
+  tdc_time = mint-dx_raw;
 }

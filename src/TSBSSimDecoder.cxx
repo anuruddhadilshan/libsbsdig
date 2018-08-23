@@ -424,14 +424,18 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
         crate = 11;
         slot = 4+(mod-192)/16;
       }
+      if( slot == 11 || slot == 12) {
+        slot += 2;
+      }
       chan = mod%16;
       Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
       if(sldat) { // meaning the module is available
-        std::vector<UInt_t> *myev = &(hcalmap[sldat]);
-        myev->push_back(chan);
-        for(size_t k = 0; k < (*it).fData.size(); k++) {
-          myev->push_back((*it).fData[k]);
-        }
+        //if((*it).fData[0] == 0 || (*it).fData[0] == 1) { // fADC
+          std::vector<UInt_t> *myev = &(hcalmap[sldat]);
+          myev->push_back(chan);
+          for(size_t k = 0; k < (*it).fData.size(); k++) {
+            myev->push_back((*it).fData[k]);
+          }
       }
       if((*it).fData[0] == 1) {
         std::cerr << "M: " << mod << ", C: " << crate << ", S: " << slot

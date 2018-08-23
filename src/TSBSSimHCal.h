@@ -48,6 +48,8 @@ public:
     int nbins;
     int nbins_raw;
     int npe;
+    double tdc_time;
+    bool met_tdc_thresh;
     int sum;
     int dnraw;
     double dx_samples;
