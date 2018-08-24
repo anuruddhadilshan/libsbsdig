@@ -1,5 +1,35 @@
 950101
 bb.ps.dettype = ECal
+bb.ps.nchan = 54
 bb.ps.chan_per_slot = 128
 bb.ps.slot_per_crate = 16
-bb.ps.nchan = 54
+
+#PS geometry info
+geo.bb.ps.nrows = 27
+geo.bb.ps.ncols = 2
+geo.bb.ps.xsize = 2.295 #m
+geo.bb.ps.ysize = 0.74 #m
+geo.bb.ps.zpos =  2.5319 #m # center of the blocks
+geo.bb.ps.xoffset = 0.0 #m
+geo.bb.ps.yoffset = 0.0 #m
+
+#PS digitization info
+dig.bb.ps.roimpedance = 50 # ohm
+dig.bb.ps.tdcconversion = 0.5 #tdc channel/ns # not 1 TDC per channel
+dig.bb.ps.tdcbits = 16 # not 1 TDC per channel
+dig.bb.ps.triggerjitter = 3.0  # ns
+dig.bb.ps.triggeroffset = 0.  # ns 
+dig.bb.ps.gatewidth = 100. #ns
+dig.bb.ps.gain = 1.0e5
+dig.bb.ps.pedestal = 0.0
+dig.bb.ps.pednoise = 0.0
+dig.bb.ps.threshold = 0.006 #V
+
+dig.bb.ps.spe_tau = 0.65  # ns
+dig.bb.ps.spe_sigma = 1.05  # ns
+dig.bb.ps.spe_transit = 19.0  # ns
+
+#dig.bb.ps.do_crosstalk = 0
+#dig.bb.ps.crosstalk_mean = 0.1
+#dig.bb.ps.crosstalk_sigma = 0.03
+#dig.bb.ps.crosstalk_chan_apart = 8
