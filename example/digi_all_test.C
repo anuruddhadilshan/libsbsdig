@@ -60,6 +60,14 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   grinch->SetDebug(debuglevel);
   digitizer->Add(grinch);
   
+  TSBSSimECal *ps = new TSBSSimECal("ps", 10);
+  ps->SetDebug(debuglevel);
+  digitizer->Add(ps);
+  
+  TSBSSimECal *sh = new TSBSSimECal("sh", 11);
+  sh->SetDebug(debuglevel);
+  digitizer->Add(sh);
+  
   digitizer->Process(f, nentries);
   
   /*

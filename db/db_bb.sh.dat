@@ -15,6 +15,8 @@ geo.bb.sh.yoffset = 0.0 #m
 
 #SH digitization info
 dig.bb.sh.roimpedance = 50 # ohm
+dig.bb.sh.adcconversion = 50.0 #adc channel/C
+dig.bb.sh.adcbits = 12 # not 1 TDC per channel
 dig.bb.sh.tdcconversion = 0.5 #tdc channel/ns # not 1 TDC per channel
 dig.bb.sh.tdcbits = 16 # not 1 TDC per channel
 dig.bb.sh.triggerjitter = 3.0  # ns

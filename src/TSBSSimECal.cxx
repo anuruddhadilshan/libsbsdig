@@ -22,7 +22,7 @@ TSBSSimECal::~TSBSSimECal()
 void TSBSSimECal::Init()
 {
   if(fDebug>=1)
-    cout << "ECalillator detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimECal::Init() " << endl;
+    cout << "ECal detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimECal::Init() " << endl;
   
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
   
@@ -62,7 +62,7 @@ void TSBSSimECal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       data = ev->GetData(4);
       
       if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << data << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
@@ -88,7 +88,8 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
   
   TSBSSimEvent::DetectorData data;
   TSBSSimEvent::SimDetectorData simdata;
-
+  
+  /*
   UInt_t TDCword;
   
   bool header[8] = {0, 0, 0, 0, 0, 0, 0, 0};//bits ...-31 
@@ -103,7 +104,8 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
     edgebitpos = 26;
   }
   short chanfirstbit = fDetInfo.DigInfo().TDCBits()+Short_t(edgebitpos==fDetInfo.DigInfo().TDCBits());
-
+  */
+  
   for(size_t m = 0; m < fSignals.size(); m++) {
     data.fData.clear();
     simdata.fData.clear();
@@ -113,15 +115,18 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       data.fDetID = UniqueDetID();
       data.fChannel = m;
       
+      if(fDebug>=3)cout << "TSBSSimECal::Digitize() : Unique Det ID " << UniqueDetID() 
+			<< " = > fSignals[m].ADC() " << fSignals[m].ADC() << endl;
       //define convention for type:
       // 0: ADC
       // 1: TDC
       // push back a different word for ADC and TDC ?
       // // Fill ADC 
-      // data.fData.push_back(0);//ADC data flag
-      // data.fData.push_back(1);//ADC data size
-      // data.fData.push_back(fSignals[m].ADC());//ADC data
+      data.fData.push_back(0);//ADC data flag
+      data.fData.push_back(1);//ADC data size
+      data.fData.push_back(fSignals[m].ADC());//ADC data
       // simdata.fData.clear();
+      /*
       // Fill TDC 
       data.fData.push_back(1);//TDCs data
       data.fData.push_back(fSignals[m].TDCSize());//TDC data size
@@ -168,8 +173,8 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
 	//Then feed here the TDC word to the data vector
 	data.fData.push_back(TDCword);
       }
+      */
       event.fDetectorData.push_back(data);
-      
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
@@ -190,6 +195,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       simdata.fData.push_back(fSignals[m].Npe());
       event.fSimDetectorData.push_back(simdata);
       simdata.fData.clear();
+      /*
       // Fill Times
       simdata.fData.push_back(2);
       simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
@@ -200,6 +206,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       }
       //data.fData.push_back(fSignals[m].SumEdep());
       //data.fData.push_back(fSignals[m].Npe());
+      
       for(int i = 0; i<fSignals[m].LeadTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].LeadTime(i));
 	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;
@@ -209,7 +216,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
       event.fSimDetectorData.push_back(simdata);
-
+      */
     }
   }
   SetHasDataFlag(any_events);
