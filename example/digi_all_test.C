@@ -51,7 +51,7 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
   hodo->SetDebug(debuglevel);
   digitizer->Add(hodo);
-    
+  
   TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
   cdet->SetDebug(debuglevel);
   digitizer->Add(cdet);

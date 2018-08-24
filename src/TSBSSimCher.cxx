@@ -87,7 +87,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
   TSBSSimEvent::DetectorData data;
   TSBSSimEvent::SimDetectorData simdata;
   
-  UInt_t TDCvetrocWord;
+  UInt_t VETROCword;
   
   bool header[8] = {0, 0, 0, 0, 0, 0, 1, 1};
   bool channel[8];
@@ -103,7 +103,18 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       any_events = true;
       data.fDetID = UniqueDetID();
       data.fChannel = m;
-      data.fData.push_back(0);//Digitized data
+      
+      //define convention for type:
+      // 0: ADC
+      // 1: TDC
+      // push back a different word for ADC and TDC ?
+      // // Fill ADC 
+      // data.fData.push_back(0);//ADC data flag
+      // data.fData.push_back(1);//ADC data size
+      // data.fData.push_back(fSignals[m].ADC());//ADC data
+      // simdata.fData.clear();
+      // Fill TDC 
+      data.fData.push_back(1);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
       if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
@@ -117,16 +128,16 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	  if(j<8){
 	    //cout << j+24 << " " << header[j] << endl;
 	    //cout << j+16 << " " << channel[j] << endl;
-	    TDCvetrocWord ^= (-header[j] ^ TDCvetrocWord) & (1 << (j+24));
+	    VETROCword ^= (-header[j] ^ VETROCword) & (1 << (j+24));
 	    channel[j] = (m >> j) & 1;
-	    TDCvetrocWord ^= (-channel[j] ^ TDCvetrocWord) & (1 << (j+16));
+	    VETROCword ^= (-channel[j] ^ VETROCword) & (1 << (j+16));
 	  }
 	  tdc[j] = (fSignals[m].TDC(i) >> j) & 1;
 	  //cout << j << " " << tdc[j] << endl;
-	  TDCvetrocWord ^= (-tdc[j] ^ TDCvetrocWord) & (1UL << j);
+	  VETROCword ^= (-tdc[j] ^ VETROCword) & (1UL << j);
 	}
 	trail  = (fSignals[m].TDC(i) >> 31) & 1;
-	TDCvetrocWord ^= (-trail ^ TDCvetrocWord) & (1UL << edgebitpos);
+	VETROCword ^= (-trail ^ VETROCword) & (1UL << edgebitpos);
 	//data.fData.push_back(fSignals[m].TDC(i));
 	if(fDebug>=3){
 	  cout << "channel " << m << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
@@ -138,21 +149,39 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	    }
 	    cout << endl << "vetroc word: " << endl;
 	    for(int j = 31; j>=0; j--){
-	      bool bit = (TDCvetrocWord >> j) & 1;
+	      bool bit = (VETROCword >> j) & 1;
 	      cout << bit;
 	    }
 	    cout << endl;
 	  }
 	}
 	//Then feed here the vetroc word to the data vector
-	data.fData.push_back(TDCvetrocWord);
+	data.fData.push_back(VETROCword);
       }
       event.fDetectorData.push_back(data);
       
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
+      
+      //define convention for type:
+      // 0: SumEdep
+      // 1: Npe
+      // 2: Time
+      // Fill SumEdep
+      simdata.fData.push_back(0);
       simdata.fData.push_back(1);
+      simdata.fData.push_back(fSignals[m].SumEdep());
+      event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
+      // Fill Npe
+      simdata.fData.push_back(1);
+      simdata.fData.push_back(1);
+      simdata.fData.push_back(fSignals[m].Npe());
+      event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
+      // Fill Times
+      simdata.fData.push_back(2);
       simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
       if(fDebug>=3){
 	cout << "SumEdep = " << fSignals[m].SumEdep() 

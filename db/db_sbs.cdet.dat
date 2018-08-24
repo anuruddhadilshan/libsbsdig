@@ -63,13 +63,17 @@ dig.sbs.cdet.tdcbits = 16
 dig.sbs.cdet.triggerjitter = 3.0  # ns
 dig.sbs.cdet.triggeroffset = 0.0  # ns 
 dig.sbs.cdet.gatewidth = 100. #ns
-dig.sbs.cdet.gain = 1.0e5
+dig.sbs.cdet.gain = 1.0e6 # assumption looking at PMT gain curves 
 dig.sbs.cdet.pedestal = 0.0
 dig.sbs.cdet.pednoise = 0.0
-dig.sbs.cdet.threshold = 0.003 #V
+dig.sbs.cdet.threshold = 0.001 #V
 
-dig.sbs.cdet.spe_tau = 0.57  # ns
-dig.sbs.cdet.spe_sigma = 0.37  # ns
+#exact PMT paramters
+#dig.sbs.cdet.spe_tau = 0.57  # ns
+#dig.sbs.cdet.spe_sigma = 0.37  # ns
+# approximate parameters to take into account of time dispersion out of CDET slat
+dig.sbs.cdet.spe_tau = 0.6  # ns 
+dig.sbs.cdet.spe_sigma = 3.8  # ns
 dig.sbs.cdet.spe_transit = 12.0  # ns
 
 

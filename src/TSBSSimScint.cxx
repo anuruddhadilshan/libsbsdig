@@ -113,8 +113,18 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       data.fDetID = UniqueDetID();
       data.fChannel = m;
       
-      data.fData.push_back(0);//Digitized data
-      data.fData.push_back(fSignals[m].TDCSize());
+      //define convention for type:
+      // 0: ADC
+      // 1: TDC
+      // push back a different word for ADC and TDC ?
+      // // Fill ADC 
+      // data.fData.push_back(0);//ADC data flag
+      // data.fData.push_back(1);//ADC data size
+      // data.fData.push_back(fSignals[m].ADC());//ADC data
+      // simdata.fData.clear();
+      // Fill TDC 
+      data.fData.push_back(1);//TDCs data
+      data.fData.push_back(fSignals[m].TDCSize());//TDC data size
       if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
       for(int i = 0; i<fSignals[m].TDCSize(); i++){
@@ -163,7 +173,25 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
+      
+      //define convention for type:
+      // 0: SumEdep
+      // 1: Npe
+      // 2: Time
+      // Fill SumEdep
+      simdata.fData.push_back(0);
       simdata.fData.push_back(1);
+      simdata.fData.push_back(fSignals[m].SumEdep());
+      event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
+      // Fill Npe
+      simdata.fData.push_back(1);
+      simdata.fData.push_back(1);
+      simdata.fData.push_back(fSignals[m].Npe());
+      event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
+      // Fill Times
+      simdata.fData.push_back(2);
       simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
       if(fDebug>=3){
 	cout << "SumEdep = " << fSignals[m].SumEdep() 
@@ -181,6 +209,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
       event.fSimDetectorData.push_back(simdata);
+
     }
   }
   SetHasDataFlag(any_events);
