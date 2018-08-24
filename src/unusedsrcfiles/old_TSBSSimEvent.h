@@ -20,7 +20,6 @@
 
 class TClonesArray;
 
-// we can leave that that's fine... won't make his way to the output file
 //-----------------------------------------------------------------------------
 class TSBSSimTrack : public Podd::MCTrack {
 public:
@@ -57,20 +56,16 @@ public:
 class TSBSSimEvent : public TObject {
 public:
   TSBSSimEvent();                 // Default constructor, for ROOT I/O
-  virtual ~TSBSSimEvent(){};
-  //TSBSSimEvent( UInt_t ntracks ); // Construct and initialize fMCTracks
+  virtual ~TSBSSimEvent();
+  TSBSSimEvent( UInt_t ntracks ); // Construct and initialize fMCTracks
   
   virtual void Clear( const Option_t* opt="" );
   virtual void Print( const Option_t* opt="" ) const;
-  
-  /*
-  //stuff from old libraries... better clean it out
   TSBSSimTrack* AddTrack( Int_t number, Int_t pid,
 			  const TVector3& vertex, const TVector3& momentum );
   
   Int_t GetNPMTHits()  const { return fPMTHits.size(); }
   Int_t GetNtracks() const;
-  */
   
   // Event identification
   Int_t     fRunID;               // Run number
@@ -79,8 +74,6 @@ public:
   Double_t  fWeight;              // Event weight
   Int_t     fNSignal;             // Number of clusters from trigger track (signal)
   
-  /*
-  //stuff from old libraries... better clean it out
   // MC tracks
   TClonesArray*   fMCTracks;      //-> Physics tracks
   //std::vector< std::pair< Int_t, std::vector<Short_t> > > fMCClusterHitID;
@@ -109,8 +102,7 @@ public:
     uint32_t fTDC[2];      // TDC VETROC words
   };
   std::vector<PMTHit> fPMTHits;  // All MC-generated clusters in the GEMs
-  */
-  
+
   struct SimDetectorData {
     Short_t fDetID;  // Source detector number
     Short_t fChannel; // Channel number for this hit

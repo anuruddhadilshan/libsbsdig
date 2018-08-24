@@ -51,8 +51,8 @@ TSBSSimDecoder::TSBSSimDecoder()
 {
   // Constructor
 
-  // fMCCherHits = new TClonesArray( "TSBSSimPMTHit",      2000 );
-  // fMCCherClus = new TClonesArray( "TSBSSimCherCluster", 500 );
+  fMCCherHits = new TClonesArray( "TSBSSimPMTHit",      2000 );
+  fMCCherClus = new TClonesArray( "TSBSSimCherCluster", 500 );
   
   DefineVariables();
 
@@ -64,8 +64,8 @@ TSBSSimDecoder::~TSBSSimDecoder() {
 
   DefineVariables( THaAnalysisObject::kDelete );
   
-  // // delete fMCCherHits;
-  // // delete fMCCherClus;
+  delete fMCCherHits;
+  delete fMCCherClus;
   
 }
 
@@ -85,7 +85,6 @@ Int_t TSBSSimDecoder::DefineVariables( THaAnalysisObject::EMode mode )
   cout << "Read TSBSSimDecoder variables " << endl;
   
   RVarDef vars[] = {
-    /*
     // PMT hits
     { "cer.pmt.id",      "MC Cher PMT ID",             "fMCCherHits.TSBSSimPMTHit.fID"          },
     { "cer.pmt.src",     "MC Cher PMT Source",         "fMCCherHits.TSBSSimPMTHit.fSource"      },
@@ -117,6 +116,7 @@ Int_t TSBSSimDecoder::DefineVariables( THaAnalysisObject::EMode mode )
     { "cer.cl.tf_rms",  "MC Cher clus fall time rms (ns)",  "fMCCherClus.TSBSSimCherCluster.fFallingTimeRMS"  },
     { "cer.cl.MCID",    "MC Cher clus track G4ID",          "fMCCherClus.TSBSSimCherCluster.fMCtrackID"       },
     { "cer.cl.MCPID",   "MC Cher clus track G4PID",         "fMCCherClus.TSBSSimCherCluster.fMCtrackPID"      },
+    /*
       if something is to be added, can be found easily in libsbsgem::TSBSSimDecoder
     */
     { 0 }
@@ -134,10 +134,9 @@ void TSBSSimDecoder::Clear( Option_t* opt )
 
   SimDecoder::Clear(opt);   // clears fMCCherHits, fMCCherClus
   
-  /*
   fMCCherHits->Clear(opt);
   fMCCherClus->Clear(opt);
-  */
+  
   fPMTMap.clear(); 
 }
 
@@ -461,8 +460,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
         //  sldat->GetModule()->LoadSlot(sldat,myevbuff.data(),0,myevbuff.size());
         //}
   }
-  
-  /*
+
   // Decode the digitized PMT data.  Populate crateslot array.
   for( vector<TSBSSimEvent::PMTHit>::size_type i = 0;
        i < simEvent->fPMTHits.size() && false; ++i ) {
@@ -470,16 +468,16 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     
     PMTtoROC(h.fChannel, crate, slot, chan);
     
-
-    // cout << "h.fChannel, crate, slot, chan " << h.fChannel << " " << crate << " " << slot << " " << chan << endl;
-    // cout << "index, h.fTDC1, 2 " << idx(crate,slot) << " " << h.fTDCtime[0] << " " << h.fTDCtime[1] << endl;
-    // UInt_t test = h.fTDC[0];
-    // cout << "TDC word 0 = " << test << " -2^31 = ";
-    // test+=pow(2, 31);
-    // cout << test << "; =>  +2^31 = ";
-    // test+=pow(2, 31);
-    // cout << test << endl;
-
+    /*
+    cout << "h.fChannel, crate, slot, chan " << h.fChannel << " " << crate << " " << slot << " " << chan << endl;
+    cout << "index, h.fTDC1, 2 " << idx(crate,slot) << " " << h.fTDCtime[0] << " " << h.fTDCtime[1] << endl;
+    UInt_t test = h.fTDC[0];
+    cout << "TDC word 0 = " << test << " -2^31 = ";
+    test+=pow(2, 31);
+    cout << test << "; =>  +2^31 = ";
+    test+=pow(2, 31);
+    cout << test << endl;
+    */
     
     // NB: the VETROC words are subtracted 2^31 to convert them from Uint to Int... 
     // This *should be temporary* !!!
@@ -489,18 +487,19 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     if( crateslot[idx(crate,slot)]->loadData("tdc",chan, h.fTDC[1]-pow(2, 31), h.fTDC[1]-pow(2, 31)) == SD_ERR )
       return HED_ERR;
     
+    /*
+    cout << "crateslot crate, slot, NumChan " << crateslot[idx(crate,slot)]->getCrate() << " " 
+	 << crateslot[idx(crate,slot)]->getSlot() << " " 
+	 << crateslot[idx(crate,slot)]->getNumChan() << endl;
+    for(int j_ = 0; j_<510; j_++)
+      {
+	if(crateslot[idx(crate,slot)]->getNumHits(j_)>0)
+	  cout << "number of hits for channel " << j_ << ": " << crateslot[idx(crate,slot)]->getNumHits(j_) << endl;
+	for(int j__ = 0; j__<crateslot[idx(crate,slot)]->getNumHits(j_); j__++)
+	  cout << crateslot[idx(crate,slot)]->getData(j_, j__) << endl;
+      }
+    */
     
-    // cout << "crateslot crate, slot, NumChan " << crateslot[idx(crate,slot)]->getCrate() << " " 
-    // 	 << crateslot[idx(crate,slot)]->getSlot() << " " 
-    // 	 << crateslot[idx(crate,slot)]->getNumChan() << endl;
-    // for(int j_ = 0; j_<510; j_++)
-    //   {
-    // 	if(crateslot[idx(crate,slot)]->getNumHits(j_)>0)
-    // 	  cout << "number of hits for channel " << j_ << ": " << crateslot[idx(crate,slot)]->getNumHits(j_) << endl;
-    // 	for(int j__ = 0; j__<crateslot[idx(crate,slot)]->getNumHits(j_); j__++)
-    // 	  cout << crateslot[idx(crate,slot)]->getData(j_, j__) << endl;
-    //   }
-        
     newclus = true;
     
     new( (*fMCCherHits)[GetNPMThits()] ) TSBSSimPMTHit(h);
@@ -565,25 +564,25 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     }
   }
   
-
-  // Bool_t newclus = true;
-  // //fill the 
-  // for(int i_ = 0; i_<fEvent->fMCClusterHitID.size(); i_++){
-  //   if(tscd.GetParticleType(ih)==fEvent->fMCClusterHitID[i_].first){
-  //     fEvent->fMCClusterHitID[i_].second.push_back(ih);
-  //     newclus = false;
-  //     break;
-  //   }
-  // }
-  // if(newclus){
-  //   Int_t trkID = tscd.GetParticleType(ih);
-  //   std::vector<Short_t> ClusterPMTlist;
-  //   ClusterPMTlist.push_back(ih);
-  //   fEvent->fMCClusterHitID.push_back(make_pair(trkID, ClusterPMTlist));
-  // }
-
+  /*
+  Bool_t newclus = true;
+  //fill the 
+  for(int i_ = 0; i_<fEvent->fMCClusterHitID.size(); i_++){
+    if(tscd.GetParticleType(ih)==fEvent->fMCClusterHitID[i_].first){
+      fEvent->fMCClusterHitID[i_].second.push_back(ih);
+      newclus = false;
+      break;
+    }
+  }
+  if(newclus){
+    Int_t trkID = tscd.GetParticleType(ih);
+    std::vector<Short_t> ClusterPMTlist;
+    ClusterPMTlist.push_back(ih);
+    fEvent->fMCClusterHitID.push_back(make_pair(trkID, ClusterPMTlist));
+  }
+  */
   
-
+  /*
   // Decode the digitized strip data.  Populate crateslot array.
   for( vector<TSBSSimEvent::DigiGEMStrip>::size_type i = 0;
        i < simEvent->fGEMStrips.size(); i++) {
@@ -830,7 +829,6 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   return HED_OK;
 }
 
-/*
 // --------------- //
 // Hit functions  //
 // ------------- //
@@ -888,8 +886,7 @@ void TSBSSimPMTHit::Print( const Option_t* ) const
        << "; for falling time: " << fTDC2 
        << endl;
 }
-*/
-/*
+
 // ------------------- //
 // Cluster functions  //
 // ----------------- //
@@ -933,4 +930,4 @@ void TSBSSimCherCluster::Print( const Option_t* ) const
        << "MC track PID " << fMCtrackPID 
        << endl;
 }
-*/
+

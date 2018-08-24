@@ -42,11 +42,10 @@ Double_t TSBSSimTrack::MCFitX_print() const
 
 //-----------------------------------------------------------------------------
 TSBSSimEvent::TSBSSimEvent()
-  : fRunID(0), fEvtID(0), fNSignal(0)//, fMCTracks(0)
+  : fRunID(0), fEvtID(0), fNSignal(0), fMCTracks(0)
 {
 }
 
-/*
 //-----------------------------------------------------------------------------
 TSBSSimEvent::TSBSSimEvent( UInt_t ntracks )
   : fRunID(0), fEvtID(0), fNSignal(0)
@@ -54,6 +53,7 @@ TSBSSimEvent::TSBSSimEvent( UInt_t ntracks )
   if( ntracks == 0 ) ntracks = 1;
   fMCTracks = new TClonesArray( "TSBSSimTrack", ntracks );
 }
+
 //-----------------------------------------------------------------------------
 TSBSSimEvent::~TSBSSimEvent()
 {
@@ -71,7 +71,6 @@ TSBSSimTrack* TSBSSimEvent::AddTrack( Int_t number, Int_t pid,
     new( (*fMCTracks)[GetNtracks()] ) TSBSSimTrack( number, pid,
 						    vertex, momentum );
 }
-*/
 
 //-----------------------------------------------------------------------------
 void TSBSSimEvent::Clear( const Option_t* opt )
@@ -81,13 +80,12 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   TString sopt(opt);
 
   fNSignal = 0;
-  //fPMTHits.clear();
+  fPMTHits.clear();
   fDetectorData.clear();
   fSimDetectorData.clear();
   //fMCClusterHitID.clear();
 }
 
-/*
 //-----------------------------------------------------------------------------
 Int_t TSBSSimEvent::GetNtracks() const
 {
@@ -95,7 +93,6 @@ Int_t TSBSSimEvent::GetNtracks() const
 
   return fMCTracks->GetLast()+1;
 }
-*/
 
 //-----------------------------------------------------------------------------
 void TSBSSimEvent::Print( const Option_t* opt ) const
@@ -106,7 +103,7 @@ void TSBSSimEvent::Print( const Option_t* opt ) const
   cout << "Run number:               " << fRunID << endl;
   cout << "Event number:               " << fEvtID << endl;
   cout << "Event weight:               " << fWeight << endl;
-  //cout << "Number of hits:             " << fPMTHits.size()   << endl;
+  cout << "Number of hits:             " << fPMTHits.size()   << endl;
   
   TString sopt(opt);
   bool do_all   = sopt.Contains("all",   TString::kIgnoreCase);
@@ -114,12 +111,12 @@ void TSBSSimEvent::Print( const Option_t* opt ) const
   bool do_clust = sopt.Contains("clust", TString::kIgnoreCase) || do_all;
   bool do_track = sopt.Contains("track", TString::kIgnoreCase) || do_all;
   
-  /*
   if( do_track && fMCTracks ) {
     for( Int_t i=0; i<GetNtracks(); ++i ) {
       fMCTracks->UncheckedAt(i)->Print(opt);
     }
   }
+  /*
   if( do_clust ) {
     cout << "Cluster list size = " << fMCClusterHitID.size() << endl;
     for(int i_ = 0; i_<fMCClusterHitID.size(); i_++){
@@ -130,6 +127,7 @@ void TSBSSimEvent::Print( const Option_t* opt ) const
       }
     }
   }
+  */
   if( do_hit ) {
     for( vector<PMTHit>::const_iterator ih = fPMTHits.begin();
 	 ih != fPMTHits.end(); ++ih ) {
@@ -154,7 +152,6 @@ void TSBSSimEvent::Print( const Option_t* opt ) const
 	   << endl;
     }
   }
-  */
 }
 
 //-----------------------------------------------------------------------------

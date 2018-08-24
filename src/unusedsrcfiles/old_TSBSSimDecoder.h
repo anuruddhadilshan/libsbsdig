@@ -20,7 +20,6 @@ class THaCrateMap;
 //-----------------------------------------------------------------------------
 // Helper classes for making decoded event data available via global variables
 
-/*
 class TSBSSimPMTHit : public TObject {
 public:
   TSBSSimPMTHit();
@@ -78,7 +77,6 @@ public:
 
   ClassDef(TSBSSimCherCluster,1) // A Monte Carlo hit at a GEM tracking chamber
 };
-*/
 
 //-----------------------------------------------------------------------------
 // SoLID simulation decoder class
@@ -99,7 +97,6 @@ class TSBSSimDecoder : public Podd::SimDecoder {
 				 THaAnalysisObject::kDefine );
   //virtual Podd::MCHitInfo GetMCHitInfo( Int_t crate, Int_t slot, Int_t chan ) const;
   
-  /*
   Int_t    GetNPMThits()  const {
     return (fMCCherHits) ? fMCCherHits->GetLast()+1 : 0;
   }
@@ -118,7 +115,6 @@ class TSBSSimDecoder : public Podd::SimDecoder {
     assert( dynamic_cast<TSBSSimCherCluster*>(obj) );
     return static_cast<TSBSSimCherCluster*>(obj);
   }
-  */
   
   // Workaround for fubar THaEvData
 #if ANALYZER_VERSION_CODE >= 67072  // ANALYZER_VERSION(1,6,0)
@@ -130,10 +126,8 @@ class TSBSSimDecoder : public Podd::SimDecoder {
 protected:
   typedef std::map<Int_t,Int_t> PMTMap_t;
 
-  /*
   TClonesArray* fMCCherHits;
   TClonesArray* fMCCherClus;
-  */
   // Event-by-event data
   PMTMap_t      fPMTMap;   //! Map ROCKey -> index of corresponding PMT
 

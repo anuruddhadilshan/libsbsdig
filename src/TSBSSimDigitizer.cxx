@@ -8,7 +8,7 @@
 TSBSSimDigitizer::TSBSSimDigitizer()
 {
   if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
-  fEvent = new TSBSSimEvent(5);
+  fEvent = new TSBSSimEvent();
   fOutFile = new TFile("rootfiles/simout_test.root","RECREATE");
   //fOutTree = new TTree("TSBSDigi","");
   fOutTree = new TTree("digtree","");
