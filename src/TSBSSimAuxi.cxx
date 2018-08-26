@@ -1,5 +1,6 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
+#define DEBUG 1
 
 //
 // Class TNPEModel
@@ -24,6 +25,10 @@ TSPEModel::TSPEModel(const char* detname,
 
 bool TSPEModel::PulseOverThr(double charge, double thr)
 {
+#if DEBUG>0
+  cout << "unnormalized pulse max (ns -1) " << fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
+  cout << "=> pulse max (C/ns) " << charge*fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << endl;
+#endif
   if(fPulseModel->GetMaximum()<thr/charge){
     return false;
   }else{
@@ -85,7 +90,11 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   if(fNpe<=0)
     return;
   
-  fADC = TMath::Nint(fNpe*fNpeChargeConv*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan));
+#if DEBUG>0
+  cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion() << endl;
+#endif
+  
+  fADC = TMath::Nint(Charge()*1.0e15*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan));
   //if ADC value bigger than number of ADC bits, ADC saturates
   if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
     fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
@@ -180,7 +189,6 @@ void TPMTSignal::Clear()
   
   fSumEdep = 0;
   fNpe = 0;
-  //fNpeChargeConv = 0;// we don't want to clear that
   fADC = 0;
   
   fEventTime = 0;
@@ -272,7 +280,7 @@ double TDigInfo::PedestalNoise(uint chan)
   }
 };
 
-double TDigInfo::Threshold(uint chan)
+double TDigInfo::Threshold(uint chan)//returns threshold in C/ns !!!
 {
   if(fThreshold.size()>1){
     if(fThreshold.size()<=chan){
@@ -280,9 +288,10 @@ double TDigInfo::Threshold(uint chan)
 	     chan, fThreshold.size());
       exit(-1);
     }
-    return fThreshold.at(chan);
+    //Thr(V)/Omega = Thr(A); Thr(A)*unit = Thr(C/ns)
+    return fThreshold.at(chan)*spe_unit/fROimpedance;
   }else{
-    return fThreshold.at(0);
+    return fThreshold.at(0)*spe_unit/fROimpedance;
   }
 };
 

@@ -121,7 +121,7 @@ class TDigInfo : public TObject{
   double SPE_Sigma(){return fSPE_sigma;};
   double SPE_TransitTime(){return fSPE_transittime;};
     
-  double NpeChargeConv(int chan){return Gain(chan)*fROimpedance*qe/spe_unit;};
+  double NpeChargeConv(int chan){return Gain(chan)*qe;};//charge in Coulomb
   
   void SetROImpedance(double roimp){fROimpedance = roimp;};
   void SetADCConversion(double adcconv){fADCconversion = adcconv;};
