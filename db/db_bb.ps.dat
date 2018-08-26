@@ -22,9 +22,9 @@ dig.bb.ps.adcbits = 12
 dig.bb.ps.triggerjitter = 3.0  # ns
 dig.bb.ps.triggeroffset = 0.  # ns 
 dig.bb.ps.gatewidth = 100. #ns
-dig.bb.ps.gain = 1.0e5
-dig.bb.ps.pedestal = 0.0
-dig.bb.ps.pednoise = 0.0
+dig.bb.ps.gain = 5.0e5
+dig.bb.ps.pedestal = 300.0 # ADC channels 
+dig.bb.ps.pednoise = 50.0 # ADC channels 
 dig.bb.ps.threshold = 0.006 #V
 
 dig.bb.ps.spe_tau = 0.65  # ns

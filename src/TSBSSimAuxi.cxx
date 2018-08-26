@@ -93,7 +93,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
 #endif
   
-  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan));
+  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+diginfo.GenPedestal(chan));
   //if ADC value bigger than number of ADC bits, ADC saturates
   if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
     fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
@@ -231,6 +231,7 @@ TDetInfo::~TDetInfo()
 //
 TDigInfo::TDigInfo()
 {
+  fRN = new TRandom3(0);
   fGain.clear();
   fPedestal.clear();
   fPedNoise.clear();

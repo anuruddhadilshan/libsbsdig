@@ -7,6 +7,7 @@
 #include "g4sbs_types.h"
 #include "TF1.h"
 #include "TF1Convolution.h"
+#include "TRandom3.h"
 
 //
 // Classes for DB information
@@ -112,6 +113,7 @@ class TDigInfo : public TObject{
   double Pedestal(uint chan);
   int    PedestalNoiseSize(){return fPedNoise.size();};
   double PedestalNoise(uint chan);
+  double GenPedestal(uint chan){return fRN->Gaus(Pedestal(chan), PedestalNoise(chan));};
   int    ThresholdSize(){return fThreshold.size();};
   double Threshold(uint chan);
   double TriggerJitter(){return fTriggerJitter;};
@@ -155,6 +157,8 @@ class TDigInfo : public TObject{
   double  fSPE_tau;            // tau param for SPE
   double  fSPE_sigma;         // sigma param for SPE
   double  fSPE_transittime;  // pmt transit time param for SPE
+  
+  TRandom3* fRN;
   
   ClassDef(TDigInfo, 1);
 };
