@@ -16,7 +16,9 @@ geo.bb.grinch.yoffset = 0.0 #m
 
 #hodoscope digitization info
 dig.bb.grinch.roimpedance = 50 # ohm
-dig.bb.grinch.tdcconversion = 1.0 #tdc channel/ns
+#dig.bb.grinch.adcconversion = 100.0 #fC/ch #optionnal for Cher
+#dig.bb.grinch.adcbits = 12 #optionnal for Cher
+dig.bb.grinch.tdcconversion = 1.0 #ns/ch
 dig.bb.grinch.tdcbits = 16
 dig.bb.grinch.triggerjitter = 3.0  # ns
 dig.bb.grinch.triggeroffset = 30.  # ns 

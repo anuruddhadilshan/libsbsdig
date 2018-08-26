@@ -62,16 +62,13 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
       data = ev->GetData(4);
       
       if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << data << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
-        //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
-        // ev->GetData(1) - 60. << std::endl;
-        //if(ev->GetData(1)<mint)
-        //  mint = ev->GetData(1);
-	//fSPE->SetNpe(data);
-        //fSignals[chan].Fill(chan, fNPE, data);//
 	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, 1);//
+	if(fDebug>=3)
+	  cout << "chan " << chan << " data " << data 
+	       << " fSignals[chan].Npe() " << fSignals[chan].Npe() << endl;
       } else if (type == 1) { // sumedep data
         fSignals[chan].AddSumEdep(data);
 	if(fDebug>=3)
@@ -117,11 +114,12 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       // 0: ADC
       // 1: TDC
       // push back a different word for ADC and TDC ?
-      // // Fill ADC 
-      // data.fData.push_back(0);//ADC data flag
-      // data.fData.push_back(1);//ADC data size
-      // data.fData.push_back(fSignals[m].ADC());//ADC data
-      // simdata.fData.clear();
+      if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+	data.fData.push_back(0);//ADC data flag
+	data.fData.push_back(1);//ADC data size
+	data.fData.push_back(fSignals[m].ADC());//ADC data
+	simdata.fData.clear();
+      }
       // Fill TDC 
       data.fData.push_back(1);//TDCs data
       data.fData.push_back(fSignals[m].TDCSize());//TDC data size

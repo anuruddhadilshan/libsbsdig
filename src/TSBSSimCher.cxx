@@ -108,11 +108,13 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       // 0: ADC
       // 1: TDC
       // push back a different word for ADC and TDC ?
-      // // Fill ADC 
-      // data.fData.push_back(0);//ADC data flag
-      // data.fData.push_back(1);//ADC data size
-      // data.fData.push_back(fSignals[m].ADC());//ADC data
-      // simdata.fData.clear();
+      // Fill ADC => only if 
+      if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+	data.fData.push_back(0);//ADC data flag
+	data.fData.push_back(1);//ADC data size
+	data.fData.push_back(fSignals[m].ADC());//ADC data
+	simdata.fData.clear();
+      }
       // Fill TDC 
       data.fData.push_back(1);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
@@ -165,15 +167,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       simdata.fChannel = m;
       
       //define convention for type:
-      // 0: SumEdep
       // 1: Npe
       // 2: Time
-      // Fill SumEdep
-      simdata.fData.push_back(0);
-      simdata.fData.push_back(1);
-      simdata.fData.push_back(fSignals[m].SumEdep());
-      event.fSimDetectorData.push_back(simdata);
-      simdata.fData.clear();
       // Fill Npe
       simdata.fData.push_back(1);
       simdata.fData.push_back(1);

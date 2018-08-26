@@ -15,10 +15,10 @@ geo.bb.ps.yoffset = 0.0 #m
 
 #PS digitization info
 dig.bb.ps.roimpedance = 50 # ohm
-dig.bb.ps.adcconversion = 50.0 #adc channel/fC 
-dig.bb.ps.adcbits = 12 # not 1 TDC per channel
-dig.bb.ps.tdcconversion = 0.5 #tdc channel/ns # not 1 TDC per channel
-dig.bb.ps.tdcbits = 16 # not 1 TDC per channel
+dig.bb.ps.adcconversion = 50.0 #fC/ch 
+dig.bb.ps.adcbits = 12
+#dig.bb.ps.tdcconversion = 0.5 #ns/ch #optionnal for ECal ?
+#dig.bb.ps.tdcbits = 16 #optionnal for ECal ?
 dig.bb.ps.triggerjitter = 3.0  # ns
 dig.bb.ps.triggeroffset = 0.  # ns 
 dig.bb.ps.gatewidth = 100. #ns

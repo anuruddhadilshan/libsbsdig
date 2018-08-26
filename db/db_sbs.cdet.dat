@@ -60,7 +60,9 @@ geo.sbs.cdet.2.3.yoffset = -0.47 #m #+42 cm -5 cm
 
 #cdet digitization info
 dig.sbs.cdet.roimpedance = 50 # ohm
-dig.sbs.cdet.tdcconversion = 2.0 #tdc channel/ns
+#dig.sbs.cdet.adcconversion = 100.0 #fC/ch #optionnal for Scint
+#dig.sbs.cdet.adcbits = 12 #optionnal for Scint
+dig.sbs.cdet.tdcconversion = 0.5 #ns/ch
 dig.sbs.cdet.tdcbits = 16
 dig.sbs.cdet.triggerjitter = 3.0  # ns
 dig.sbs.cdet.triggeroffset = 0.0  # ns 

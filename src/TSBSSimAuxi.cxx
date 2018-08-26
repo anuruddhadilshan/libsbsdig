@@ -1,6 +1,6 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
-#define DEBUG 1
+#define DEBUG 0
 
 //
 // Class TNPEModel
@@ -27,7 +27,6 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
 {
 #if DEBUG>0
   cout << "unnormalized pulse max (ns -1) " << fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
-  cout << "=> pulse max (C/ns) " << charge*fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << endl;
 #endif
   if(fPulseModel->GetMaximum()<thr/charge){
     return false;
@@ -91,39 +90,47 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
     return;
   
 #if DEBUG>0
-  cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion() << endl;
+  cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
 #endif
   
-  fADC = TMath::Nint(Charge()*1.0e15*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan));
+  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan));
   //if ADC value bigger than number of ADC bits, ADC saturates
   if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
     fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
   }
   //cout << "TPMTSignal::Digitize():  " << fLeadTimes.size() << " - " << fTrailTimes.size() << endl;
   
+#if DEBUG>0
+  cout << " => ADC = " << fADC << endl;
+#endif
+  
   UInt_t tdc_value;
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
   if(fLeadTimes.size() && fTrailTimes.size()){
-    //cout << fLeadTimes.at(0) << " " << fTrailTimes.at(0) << endl;
-
+#if DEBUG>0
+    cout << " fLeadTimes.at(0) " << fLeadTimes.at(0) << " fTrailTimes.at(0) " << fTrailTimes.at(0) << endl;
+#endif
+    
     // trim "all" bits that are above the number of TDC bits - a couple to speed it up
     // (since TDC have a revolving clock, as far as I understand)
-    tdc_value = TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion());
+    tdc_value = TMath::Nint(fLeadTimes.at(0)/diginfo.TDCConversion());
     for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
       tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
     }
     tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
     fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));
     // also mark the traling time with setting bin 31 to 1
-    tdc_value = TMath::Nint(fTrailTimes.at(0)*diginfo.TDCConversion());
+    tdc_value = TMath::Nint(fTrailTimes.at(0)/diginfo.TDCConversion());
     for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
       tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
     }
     tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
     fTDCs.insert(fTDCs.begin()+1, tdc_value);
     
-    //cout << fTDCs.at(0) << " " << fTDCs.at(1) << endl;
+#if DEBUG>0
+    cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
+#endif
   }
   
   /*
