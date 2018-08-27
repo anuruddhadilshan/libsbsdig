@@ -5,17 +5,16 @@
 #include <TTree.h>
 #include <TFile.h>
 
-TSBSSimDigitizer::TSBSSimDigitizer()
+TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 {
   if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
   fEvent = new TSBSSimEvent();
-  fOutFile = new TFile("rootfiles/simout_test.root","RECREATE");
+  fOutFile = new TFile(outputfilename,"RECREATE");
   //fOutTree = new TTree("TSBSDigi","");
   fOutTree = new TTree("digtree","");
   //fOutTree->Branch("fEvents",&fEvent);
   fOutTree->Branch("event",&fEvent);
 }
-
 
 TSBSSimDigitizer::~TSBSSimDigitizer()
 {

@@ -40,7 +40,7 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   manager->LoadGenInfo("db_geninfo_gmn.dat");
   
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer();
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
   digitizer->SetDebug(debuglevel+1);
   
   // First load the input root file

@@ -72,8 +72,9 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   THaAnalyzer* analyzer = new THaAnalyzer;
 
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
-  manager->LoadGeneralInfo(Form("../db/db_generalinfo_%s.dat", detsuffix));
-  manager->LoadGeoInfo(Form("g4sbs_%s", detsuffix));
+  manager->LoadGenInfo("db_geninfo_gmn.dat");
+  // manager->LoadGeneralInfo(Form("../db/db_generalinfo_%s.dat", detsuffix));
+  // manager->LoadGeoInfo(Form("g4sbs_%s", detsuffix));
   THaInterface::SetDecoder( TSBSSimDecoder::Class() );
 
 
@@ -87,7 +88,8 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // We just set up one, but this could be many.
   //  THaRun* run = new THaRun( "prod12_4100V_TrigRate25_4.dat" );
   //THaRun* run = new THaRun(TString::Format("digitized/simin_%d.root",runnum) );
-  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/simin_%d.root",runnum) );
+  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/sim.root",runnum) );
+  //THaRunBase *run = new TSBSSimFile("rootfiles/simout_test.root");
   run->SetFirstEvent(0);
   run->SetLastEvent(lastEvent);
 
