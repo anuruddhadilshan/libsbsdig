@@ -1,5 +1,6 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
+#define DEBUG 0
 
 //
 // Class TNPEModel
@@ -24,6 +25,9 @@ TSPEModel::TSPEModel(const char* detname,
 
 bool TSPEModel::PulseOverThr(double charge, double thr)
 {
+#if DEBUG>0
+  cout << "unnormalized pulse max (ns -1) " << fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
+#endif
   if(fPulseModel->GetMaximum()<thr/charge){
     return false;
   }else{
@@ -85,18 +89,48 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   if(fNpe<=0)
     return;
   
-  fADC = fNpe*fNpeChargeConv*diginfo.ADCConversion()+diginfo.Pedestal(chan)+diginfo.PedestalNoise(chan);
+#if DEBUG>0
+  cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
+#endif
   
+  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+diginfo.GenPedestal(chan));
+  //if ADC value bigger than number of ADC bits, ADC saturates
+  if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
+    fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
+  }
   //cout << "TPMTSignal::Digitize():  " << fLeadTimes.size() << " - " << fTrailTimes.size() << endl;
+  
+#if DEBUG>0
+  cout << " => ADC = " << fADC << endl;
+#endif
+  
+  UInt_t tdc_value;
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
   if(fLeadTimes.size() && fTrailTimes.size()){
-    //cout << fLeadTimes.at(0) << " " << fTrailTimes.at(0) << endl;
+#if DEBUG>0
+    cout << " fLeadTimes.at(0) " << fLeadTimes.at(0) << " fTrailTimes.at(0) " << fTrailTimes.at(0) << endl;
+#endif
     
+    // trim "all" bits that are above the number of TDC bits - a couple to speed it up
+    // (since TDC have a revolving clock, as far as I understand)
+    tdc_value = TMath::Nint(fLeadTimes.at(0)/diginfo.TDCConversion());
+    for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
+      tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
+    }
+    tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
     fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));
-    fTDCs.insert(fTDCs.begin()+1, TMath::Nint(fTrailTimes.at(0)*diginfo.TDCConversion()));
+    // also mark the traling time with setting bin 31 to 1
+    tdc_value = TMath::Nint(fTrailTimes.at(0)/diginfo.TDCConversion());
+    for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
+      tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
+    }
+    tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
+    fTDCs.insert(fTDCs.begin()+1, tdc_value);
     
-    //cout << fTDCs.at(0) << " " << fTDCs.at(1) << endl;
+#if DEBUG>0
+    cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
+#endif
   }
   
   /*
@@ -162,7 +196,6 @@ void TPMTSignal::Clear()
   
   fSumEdep = 0;
   fNpe = 0;
-  //fNpeChargeConv = 0;// we don't want to clear that
   fADC = 0;
   
   fEventTime = 0;
@@ -198,6 +231,7 @@ TDetInfo::~TDetInfo()
 //
 TDigInfo::TDigInfo()
 {
+  fRN = new TRandom3(0);
   fGain.clear();
   fPedestal.clear();
   fPedNoise.clear();
@@ -254,7 +288,7 @@ double TDigInfo::PedestalNoise(uint chan)
   }
 };
 
-double TDigInfo::Threshold(uint chan)
+double TDigInfo::Threshold(uint chan)//returns threshold in C/ns !!!
 {
   if(fThreshold.size()>1){
     if(fThreshold.size()<=chan){
@@ -262,9 +296,10 @@ double TDigInfo::Threshold(uint chan)
 	     chan, fThreshold.size());
       exit(-1);
     }
-    return fThreshold.at(chan);
+    //Thr(V)/Omega = Thr(A); Thr(A)*unit = Thr(C/ns)
+    return fThreshold.at(chan)*spe_unit/fROimpedance;
   }else{
-    return fThreshold.at(0);
+    return fThreshold.at(0)*spe_unit/fROimpedance;
   }
 };
 

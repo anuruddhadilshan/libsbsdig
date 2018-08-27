@@ -14,7 +14,7 @@
 //  and breakable
 
 #define qe 1.602e-19
-#define spe_unit 1.0e-9
+#define spe_unit 1.0e-9 //to convert ns to s...
 
 #define NBANKS 1
 

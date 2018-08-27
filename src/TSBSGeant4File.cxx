@@ -179,9 +179,19 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       bbpstf1hit->SetData(3, fTree->Earm_BBPSTF1.tavg->at(i));
       bbpstf1hit->SetData(4, fTree->Earm_BBPSTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbpstf1hit);
+      
+      Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
+      t = fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
+      g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
+      bbpshit->SetData(0, fSource);
+      bbpshit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
+      bbpshit->SetData(2, 0);
+      bbpshit->SetData(3, t);
+      bbpshit->SetData(4, Npe);
+      fg4sbsHitData.push_back(bbpshit);
     }
   }
-  
+  /*
   if(fTree->Earm_BBPS.nhits){
     for(int i = 0; i<fTree->Earm_BBPS.nhits; i++){
       g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
@@ -193,6 +203,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(bbpshit);
     }
   }
+  */
   
   // Process BB SH data
   if(fTree->Earm_BBSHTF1.nhits){
@@ -204,9 +215,19 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       bbshtf1hit->SetData(3, fTree->Earm_BBSHTF1.tavg->at(i));
       bbshtf1hit->SetData(4, fTree->Earm_BBSHTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbshtf1hit);
-    }
+      
+      Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
+      t = fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
+      g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
+      bbshhit->SetData(0, fSource);
+      bbshhit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
+      bbshhit->SetData(2, 0);
+      bbshhit->SetData(3, t);
+      bbshhit->SetData(4, Npe);
+      fg4sbsHitData.push_back(bbshhit);
+     }
   }
-  
+  /*
   if(fTree->Earm_BBSH.nhits){
     for(int i = 0; i<fTree->Earm_BBSH.nhits; i++){
       g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
@@ -218,7 +239,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(bbshhit);
     }
   }
-  
+  */
   
   // Hadron Arm
   // Process CDet data

@@ -216,14 +216,16 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   ignore_adc = (ignore_pmt || ignore_adc);
 
   bool ignore_tdc = false;
+  if(detinfo.DetType()==kECal) ignore_tdc = true;
+  ignore_tdc = (ignore_pmt || ignore_tdc);
   
   TDigInfo diginfo;
   
   double roimp;
-  double adcconv;
-  int    adcbits;
-  double tdcconv;
-  int    tdcbits;
+  double adcconv = -1;
+  int    adcbits = -1;
+  double tdcconv = -1;
+  int    tdcbits = -1;
   std::vector<double>* gain = 0;
   std::vector<double>* pedestal = 0;
   std::vector<double>* pednoise = 0;
@@ -284,7 +286,6 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     diginfo.SetSPE_Tau(spe_tau);
     diginfo.SetSPE_Sigma(spe_sig);
     diginfo.SetSPE_TransitTime(spe_transit);
-    
     
     if(fDebug>=3){
       cout << "roimp " << roimp << ", DigInfo ROinmpedance " << diginfo.ROImpedance() << endl;

@@ -127,8 +127,8 @@ void g4sbs_tree::Init(TTree *tree)
        SetupDetBranch(Earm_BBPS,    "Earm.BBPS.hit");
        SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
        SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
-       SetupDetBranch(Earm_BBPS,    "Earm.BBSH.hit");
-       SetupDetBranch(Earm_BBPSTF1, "Earm.BBSHTF1.hit");
+       SetupDetBranch(Earm_BBSH,    "Earm.BBSH.hit");
+       SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
      }
    }
    
