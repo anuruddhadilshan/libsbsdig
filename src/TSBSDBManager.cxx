@@ -30,9 +30,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
         exit(0);
   }
   */
-  std::string path = "";
-  if(std::getenv("DB_DIR")) {
-    path = std::string(std::getenv("DB_DIR")) + "/";
+  std::string path = "../db/";
+  if(std::getenv("SBS_DIGI_DB")) {
+    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
   }
   const string& PathfileName = path+fileName;
   
