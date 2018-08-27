@@ -25,6 +25,7 @@
 #include "TDatabasePDG.h"
 #include "TRandom.h"
 #include "THaVarList.h"
+#include "TSBSSimAuxi.h"
 
 #include <SBSSimFadc250Module.h>
 
@@ -231,12 +232,32 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   Bool_t newclus;
   Int_t crate, slot, chan;
 
+  // looks kinda dumb done this way, but it avoids unnecessary loop on events.
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > grinchmap;
+  const int CPS_grinch = ((TDetInfo &)fManager->GetDetInfo("grinch")).ChanPerSlot();
+  const int SPC_grinch = ((TDetInfo &)fManager->GetDetInfo("grinch")).SlotPerCrate();
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbpsmap;
+  const int CPS_bbps = ((TDetInfo &)fManager->GetDetInfo("bbps")).ChanPerSlot();
+  const int SPC_bbps = ((TDetInfo &)fManager->GetDetInfo("bbps")).SlotPerCrate();
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hodomap;
+  const int CPS_hodo = ((TDetInfo &)fManager->GetDetInfo("hodo")).ChanPerSlot();
+  const int SPC_hodo = ((TDetInfo &)fManager->GetDetInfo("hodo")).SlotPerCrate();
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbshmap;
+  const int CPS_bbsh = ((TDetInfo &)fManager->GetDetInfo("bbsh")).ChanPerSlot();
+  const int SPC_bbsh = ((TDetInfo &)fManager->GetDetInfo("bbsh")).SlotPerCrate();
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > cdetmap;
+  const int CPS_cdet = ((TDetInfo &)fManager->GetDetInfo("cdet")).ChanPerSlot();
+  const int SPC_cdet = ((TDetInfo &)fManager->GetDetInfo("cdet")).SlotPerCrate();
+  //
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hcalmap;
+  const int CPS_hcal = ((TDetInfo &)fManager->GetDetInfo("hcal")).ChanPerSlot();
+  const int SPC_hcal = ((TDetInfo &)fManager->GetDetInfo("hcal")).SlotPerCrate();
+  
   std::cerr << "\n\n\n\n\nStart Processing event: " << event_num << std::endl;
   for(std::vector<TSBSSimEvent::DetectorData>::const_iterator it =
       simEvent->fDetectorData.begin(); it != simEvent->fDetectorData.end();
-      ++it )
-  {
+      ++it ) {
+    /* // the old version of the code with HCal only still exists...
     if((*it).fDetID == 2 && (*it).fData.size() > 0) { // HCal
       //crate = (*it).fCrate;
       //slot  = (*it).fSlot;
@@ -263,9 +284,44 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
           << ", C: " << chan << ", I: " << (*it).fData[2] << std::endl;
       }
     }
+    */
+    LoadDetector(hcalmap, (*it), HCAL_UNIQUE_DETID, CPS_hcal, SPC_hcal);
+    LoadDetector(cdetmap, (*it), CDET_UNIQUE_DETID, CPS_cdet, SPC_cdet);
+    LoadDetector(bbshmap, (*it), BBSH_UNIQUE_DETID, CPS_bbsh, SPC_bbsh);
+    LoadDetector(hodomap, (*it), HODO_UNIQUE_DETID, CPS_hodo, SPC_hodo);
+    LoadDetector(bbpsmap, (*it), BBPS_UNIQUE_DETID, CPS_bbps, SPC_bbps);
+    LoadDetector(grinchmap, (*it), GRINCH_UNIQUE_DETID, CPS_grinch, SPC_grinch);
+    // what if we were just coding the stuff above in a function ?
+    // what would this function need ? name (or CPS/SPC) +detID of det, and map ???? 
+    // go for it ?
+    // OK, faisons l'exercise bete de copier en adaptant pour e.g. CDet brouillon
+    /*
+    if((*it).fDetID == CDET_UNIQUE_DETID && (*it).fData.size() > 0) { // 
+      int mod =  (*it).fChannel;
+      //This should be *general* and work for *every* subsystem
+      chan = mod%CPS_cdet;
+      slot = ((mod-chan)/CPS_cdet)%SPC_cdet;//+first_slot
+      crate = (mod-slot*CPS_cdet-chan)/SPC_cdet;//+first_crate
+      
+      Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
+      if(sldat) { // meaning the module is available
+	std::vector<UInt_t> *myev = &(map[sldat]);
+	myev->push_back(chan);
+	for(size_t k = 0; k < (*it).fData.size(); k++) {
+	  myev->push_back((*it).fData[k]);
+	}
+      }
+      if((*it).fData[0] == 1) {
+	std::cerr << "M: " << mod << ", C: " << crate << ", S: " << slot
+		  << ", C: " << chan << ", I: " << (*it).fData[2] << std::endl;
+      }
+    }
+    */
+    
   }
 
-  // Now that all data is prepared, loop through the hcal map and load
+  // HCAL
+  // Now that all data is prepared, loop through the maps and load
   // the appropriate slots
   std::cerr << "HCal hits: " << hcalmap.size() << std::endl;
   for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
@@ -286,8 +342,69 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
         //}
   }
   
+  // CDET
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 cdetmap.begin(); it != hcalmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // BBSH
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 bbshmap.begin(); it != bbshmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // HODO
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 hodomap.begin(); it != hodomap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // BBPS
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 bbpsmap.begin(); it != bbpsmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // GRINCH
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 grinchmap.begin(); it != grinchmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  
   std::cerr << "End Processing event:   " << event_num << std::endl;
   return HED_OK;
 }
 
-
+Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map,
+				    TSBSSimEvent::DetectorData detdata, 
+				    const int detid, 
+				    const int crateperslot, const int slotpercrate, 
+				    const int firstcrate, const int firstslot)
+{
+  Int_t crate, slot, chan;
+  
+  if(detdata.fDetID == detid && detdata.fData.size() > 0) { // 
+    int mod =  (detdata).fChannel;
+    //This should be *general* and work for *every* subsystem
+    chan = mod%crateperslot;
+    slot = ((mod-chan)/crateperslot)%slotpercrate+firstslot;
+    crate = (mod-slot*crateperslot-chan)/slotpercrate+firstcrate;
+    
+    Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
+    if(sldat) { // meaning the module is available
+      std::vector<UInt_t> *myev = &(map[sldat]);
+      myev->push_back(chan);
+      for(size_t k = 0; k < detdata.fData.size(); k++) {
+	myev->push_back(detdata.fData[k]);
+      }
+    }
+    if(detdata.fData[0] == 1) {
+      std::cerr << "M: " << mod << ", C: " << crate << ", S: " << slot
+		<< ", C: " << chan << ", I: " << detdata.fData[2] << std::endl;
+    }
+  }
+  
+  return HED_OK;
+}

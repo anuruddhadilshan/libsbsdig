@@ -38,6 +38,9 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   SBSTimingHodoscope *sh = new SBSTimingHodoscope("hodo","BB timing hodoscope");
   SBSBBShower *ps = new SBSBBShower("ps","BB preshower");
   SBSGRINCH *grinch = new SBSGRINCH("grinch","GRINCH");
+  SBSEArm *earm = new SBSEArm("bb","Big Bite electron arm");
+  harm->AddDetector(hcal);
+  gHaApps->Add(earm);
   // SBSCDet *cdet = new SBSHCal("cdet","CDet");
   // SBSEArm *harm = new SBSEArm("sbs","Hadron Arm with HCal, CDet");
   // harm->AddDetector(hcal);
