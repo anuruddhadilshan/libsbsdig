@@ -27,6 +27,7 @@
 // List of detector unique IDs: 
 // by (proposed) convention: DetUniqueID = DetType*10+DetID
 // DetType of type det_type defined in g4sbs_types: kHCal(0), kECal(1), kCher(2), kScint(3), kGEM(4);
+// TODO: also put those in the detector DB, and have DB manager ensure no detector share and indentical unique ID
 #define HCAL_UNIQUE_DETID 0
 #define BBPS_UNIQUE_DETID 10
 #define BBSH_UNIQUE_DETID 11
@@ -40,7 +41,6 @@
 #define FT_UNIQUE_DETID 42
 #define FPP1_UNIQUE_DETID 43
 #define FPP2_UNIQUE_DETID 44
-//#define CHER_HIT_ID 0
 
 static int __g4sbs_types_datasize[NBANKS] = {21};
 

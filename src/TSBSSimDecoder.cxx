@@ -114,6 +114,7 @@ int TSBSSimDecoder::LoadEvent(const Int_t* evbuffer )
   return ret;
 }
 
+/*
 //-----------------------------------------------------------------------------
 static inline
 void PMTtoROC( Int_t h_chan,
@@ -126,11 +127,12 @@ void PMTtoROC( Int_t h_chan,
   // In the case of GRINCH/RICH: 
   // crate = GTP; slot = VETROC; chan = PMT. (NINOs are "transparent", in a similar way to the MPDs)
   
-  div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  //div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  div_t d = div( h_chan, 1 );
   slot = d.quot;
   chan = d.rem;
 
-  d = div( slot, fManager->GetSlotPerCrate() );
+  d = div( slot, 1 );
   crate = d.quot;
   slot  = d.rem;
 }
@@ -139,8 +141,8 @@ void PMTtoROC( Int_t h_chan,
 static inline
 Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan )
 {
-  return chan +
-    fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
+  return chan;// +
+  //fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
 }
 
 //-----------------------------------------------------------------------------
@@ -158,6 +160,7 @@ Int_t TSBSSimDecoder::PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const
 
   return found->second;
 }
+*/
 
 //-----------------------------------------------------------------------------
 static inline Int_t NumberOfSetBits( UInt_t v )

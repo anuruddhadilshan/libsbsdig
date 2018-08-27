@@ -61,11 +61,12 @@ protected:
 		      const int crateperslot, const int slotpercrate, 
 		      const int firstcrate = 0, const int firstslot = 0 );
   
+  /*
   // void  PMTtoROC( Int_t s_plane, Int_t s_sector, Int_t s_proj, Int_t s_chan,
   //		    Int_t& crate, Int_t& slot, Int_t& chan ) const;
   Int_t PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const;
   // Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan ) const;
-  
+  */
   ClassDef(TSBSSimDecoder,0) // Decoder for simulated SoLID spectrometer data
 };
 

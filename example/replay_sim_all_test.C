@@ -12,6 +12,10 @@
 //#include "SBSBigBite.h"
 #include "SBSEArm.h"
 #include "SBSHCal.h"
+#include "SBSCDet.h"
+#include "SBSBBShower.h"
+#include "SBSTimingHodoscope.h"
+#include "SBSGRINCH.h"
 #include "TSBSDBManager.h"
 #include "THaInterface.h"
 #include "TSBSSimDecoder.h"
@@ -29,29 +33,32 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   //gSystem->Load("../libsbsdig.so");
 
   SBSHCal *hcal = new SBSHCal("hcal","HCAL");
-  SBSCDet *cdet = new SBSHCal("cdet","Coordinate Detector");
+  SBSCDet *cdet = new SBSCDet("cdet","Coordinate Detector");
   SBSEArm *harm = new SBSEArm("sbs","Hadron Arm with HCal, CDet");
   harm->AddDetector(hcal);
+  harm->AddDetector(cdet);
   gHaApps->Add(harm);
 
   SBSBBShower *sh = new SBSBBShower("sh","BB shower");
-  SBSTimingHodoscope *sh = new SBSTimingHodoscope("hodo","BB timing hodoscope");
+  SBSTimingHodoscope *hodo = new SBSTimingHodoscope("hodo","BB timing hodoscope");
   SBSBBShower *ps = new SBSBBShower("ps","BB preshower");
   SBSGRINCH *grinch = new SBSGRINCH("grinch","GRINCH");
   SBSEArm *earm = new SBSEArm("bb","Big Bite electron arm");
-  harm->AddDetector(hcal);
+  earm->AddDetector(sh);
+  earm->AddDetector(hodo);
+  earm->AddDetector(ps);
+  earm->AddDetector(grinch);
   gHaApps->Add(earm);
   // SBSCDet *cdet = new SBSHCal("cdet","CDet");
   // SBSEArm *harm = new SBSEArm("sbs","Hadron Arm with HCal, CDet");
   // harm->AddDetector(hcal);
   // gHaApps->Add(harm);
   
-  
-  
   //
   //  Steering script for Hall A analyzer demo
   //
-
+  
+  
   // Set up the equipment to be analyzed.
 
   // add the two spectrometers with the "standard" configuration
@@ -59,10 +66,10 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // Collect information about a easily modified random set of channels
   // (see DB_DIR/*/db_D.dat)
   /*
-     THaApparatus* DECDAT = new THaDecData("D","Misc. Decoder Data");
-     gHaApps->Add( DECDAT );
-     */
-
+    THaApparatus* DECDAT = new THaDecData("D","Misc. Decoder Data");
+    gHaApps->Add( DECDAT );
+  */
+  
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -76,8 +83,8 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // manager->LoadGeneralInfo(Form("../db/db_generalinfo_%s.dat", detsuffix));
   // manager->LoadGeoInfo(Form("g4sbs_%s", detsuffix));
   THaInterface::SetDecoder( TSBSSimDecoder::Class() );
-
-
+  
+  
 
   // A simple event class to be output to the resulting tree.
   // Creating your own descendant of THaEvent is one way of
@@ -88,8 +95,7 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // We just set up one, but this could be many.
   //  THaRun* run = new THaRun( "prod12_4100V_TrigRate25_4.dat" );
   //THaRun* run = new THaRun(TString::Format("digitized/simin_%d.root",runnum) );
-  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/sim.root",runnum) );
-  //THaRunBase *run = new TSBSSimFile("rootfiles/simout_test.root");
+  THaRunBase *run = new TSBSSimFile( "digitized/simdig_test.root" );
   run->SetFirstEvent(0);
   run->SetLastEvent(lastEvent);
 
@@ -102,7 +108,7 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   //analyzer->SetEvent( event );
   analyzer->SetOutFile( TString::Format("rootfiles/simout_%d.root",runnum));
   // File to record cuts accounting information
-  analyzer->SetSummaryFile("sbs_hcal_test.log"); // optional
+  analyzer->SetSummaryFile("sbs_bb_test.log"); // optional
 
   // Change the cratemap to point to the sim one
   analyzer->SetCrateMapFileName("db_sbssim_cratemap");
