@@ -91,7 +91,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   int n_gen = 0;//total number of tracks at the end of the event
   // bool newtrk, dupli;// These variables help avoid store many times the same MC track info
   bool res = false;
-  
+  if(d_flag>1){
+    printf("Reading event %d\n", fEvNum);
+  }
   fEvNum++;
 
   //cout << "Read Next Event: Evt " << fEvNum << endl;

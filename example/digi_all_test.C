@@ -41,34 +41,39 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   // Create the SBS Digitizer (will control the digitization process)
   TSBSSimDigitizer *digitizer = new TSBSSimDigitizer();
-  digitizer->SetDebug(debuglevel);
+  digitizer->SetDebug(debuglevel+1);
   
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
+  // TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
+  
+  // digitizer->AddInputFile(f, 1);
+  // digitizer->AddInputFile(f_b, 100);
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
   hodo->SetDebug(debuglevel);
-  digitizer->Add(hodo);
+  digitizer->AddDetector(hodo);
   
   TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
   cdet->SetDebug(debuglevel);
-  digitizer->Add(cdet);
+  digitizer->AddDetector(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
   grinch->SetDebug(debuglevel);
-  digitizer->Add(grinch);
+  digitizer->AddDetector(grinch);
   
   TSBSSimECal *ps = new TSBSSimECal("ps", 10);
   ps->SetDebug(debuglevel);
-  digitizer->Add(ps);
+  digitizer->AddDetector(ps);
   
   TSBSSimECal *sh = new TSBSSimECal("sh", 11);
   sh->SetDebug(debuglevel);
-  digitizer->Add(sh);
+  digitizer->AddDetector(sh);
   
   digitizer->Process(f, nentries);
+  //digitizer->Process(nentries);
   
   /*
     TSBSSimHCal *hcal = new TSBSSimHCal();

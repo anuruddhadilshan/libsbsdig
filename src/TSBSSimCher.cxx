@@ -161,23 +161,27 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	data.fData.push_back(VETROCword);
       }
       event.fDetectorData.push_back(data);
+      data.fData.clear();
       
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
-      
       //define convention for type:
       // 1: Npe
       // 2: Time
       // Fill Npe
-      simdata.fData.push_back(1);
-      simdata.fData.push_back(1);
+      simdata.fDataType = 1;
+      simdata.fNdata = 1;
+      // simdata.fData.push_back(1);
+      // simdata.fData.push_back(1);
       simdata.fData.push_back(fSignals[m].Npe());
       event.fSimDetectorData.push_back(simdata);
       simdata.fData.clear();
       // Fill Times
-      simdata.fData.push_back(2);
-      simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
+      simdata.fDataType = 2;
+      simdata.fNdata = fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize();
+      // simdata.fData.push_back(2);
+      // simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
       if(fDebug>=3){
 	cout << "SumEdep = " << fSignals[m].SumEdep() 
 	     << ", Charge " << fSignals[m].Charge() 
@@ -193,6 +197,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
       event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
     }
   }
   SetHasDataFlag(any_events);
