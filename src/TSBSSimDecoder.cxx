@@ -237,24 +237,11 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 
   // looks kinda dumb done this way, but it avoids unnecessary loop on events.
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > grinchmap;
-  const int CPS_grinch = ((TDetInfo &)fManager->GetDetInfo("grinch")).ChanPerSlot();
-  const int SPC_grinch = ((TDetInfo &)fManager->GetDetInfo("grinch")).SlotPerCrate();
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbpsmap;
-  const int CPS_bbps = ((TDetInfo &)fManager->GetDetInfo("bbps")).ChanPerSlot();
-  const int SPC_bbps = ((TDetInfo &)fManager->GetDetInfo("bbps")).SlotPerCrate();
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hodomap;
-  const int CPS_hodo = ((TDetInfo &)fManager->GetDetInfo("hodo")).ChanPerSlot();
-  const int SPC_hodo = ((TDetInfo &)fManager->GetDetInfo("hodo")).SlotPerCrate();
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbshmap;
-  const int CPS_bbsh = ((TDetInfo &)fManager->GetDetInfo("bbsh")).ChanPerSlot();
-  const int SPC_bbsh = ((TDetInfo &)fManager->GetDetInfo("bbsh")).SlotPerCrate();
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > cdetmap;
-  const int CPS_cdet = ((TDetInfo &)fManager->GetDetInfo("cdet")).ChanPerSlot();
-  const int SPC_cdet = ((TDetInfo &)fManager->GetDetInfo("cdet")).SlotPerCrate();
-  //
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hcalmap;
-  const int CPS_hcal = ((TDetInfo &)fManager->GetDetInfo("hcal")).ChanPerSlot();
-  const int SPC_hcal = ((TDetInfo &)fManager->GetDetInfo("hcal")).SlotPerCrate();
   
   std::cerr << "\n\n\n\n\nStart Processing event: " << event_num << std::endl;
   for(std::vector<TSBSSimEvent::DetectorData>::const_iterator it =
@@ -288,12 +275,20 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       }
     }
     */
-    LoadDetector(hcalmap, (*it), HCAL_UNIQUE_DETID, CPS_hcal, SPC_hcal);
-    LoadDetector(cdetmap, (*it), CDET_UNIQUE_DETID, CPS_cdet, SPC_cdet);
-    LoadDetector(bbshmap, (*it), BBSH_UNIQUE_DETID, CPS_bbsh, SPC_bbsh);
-    LoadDetector(hodomap, (*it), HODO_UNIQUE_DETID, CPS_hodo, SPC_hodo);
-    LoadDetector(bbpsmap, (*it), BBPS_UNIQUE_DETID, CPS_bbps, SPC_bbps);
-    LoadDetector(grinchmap, (*it), GRINCH_UNIQUE_DETID, CPS_grinch, SPC_grinch);
+    int CPS, SPC, FC, FS;
+    RetrieveDetMapParam("hcal", CPS, SPC, FC, FS);
+    LoadDetector(hcalmap, (*it), HCAL_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("cdet", CPS, SPC, FC, FS);
+    LoadDetector(cdetmap, (*it), CDET_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("sh", CPS, SPC, FC, FS);
+    LoadDetector(bbshmap, (*it), BBSH_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("hodo", CPS, SPC, FC, FS);
+    LoadDetector(hodomap, (*it), HODO_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("ps", CPS, SPC, FC, FS);
+    LoadDetector(bbpsmap, (*it), BBPS_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("grinch", CPS, SPC, FC, FS);
+    LoadDetector(grinchmap, (*it), GRINCH_UNIQUE_DETID, CPS, SPC, FC, FS);
+    
     // what if we were just coding the stuff above in a function ?
     // what would this function need ? name (or CPS/SPC) +detID of det, and map ???? 
     // go for it ?
@@ -380,10 +375,25 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   return HED_OK;
 }
 
+Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname, 
+					  int& chanperslot, int& slotpercrate, 
+					  int& firstcrate, int& firstslot)
+{
+  // chanperslot = ((TDetInfo &)fManager->GetDetInfo("hcal")).ChanPerSlot();
+  // slotpercrate = ((TDetInfo &)fManager->GetDetInfo("hcal")).SlotPerCrate();
+  // firstslot = ((TDetInfo &)fManager->GetDetInfo("hcal")).FirstSlot();
+  // firstcrate = ((TDetInfo &)fManager->GetDetInfo("hcal")).FirstCrate();
+  TDetInfo detinfo = fManager->GetDetInfo(detname);
+  chanperslot = detinfo.ChanPerSlot();
+  slotpercrate = detinfo.SlotPerCrate();
+  firstslot = detinfo.FirstSlot();
+  firstcrate = detinfo.FirstCrate();
+}
+
 Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map,
 				    TSBSSimEvent::DetectorData detdata, 
 				    const int detid, 
-				    const int crateperslot, const int slotpercrate, 
+				    const int chanperslot, const int slotpercrate, 
 				    const int firstcrate, const int firstslot)
 {
   Int_t crate, slot, chan;
@@ -391,9 +401,9 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
   if(detdata.fDetID == detid && detdata.fData.size() > 0) { // 
     int mod =  (detdata).fChannel;
     //This should be *general* and work for *every* subsystem
-    chan = mod%crateperslot;
-    slot = ((mod-chan)/crateperslot)%slotpercrate+firstslot;
-    crate = (mod-slot*crateperslot-chan)/slotpercrate+firstcrate;
+    chan = mod%chanperslot;
+    slot = ((mod-chan)/chanperslot)%slotpercrate+firstslot;
+    crate = (mod-slot*chanperslot-chan)/slotpercrate+firstcrate;
     
     Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
     if(sldat) { // meaning the module is available
@@ -411,3 +421,4 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
   
   return HED_OK;
 }
+
