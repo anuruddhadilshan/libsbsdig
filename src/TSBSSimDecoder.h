@@ -60,8 +60,14 @@ protected:
 			    int& crateperslot, int& slotpercrate, 
 			    int& firstcrate, int& firstslot);
 
-  Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map,
+  Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
       const char *detname, TSBSSimEvent::DetectorData detdata, const int detid);
+
+  bool fCheckedForEnabledDetectors;
+  std::vector<const char*> fDetNames;
+  std::vector<short> fDetIDs;
+  void CheckForEnabledDetectors();
+  void CheckForDetector(const char *detname, short id);
 
   /*
   // void  PMTtoROC( Int_t s_plane, Int_t s_sector, Int_t s_proj, Int_t s_chan,

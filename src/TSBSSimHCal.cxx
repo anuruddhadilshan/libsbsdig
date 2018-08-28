@@ -9,8 +9,10 @@
 
 #define HCAL_TDC_THRESH 0.1
 
-TSBSSimHCal::TSBSSimHCal()
+TSBSSimHCal::TSBSSimHCal(const char* name, short id)
 {
+  fName = name;
+  SetUniqueDetID(id);
   Init();
 }
 
