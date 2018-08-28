@@ -152,8 +152,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   SetHasDataFlag(any_events);
 }
 
-TSBSSimHCal::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
-  dnraw(10), sumedep(0.0)
+TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(1.0)
   //mint(0.0), maxt(50.), nbins(50),
 {
   nbins = (maxt-mint)/dx_samples;
