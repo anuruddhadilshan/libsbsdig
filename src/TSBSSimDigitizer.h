@@ -23,10 +23,10 @@ public:
   int Process(int max_events = 0);// Process the mmeber file stack
   
   // Add a new detector to the list
-  int AddDetector(TSBSSimDetector* detector);
+  void AddDetector(TSBSSimDetector* detector);
 
   // Add a new file to the file stack
-  int AddInputFile(TSBSGeant4File* file, UInt_t weight = 1);
+  void AddInputFile(TSBSGeant4File* file, UInt_t weight = 1);
   
 private:
   std::vector<TSBSSimDetector*> fDetectors;

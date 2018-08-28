@@ -38,7 +38,7 @@ void TSBSSimCher::Init()
   
   //Configure the PMT signals array
   fSignals.resize(fDetInfo.NChan());
-  for(int i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
+  for(size_t i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
     fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));
   }
 }
@@ -48,7 +48,7 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
   
-  bool signal = false;
+  //bool signal = false;
   int chan = 0;
   int type = 0;
   double time = 0;
@@ -58,7 +58,7 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     // Only get detector data for Cherenkov
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
     if(ev->GetDetUniqueID() == UniqueDetID()) {
-      signal = (ev->GetData(0)==0);
+      //signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
       time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
@@ -120,7 +120,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       data.fData.push_back(fSignals[m].TDCSize());
       if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
-      for(int i = 0; i<fSignals[m].TDCSize(); i++){
+      for(size_t i = 0; i<fSignals[m].TDCSize(); i++){
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
 	// Build here the vetroc word:
 	// we can afford to do very ad-hoc code because 
@@ -188,11 +188,11 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	     << ", Npe = " << fSignals[m].Npe() << endl;
       }
       //data.fData.push_back(fSignals[m].Npe());
-      for(int i = 0; i<fSignals[m].LeadTimesSize(); i++){
+      for(size_t i = 0; i<fSignals[m].LeadTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].LeadTime(i));
 	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;
       }
-      for(int i = 0; i<fSignals[m].TrailTimesSize(); i++){
+      for(size_t i = 0; i<fSignals[m].TrailTimesSize(); i++){
 	simdata.fData.push_back(fSignals[m].TrailTime(i));
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
