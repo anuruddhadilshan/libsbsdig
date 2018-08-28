@@ -24,38 +24,38 @@ endif
 
 
 #------------------------------------------------------------------------------
-# EVIO
-
-PLATFORM = $(shell uname -s)-$(shell uname -i)
+# EVIO => comment evio stuff
+# 
+# PLATFORM = $(shell uname -s)-$(shell uname -i)
 # EVIO default locations as a last resort if $EVIO isn't set in build env
-EVIO ?= $(CODA)
-EVIO ?= ../libevio
-ifdef EVIO_INCDIR
-	EVIOINC= $(EVIO_INCDIR)
-else
-	# Possible EVIO header directories, will be used in the order found
-	EVIOINC := $(wildcard $(addprefix $(EVIO)/, include src/libsrc src/libsrc++))
-endif
-ifdef EVIO_LIBDIR
-	EVIOLIB= $(EVIO_LIBDIR)
-else
-	# Possible EVIO library locations, the first one found will be used
-	EVIOLIB := $(firstword $(wildcard $(addprefix $(EVIO)/, $(PLATFORM)/lib lib)))
-endif
-ifeq ($(strip $(EVIOINC)),)
-  $(error No EVIO header files found. Check $$EVIO)
-endif
-ifeq ($(strip $(EVIOLIB)),)
-  $(error No EVIO library directory found. Check $$EVIO)
-endif
-ifeq (debug,$(findstring debug,$(ROOTBUILD)))
-  DBGSFX = -dbg
-  CXXFLAGS += -O0
-else
-  CXXFLAGS += -O2 -g #-DNDEBUG
-endif
-SOLINCLUDE += $(addprefix -I, $(EVIOINC) )
-LDFLAGS  += -L$(EVIOLIB) -levioxx$(DBGSFX) -levio$(DBGSFX) -lz -lexpat
+# EVIO ?= $(CODA)
+# EVIO ?= ../libevio
+# ifdef EVIO_INCDIR
+# 	EVIOINC= $(EVIO_INCDIR)
+# else
+# 	# Possible EVIO header directories, will be used in the order found
+# 	EVIOINC := $(wildcard $(addprefix $(EVIO)/, include src/libsrc src/libsrc++))
+# endif
+# ifdef EVIO_LIBDIR
+# 	EVIOLIB= $(EVIO_LIBDIR)
+# else
+# 	# Possible EVIO library locations, the first one found will be used
+# 	EVIOLIB := $(firstword $(wildcard $(addprefix $(EVIO)/, $(PLATFORM)/lib lib)))
+# endif
+# ifeq ($(strip $(EVIOINC)),)
+#   $(error No EVIO header files found. Check $$EVIO)
+# endif
+# ifeq ($(strip $(EVIOLIB)),)
+#   $(error No EVIO library directory found. Check $$EVIO)
+# endif
+# ifeq (debug,$(findstring debug,$(ROOTBUILD)))
+#   DBGSFX = -dbg
+#   CXXFLAGS += -O0
+# else
+#   CXXFLAGS += -O2 -g #-DNDEBUG
+# endif
+# SOLINCLUDE += $(addprefix -I, $(EVIOINC) )
+# LDFLAGS  += -L$(EVIOLIB) -levioxx$(DBGSFX) -levio$(DBGSFX) -lz -lexpat
 
 # Some of the analyzer include dirs conflict with headers in
 # EVIO
