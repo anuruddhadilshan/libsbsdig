@@ -43,7 +43,7 @@ void digi_hcal_test()
   TSBSGeant4File *f = new TSBSGeant4File("data/sbsin_931.root");
   
   TSBSSimHCal *hcal = new TSBSSimHCal();
-  digitizer->Add(hcal);
+  digitizer->AddDetector(hcal);
 
   // Now start the digitization on this file
   digitizer->Process(f);
