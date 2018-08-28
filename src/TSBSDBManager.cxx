@@ -30,9 +30,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
         exit(0);
   }
   */
-  std::string path = "";
-  if(std::getenv("DB_DIR")) {
-    path = std::string(std::getenv("DB_DIR")) + "/";
+  std::string path = "../db/";
+  if(std::getenv("SBS_DIGI_DB")) {
+    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
   }
   const string& PathfileName = path+fileName;
   
@@ -184,27 +184,49 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 
   string dettype_str;
   int nchan, chan_per_slot, slot_per_crate;
+  std::vector<int>* detmap = 0;
+  
+  Int_t err = 0;
+  try{
+    detmap = new std::vector<int>;
+    //First load the parameters which will be common to *all* detectors (including digitization parameters)
+    DBRequest request[] = {
+      {"dettype",        &dettype_str,    kString,  0, 0},
+      {"nchan",          &nchan,          kInt,     0, 0},
+      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
+      {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
+      {"detmap",         detmap,          kIntV,    0, 0},
+      { 0 }
+    };
+    
+    err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+    if (err){
+      //input.close();
+      fclose(file);
+      return kInitError;
+    }
+    
+    if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
+    if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
+    if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
+    if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
+    if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
+    
+    detinfo.SetNChan(nchan);
+    detinfo.SetChanPerSlot(chan_per_slot);
+    detinfo.SetSlotPerCrate(slot_per_crate);
+    
+    detinfo.SetFirstSlot(detmap->at(0));
+    detinfo.SetFirstCrate(detmap->at(1));
 
-  //First load the parameters which will be common to *all* detectors (including digitization parameters)
-  DBRequest request[] = {
-    {"dettype",        &dettype_str,    kString,  0, 0},
-    {"nchan",          &nchan,          kInt,     0, 0},
-    {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
-    {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
-    { 0 }
-  };
-  
-  Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
-  
-  if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
-  if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
-  if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
-  if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
-  if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
-  
-  detinfo.SetNChan(nchan);
-  detinfo.SetChanPerSlot(chan_per_slot);
-  detinfo.SetSlotPerCrate(slot_per_crate);
+    
+    delete detmap;
+  }catch(...) {
+    delete detmap;
+    //input.close();
+    fclose(file);
+    throw;
+  }//end try / catch
 
   const string digprefix = "dig."+prefix;
   

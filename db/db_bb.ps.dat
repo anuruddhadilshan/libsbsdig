@@ -35,3 +35,8 @@ dig.bb.ps.spe_transit = 19.0  # ns
 #dig.bb.ps.crosstalk_mean = 0.1
 #dig.bb.ps.crosstalk_sigma = 0.03
 #dig.bb.ps.crosstalk_chan_apart = 8
+
+#bb ps detector map
+# crate slot ch_min ch_max
+bb.ps.detmap =
+   0     0       0      53

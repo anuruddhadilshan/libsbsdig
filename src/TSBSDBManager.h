@@ -31,8 +31,8 @@ public:
   
   // This is left as a patch, to make the program compile, but we'll need to replace them eventually,
   // cause we'll need these information for each detector.
-  const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
-  const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
+  // const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
+  // const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
   
   const TDetInfo & GetDetInfo(const char* detname);
   

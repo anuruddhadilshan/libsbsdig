@@ -35,3 +35,10 @@ dig.bb.sh.spe_transit = 19.0  # ns
 #dig.bb.sh.crosstalk_mean = 0.1
 #dig.bb.sh.crosstalk_sigma = 0.03
 #dig.bb.sh.crosstalk_chan_apart = 8
+
+#bb sh detector map
+# crate slot ch_min ch_max
+bb.sh.detmap =
+   0     1       0      63
+   0     2       0      63
+   0     3       0      60

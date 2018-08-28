@@ -171,6 +171,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
 	  data.fData.push_back(TDCword);
 	}
 	event.fDetectorData.push_back(data);
+	data.fData.clear();
       }
       
       //Now take care of simulated data
@@ -182,14 +183,18 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       // 1: Npe
       // 2: Time
       // Fill SumEdep
-      simdata.fData.push_back(0);
-      simdata.fData.push_back(1);
+      simdata.fDataType = 0;
+      simdata.fNdata = 1;
+      // simdata.fData.push_back(0);
+      // simdata.fData.push_back(1);
       simdata.fData.push_back(fSignals[m].SumEdep());
       event.fSimDetectorData.push_back(simdata);
       simdata.fData.clear();
       // Fill Npe
-      simdata.fData.push_back(1);
-      simdata.fData.push_back(1);
+      simdata.fDataType = 1;
+      simdata.fNdata = 1;
+      // simdata.fData.push_back(1);
+      // simdata.fData.push_back(1);
       simdata.fData.push_back(fSignals[m].Npe());
       event.fSimDetectorData.push_back(simdata);
       simdata.fData.clear();
@@ -214,6 +219,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
       event.fSimDetectorData.push_back(simdata);
+      simdata.fData.clear();
       */
     }
   }

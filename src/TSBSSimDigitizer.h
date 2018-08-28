@@ -13,19 +13,36 @@ class THaAnalysisObject;
 
 class TSBSSimDigitizer : public THaAnalysisObject {
 public:
-  TSBSSimDigitizer();
+  TSBSSimDigitizer(const char* outputfilename = "digitized/simdig_test.root");
   virtual ~TSBSSimDigitizer();
 
   // Parsses the passed file event by event and digitizes
   int Process(TSBSGeant4File *file, int max_events = 0);
-
+  // File superposition: Procession of a stack of files ?
+  // option: make the file stack a member of TSBSSimDigitizer, and just "Process" it
+  int Process(int max_events = 0);// Process the mmeber file stack
+  
   // Add a new detector to the list
-  int Add(TSBSSimDetector* detector);
+  int AddDetector(TSBSSimDetector* detector);
+
+  // Add a new file to the file stack
+  int AddInputFile(TSBSGeant4File* file, UInt_t weight = 1);
+  
 private:
   std::vector<TSBSSimDetector*> fDetectors;
   TSBSSimEvent *fEvent;
   TFile *fOutFile;
   TTree *fOutTree;
+  
+  //std::vector< std::pair<TSBSGeant4File*, UInt_t> > fG4FileStack;
+  //Files and weights are added at the same time, and cannot be accessed from the outside... 
+  // No need to inforce them to be bound together by a quirky object
+  std::vector< TSBSGeant4File* > fG4FileStack_;
+  // vector of vector if strings: 
+  // the global vector contains the type of file, the inner vector contains the list of names of files.
+  std::vector< std::vector<TString> > fG4FileStack;
+  std::vector< UInt_t > fG4FileWeights;
+  
   
   ClassDef(TSBSSimDigitizer,1)
 };

@@ -175,6 +175,8 @@ class TDetInfo : public TObject{
   int       NChan(){return fNchan;};
   int      ChanPerSlot(){return fChanPerSlot;};
   int     SlotPerCrate(){return fSlotPerCrate;};
+  int      FirstSlot(){return fFirstSlot;};
+  int     FirstCrate(){return fFirstCrate;};
   int    NPlanes(){return fNplanes;};
   int   NModulesSize(){return fNmodules.size();};
   int  NModules(int i){return fNmodules.at(i);};
@@ -188,6 +190,8 @@ class TDetInfo : public TObject{
   void SetNChan(int nchan){fNchan = nchan;};
   void SetChanPerSlot(int chanperslot){fChanPerSlot = chanperslot;};
   void SetSlotPerCrate(int slotpercrate){fSlotPerCrate = slotpercrate;};
+  void SetFirstSlot(int firstslot){fFirstSlot = firstslot;};
+  void SetFirstCrate(int firstcrate){fFirstCrate = firstcrate;};
   void SetNPlanes(int nplanes){fNplanes = nplanes;};
   void AddNModules(int nmodules){fNmodules.push_back(nmodules);};
   
@@ -200,6 +204,8 @@ class TDetInfo : public TObject{
   int           fNchan;        // Total number of channels over all detector
   int            fChanPerSlot;  // Number of channels per slot
   int             fSlotPerCrate; // Number of slots per crate
+  int            fFirstSlot;  // first slot in detmap
+  int             fFirstCrate; // first crate in detmpa
   int              fNplanes;      // Number of planes // useful e.g. GEM, CDet
   std::vector<int>  fNmodules;     // Number of modules per plane // useful e.g. GEM, CDet
   

@@ -37,3 +37,11 @@ dig.bb.grinch.spe_transit = 33.0  # ns
 #dig.bb.grinch.crosstalk_mean = 0.1
 #dig.bb.grinch.crosstalk_sigma = 0.03
 #dig.bb.grinch.crosstalk_chan_apart = 8
+
+#grinch detector map
+# crate slot ch_min ch_max
+bb.grinch.detmap =
+   2     0       0     127
+   2     1       0     127
+   2     2       0     127
+   2     3       0     125

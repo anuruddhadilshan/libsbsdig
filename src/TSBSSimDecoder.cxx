@@ -25,6 +25,7 @@
 #include "TDatabasePDG.h"
 #include "TRandom.h"
 #include "THaVarList.h"
+#include "TSBSSimAuxi.h"
 
 #include <SBSSimFadc250Module.h>
 
@@ -113,6 +114,7 @@ int TSBSSimDecoder::LoadEvent(const Int_t* evbuffer )
   return ret;
 }
 
+/*
 //-----------------------------------------------------------------------------
 static inline
 void PMTtoROC( Int_t h_chan,
@@ -125,11 +127,12 @@ void PMTtoROC( Int_t h_chan,
   // In the case of GRINCH/RICH: 
   // crate = GTP; slot = VETROC; chan = PMT. (NINOs are "transparent", in a similar way to the MPDs)
   
-  div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  //div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  div_t d = div( h_chan, 1 );
   slot = d.quot;
   chan = d.rem;
 
-  d = div( slot, fManager->GetSlotPerCrate() );
+  d = div( slot, 1 );
   crate = d.quot;
   slot  = d.rem;
 }
@@ -138,8 +141,8 @@ void PMTtoROC( Int_t h_chan,
 static inline
 Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan )
 {
-  return chan +
-    fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
+  return chan;// +
+  //fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
 }
 
 //-----------------------------------------------------------------------------
@@ -157,6 +160,7 @@ Int_t TSBSSimDecoder::PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const
 
   return found->second;
 }
+*/
 
 //-----------------------------------------------------------------------------
 static inline Int_t NumberOfSetBits( UInt_t v )
@@ -231,12 +235,19 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   Bool_t newclus;
   Int_t crate, slot, chan;
 
+  // looks kinda dumb done this way, but it avoids unnecessary loop on events.
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > grinchmap;
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbpsmap;
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hodomap;
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > bbshmap;
+  std::map<Decoder::THaSlotData*, std::vector<UInt_t> > cdetmap;
   std::map<Decoder::THaSlotData*, std::vector<UInt_t> > hcalmap;
+  
   std::cerr << "\n\n\n\n\nStart Processing event: " << event_num << std::endl;
   for(std::vector<TSBSSimEvent::DetectorData>::const_iterator it =
       simEvent->fDetectorData.begin(); it != simEvent->fDetectorData.end();
-      ++it )
-  {
+      ++it ) {
+    /* // the old version of the code with HCal only still exists...
     if((*it).fDetID == 2 && (*it).fData.size() > 0) { // HCal
       //crate = (*it).fCrate;
       //slot  = (*it).fSlot;
@@ -267,9 +278,52 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
           << ", C: " << chan << ", I: " << (*it).fData[2] << std::endl;
       }
     }
+    */
+    int CPS, SPC, FC, FS;
+    RetrieveDetMapParam("hcal", CPS, SPC, FC, FS);
+    LoadDetector(hcalmap, (*it), HCAL_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("cdet", CPS, SPC, FC, FS);
+    LoadDetector(cdetmap, (*it), CDET_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("sh", CPS, SPC, FC, FS);
+    LoadDetector(bbshmap, (*it), BBSH_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("hodo", CPS, SPC, FC, FS);
+    LoadDetector(hodomap, (*it), HODO_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("ps", CPS, SPC, FC, FS);
+    LoadDetector(bbpsmap, (*it), BBPS_UNIQUE_DETID, CPS, SPC, FC, FS);
+    RetrieveDetMapParam("grinch", CPS, SPC, FC, FS);
+    LoadDetector(grinchmap, (*it), GRINCH_UNIQUE_DETID, CPS, SPC, FC, FS);
+    
+    // what if we were just coding the stuff above in a function ?
+    // what would this function need ? name (or CPS/SPC) +detID of det, and map ???? 
+    // go for it ?
+    // OK, faisons l'exercise bete de copier en adaptant pour e.g. CDet brouillon
+    /*
+    if((*it).fDetID == CDET_UNIQUE_DETID && (*it).fData.size() > 0) { // 
+      int mod =  (*it).fChannel;
+      //This should be *general* and work for *every* subsystem
+      chan = mod%CPS_cdet;
+      slot = ((mod-chan)/CPS_cdet)%SPC_cdet;//+first_slot
+      crate = (mod-slot*CPS_cdet-chan)/SPC_cdet;//+first_crate
+      
+      Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
+      if(sldat) { // meaning the module is available
+	std::vector<UInt_t> *myev = &(map[sldat]);
+	myev->push_back(chan);
+	for(size_t k = 0; k < (*it).fData.size(); k++) {
+	  myev->push_back((*it).fData[k]);
+	}
+      }
+      if((*it).fData[0] == 1) {
+	std::cerr << "M: " << mod << ", C: " << crate << ", S: " << slot
+		  << ", C: " << chan << ", I: " << (*it).fData[2] << std::endl;
+      }
+    }
+    */
+    
   }
 
-  // Now that all data is prepared, loop through the hcal map and load
+  // HCAL
+  // Now that all data is prepared, loop through the maps and load
   // the appropriate slots
   std::cerr << "HCal hits: " << hcalmap.size() << std::endl;
   for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
@@ -290,8 +344,85 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
         //}
   }
   
+  // CDET
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 cdetmap.begin(); it != hcalmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // BBSH
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 bbshmap.begin(); it != bbshmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // HODO
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 hodomap.begin(); it != hodomap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // BBPS
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 bbpsmap.begin(); it != bbpsmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  // GRINCH
+  for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
+	 grinchmap.begin(); it != grinchmap.end(); ++it) {
+    it->first->GetModule()->LoadSlot(it->first,
+        it->second.data(),0,it->second.size() );
+  }
+  
   std::cerr << "End Processing event:   " << event_num << std::endl;
   return HED_OK;
 }
 
+Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname, 
+					  int& chanperslot, int& slotpercrate, 
+					  int& firstcrate, int& firstslot)
+{
+  // chanperslot = ((TDetInfo &)fManager->GetDetInfo("hcal")).ChanPerSlot();
+  // slotpercrate = ((TDetInfo &)fManager->GetDetInfo("hcal")).SlotPerCrate();
+  // firstslot = ((TDetInfo &)fManager->GetDetInfo("hcal")).FirstSlot();
+  // firstcrate = ((TDetInfo &)fManager->GetDetInfo("hcal")).FirstCrate();
+  TDetInfo detinfo = fManager->GetDetInfo(detname);
+  chanperslot = detinfo.ChanPerSlot();
+  slotpercrate = detinfo.SlotPerCrate();
+  firstslot = detinfo.FirstSlot();
+  firstcrate = detinfo.FirstCrate();
+}
+
+Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map,
+				    TSBSSimEvent::DetectorData detdata, 
+				    const int detid, 
+				    const int chanperslot, const int slotpercrate, 
+				    const int firstcrate, const int firstslot)
+{
+  Int_t crate, slot, chan;
+  
+  if(detdata.fDetID == detid && detdata.fData.size() > 0) { // 
+    int mod =  (detdata).fChannel;
+    //This should be *general* and work for *every* subsystem
+    chan = mod%chanperslot;
+    slot = ((mod-chan)/chanperslot)%slotpercrate+firstslot;
+    crate = (mod-slot*chanperslot-chan)/slotpercrate+firstcrate;
+    
+    Decoder::THaSlotData *sldat = crateslot[idx(crate,slot)];
+    if(sldat) { // meaning the module is available
+      std::vector<UInt_t> *myev = &(map[sldat]);
+      myev->push_back(chan);
+      for(size_t k = 0; k < detdata.fData.size(); k++) {
+	myev->push_back(detdata.fData[k]);
+      }
+    }
+    if(detdata.fData[0] == 1) {
+      std::cerr << "M: " << mod << ", C: " << crate << ", S: " << slot
+		<< ", C: " << chan << ", I: " << detdata.fData[2] << std::endl;
+    }
+  }
+  
+  return HED_OK;
+}
 

@@ -1,5 +1,74 @@
+# -*- mode: Text -*-
+#
+# Crate map for SBS simulation input (see TSBSSimDecoder).
+# Hardware models emulates the APV25 VME readout module.
+# header and mask are not needed for simulation data.
+# nchan must match CHAN_PER_SLOT in TSBSSimDecoder.cxx. 
+# ndata = number_of_samples * nchan => OK
+#
+
+==== Crate  0 type fastbus
+# ADC (+TDCs) for BBPS, BBSH
+# slot model clear header mask       nchan ndata
+   0    1881  1 0x00000000 0x00000000 64     64
+   1    1881  1 0x00000000 0x00000000 64     64
+   2    1881  1 0x00000000 0x00000000 64     64
+   3    1881  1 0x00000000 0x00000000 64     64
+   4    1881  1 0x00000000 0x00000000 64     64
+   5    1881  1 0x00000000 0x00000000 64     64
+
+==== Crate  1 type vme
+# TDCs for BBTH (+ADCs for )
+# slot model clear header mask       nchan ndata
+   0    1190  1 0x00000000 0x00000000 128 12800
+   1    1190  1 0x00000000 0x00000000 128 12800
+   2     792  1 0x00000000 0x00000000  32    32
+   3     792  1 0x00000000 0x00000000  32    32 
+# QDC for GRINCH/Hodoscope ADC/TOT calibration
+
+==== Crate  2 type vme
+# TDCs for GRINCH (VETROC) - still stuck with something that is not VETROC
+# slot model clear header mask     nchan ndata
+   0    1190  1 0x00000000 0x00000000 128 12800
+   1    1190  1 0x00000000 0x00000000 128 12800
+   2    1190  1 0x00000000 0x00000000 128 12800
+   3    1190  1 0x00000000 0x00000000 128 12800
+
+==== Crate  8 type fastbus
+# TDC for CDet: similar to 
+# slot model clear header mask       nchan ndata
+   0    1877  1 0x00000000 0x00000000 96   960
+   1    1877  1 0x00000000 0x00000000 96   960
+   2    1877  1 0x00000000 0x00000000 96   960
+   3    1877  1 0x00000000 0x00000000 96   960
+   4    1877  1 0x00000000 0x00000000 96   960
+   5    1877  1 0x00000000 0x00000000 96   960
+   6    1877  1 0x00000000 0x00000000 96   960
+   7    1877  1 0x00000000 0x00000000 96   960
+   8    1877  1 0x00000000 0x00000000 96   960
+   9    1877  1 0x00000000 0x00000000 96   960
+  10    1877  1 0x00000000 0x00000000 96   960
+  11    1877  1 0x00000000 0x00000000 96   960
+  12    1877  1 0x00000000 0x00000000 96   960
+  13    1877  1 0x00000000 0x00000000 96   960
+  14    1877  1 0x00000000 0x00000000 96   960
+  15    1877  1 0x00000000 0x00000000 96   960
+  16    1877  1 0x00000000 0x00000000 96   960
+  17    1877  1 0x00000000 0x00000000 96   960
+  18    1877  1 0x00000000 0x00000000 96   960
+  19    1877  1 0x00000000 0x00000000 96   960
+  20    1877  1 0x00000000 0x00000000 96   960
+  21    1877  1 0x00000000 0x00000000 96   960
+  22    1877  1 0x00000000 0x00000000 96   960
+  23    1877  1 0x00000000 0x00000000 96   960
+
+==== Crate  9 type fastbus
+   0    1877  1 0x00000000 0x00000000 96   960
+   1    1877  1 0x00000000 0x00000000 96   960
+# one extra for BB PS/SH
+
 ==== Crate 10 type vme
-# slot model bank
+# crates for HCal
 # slot model clear header mask nchan ndata
 #   4   25099  1 151705 151705 16 10
    4   25099  1 0x00000000 0x00000000 16 20000

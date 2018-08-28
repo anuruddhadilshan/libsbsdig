@@ -55,11 +55,24 @@ protected:
   Int_t DoLoadEvent( const Int_t* evbuffer );
 #endif
 
+  // retrive chanperslot, slotpercrate, etc...
+  Int_t RetrieveDetMapParam(const char* detname, 
+			    int& crateperslot, int& slotpercrate, 
+			    int& firstcrate, int& firstslot);
+  
+  Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map, 
+		      TSBSSimEvent::DetectorData detdata, 
+		      const int detid, 
+		      const int chanperslot, const int slotpercrate, 
+		      const int firstcrate = 0, const int firstslot = 0 );
+  
+ 
+  /*
   // void  PMTtoROC( Int_t s_plane, Int_t s_sector, Int_t s_proj, Int_t s_chan,
   //		    Int_t& crate, Int_t& slot, Int_t& chan ) const;
   Int_t PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const;
   // Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan ) const;
-  
+  */
   ClassDef(TSBSSimDecoder,0) // Decoder for simulated SoLID spectrometer data
 };
 

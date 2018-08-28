@@ -90,3 +90,33 @@ dig.sbs.cdet.spe_transit = 12.0  # ns
 #sbs.cdet.crosstalk_mean = 0.1
 #sbs.cdet.crosstalk_sigma = 0.03
 #sbs.cdet.crosstalk_chan_apart = 8
+
+#cdet detector map
+# crate slot ch_min ch_max
+sbs.cdet.detmap =
+   8     0       0      95
+   8     1       0      95
+   8     2       0      95
+   8     3       0      95
+   8     4       0      95
+   8     5       0      95
+   8     6       0      95
+   8     7       0      95
+   8     8       0      95
+   8     9       0      95
+   8    10       0      95
+   8    11       0      95
+   8    12       0      95
+   8    13       0      95
+   8    14       0      95
+   8    15       0      95
+   8    16       0      95
+   8    17       0      95
+   8    18       0      95
+   8    19       0      95
+   8    20       0      95
+   8    21       0      95
+   8    22       0      95
+   8    23       0      95
+   9     0       0      47
+
