@@ -253,7 +253,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     }
   }
 
-  if(!err)
+  if(err)
     return err;
 
   // If the user specified a channel map, build that now
