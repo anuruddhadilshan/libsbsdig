@@ -42,6 +42,8 @@
 #define FPP1_UNIQUE_DETID 43
 #define FPP2_UNIQUE_DETID 44
 
+/*
+// Not used anymore
 static int __g4sbs_types_datasize[NBANKS] = {21};
 
 // FIXME:  Need to do this better,  map?
@@ -51,6 +53,7 @@ static int data_size(int tag){
     }
     return 0;
 }
+*/
 
 enum exp_type{
   kGMn, kGEp, kGEn, 

@@ -87,9 +87,6 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   Clear();
     
-  int n_hits = 0;//total number of hits at the end of the event
-  int n_gen = 0;//total number of tracks at the end of the event
-  // bool newtrk, dupli;// These variables help avoid store many times the same MC track info
   bool res = false;
   if(d_flag>1){
     printf("Reading event %d\n", fEvNum);
@@ -108,27 +105,35 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     } //DEBUG
     return 0;
   }
-  
-  double weight = fTree->ev_solang*fTree->ev_sigma; 
-    
-  int det_id;//2017/02/09: now corresponds to fManager->Getg4sbsDetType()
-  
-  int PMTID;
-  double XPMT;
-  double YPMT;
+
+  //Useful variables for the processing
   int Npe;
   double t;
-  double trms;
-  int type;
-  int PID_MCtrack;
-  double pz_MCtrack;
-  TVector3 Mom_MCtrack;
-  TVector3 Vtx_MCtrack;
-  TVector3 Pos_det;
-  int origvolflag;
   
-  double hit_data_temp[19];
-  double gen_data_temp[9];
+  /*
+  // and here a bunch of variables that had a similar use, but lost it.
+  // int n_hits = 0;//total number of hits at the end of the event
+  // int n_gen = 0;//total number of tracks at the end of the event
+  // bool newtrk, dupli;// These variables help avoid store many times the same MC track info
+  // double weight = fTree->ev_solang*fTree->ev_sigma; 
+  
+  //int det_id;//2017/02/09: now corresponds to fManager->Getg4sbsDetType()
+  
+  // int PMTID;
+  // double XPMT;
+  // double YPMT;
+  // double trms;
+  // int type;
+  // int PID_MCtrack;
+  // double pz_MCtrack;
+  // TVector3 Mom_MCtrack;
+  // TVector3 Vtx_MCtrack;
+  // TVector3 Pos_det;
+  // int origvolflag;
+  
+  // double hit_data_temp[19];
+  // double gen_data_temp[9];
+  */
 
   // Electron Arm
   

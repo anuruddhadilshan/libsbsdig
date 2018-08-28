@@ -77,7 +77,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   fSpecNames = vsplit(specs_str);
   
   //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
-  for(int i_spec = 0; i_spec<fNSpecs; i_spec++){
+  for(UInt_t i_spec = 0; i_spec<fNSpecs; i_spec++){
     TSpectroInfo specinfo;
     double mcangle;
     int ndets;
@@ -119,7 +119,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
       specinfo.SetMCAngle(mcangle);
       specinfo.SetNDets(ndets);
       std::vector<std::string> detnames = vsplit(dets_str);
-      for(int i_str = 0; i_str<detnames.size(); i_str++){
+      for(UInt_t i_str = 0; i_str<detnames.size(); i_str++){
 	specinfo.AddDetName(detnames.at(i_str));
       }
       
@@ -127,7 +127,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 	cout << " spec " << i_spec << ": ndetectors = " << specinfo.NDets() << endl;
       }
       
-      for(int i_sig = 0; i_sig<nsig; i_sig++){
+      for(Int_t i_sig = 0; i_sig<nsig; i_sig++){
 	TSignalInfo siginfo(pid->at(i_sig), tid->at(i_sig));
 	specinfo.AddMCSignalInfo(siginfo);
       }
@@ -148,7 +148,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     }
     
     // then loop on detectors
-    for(int i_det = 0; i_det<specinfo.NDets(); i_det++){
+    for(UInt_t i_det = 0; i_det<specinfo.NDets(); i_det++){
       LoadDetInfo(fSpecNames.at(i_spec), specinfo.DetName(i_det));
     }
     
@@ -442,8 +442,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   const string geoprefix = "geo."+prefix;
   
   if(detinfo.DetType()==kGEM || detinfo.DetType()==kScint){
-    int nplanes;
-    std::vector<int>* nmodules = 0;
+    UInt_t nplanes;
+    std::vector<Int_t>* nmodules = 0;
     
     try{
       nmodules = new vector<int>;
@@ -469,10 +469,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       detinfo.SetNPlanes(nplanes);
       
       
-      for(int i_pl = 0; i_pl<nplanes; i_pl++){
+      for(UInt_t i_pl = 0; i_pl<nplanes; i_pl++){
 	detinfo.AddNModules(nmodules->at(i_pl));
 	
-	for(int i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
+	for(Int_t i_mod = 0; i_mod<nmodules->at(i_pl); i_mod++){
 	  TGeoInfo thisGeo;
 	  int nrows;
 	  int ncols;
@@ -599,7 +599,7 @@ const TDetInfo & TSBSDBManager::GetDetInfo(const char* detname)
   }
   
   // if so, loop on list of detectors.
-  for(int i = 0; i<fDetInfo.size(); i++){
+  for(UInt_t i = 0; i<fDetInfo.size(); i++){
     if(fDetInfo.at(i).DetName().compare(detname)==0){
       return fDetInfo.at(i);
     }
