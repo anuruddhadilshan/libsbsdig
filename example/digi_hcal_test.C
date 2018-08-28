@@ -31,8 +31,9 @@ void digi_hcal_test()
   ////////////////////////////////////////////////////////////////
 
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
-  manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
-  manager->LoadGeoInfo("g4sbs_grinch");
+  //manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
+  manager->LoadGenInfo("db_geninfo_hcal.dat");
+  //manager->LoadGeoInfo("g4sbs_grinch");
 
 
   // Create the SBS Digitizer (will control the digitization process)

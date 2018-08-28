@@ -11,7 +11,7 @@
 //#include "SBSGEMStand.h"
 //#include "SBSBigBite.h"
 #include "SBSEArm.h"
-#include "SBSHCal.h"
+#include "SBSCalorimeter.h"
 #include "TSBSDBManager.h"
 #include "THaInterface.h"
 #include "TSBSSimDecoder.h"
@@ -28,10 +28,6 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
   //gSystem->Load(Form("/home/cornejo/SBS/analysis/sbs_offline/devel/libsbs.so"));
   //gSystem->Load("../libsbsdig.so");
 
-  SBSHCal *hcal = new SBSHCal("hcal","HCAL");
-  SBSEArm *harm = new SBSEArm("sbs","Hadron Arm with HCal");
-  harm->AddDetector(hcal);
-  gHaApps->Add(harm);
 
   //
   //  Steering script for Hall A analyzer demo
@@ -57,8 +53,10 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
   THaAnalyzer* analyzer = new THaAnalyzer;
 
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
-  manager->LoadGeneralInfo(Form("../db/db_generalinfo_%s.dat", detsuffix));
-  manager->LoadGeoInfo(Form("g4sbs_%s", detsuffix));
+  //manager->LoadGenInfo(Form("../db/db_generalinfo_%s.dat", detsuffix));
+  manager->LoadGenInfo("../db/db_geninfo_hcal.dat");
+  //manager->LoadGeoInfo(Form("g4sbs_%s", detsuffix));
+  //manager->LoadROCMap("../db/db_rocmap.dat");
   THaInterface::SetDecoder( TSBSSimDecoder::Class() );
 
 
@@ -89,6 +87,16 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
 
   // Change the cratemap to point to the sim one
   analyzer->SetCrateMapFileName("db_sbssim_cratemap");
+
+  //SBSHCal *hcal = new SBSHCal("hcal","HCAL");
+  SBSCalorimeter *hcal = new SBSCalorimeter("hcal","HCAL");
+  hcal->SetWithADCSamples(true);
+  hcal->SetWithTDC(true);
+
+  SBSEArm *harm = new SBSEArm("sbs","Hadron Arm with HCal");
+  harm->AddDetector(hcal);
+  gHaApps->Add(harm);
+
 
   analyzer->SetOdefFile("output_hcal_test.def");
 

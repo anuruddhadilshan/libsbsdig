@@ -161,6 +161,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 //______________________________________________________________
 Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 {
+  const char *here = "TSBSDBManager::LoadDetInfo()";
   TDetInfo detinfo(detname);
   // Include DB_DIR (standard Hall A analyzer DB path in the search)
   std::string path = "";
@@ -183,50 +184,88 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   const string prefix = specname+"."+detname+".";
 
   string dettype_str;
-  int nchan, chan_per_slot, slot_per_crate;
-  std::vector<int>* detmap = 0;
+  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0;
+  std::vector<int> detmap,chanmap;
+
+  //First load the parameters which will be common to *all* detectors (including digitization parameters)
+  // nlog_chan is number of "logical" channels, in case there
+  // are multiple channels that correspond to one physical detector
+  // component.  For example, HCAL will have one ADC channel and one TDC
+  // channel for each block.
+  DBRequest request[] = {
+    {"dettype",        &dettype_str,    kString,  0, 0},
+    {"nchan",          &nchan,          kInt,     0, 0},
+    {"nlog_chan",      &nchan,          kInt,     0, true},
+    {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
+    {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
+    {"detmap", &detmap, kIntV,     0, true}, ///< Optional detmap
+    {"chanmap", &chanmap, kIntV,     0, true}, ///< Optional chanmap
+    { 0 }
+  };
   
-  Int_t err = 0;
-  try{
-    detmap = new std::vector<int>;
-    //First load the parameters which will be common to *all* detectors (including digitization parameters)
-    DBRequest request[] = {
-      {"dettype",        &dettype_str,    kString,  0, 0},
-      {"nchan",          &nchan,          kInt,     0, 0},
-      {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
-      {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
-      {"detmap",         detmap,          kIntV,    0, 0},
-      { 0 }
-    };
-    
-    err = LoadDB (file, GetInitDate(), request, prefix.c_str());
-    if (err){
-      //input.close();
-      fclose(file);
-      return kInitError;
-    }
-    
-    if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
-    if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
-    if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
-    if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
-    if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
-    
-    detinfo.SetNChan(nchan);
+  Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+  if(nlog_chan == 0) {
+    nlog_chan = nchan;
+  }
+  
+  if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
+  if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
+  if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
+  if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
+  if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
+  
+  detinfo.SetNChan(nchan);
+  detinfo.SetNLogChan(nlog_chan);
+
+  // Now see if we have a detector and channel map specified,
+  // if so, we'll use that instead of the chan_per_slot or slot_per_crate
+  // values.
+  if(detmap.empty()) { // No detmap, so build simple one with values defined
     detinfo.SetChanPerSlot(chan_per_slot);
     detinfo.SetSlotPerCrate(slot_per_crate);
-    
-    detinfo.SetFirstSlot(detmap->at(0));
-    detinfo.SetFirstCrate(detmap->at(1));
+    // Should also set a reasonable first slot and crate number
+    // in case the user doesn't specify it
+    detinfo.SetFirstSlot(0);
+    detinfo.SetFirstCrate(0);
+  } else {
+    int crate,slot,ch_lo,ch_hi,chan_count, ch_count;
+    chan_count = 0;
+    for(size_t k = 0; k < detmap.size(); k+=4) {
+      ch_count = 0;
+      crate  = detmap[k];
+      slot   = detmap[k+1];
+      ch_lo  = detmap[k+2];
+      ch_hi  = detmap[k+3];
+      ch_count = 1 + (ch_hi-ch_lo);
+      // Check to make sure numbers make sense
+      if(ch_count <= 0) {
+        Error(Here(here), "Cannot specify detmap where first channel (%d) is "
+            "smaller than last channel (%d)",ch_lo,ch_hi);
+        err = kInitError;
+      }
+      detinfo.AddSlot(crate,slot,ch_lo,ch_hi);
+      chan_count += ch_count;
+    }
+    if(chan_count != nlog_chan) {
+      Error(Here(here), "Number of logical channels read in detmap (%d) does "
+          "not match expected (%d)",chan_count,nlog_chan);
+      err = kInitError;
+    }
+  }
 
-    
-    delete detmap;
-  }catch(...) {
-    delete detmap;
-    //input.close();
-    fclose(file);
-    throw;
-  }//end try / catch
+  if(!err)
+    return err;
+
+  // If the user specified a channel map, build that now
+  if(!chanmap.empty()) {
+    if (int(chanmap.size()) != nlog_chan) {
+      Error(Here(here), "Number of logical channels read in chanmap (%d) does "
+          "not match expected (%d)",int(chanmap.size()),nlog_chan);
+      err = kInitError;
+    } else {
+      detinfo.LoadChannelMap(chanmap);
+    }
+  }
 
   const string digprefix = "dig."+prefix;
   

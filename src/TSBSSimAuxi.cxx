@@ -205,10 +205,56 @@ void TPMTSignal::Clear()
 }
 
 //
+// Class TDigSlot
+//
+TDigSlot::TDigSlot() : fCrate(-1), fSlot(-1), fNchan(-1), fChanLo(-1),
+  fChanHi(-1)
+{
+};
+
+TDigSlot::TDigSlot(Int_t crate, Int_t slot, Int_t lo,
+    Int_t hi) : fCrate(crate), fSlot(slot), fChanLo(lo), fChanHi(hi)
+{
+  fNchan = fChanHi - fChanLo;
+}
+
+TDigSlot::~TDigSlot()
+{
+}
+
+Int_t TDigSlot::GetChanNumber(Int_t ch)
+{
+  Int_t lch = fChanLo + ch;
+  if (lch > fChanHi)
+    return -1;
+
+  return lch;
+}
+
+//
+// Class TDigDetMap
+//
+/*
+Int_t TDigDetMap::Fill(std::vector<Int_t> vals)
+{
+  // TODO: Check if some of the data does not repeat.
+  // As a first try, just pre-fill all data the user provides
+  for(size_t k = 0; k < vals.size(); k+=4) {
+    TDigSlot slot(vals[k],vals[k+1],vals[k+2],vals[k+3]);
+    fSlots.push_back(slot);
+  }
+
+  return 0;
+}
+*/
+
+
+//
 // Class TDetInfo
 //
 TDetInfo::TDetInfo()
 {
+  fModSlots.clear();
   fNmodules.clear();
   fGeoInfo.clear();
 }
@@ -224,6 +270,72 @@ TDetInfo::~TDetInfo()
 {
   fNmodules.clear();
   fGeoInfo.clear();
+}
+
+Int_t TDetInfo::AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi)
+{
+  TDigSlot modslot(crate,slot,lo,hi);
+  fModSlots.push_back(modslot);
+  return modslot.GetNchan();
+}
+
+
+TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
+{
+  TDigChannelInfo info;
+  info.ch = -1;
+  info.slot = -1;
+  info.crate = -1;
+  // If we have a detector map, then use that
+  if(!fDetMap.empty()) {
+    std::map<int,std::pair<int,int> >::iterator it = fDetMap.find(lch);
+    if(it != fDetMap.end() ) {
+      TDigSlot &sl = fModSlots[it->second.first];
+      info.ch = sl.GetChanNumber(it->second.second);
+      info.slot = sl.GetSlot();
+      info.crate = sl.GetCrate();
+      return info;
+    }
+  } else if(! fModSlots.empty()) {
+    // Otherwise, loop through all the modules and find the one we want
+    for(std::vector<TDigSlot>::iterator it = fModSlots.begin();
+        it != fModSlots.end(); it++) {
+      if ( (*it).GetNchan() < lch ) {
+        info.ch = (*it).GetChanNumber(lch);
+        info.slot = (*it).GetSlot();
+        info.crate = (*it).GetCrate();
+        return info;
+      }
+      lch -= (*it).GetNchan();
+    }
+  } else {
+    // No map of any kind, so then come up with the channel
+    // based on fFirstSlot and fFirstCrate
+    info.ch = lch%fChanPerSlot;
+    info.slot = ((lch-info.ch)/fChanPerSlot)%fSlotPerCrate+fFirstSlot;
+    info.crate = (lch-info.slot*fChanPerSlot-info.ch)/fSlotPerCrate+fFirstCrate;
+  }
+
+  // Well, if we got to here, then clearly we didn't find it, so instead
+  // make it up based on the firstSlot and lastSlot
+  return info;
+
+}
+
+
+void TDetInfo::LoadChannelMap(std::vector<int> chanmap)
+{
+  // Assume DBManager has checked it for proper size and proceed blindly
+  // accepting the format.
+  int lch = 0;
+  int nmods = fModSlots.size();
+  int nch = 0;
+  for(int i = 0; i < nmods; i++) {
+    nch = fModSlots[i].GetNchan();
+    for(int k = 0; k < nch; k++) {
+      fDetMap[lch++] = std::pair<int,int>(i,k);
+    }
+  }
 }
 
 //

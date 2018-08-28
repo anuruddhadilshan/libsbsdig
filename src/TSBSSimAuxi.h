@@ -164,6 +164,46 @@ class TDigInfo : public TObject{
 };
 
 //______________________________
+//
+// A "digital" module in a "digital crate" with corresponding
+// slot#, and number of channels, etc...
+class TDigSlot : public TObject {
+public:
+  TDigSlot();
+  TDigSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi);
+  virtual ~TDigSlot();
+
+  Int_t GetCrate()  { return fCrate; }
+  Int_t GetSlot()   { return fSlot; }
+  Int_t GetNchan()  { return fNchan; }
+  Int_t GetChanLo() { return fChanLo; }
+  Int_t GetChanHi() { return fChanHi; }
+
+  // Get corresponding channel number
+  Int_t GetChanNumber(Int_t ch);
+
+private:
+  Int_t fCrate;
+  Int_t fSlot;
+  Int_t fNchan;
+  Int_t fChanLo;
+  Int_t fChanHi;
+
+  ClassDef(TDigSlot,0);
+};
+
+//______________________________
+//
+// Contains information about the logical channel, such as "digital" slot
+// crate, slot#, channel number in the current TDigSlot, etc..
+struct TDigChannelInfo {
+  int ch;
+  int slot;
+  int crate;
+};
+
+
+//______________________________
 class TDetInfo : public TObject{
  public:
   TDetInfo();
@@ -173,6 +213,7 @@ class TDetInfo : public TObject{
   std::string DetName(){return fDetName;};
   det_type   DetType(){return fDetType;};
   int       NChan(){return fNchan;};
+  int       NLogChan(){return fNlogChan;};
   int      ChanPerSlot(){return fChanPerSlot;};
   int     SlotPerCrate(){return fSlotPerCrate;};
   int      FirstSlot(){return fFirstSlot;};
@@ -188,6 +229,7 @@ class TDetInfo : public TObject{
   void SetDetName(std::string detname){fDetName = detname;};
   void SetDetType(det_type type){fDetType = type;};
   void SetNChan(int nchan){fNchan = nchan;};
+  void SetNLogChan(int nchan){fNlogChan = nchan;};
   void SetChanPerSlot(int chanperslot){fChanPerSlot = chanperslot;};
   void SetSlotPerCrate(int slotpercrate){fSlotPerCrate = slotpercrate;};
   void SetFirstSlot(int firstslot){fFirstSlot = firstslot;};
@@ -197,11 +239,16 @@ class TDetInfo : public TObject{
   
   void AddGeoInfo(TGeoInfo geoinfo){fGeoInfo.push_back(geoinfo);};
   void SetDigInfo(TDigInfo diginfo){fDigInfo = diginfo;};
-  
+
+  Int_t AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi);
+  TDigChannelInfo FindLogicalChannelSlot(Int_t lch);
+  void LoadChannelMap(std::vector<int> chanmap);
+
  private:
   std::string fDetName;      // Detector name
   det_type     fDetType;      // DetectorType
   int           fNchan;        // Total number of channels over all detector
+  int           fNlogChan;        // Total number of *logical* channels over all detector
   int            fChanPerSlot;  // Number of channels per slot
   int             fSlotPerCrate; // Number of slots per crate
   int            fFirstSlot;  // first slot in detmap
@@ -211,6 +258,8 @@ class TDetInfo : public TObject{
   
   std::vector<TGeoInfo> fGeoInfo;
   TDigInfo fDigInfo;
+  std::vector<TDigSlot> fModSlots;
+  std::map<int,std::pair<int,int> > fDetMap;
   
   ClassDef(TDetInfo, 1);
 };

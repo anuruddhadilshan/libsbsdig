@@ -101,6 +101,8 @@ void TSBSSimHCal::Signal::Digitize()
   // suitable for the F1 TDC
   // The F1 TDC in high resolution mode has a resolution of 60 ps LSB
   // and a range of 3.9 us (16 bits).
+  // TODO: I should also stop hard coding this! Use Eric's methods
+  // in TPMTSignal instead!
   if(met_tdc_thresh) {
     tdc_time -= mint; // Make sure tdc_time is always positive
     tdc_time = int((tdc_time/3.9e3)*65535);
@@ -115,7 +117,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
     if(fSignals[m].npe > 0) {
       any_events = true;
       TSBSSimEvent::DetectorData data;
-      data.fDetID = 2; // 2 for fADC data
+      data.fDetID = HCAL_UNIQUE_DETID; // 2 for fADC data
       data.fChannel = m;
       //data.fData.push_back(data.fChannel);
       //data.fData.push_back(m);
@@ -130,14 +132,17 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       // Now add the sum (or edep)
       data.fData.clear();
       //data.fData.push_back(m);
-      data.fData.push_back(1);
-      data.fData.push_back(1);
-      data.fData.push_back(fSignals[m].sumedep);
-      event.fDetectorData.push_back(data);
+      // Since it's still uncertain if we can populate the sumedet
+      // parts, I'll leave this out for now...
+      //data.fData.push_back(1);
+      //data.fData.push_back(1);
+      //data.fData.push_back(fSignals[m].sumedep);
+      //event.fDetectorData.push_back(data);
+
       // Now add the TDC if the threshold was met
-      if( fSignals[m].met_tdc_thresh && false) {
+      if( fSignals[m].met_tdc_thresh) {
         data.fData.clear();
-        data.fData.push_back(2);
+        data.fData.push_back(1);
         data.fData.push_back(1);
         data.fData.push_back(fSignals[m].tdc_time);
         event.fDetectorData.push_back(data);
