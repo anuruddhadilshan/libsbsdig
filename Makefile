@@ -13,7 +13,7 @@ SOLINCLUDE := -I$(shell pwd)/src
 # Analyzer default location,
 ANALYZER ?= $(HOME)/ANALYZER
 # Possible Analyzer header locations, will be used in the order found
-ANAINCDIRS  := $(wildcard $(addprefix $(ANALYZER)/, include src hana_decode hana_scaler))
+ANAINCDIRS  := $(wildcard  $(addprefix $(ANALYZER)/, include src hana_decode hana_scaler evio))
 ifeq ($(strip $(ANAINCDIRS)),)
   $(error No Analyzer header files found. Check $$ANALYZER)
 endif

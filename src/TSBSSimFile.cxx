@@ -14,7 +14,7 @@
 
 #include "TSBSSimFile.h"
 #include "TSBSSimEvent.h"
-//#include "evio.h"     // for S_SUCCESS
+#include "evio.h"     // for S_SUCCESS
 
 #include "TFile.h"
 #include "TTree.h"
@@ -190,7 +190,7 @@ Int_t TSBSSimFile::ReadEvent()
   if( ret < 0 )
     return -128;  // CODA_ERR
 
-  return 1;//S_SUCCESS; // get rid of this, if this is the only stuff we need evio for...
+  return S_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
