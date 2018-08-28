@@ -498,9 +498,18 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	  }
 	  
 	  string geoprefix_ii = geoprefix;
-	  if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
-	  if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
-	  
+	  char temp[100];
+	  if(nplanes>1){
+	    sprintf(temp, "%s%lu", geoprefix_ii.c_str(), (i_pl+1));
+	    geoprefix_ii = std::string(temp)+".";
+	  }
+	  if(nmodules->at(i_pl)>1){
+	    sprintf(temp, "%s%d", geoprefix_ii.c_str(), (i_mod+1));
+	    geoprefix_ii = std::string(temp)+".";
+	  }
+	  // if(nplanes>1) geoprefix_ii = geoprefix_ii+std::to_string(i_pl+1)+".";
+	  // if(nmodules->at(i_pl)>1) geoprefix_ii = geoprefix_ii+std::to_string(i_mod+1)+".";
+	  	  
 	  if(fDebug>=3){
 	    cout << " geoprefix_ii.c_str() " << geoprefix_ii.c_str() << endl;
 	  }

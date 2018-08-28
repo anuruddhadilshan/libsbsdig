@@ -2,6 +2,7 @@
 #define _TSBSSIMAUXI_H
 
 #include <vector>
+#include <map>
 #include "g4sbs_types.h"
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
