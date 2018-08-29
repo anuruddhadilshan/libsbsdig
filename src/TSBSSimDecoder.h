@@ -56,10 +56,11 @@ protected:
 #endif
 
   // retrive chanperslot, slotpercrate, etc...
+  /*
   Int_t RetrieveDetMapParam(const char* detname, 
 			    int& crateperslot, int& slotpercrate, 
 			    int& firstcrate, int& firstslot);
-
+  */
   Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
       const char *detname, TSBSSimEvent::DetectorData detdata, const int detid);
 

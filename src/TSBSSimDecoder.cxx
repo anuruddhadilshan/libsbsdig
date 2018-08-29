@@ -231,8 +231,8 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   //
   if( fDoBench ) fBench->Begin("physics_decode");
   
-  Bool_t newclus;
-  Int_t crate, slot, chan,lchan;
+  //Bool_t newclus;
+  //Int_t crate, slot, chan,lchan;
   
   // We must check at least once which detectors are enabled
   // before we try to load up data for that detector
@@ -388,6 +388,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   return HED_OK;
 }
 
+/*
 Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname, 
 					  int& chanperslot, int& slotpercrate, 
 					  int& firstcrate, int& firstslot)
@@ -402,6 +403,7 @@ Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname,
   firstslot = detinfo.FirstSlot();
   firstcrate = detinfo.FirstCrate();
 }
+*/
 
 Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
       const char *detname, TSBSSimEvent::DetectorData detdata, const int detid)

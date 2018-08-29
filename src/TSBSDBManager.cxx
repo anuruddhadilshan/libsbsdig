@@ -600,7 +600,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 bool TSBSDBManager::IsDetInfoAvailable(const char* detname)
 {
   // Loop through all detectors to see if this one is available
-  for(int i = 0; i<fDetInfo.size(); i++){
+  for(size_t i = 0; i<fDetInfo.size(); i++){
     if(fDetInfo.at(i).DetName().compare(detname)==0){
       return true;
     }
