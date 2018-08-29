@@ -274,7 +274,8 @@ class TDetInfo : public TObject{
 class TSPEModel : public TObject {
  public:
   TSPEModel(const char* detname, double tau, double sigma, double t0 = 0, double tmin = -100, double tmax = +100);
-  double Eval(double t){return fPulseModel->Eval(t);};
+  //double Eval(double t){return fPulseModel->Eval(t);};
+  double Eval(double t){return fPulseHisto->Interpolate(t);};
   bool   PulseOverThr(double charge, double thr);
   void   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
   
