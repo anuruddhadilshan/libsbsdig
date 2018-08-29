@@ -11,7 +11,7 @@
 
 class TSBSSimHCal : public TSBSSimDetector {
 public:
-  TSBSSimHCal();
+  TSBSSimHCal(const char* name, short id);
   virtual ~TSBSSimHCal();
   // This loads the simulation event data
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer);

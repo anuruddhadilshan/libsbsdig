@@ -35,6 +35,7 @@ public:
   // const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
   
   const TDetInfo & GetDetInfo(const char* detname);
+  bool IsDetInfoAvailable(const char* detname); // Check if a detector is defined
   
  protected:
   TSBSDBManager();

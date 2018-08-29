@@ -195,7 +195,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   DBRequest request[] = {
     {"dettype",        &dettype_str,    kString,  0, 0},
     {"nchan",          &nchan,          kInt,     0, 0},
-    {"nlog_chan",      &nchan,          kInt,     0, true},
+    {"nlog_chan",      &nlog_chan,          kInt,     0, true},
     {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
     {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
     {"detmap", &detmap, kIntV,     0, true}, ///< Optional detmap
@@ -595,6 +595,18 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   //input.close();
   fclose(file);
   return(kOK);
+}
+
+bool TSBSDBManager::IsDetInfoAvailable(const char* detname)
+{
+  // Loop through all detectors to see if this one is available
+  for(int i = 0; i<fDetInfo.size(); i++){
+    if(fDetInfo.at(i).DetName().compare(detname)==0){
+      return true;
+    }
+  }
+
+  return false;
 }
 
 //function to retrieve the coorect detector information from the detector name
