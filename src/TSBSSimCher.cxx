@@ -50,7 +50,9 @@ void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   double time = 0;
   double data = 0;
   
-  for( const g4sbshitdata *ev: evbuffer) {
+  // for( const g4sbshitdata *ev: evbuffer) {
+  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
+    g4sbshitdata* ev = (*it);
     // Only get detector data for Cherenkov
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
     if(ev->GetDetUniqueID() == UniqueDetID()) {

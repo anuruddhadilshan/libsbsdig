@@ -63,7 +63,9 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   int type = 0;
   double data = 0;
   double pulsenorm = 0;
-  for( const g4sbshitdata *ev: evbuffer) {
+  // for( const g4sbshitdata *ev: evbuffer) {
+  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
+    g4sbshitdata* ev = (*it);
     // Only get detector data for HCAL
     // TODO: Don't hard code DetID here!!!
     if(ev->GetDetType() == kHCal) {
