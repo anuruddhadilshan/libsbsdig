@@ -163,10 +163,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 {
   const char *here = "TSBSDBManager::LoadDetInfo()";
   TDetInfo detinfo(detname);
-  // Include DB_DIR (standard Hall A analyzer DB path in the search)
-  std::string path = "";
-  if(std::getenv("DB_DIR")) {
-    path = std::string(std::getenv("DB_DIR")) + "/";
+  // Include SBS_DIGI_DB (standard Hall A analyzer DB path in the search)
+  std::string path = "../db/";
+  if(std::getenv("SBS_DIGI_DB")) {
+    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
   }
   const string& fileName = path+"db_"+specname+"."+detname+".dat";
   
@@ -750,10 +750,10 @@ void TSBSDBManager::LoadGeneralInfo(const string& fileName)
 //______________________________________________________________
 void TSBSDBManager::LoadGeoInfo(const string& prefix)
 {
-  // Include DB_DIR (standard Hall A analyzer DB path in the search)
-  std::string path = "";
-  if(std::getenv("DB_DIR")) {
-    path = std::string(std::getenv("DB_DIR")) + "/";
+  // Include SBS_DIGI_DB (standard Hall A analyzer DB path in the search)
+  std::string path = "../db/";
+  if(std::getenv("SBS_DIGI_DB")) {
+    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
   }
   const string& fileName = path+"db_"+prefix+".dat";
     
