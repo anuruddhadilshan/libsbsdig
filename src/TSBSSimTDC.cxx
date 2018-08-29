@@ -82,7 +82,7 @@ namespace Decoder {
   Int_t TSBSSimTDC::LoadSlot(THaSlotData *sldat, const UInt_t *evbuffer,
       const UInt_t *pstop) {
     Clear();
-    int chan = 0, type = 0, num_samples = 0;
+    int chan = 0, type = 0;//, num_samples = 0; //not needed so far
     UInt_t raw_buff;
     bool printed = false;
     while(evbuffer < pstop) {

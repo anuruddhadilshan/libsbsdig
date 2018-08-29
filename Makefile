@@ -81,10 +81,10 @@ SRC   = src/g4sbs_tree.cxx \
 	src/TSBSSimCher.cxx \
         src/TSBSSimECal.cxx \
         src/TSBSSimHCal.cxx \
+        src/TSBSSimADC.cxx \
+        src/TSBSSimTDC.cxx \
 	src/TSBSSimScint.cxx \
         src/TSBSSpec.cxx
-        src/TSBSSimADC.cxx \
-        src/TSBSSimTDC.cxx
 
 
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o

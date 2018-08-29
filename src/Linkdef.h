@@ -20,8 +20,8 @@
 #pragma link C++ defined_in "src/TSBSSimCher.h";
 #pragma link C++ defined_in "src/TSBSSimECal.h";
 #pragma link C++ defined_in "src/TSBSSimHCal.h";
-//#pragma link C++ defined_in "src/TSBSSimADC.h";
-//#pragma link C++ defined_in "src/TSBSSimTDC.h";
+#pragma link C++ defined_in "src/TSBSSimADC.h";
+#pragma link C++ defined_in "src/TSBSSimTDC.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
 #pragma link C++ defined_in "src/TSBSSpec.h";
 

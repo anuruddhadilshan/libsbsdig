@@ -37,8 +37,8 @@ namespace Decoder {
 
     // We don't need these functions for simulated data, but must be defined
     // so that this won't be an abstract class
-    Int_t LoadNextEvBuffer(THaSlotData*) {};
-    Int_t LoadThisBlock(THaSlotData*, std::vector<UInt_t >) {};
+    Int_t LoadNextEvBuffer(THaSlotData*) {return 0;};// needs return something for compilation
+    Int_t LoadThisBlock(THaSlotData*, std::vector<UInt_t >) {return 0;};// needs return something for compilation
     Int_t Decode(const UInt_t *) { return 0; }; // use DecodeOneWord instead
 
 
