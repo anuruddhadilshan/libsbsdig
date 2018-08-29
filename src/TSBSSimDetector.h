@@ -7,7 +7,7 @@
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
-#include "TF1Convolution.h"
+//#include "TF1Convolution.h"
 
 class g4sbshitdata;
 class TSBSSimEvent;

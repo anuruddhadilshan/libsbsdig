@@ -7,7 +7,8 @@
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
-#include "TF1Convolution.h"
+//#include "TF1Convolution.h"
+#include "TH1D.h"
 #include "TRandom3.h"
 
 //
@@ -278,7 +279,11 @@ class TSPEModel : public TObject {
   void   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
   
  private:
-  TF1 *fPulseModel;
+  TF1 *fPulseModel;// We'll have to ditch that stuff... *sigh*
+  TH1D *fPulseHisto;//At least we'll have to setup and use one per detector
+  double GetHistoX(double y, double x1, double x2);
+  //void  BuildHisto(double tau, double sigma);
+  
   ClassDef(TSPEModel,1);
 };
 

@@ -1,10 +1,6 @@
 #include "TSBSSimScint.h"
 #include <iostream>
 #include <TSBSSimData.h>
-#include <TF1.h>
-#include <TF1Convolution.h>
-#include <TTree.h>
-#include <TFile.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
 
@@ -24,6 +20,7 @@ void TSBSSimScint::Init()
   if(fDebug>=1)
     cout << "Scintillator detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimScint::Init() " << endl;
   
+  // Get the Detector info
   fDetInfo = fDBmanager->GetDetInfo(fName.Data());
   
   double tau = fDetInfo.DigInfo().SPE_Tau();
@@ -32,8 +29,10 @@ void TSBSSimScint::Init()
   double tmax = +fDetInfo.DigInfo().GateWidth()/2.0;
   double t0 = 0.0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
   
+  // Get all necessary info to parameterize the PMT pulse shape.
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
+  //Configure the PMT signals array
   fSignals.resize(fDetInfo.NChan());
   for(size_t i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
     fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));

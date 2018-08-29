@@ -10,16 +10,38 @@ TSPEModel::TSPEModel(const char* detname,
 		     double t0, double tmin, double tmax)
 {
   TF1 fFunc1(Form("fFunc1%s",detname),
-	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
-			     tau*tau, tau),
-	     tmin ,tmax);
+  	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
+  			     tau*tau, tau),
+  	     tmin ,tmax);
   TF1 fFunc2(Form("fFunc2%s",detname),
-	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))", 
-			     1./TMath::Sqrt(2*TMath::Pi()*sigma), t0, sigma*sigma),
-	     tmin, tmax);
-  TF1Convolution fConvolution(&fFunc1, &fFunc2);
+  	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))", 
+  			     1./TMath::Sqrt(2*TMath::Pi()*sigma), t0, sigma*sigma),
+  	     tmin, tmax);
+ 
+  //TF1Convolution is deemed too premature to be used - and potentially pretty slow
+  //TF1Convolution fConvolution(&fFunc1, &fFunc2);
+  //fPulseModel = new TF1(Form("fSignal%s",detname), fConvolution, tmin, tmax, fConvolution.GetNpar());
   
-  fPulseModel = new TF1(Form("fSignal%s",detname), fConvolution, tmin, tmax, fConvolution.GetNpar());
+  const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
+  fPulseHisto = new TH1D(Form("fPulseHisto%s",detname), "", NbinsTotal, tmin, tmax);
+  double t_i, t_j;
+  double ps_i, g_j;
+  for(int i = 0; i<NbinsTotal; i++){
+    t_i = fPulseHisto->GetXaxis()->GetBinCenter(i+1);
+    ps_i = fFunc1.Eval(t_i);
+    if(sigma>0){
+      if(ps_i>1.0e-10){
+	for(int j = 0; j<NbinsTotal; j++){
+	  fFunc2.SetParameter(1, t_i);
+	  t_j = fPulseHisto->GetXaxis()->GetBinCenter(j+1);
+	  g_j = fFunc2.Eval(t_j);
+	  if(g_j>1.0e-10)fPulseHisto->Fill(t_j, ps_i*g_j);
+	}
+      }
+    }else{
+      fPulseHisto->Fill(t_i, ps_i);
+    }
+  }
   
 }
 
@@ -28,7 +50,8 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
 #if DEBUG>0
   cout << "unnormalized pulse max (ns -1) " << fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
 #endif
-  if(fPulseModel->GetMaximum()<thr/charge){
+  //if(fPulseModel->GetMaximum()<thr/charge){
+  if(fPulseHisto->GetMaximum()<thr/charge){
     return false;
   }else{
     return true;
@@ -41,11 +64,32 @@ void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, dou
     t_lead = 1.0e38;
     t_trail = 1.0e38;
   }else{
+    /*
     double xmax = fPulseModel->GetMaximumX();
     t_lead = fPulseModel->GetX(thr/charge, fPulseModel->GetXmin(), xmax);
     t_trail = fPulseModel->GetX(thr/charge, xmax, fPulseModel->GetXmax());
+    */
+    double xmax = fPulseHisto->GetBinCenter(fPulseHisto->GetMaximumBin());
+    t_lead = GetHistoX(thr/charge, fPulseHisto->GetBinLowEdge(1), xmax);
+    t_trail = GetHistoX(thr/charge, xmax, fPulseHisto->GetBinLowEdge(fPulseHisto->GetNbinsX()+1));
   }
 }
+
+double TSPEModel::GetHistoX(double y, double x1, double x2)
+{
+  double splineslope;
+  for(int k = fPulseHisto->FindBin(x1); k<=fPulseHisto->FindBin(x2); k++){
+    if(  ( (fPulseHisto->GetBinContent(k+1)-y)*(fPulseHisto->GetBinContent(k)-y) )<0 ){
+      // threshold crossed if diff(TH1::GetBinContent-y) changes sign
+      splineslope = (fPulseHisto->GetBinContent(k+1)-fPulseHisto->GetBinContent(k))/(fPulseHisto->GetBinCenter(k+1)-fPulseHisto->GetBinCenter(k));
+      
+      return fPulseHisto->GetBinCenter(k)+(y-fPulseHisto->GetBinContent(k))/splineslope;
+    }
+  }
+  return 1.0e38;
+}
+
+
 
 //
 // Class TPMTSignal

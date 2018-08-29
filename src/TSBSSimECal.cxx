@@ -1,10 +1,6 @@
 #include "TSBSSimECal.h"
 #include <iostream>
 #include <TSBSSimData.h>
-#include <TF1.h>
-#include <TF1Convolution.h>
-#include <TTree.h>
-#include <TFile.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
 
