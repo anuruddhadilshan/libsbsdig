@@ -44,7 +44,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
   
-  //bool signal = false;
+  bool signal = false;
   int chan = 0;
   int type = 0;
   double time = 0;
@@ -56,7 +56,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
     // Only get detector data for Scintillator
     // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
     if(ev->GetDetUniqueID() == UniqueDetID()) {
-      //signal = (ev->GetData(0)==0);
+      signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
       time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
@@ -66,7 +66,7 @@ void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
       if(type == 0) {
-	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, 1);//
+	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, signal);//
 	if(fDebug>=3)
 	  cout << "chan " << chan << " data " << data 
 	       << " fSignals[chan].Npe() " << fSignals[chan].Npe() << endl;

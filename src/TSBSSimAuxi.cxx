@@ -129,9 +129,101 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  t_lead+=evttime;
+  t_trail+=evttime;
   if(t_lead<1e30 && t_trail<1e30){
-    fLeadTimes.push_back(evttime+t_lead);
-    fTrailTimes.push_back(evttime+t_trail);
+    //Filter here the lead and trail times
+    if(fLeadTimes.size()>0){
+      // Check if the lead and trail times are inside an existing lead time- trail time pair
+      // we assume here that fLeadTimes and fTrailTimes are same size 
+      // *if we do things correctly, that should be the case*
+      // we shall keep lead-trail times pair in timing order
+      // we neglect pulse overlaps ftm.
+      for(size_t i = 0; i<fLeadTimes.size(); i++){
+	// possibility of the current pair straddling with others.... :/
+	// treat those separately to simplify...
+	// tL < tT_i-1 < tL_i < tT
+	if(i>0)
+	  if(t_lead < fTrailTimes.at(i-1) && fLeadTimes.at(i) < t_trail){
+	    //fLeadTimes.at(i-1) < t_lead && 
+	    fLeadTimes.erase(fLeadTimes.begin()+i);
+	    fTrailTimes.erase(fTrailTimes.begin()+i-i);
+	    // tL < tL_i-1
+	    if(t_lead < fLeadTimes.at(i-1)){
+	      fLeadTimes.erase(fLeadTimes.begin()+i-1);
+	      fLeadTimes.insert(fLeadTimes.begin()+i-1, t_lead);
+	    }
+	    // tT_i < tT
+	    if(t_lead < fLeadTimes.at(i-1)){
+	      fTrailTimes.erase(fTrailTimes.begin()+i);
+	      fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	    }
+	    break;
+	  }
+	// tL < tT_i < tL_i+1 < tT
+	if(i<fLeadTimes.size()-1)
+	  if(t_lead < fTrailTimes.at(i) && fLeadTimes.at(i+1) < t_trail){
+	    //fLeadTimes.at(i-1) < t_lead && 
+	    fLeadTimes.erase(fLeadTimes.begin()+i+1);
+	    fTrailTimes.erase(fTrailTimes.begin()+i);
+	    // tL < tL_i
+	    if(t_lead < fLeadTimes.at(i-1)){
+	      fLeadTimes.erase(fLeadTimes.begin()+i);
+	      fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	    }
+	    // tT_i+1 < tT
+	    if(t_lead < fLeadTimes.at(i-1)){
+	      fTrailTimes.erase(fTrailTimes.begin()+i+1);
+	      fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	    }
+	    break;
+	  }
+	
+	// if not, 6 cases to consider:
+	// tL < tT < tL_i < tT_i => both inserted *before* existing pair 
+	if(t_trail < fLeadTimes.at(i)){
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  break;
+	}
+	// tL < tL_i < tT < tT_i => tL *replaces* tL_i
+	if(t_lead < fLeadTimes.at(i) && fLeadTimes.at(i) < t_trail && t_trail < fTrailTimes.at(i)){
+	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  break;
+	}
+	// tL_i < tL < tT < tT_i => tL *replaces* tL_i AND tT *replaces* tT_i
+	if(t_lead < fLeadTimes.at(i) && fTrailTimes.at(i) < t_trail){
+	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  break;
+	}
+	// tL < tL_i < tT_i < tT => nothing happens
+	if(fLeadTimes.at(i) < t_lead && t_trail < fTrailTimes.at(i)){
+	  break;
+	}
+	// tL_i < tL   < tT_i < tT   => tT *replaces* tT_i
+	if(fLeadTimes.at(i) < t_lead && t_lead < fTrailTimes.at(i) && fTrailTimes.at(i) < t_trail){
+	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	}
+	// tL_i < tL   < tT   < tT_i => both inserted *after* existing pair 
+	if(fTrailTimes.at(i) < t_lead){
+	  fLeadTimes.insert(fLeadTimes.begin()+i+1, t_lead);
+	  fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	  break;
+	}
+	//()
+      }
+    }else{
+      //of course, if initial size was 0, just psuh it back
+      //hopefully it will be the case most of the time
+      fLeadTimes.push_back(t_lead);
+      fTrailTimes.push_back(t_trail);
+    }
+    
   }
 }
 
