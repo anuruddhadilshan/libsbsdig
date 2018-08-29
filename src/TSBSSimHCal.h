@@ -2,11 +2,12 @@
 #define _TSBSSIMHCAL_H
 
 #include "TSBSSimDetector.h"
+#include "TSBSSimAuxi.h"
 
-class TF1;
-class TF1Convolution;
-class TTree;
-class TFile;
+// class TF1;
+// class TF1Convolution;
+// class TTree;
+// class TFile;
 
 class TSBSSimHCal : public TSBSSimDetector {
 public:
@@ -20,6 +21,7 @@ public:
 
   // Initialize
   void Init();
+  /* 
   struct SPEModel {
     double gain_pmt;
     double resistance; //ohm
@@ -39,6 +41,7 @@ public:
     double sig;
     double t0;
   };
+  */
   struct Signal {
     std::vector<double> samples;
     std::vector<double> samples_raw;
@@ -55,12 +58,14 @@ public:
     double dx_samples;
     double dx_raw;
     Signal();
-    void Fill(SPEModel *model,double t, double toffset = 0.0);
+    //void Fill(SPEModel *model,double t, double toffset = 0.0);
+    void Fill(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
     void Digitize();
     void Clear();
   };
 private:
-  SPEModel *fSPE;
+  //SPEModel *fSPE;
+  TSPEModel *fSPE;
   std::vector<Signal> fSignals;
 
   ClassDef(TSBSSimHCal,1)

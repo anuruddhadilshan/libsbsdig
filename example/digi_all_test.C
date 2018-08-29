@@ -10,16 +10,6 @@
 #include "TSBSSimDigitizer.h"
 #include "THaAnalysisObject.h"
 
-/*
-#include "TSBSCher.h"
-#include "TSystem.h"
-#include "TSBSSpec.h"
-#include "TSBSSimCherDigitization.h"
-#include "TSBSDBManager.h"
-#include "TSBSGeant4File.h"
-#include "TSBSSimEvent.h"
-*/
-
 R__LOAD_LIBRARY(../libsbsdig)
 
 void digi_all_test(int nentries = 100, int debuglevel = 1)
@@ -52,6 +42,10 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h
+  
+  TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
+  digitizer->AddDetector(hcal);
+  
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
   hodo->SetDebug(debuglevel);
   digitizer->AddDetector(hodo);
@@ -74,13 +68,6 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   digitizer->Process(f, nentries);
   //digitizer->Process(nentries);
-  
-  /*
-    TSBSSimHCal *hcal = new TSBSSimHCal();
-    digitizer->Add(hcal);
-    // Now start the digitization on this file
-    delete hcal;
-  */
   
   //cout << "delete detectors" << endl;
   //delete hodo;

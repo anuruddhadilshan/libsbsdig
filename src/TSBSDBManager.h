@@ -42,7 +42,7 @@ public:
   
   //New database parameters:
   exp_type fSBSExpType;
-  int fNSpecs;
+  UInt_t fNSpecs;
   std::vector<string> fSpecNames;
   std::vector<TSpectroInfo> fSpectroInfo;
   std::vector<TDetInfo> fDetInfo;

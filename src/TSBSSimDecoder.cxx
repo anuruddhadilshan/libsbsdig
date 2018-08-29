@@ -68,7 +68,7 @@ Int_t TSBSSimDecoder::DefineVariables( THaAnalysisObject::EMode mode )
 {
   // Define global variables for the MC quantities. Extends the base
   // class method.
-
+  
   const char* const here = "TSBSSimDecoder::DefineVariables";
   
   if( mode == THaAnalysisObject::kDefine && fIsSetup )
@@ -181,8 +181,8 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 #endif
 {
   // Fill crateslot structures with Monte Carlo event data in 'evbuffer'
-
-  static const char* const here = "TSBSSimDecoder::LoadEvent";
+  
+  //static const char* const here = "TSBSSimDecoder::LoadEvent";
 
 #if ANALYZER_VERSION_CODE < ANALYZER_VERSION(1,6,0)
   Bool_t fNeedInit = fgNeedInit;
@@ -231,9 +231,8 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   //
   if( fDoBench ) fBench->Begin("physics_decode");
   
-  
-  Bool_t newclus;
-  Int_t crate, slot, chan,lchan;
+  //Bool_t newclus;
+  //Int_t crate, slot, chan,lchan;
   
   // We must check at least once which detectors are enabled
   // before we try to load up data for that detector
@@ -389,6 +388,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   return HED_OK;
 }
 
+/*
 Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname, 
 					  int& chanperslot, int& slotpercrate, 
 					  int& firstcrate, int& firstslot)
@@ -403,6 +403,7 @@ Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname,
   firstslot = detinfo.FirstSlot();
   firstcrate = detinfo.FirstCrate();
 }
+*/
 
 Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
       const char *detname, TSBSSimEvent::DetectorData detdata, const int detid)
@@ -422,7 +423,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
     int mod =  detdata.fChannel;
     //This should be *general* and work for *every* subsystem
     // Loop over all raw data in this event
-    for( int j = 0; j < detdata.fData.size(); j++ ) {
+    for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
       // Identify the "logical" channel number for this event
       // based on the first integer in the raw data
       int lchan = mod + detdata.fData[j]*detInfo.NChan();

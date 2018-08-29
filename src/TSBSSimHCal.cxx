@@ -1,11 +1,12 @@
 #include "TSBSSimHCal.h"
 #include <iostream>
 #include <TSBSSimData.h>
-#include <TF1.h>
-#include <TF1Convolution.h>
-#include <TTree.h>
-#include <TFile.h>
+//#include <TF1.h>
+//#include <TF1Convolution.h>
+//#include <TTree.h>
+//#include <TFile.h>
 #include <TSBSSimEvent.h>
+#include "TSBSDBManager.h"
 
 #define HCAL_TDC_THRESH 0.1
 
@@ -22,18 +23,33 @@ TSBSSimHCal::~TSBSSimHCal()
 
 void TSBSSimHCal::Init()
 {
-  fSPE = new SPEModel();
-  //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
-  //    fConvolution->GetNpar()));
-  fSignals.resize(288); // TODO: Don't hard code this!!!
-
+  if(fDebug>=1)
+    cout << "HCal detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimHCal::Init() " << endl;
+  
+  fDetInfo = fDBmanager->GetDetInfo(fName.Data());
+  
+  double tau = fDetInfo.DigInfo().SPE_Tau();
+  double sigma = fDetInfo.DigInfo().SPE_Sigma();
+  double tmin = -fDetInfo.DigInfo().GateWidth()/2.0;
+  double tmax = +fDetInfo.DigInfo().GateWidth()/2.0;
+  double t0 = 0.0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
+  
+  fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
+  
+  fSignals.resize(fDetInfo.NChan());
+  /*
+    fSPE = new SPEModel();
+    //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
+    //    fConvolution->GetNpar()));
+    fSignals.resize(288); // TODO: Don't hard code this!!!
+  */
   //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
   //fTreeOut = new TTree("TTest","");
   /*for(int m = 0; m < int(fSignals.size()); m++) {
     fTreeOut->Branch(TString::Format("m%d.npe",m),&(fSignals[m].npe));
     fTreeOut->Branch(TString::Format("m%d.sum",m),&(fSignals[m].sum));
     fTreeOut->Branch(TString::Format("m%d.samples",m),&(fSignals[m].samples));
-  }
+    }
   */
 }
 
@@ -46,6 +62,7 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
   int mod = 0;
   int type = 0;
   double data = 0;
+  double pulsenorm = 0;
   for( const g4sbshitdata *ev: evbuffer) {
     // Only get detector data for HCAL
     // TODO: Don't hard code DetID here!!!
@@ -58,7 +75,9 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-        fSignals[mod].Fill(fSPE,data-75.);
+	pulsenorm = fDetInfo.DigInfo().Gain(mod)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
+        //fSignals[mod].Fill(fSPE, data-75.);
+	fSignals[mod].Fill(fSPE, pulsenorm,data-75.);
       } else if (type == 1) { // sumedep data
         fSignals[mod].sumedep = data;
       }
@@ -154,8 +173,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   SetHasDataFlag(any_events);
 }
 
-TSBSSimHCal::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
-  dnraw(10), sumedep(0.0)
+TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(1.0)
   //mint(0.0), maxt(50.), nbins(50),
 {
   nbins = (maxt-mint)/dx_samples;
@@ -165,6 +183,31 @@ TSBSSimHCal::Signal::Signal() : mint(0.0), maxt(50.0), dx_samples(1.0), npe(0),
   samples_raw.resize(nbins_raw);
 }
 
+void TSBSSimHCal::Signal::Fill(TSPEModel *model, double pulsenorm, double t, double toffset)
+{
+  int start_bin = 0;
+  if( mint > t )
+    toffset -= (mint-t);
+  else
+    start_bin = (t-mint)/dx_raw;
+
+  if(start_bin > nbins_raw)
+    return; // Way outside our window anyways
+
+  // Now digitize this guy into the raw_bin (scope)
+  //double tt = model->start_t-toffset;
+  double tt = -12.5-toffset;//model->start_t hardcoded anyway
+  //std::cout << "t=" << t << ", tt=" << tt << std::endl;
+  for(int bin = start_bin; bin < nbins_raw; bin++) {
+    samples_raw[bin] += pulsenorm*model->Eval(tt);
+    tt += dx_raw;
+  }
+  npe++;
+}
+
+
+/* 
+//This is the old function TSBSSimHCal::Signal::Fill, which uses struct SPEModel instead of class TSPEModel:
 void TSBSSimHCal::Signal::Fill(SPEModel *model,double t, double toffset)
 {
   int start_bin = 0;
@@ -216,7 +259,7 @@ double TSBSSimHCal::SPEModel::Eval(double t)
   //return model->Eval(t);
   //return 1.0;
 }
-
+*/
 
 void TSBSSimHCal::Clear()
 {

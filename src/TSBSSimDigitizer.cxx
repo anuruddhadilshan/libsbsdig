@@ -42,7 +42,7 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
   // Now loop through the file and digitize entries
   int d_flag_readevent = 0;
   int nevent = 0;
-  int ngood = 0;
+  //int ngood = 0;
   bool has_data;
   while( f->ReadNextEvent(d_flag_readevent) && nevent<max_events ) {
     if(fDebug>=3)cout << "clear event " << endl;
@@ -112,7 +112,7 @@ int TSBSSimDigitizer::Process(int max_events)
   }
   */
   
-  for(int i_f = 0; i_f<fG4FileStack_.size(); i_f++){
+  for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
     int res = fG4FileStack_.at(i_f)->Open();
     if( res != 1) {
       std::cerr << "Failed to open g4sbs rootfile " << std::endl
@@ -128,8 +128,8 @@ int TSBSSimDigitizer::Process(int max_events)
   // Now loop through the file and digitize entries
   //int d_flag_readevent = 0;
   int nevent = 0;
-  int nevt_b;
-  int ngood = 0;
+  UInt_t nevt_b;
+  //int ngood = 0;
   bool has_data;
   
   while( nevent<max_events ) {
@@ -138,7 +138,7 @@ int TSBSSimDigitizer::Process(int max_events)
     has_data = false;
      
     // Accumulate data here...
-    for(int i_f = 0; i_f<fG4FileStack_.size(); i_f++){
+    for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
       nevt_b = 0;
       //f_b = fG4FileStack.at(i_f);
       while( fG4FileStack_.at(i_f)->ReadNextEvent(fDebug) && 
@@ -192,12 +192,12 @@ int TSBSSimDigitizer::Process(int max_events)
 }
 
 
-int TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
+void TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
 {
   fDetectors.push_back(detector);
 }
 
-int TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, UInt_t weight)
+void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, UInt_t weight)
 {
   //fG4FileStack.push_back(std::make_pair<file, weight>);
   // Files and weights are added at the same time, and cannot be accessed from the outside... 

@@ -45,12 +45,12 @@ void TSBSSimEvent::Print( const Option_t* opt ) const
   cout << "Event number:               " << fEvtID << endl;
   cout << "Event weight:               " << fWeight << endl;
   
-  TString sopt(opt);
-  bool do_all   = sopt.Contains("all",   TString::kIgnoreCase);
+  // TODO: rewrite this Print function
+  // TString sopt(opt);
+  // bool do_all   = sopt.Contains("all",   TString::kIgnoreCase);
   // bool do_hit   = sopt.Contains("hit",   TString::kIgnoreCase) || do_all;
   // bool do_clust = sopt.Contains("clust", TString::kIgnoreCase) || do_all;
   // bool do_track = sopt.Contains("track", TString::kIgnoreCase) || do_all;
-  
 }
 
 //-----------------------------------------------------------------------------

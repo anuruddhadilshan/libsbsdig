@@ -4,11 +4,6 @@
 #include "TSBSSimDetector.h"
 #include "TSBSSimAuxi.h"
 
-class TF1;
-class TF1Convolution;
-class TTree;
-class TFile;
-
 class TSBSSimECal : public TSBSSimDetector {
 public:
   TSBSSimECal(const char* name, short id);
