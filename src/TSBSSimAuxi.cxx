@@ -13,11 +13,12 @@ TSPEModel::TSPEModel(const char* detname,
   	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
   			     tau*tau, tau),
   	     tmin ,tmax);
-  TF1 fFunc2(Form("fFunc2%s",detname),
-  	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))", 
-  			     1./TMath::Sqrt(2*TMath::Pi()*sigma), t0, sigma*sigma),
-  	     tmin, tmax);
- 
+  TF1 fFunc2(Form("fFunc2%s",detname), "gaus", 
+  // 	     TString::Format("%g*TMath::Exp(-((x-%g)**2)/(%g))", 
+  // 			     1./TMath::Sqrt(2*TMath::Pi()*sigma), t0, sigma*sigma),
+   	     tmin, tmax);
+  fFunc2.SetParameters(1.0e0/10.0/(sqrt(2*TMath::Pi())*sigma), 0, sigma);//do it this way for thaat purpose
+  
   //TF1Convolution is deemed too premature to be used - and potentially pretty slow
   //TF1Convolution fConvolution(&fFunc1, &fFunc2);
   //fPulseModel = new TF1(Form("fSignal%s",detname), fConvolution, tmin, tmax, fConvolution.GetNpar());
@@ -26,22 +27,28 @@ TSPEModel::TSPEModel(const char* detname,
   fPulseHisto = new TH1D(Form("fPulseHisto%s",detname), "", NbinsTotal, tmin, tmax);
   double t_i, t_j;
   double ps_i, g_j;
-  for(int i = 0; i<NbinsTotal; i++){
-    t_i = fPulseHisto->GetXaxis()->GetBinCenter(i+1);
+  for(int i = 1; i<=NbinsTotal; i++){
+    t_i = fPulseHisto->GetBinCenter(i+1);
     ps_i = fFunc1.Eval(t_i);
-    if(sigma>0){
-      if(ps_i>1.0e-10){
-	for(int j = 0; j<NbinsTotal; j++){
-	  fFunc2.SetParameter(1, t_i);
-	  t_j = fPulseHisto->GetXaxis()->GetBinCenter(j+1);
-	  g_j = fFunc2.Eval(t_j);
-	  if(g_j>1.0e-10)fPulseHisto->Fill(t_j, ps_i*g_j);
-	}
+    if(sigma>0 && ps_i>1.0e-12){
+      fFunc2.SetParameter(1, t_i);
+      for(int j = 1; j<=NbinsTotal; j++){
+	t_j = fPulseHisto->GetBinCenter(j+1);
+	g_j = fFunc2.Eval(t_j);
+	if(g_j>1.0e-12)fPulseHisto->Fill(t_j, ps_i*g_j);
       }
     }else{
       fPulseHisto->Fill(t_i, ps_i);
     }
   }
+  
+  cout << endl<< detname << " pulse histo built" << endl;
+#if DEBUG>2
+  for(int i = 0; i<NbinsTotal; i++){
+    if(fPulseHisto->GetBinContent(i)>0)cout << fPulseHisto->GetBinContent(i) << " ";
+  }
+  cout << endl;
+#endif
   
 }
 
