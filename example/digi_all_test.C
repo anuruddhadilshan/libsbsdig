@@ -31,14 +31,17 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   // Create the SBS Digitizer (will control the digitization process)
   TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
-  digitizer->SetDebug(debuglevel+1);
+  digitizer->SetDebug(debuglevel);
   
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
-  // TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
+  f->SetSource(0);
+  TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
+  f_b->SetSource(1);
   
-  // digitizer->AddInputFile(f, 1);
-  // digitizer->AddInputFile(f_b, 100);
+  
+  digitizer->AddInputFile(f, 1);
+  //digitizer->AddInputFile(f_b, 10);
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h

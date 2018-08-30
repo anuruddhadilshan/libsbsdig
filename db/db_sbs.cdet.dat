@@ -7,7 +7,7 @@ sbs.cdet.nchan = 2352
 sbs.cdet.nplanes = 2
 sbs.cdet.nmodules = 3 3
 
-#cdet geometry info #shall we assume there are 6 modules per plane instead of 3 ?
+#cdet geometry info #shall we assume there are 6 half-modules per plane instead of 3 modules ?
 geo.sbs.cdet.1.1.nrows = 196 #m
 geo.sbs.cdet.1.1.ncols = 2 
 geo.sbs.cdet.1.1.xsize = 0.98125 #m
@@ -60,8 +60,10 @@ geo.sbs.cdet.2.3.yoffset = -0.47 #m #+42 cm -5 cm
 
 #cdet digitization info
 dig.sbs.cdet.roimpedance = 50 # ohm
+#CDet may use Lecroy 1881M ADC ? for calibration only
 #dig.sbs.cdet.adcconversion = 100.0 #fC/ch #optionnal for Scint
 #dig.sbs.cdet.adcbits = 12 #optionnal for Scint
+#CDet uses Lecroy 1877 TDC
 dig.sbs.cdet.tdcconversion = 0.5 #ns/ch
 dig.sbs.cdet.tdcbits = 16
 dig.sbs.cdet.triggerjitter = 3.0  # ns

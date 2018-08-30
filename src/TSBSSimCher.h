@@ -10,6 +10,7 @@ public:
   virtual ~TSBSSimCher();
   // This loads the simulation event data
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer);
+  virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
   
   virtual void Clear();

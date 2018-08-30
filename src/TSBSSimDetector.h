@@ -19,6 +19,7 @@ public:
   TSBSSimDetector();
   virtual ~TSBSSimDetector();
   virtual void LoadEventData(const std::vector<g4sbshitdata*> &evbuffer) = 0;
+  virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer) = 0;
   virtual void Digitize(TSBSSimEvent &event) = 0;
   virtual bool HasData() { return fHasData; }
   void SetUniqueDetID(short id){fUniqueDetID = id;};

@@ -57,6 +57,43 @@ void TSBSSimHCal::Init()
 void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
+  LoadAccumulateData(evbuffer);
+  /*
+  // Just make HCAL be 288 modules for now to make it easier....
+  //Double_t mint = 1e9;
+  int mod = 0;
+  int type = 0;
+  double data = 0;
+  double pulsenorm = 0;
+  // for( const g4sbshitdata *ev: evbuffer) {
+  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
+    g4sbshitdata* ev = (*it);
+    // Only get detector data for HCAL
+    // TODO: Don't hard code DetID here!!!
+    if(ev->GetDetType() == kHCal) {
+      mod  = ev->GetData(0);
+      type = ev->GetData(1);
+      data = ev->GetData(2);
+      if(type == 0) {
+        //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
+        // ev->GetData(1) - 60. << std::endl;
+        //if(ev->GetData(1)<mint)
+        //  mint = ev->GetData(1);
+	pulsenorm = fDetInfo.DigInfo().Gain(mod)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
+        //fSignals[mod].Fill(fSPE, data-75.);
+	fSignals[mod].Fill(fSPE, pulsenorm,data-75.);
+      } else if (type == 1) { // sumedep data
+        fSignals[mod].sumedep = data;
+      }
+    }
+  }
+  //std::cout << "Mint = " << mint << std::endl;
+  */
+}
+
+
+void TSBSSimHCal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
+{
   // Just make HCAL be 288 modules for now to make it easier....
   //Double_t mint = 1e9;
   int mod = 0;

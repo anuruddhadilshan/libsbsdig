@@ -40,23 +40,26 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
     max_events = f->GetEntries();
 
   // Now loop through the file and digitize entries
-  int d_flag_readevent = 0;
+  //int d_flag_readevent = 0;
   int nevent = 0;
   //int ngood = 0;
   bool has_data;
-  while( f->ReadNextEvent(d_flag_readevent) && nevent<max_events ) {
+  while( f->ReadNextEvent(fDebug) && nevent<max_events ) {
     if(fDebug>=3)cout << "clear event " << endl;
     fEvent->Clear();
     has_data = false;
     
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "load event for det " << det << endl;
+      if(fDebug>=3){
+	cout << "load event for det " << fDetectors[det]->GetName() << endl;
+	cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+      }
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
     // Now digitize all detectors
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "digitize det " << det << endl;
+      if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;
       fDetectors[det]->Digitize(*fEvent);
     }
     fEvent->fEvtID = nevent;
@@ -128,6 +131,7 @@ int TSBSSimDigitizer::Process(int max_events)
   // Now loop through the file and digitize entries
   //int d_flag_readevent = 0;
   int nevent = 0;
+  int i_f = 0;
   UInt_t nevt_b;
   //int ngood = 0;
   bool has_data;
@@ -136,29 +140,39 @@ int TSBSSimDigitizer::Process(int max_events)
     if(fDebug>=3)cout << "clear event " << endl;
     fEvent->Clear();
     has_data = false;
-     
+    i_f = 0;
     // Accumulate data here...
-    for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
+    //for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
+    for(std::vector<TSBSGeant4File*>::const_iterator it = fG4FileStack_.begin(); it!=fG4FileStack_.end(); ++it){
+      TSBSGeant4File* f = (*it);
+      cout << " i_f "  << i_f << endl;
       nevt_b = 0;
       //f_b = fG4FileStack.at(i_f);
-      while( fG4FileStack_.at(i_f)->ReadNextEvent(fDebug) && 
+      while( f->ReadNextEvent(fDebug) && 
 	     nevt_b<(fG4FileWeights.at(i_f)/fG4FileWeights.at(0)) ) {
-	
 	// Loop through all detectors and have them parse data vector
 	for(size_t det = 0; det < fDetectors.size(); det++) {
-	  if(fDebug>=3)cout << "load event " << nevt_b << " for file " << fG4FileStack_.at(i_f)->GetFileName() 
-			    << " det " << fDetectors[det]->GetName() << endl;
-	  fDetectors[det]->LoadEventData(fG4FileStack_.at(i_f)->GetDataVector());
+	  if(fDebug>=3){
+	    cout << "load event " << nevt_b << " for file " << f->GetFileName() 
+		 << " det " << fDetectors[det]->GetName() << endl;
+	  }
+	  if(f->GetSource()==0){
+	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+	    fDetectors[det]->LoadEventData(f->GetDataVector());
+	  }else{
+	    fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+	  }
 	}
 	nevt_b++;
       }
+      i_f++;
     }
     
     
     
     // Now digitize all detectors
     for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "digitize det " << det << endl;
+      if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;
       fDetectors[det]->Digitize(*fEvent);
     }
     fEvent->fEvtID = nevent;

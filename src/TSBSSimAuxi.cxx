@@ -215,7 +215,6 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
 	  fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
 	  break;
 	}
-	//()
       }
     }else{
       //of course, if initial size was 0, just psuh it back
@@ -223,8 +222,13 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
       fLeadTimes.push_back(t_lead);
       fTrailTimes.push_back(t_trail);
     }
-    
-  }
+#if DEBUG>0
+    if(fLeadTimes.size()!=fTrailTimes.size()){
+      cout << "Warning: size of lead times container: " << fLeadTimes.size() 
+	   << " != size of trail times container: " << fTrailTimes.size() << endl;
+    }
+#endif
+  }//end if(t_lead && t_trail<30)
 }
 
 void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
@@ -251,84 +255,33 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
   if(fLeadTimes.size() && fTrailTimes.size()){
+    for(size_t i = 0; i<fLeadTimes.size(); i++){
 #if DEBUG>0
-    cout << " fLeadTimes.at(0) " << fLeadTimes.at(0) << " fTrailTimes.at(0) " << fTrailTimes.at(0) << endl;
+      cout << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) 
+	   << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
 #endif
-    
-    // trim "all" bits that are above the number of TDC bits - a couple to speed it up
-    // (since TDC have a revolving clock, as far as I understand)
-    tdc_value = TMath::Nint(fLeadTimes.at(0)/diginfo.TDCConversion());
-    for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
-      tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
-    }
-    tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
-    fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));
-    // also mark the traling time with setting bin 31 to 1
-    tdc_value = TMath::Nint(fTrailTimes.at(0)/diginfo.TDCConversion());
-    for(int i = diginfo.TDCBits()+2; i>=diginfo.TDCBits(); i--){
-      tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (i) );
-    }
-    tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
-    fTDCs.insert(fTDCs.begin()+1, tdc_value);
-    
+      // trim "all" bits that are above the number of TDC bits - a couple to speed it up
+      // (since TDC have a revolving clock, as far as I understand)
+      tdc_value = TMath::Nint(fLeadTimes.at(i)/diginfo.TDCConversion());
+      for(int j = 30; j>=diginfo.TDCBits(); j--){
+	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
+      }
+      tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
+      //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
+      fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
+      // also mark the traling time with setting bin 31 to 1
+      tdc_value = TMath::Nint(fTrailTimes.at(i)/diginfo.TDCConversion());
+      for(int j = 30; j>=diginfo.TDCBits(); j--){
+	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
+      }
+      tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
+      fTDCs.push_back(tdc_value);
+      
 #if DEBUG>0
-    cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
+      cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
 #endif
-  }
-  
-  /*
-  // TDCs: select only lead and trail times not between a lead and a trail time.
-  // too complicated for the moment. 
-  int minsize = min(fLeadTimes.size(), fTrailTimes.size());
-  UInt_t LeadTDC;
-  UInt_t TrailTDC;
-  for(int i = 1; i<minsize; i++){
-    LeadTimeBoxed = false;
-    TrailTimeBoxed = false;
-    LeadTDC = fLeadTimes.at(i)*diginfo.fTDCconversion;
-    TrailTDC = fTrailTimes.at(i)*diginfo.fTDCconversion;
-    
-    for(j = 0; j<fTDCs.size(); j+=2){
-      //if(fTDCs.at(j)<=LeadTDC && LeadTDC<=fTDCs.at(j+1))LeadTimeBoxed = true;
-      //if(fTDCs.at(j)<=TrailTDC && TrailTDC<=fTDCs.at(j+1))TrailTimeBoxed = true;
-      
-      if(LeadTDC<fTDCs.at(j)){//current leading time before "recorded" TDC leading time
-	if(TrailTDC>=fTDCs.at(j)){//current trailing time after: replace leading time with current
-	  fTDCs.erase(fTDCs.begin()+j);
-	  fTDCs.insert(fTDCs.begin()+j, LeadTDC);
-	}else{// current trailing time before: insert a new "pair"
-	  fTDCs.insert(fTDCs.begin()+j, LeadTDC);
-	  fTDCs.insert(fTDCs.begin()+j+1, TrailTDC);
-	}
-	break;
-      }
-      if(fTDCs.at(j)<=LeadTDC && LeadTDC<=fTDCs.at(j+1)){
-	if(fTDCs.at(j)<=TrailTDC && TrailTDC<=fTDCs.at(j+1)){
-	  break;
-	}else{
-	  fTDCs.erase(fTDCs.begin()+j+1);
-	  fTDCs.insert(fTDCs.begin()+j+1, TrailTDC);
-	}
-      }
-      //   if(LeadTDC<fTDCs.at(j)){
-    // 	fTDCs.insert(fTDCs.begin()+j-1);
-    // 	if(TrailTDC>=fTDCs.at(j)){
-	  
-    // 	}
-    //   }
-    // 	&& TrailTDC>=fTDCs.at(j)){
-    // 	fTDCs.erase(fTDCs.begin()+j);
-    // 	fTDCs.insert(fTDCs.begin()+j);
-    //   }
-      
-      // 
     }
-    //fTDCs.push_back(TMath::Nint(fLeadTimes.at(i)*diginfo.fTDCconversion));
   }
-  // for(int i = 0; i<fLeadTimes.size(); i++){
-  //   fTDCs.push_back(TMath::Nint(fLeadTimes.at(i)*diginfo.fTDCconversion));
-  // }
-  */
   
   fSumEdep*=1.0e9;// store in eV.
 }
