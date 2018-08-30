@@ -19,7 +19,8 @@ public:
   // Parsses the passed file event by event and digitizes
   int Process(TSBSGeant4File *file, int max_events = 0);
   // File superposition: Procession of a stack of files ?
-  // option: make the file stack a member of TSBSSimDigitizer, and just "Process" it
+  // make the file stack a member of TSBSSimDigitizer, and just "Process" it with function below 
+  // -> not functional yet :/
   int Process(int max_events = 0);// Process the mmeber file stack
   
   // Add a new detector to the list
@@ -34,9 +35,8 @@ private:
   TFile *fOutFile;
   TTree *fOutTree;
   
-  //std::vector< std::pair<TSBSGeant4File*, UInt_t> > fG4FileStack;
-  //Files and weights are added at the same time, and cannot be accessed from the outside... 
-  // No need to inforce them to be bound together by a quirky object
+  // Lists of files with weight to perform additive digitization.
+  // Files and weights are added at the same time, and cannot be accessed from the outside... 
   std::vector< TSBSGeant4File* > fG4FileStack_;
   // vector of vector if strings: 
   // the global vector contains the type of file, the inner vector contains the list of names of files.

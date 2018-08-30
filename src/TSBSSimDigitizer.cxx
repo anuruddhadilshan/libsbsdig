@@ -94,6 +94,8 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
 
 int TSBSSimDigitizer::Process(int max_events)
 {
+  cout << "Warning:  TSBSSimDigitizer::Process(int) is not functional yet." << endl 
+       << "Please use int TSBSSimDigitizer::Process(TSBSGeant4File, int)" << endl;
   if(fG4FileStack_.size()==0)
     return 0;
   
@@ -114,7 +116,7 @@ int TSBSSimDigitizer::Process(int max_events)
     }
   }
   */
-  
+  //go through the file stack and open all of them...
   for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
     int res = fG4FileStack_.at(i_f)->Open();
     if( res != 1) {
@@ -149,7 +151,7 @@ int TSBSSimDigitizer::Process(int max_events)
       nevt_b = 0;
       //f_b = fG4FileStack.at(i_f);
       while( f->ReadNextEvent(fDebug) && 
-	     nevt_b<(fG4FileWeights.at(i_f)/fG4FileWeights.at(0)) ) {
+	     nevt_b<(fG4FileWeights.at(i_f)/fG4FileWeights.at(0)) ) {//Keep adding as many events as indicated by the weight
 	// Loop through all detectors and have them parse data vector
 	for(size_t det = 0; det < fDetectors.size(); det++) {
 	  if(fDebug>=3){
@@ -157,9 +159,11 @@ int TSBSSimDigitizer::Process(int max_events)
 		 << " det " << fDetectors[det]->GetName() << endl;
 	  }
 	  if(f->GetSource()==0){
+	    //"LoadEventData" for signal - we want teverything cleanded up for signal
 	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	    fDetectors[det]->LoadEventData(f->GetDataVector());
 	  }else{
+	    //"LoadAccumulateData" for any other stuff we want to superimposeto signal
 	    fDetectors[det]->LoadAccumulateData(f->GetDataVector());
 	  }
 	}
