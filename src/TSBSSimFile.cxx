@@ -14,7 +14,13 @@
 
 #include "TSBSSimFile.h"
 #include "TSBSSimEvent.h"
-#include "evio.h"     // for S_SUCCESS
+//#include "evio.h"     // for S_SUCCESS
+// We really only need S_SUCCESS from evio.h, so why not just define
+// it ourselves so we don't have to pull the whole header file.
+#ifndef S_SUCCESS
+#define S_SUCCESS 0
+#define S_FAILURE -1
+#endif
 
 #include "TFile.h"
 #include "TTree.h"
