@@ -70,7 +70,7 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // We just set up one, but this could be many.
   //  THaRun* run = new THaRun( "prod12_4100V_TrigRate25_4.dat" );
   //THaRun* run = new THaRun(TString::Format("digitized/simin_%d.root",runnum) );
-  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/simin_%d.root",runnum) );
+  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/simdig_%d.root",runnum) );
   run->SetFirstEvent(0);
   run->SetLastEvent(lastEvent);
 
