@@ -1,10 +1,10 @@
-#ifndef _TSBSSIMAUXI_H
-#define _TSBSSIMAUXI_H
+#ifndef TSBSSIMAUXI_H
+#define TSBSSIMAUXI_H
 
 #include <vector>
 #include <map>
 #include "g4sbs_types.h"
-#include "THaAnalysisObject.h"
+//#include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
 //#include "TF1Convolution.h"
@@ -18,9 +18,9 @@
 class TSignalInfo : public TObject {
  public:
   TSignalInfo() {};
- TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
-  ~TSignalInfo() {};
-  
+  TSignalInfo(int apid, int atid):fPID(apid), fTID(atid) {};
+  virtual ~TSignalInfo() {};
+
   double PID(){return fPID;};
   double TID(){return fTID;};
 
@@ -192,7 +192,7 @@ private:
   Int_t fChanLo;
   Int_t fChanHi;
 
-  ClassDef(TDigSlot,0);
+  ClassDef(TDigSlot,1);
 };
 
 //______________________________
@@ -264,6 +264,7 @@ class TDetInfo : public TObject{
   std::vector<TDigSlot> fModSlots;
   std::map<int,std::pair<int,int> > fDetMap;
   
+public:
   ClassDef(TDetInfo, 1);
 };
 
@@ -382,5 +383,5 @@ class TNPEModel : public TObject {
 */
 
 
-#endif // _TSBSSIMAUXI_H
+#endif // TSBSSIMAUXI_H
 

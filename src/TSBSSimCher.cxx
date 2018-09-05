@@ -246,3 +246,4 @@ void TSBSSimCher::Clear()
     fSignals[i].Clear();
   }
 }
+ClassImp(TSBSSimCher) // Implements TSBSSimCher

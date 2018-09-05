@@ -319,3 +319,4 @@ void TSBSSimHCal::Signal::Clear()
   met_tdc_thresh = false;
   tdc_time = mint-dx_raw;
 }
+ClassImp(TSBSSimHCal) // Implements TSBSSimHCal

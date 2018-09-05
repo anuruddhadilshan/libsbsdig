@@ -1,7 +1,16 @@
 #include "TSBSSimAuxi.h"
-#include "TSBSDBManager.h"
 #define DEBUG 0
 
+//ClassImp(TSpectroInfo) // Implements TSpectroInfo
+ClassImp(TGeoInfo) // Implements TGeoInfo
+ClassImp(TDigInfo) // Implements TDigInfo
+ClassImp(TDigSlot) // Implements TDigSlot
+ClassImp(TDetInfo) // Implements TDetInfo
+ClassImp(TSPEModel) // Implements TSPEModel
+ClassImp(TPMTSignal) // Implements TPMTSignal
+ClassImp(TSignalInfo) // Implements TSignalInfo
+
+using namespace std;
 //
 // Class TNPEModel
 //

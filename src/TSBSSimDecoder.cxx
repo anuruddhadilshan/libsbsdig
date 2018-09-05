@@ -25,7 +25,6 @@
 #include "TDatabasePDG.h"
 #include "TRandom.h"
 #include "THaVarList.h"
-#include "TSBSSimAuxi.h"
 
 //#include <SBSSimFadc250Module.h>// we need not to need this
 
@@ -36,7 +35,9 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace Podd;
+//using namespace Podd;
+
+ClassImp(TSBSSimDecoder) // Implements TSBSSimDecoder
 
 //EFuchey: 2016/12/10: it is necessary to declare the TSBSDBManager as a static instance here 
 // (and not make it a member) because it is used by functions whic are defined as "static inline".
@@ -84,7 +85,7 @@ Int_t TSBSSimDecoder::DefineVariables( THaAnalysisObject::EMode mode )
 
   return THaAnalysisObject::
     DefineVarsFromList( vars, THaAnalysisObject::kRVarDef,
-			mode, "", this, MC_PREFIX, here );
+			mode, "", this, Podd::MC_PREFIX, here );
 }
 
 //-----------------------------------------------------------------------------

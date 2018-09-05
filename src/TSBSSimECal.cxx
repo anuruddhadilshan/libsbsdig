@@ -273,3 +273,4 @@ void TSBSSimECal::Clear()
   }
 }
 
+ClassImp(TSBSSimECal) // Implements TSBSSimECal

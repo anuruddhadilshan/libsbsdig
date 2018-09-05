@@ -269,3 +269,4 @@ void TSBSSimScint::Clear()
   }
 }
 
+ClassImp(TSBSSimScint) // Implements TSBSSimScint

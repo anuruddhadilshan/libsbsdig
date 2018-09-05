@@ -7,17 +7,6 @@
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 
-/*
-#include "TSBSCher.h"
-#include "TSystem.h"
-#include "TSBSSpec.h"
-#include "TSBSSimCherDigitization.h"
-#include "TSBSDBManager.h"
-#include "TSBSGeant4File.h"
-#include "TSBSSimEvent.h"
-*/
-
-R__LOAD_LIBRARY(../libsbsdig)
 
 void digi_hcal_test(int runnum = 931, int nentries = 100, int debuglevel = 1)
 
@@ -27,6 +16,7 @@ void digi_hcal_test(int runnum = 931, int nentries = 100, int debuglevel = 1)
 
   TDatime run_time = 991231;
 
+  gSystem->AddDynamicPath("${SBS_ANALYSIS}");
   gSystem->Load("../libsbsdig.so");
 
   ////////////////////////////////////////////////////////////////

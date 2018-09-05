@@ -53,7 +53,7 @@ namespace Decoder {
     static TypeIter_t fgThisType;
     std::vector<tdc_data_struct> tdc_data;
 
-    ClassDef(TSBSSimTDC,0)  //  Generic SimTDC module
+    ClassDef(TSBSSimTDC,1)  //  Generic SimTDC module
 
   };  // TSBSSimTDC class
 

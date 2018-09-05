@@ -1,5 +1,4 @@
 #include "TSBSDBManager.h"
-#include "TSBSSimDecoder.h"
 #include <cassert>
 #include <cmath>
 #include "TMath.h"

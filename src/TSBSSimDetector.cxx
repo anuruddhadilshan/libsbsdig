@@ -103,3 +103,5 @@ void TPMTSignal::Clear()
   trailtimes.clear();
 }
 */
+ClassImp(TSPEModel) // Implements TSPEModel
+ClassImp(TPMTSignal) // Implements TPMTSignal

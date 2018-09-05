@@ -12,7 +12,7 @@
 class g4sbshitdata;
 class TSBSSimEvent;
 class TSBSDBManager;
-class THaAnalysisObject;
+//class THaAnalysisObject;
 
 class TSBSSimDetector : public THaAnalysisObject {
 public:
