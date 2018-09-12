@@ -11,6 +11,9 @@
 #include "TH1D.h"
 #include "TRandom3.h"
 
+// An data_word encoder for the various modules (i.e. F250 ADC, Caen TDC, etc..)
+class TSBSDataEncoder;
+
 //
 // Classes for DB information
 //
@@ -224,6 +227,7 @@ class TDetInfo : public TObject{
   UInt_t   NPlanes(){return fNplanes;};
   UInt_t   NModulesSize(){return fNmodules.size();};
   UInt_t   NModules(int i){return fNmodules.at(i);};
+  TSBSDataEncoder* GetDataEncoder(int i) { return fEncoders.at(i); }
   
   int GeoInfoSize(){return fGeoInfo.size();};
   TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
@@ -263,6 +267,7 @@ class TDetInfo : public TObject{
   TDigInfo fDigInfo;
   std::vector<TDigSlot> fModSlots;
   std::map<int,std::pair<int,int> > fDetMap;
+  std::vector<TSBSDataEncoder*> fEncoders;
   
 public:
   ClassDef(TDetInfo, 1);

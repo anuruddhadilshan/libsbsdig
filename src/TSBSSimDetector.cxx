@@ -12,6 +12,16 @@ TSBSSimDetector::~TSBSSimDetector()
   fDBmanager->Delete();
 }
 
+void TSBSSimDetector::CopyEncodedData(unsigned short type, unsigned short mult,
+    std::vector<unsigned int> &dat)
+{
+  dat.push_back(SimEncoder::EncodeHeader(type,mult,fNEncBufferWords));
+  for(unsigned short n = 0; n < fNEncBufferWords; n++) {
+    dat.push_back(fEncBuffer[n]);
+  }
+  fNEncBufferWords = 0;
+}
+
 ClassImp(TSBSSimDetector)
 /*
 //

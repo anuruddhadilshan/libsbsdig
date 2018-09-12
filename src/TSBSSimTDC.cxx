@@ -3,6 +3,7 @@
 //   TSBSSimTDC
 
 #include "TSBSSimTDC.h"
+#include "TSBSSimDataEncoder.h"
 #include "THaEvData.h"
 #include "THaSlotData.h"
 #include "TMath.h"
@@ -72,35 +73,30 @@ namespace Decoder {
   void TSBSSimTDC::Init() {
     Clear();
     IsInit = kTRUE;
-    fName = "SBSSimFADC250 JLab Flash ADC Module";
+    fName = "SBSSimTDC Generic TDC Module";
   }
 
   void TSBSSimTDC::CheckDecoderStatus() const {
-    cout << "FADC250 Decoder has been called" << endl;
   }
 
   Int_t TSBSSimTDC::LoadSlot(THaSlotData *sldat, const UInt_t *evbuffer,
       const UInt_t *pstop) {
     Clear();
-    int chan = 0, type = 0;//, num_samples = 0; //not needed so far
+    unsigned int nwords = 0;
+    unsigned short chan = 0, type = 0;
     UInt_t raw_buff;
-    bool printed = false;
+    SimEncoder::tdc_data tmp_tdc_data;
     while(evbuffer < pstop) {
-      // First get channel number
-      chan = *evbuffer++;
-      type = *evbuffer++;
-      if(type == 0) { // Leading Edge
-        raw_buff = *evbuffer++;
+      // First, decode the header
+      SimEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
+      if(type == SimEncoder::F1TDC && nwords > 0) { // Leading Edge
+        SimEncoder::F1TDCDecode(tmp_tdc_data,evbuffer,nwords);
+        evbuffer += nwords; // skip ahead the total number of words read
+        raw_buff = tmp_tdc_data.lead_time;
         tdc_data[chan].lead_time = raw_buff;
-        sldat->loadData("tdc",chan,raw_buff,raw_buff);
-      } else if (type==1) { // Trailing edge
-        raw_buff = *evbuffer++;
-        tdc_data[chan].trail_time = raw_buff;
         sldat->loadData("tdc",chan,raw_buff,raw_buff);
       }
     }
-    if(printed)
-      std::cerr << std::endl;
    return 0;
   }
 

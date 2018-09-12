@@ -7,6 +7,7 @@
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
+#include "TSBSSimDataEncoder.h"
 //#include "TF1Convolution.h"
 
 class g4sbshitdata;
@@ -31,10 +32,15 @@ protected:
     
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
+  unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
+  unsigned short fNEncBufferWords;
+
+  void CopyEncodedData(unsigned short type, unsigned short mult,
+      std::vector<unsigned int> &dat);
 private:
   bool fHasData;
   short fUniqueDetID;
-  
+
   ClassDef(TSBSSimDetector,1)
 };
 

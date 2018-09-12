@@ -45,8 +45,12 @@ public:
   };
   */
   struct Signal {
-    std::vector<double> samples;
+    SimEncoder::fadc_data fadc;
+    SimEncoder::tdc_data tdc;
+    //std::vector<double> samples;
     std::vector<double> samples_raw;
+    std::vector<double> times_histo;
+    int nbins_times;
     double sumedep;
     double mint;
     double maxt;
@@ -59,16 +63,22 @@ public:
     int dnraw;
     double dx_samples;
     double dx_raw;
+    double dx_raw_time;
     Signal();
-    //void Fill(SPEModel *model,double t, double toffset = 0.0);
-    void Fill(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
-    void Digitize();
+    void FillNPE(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
+    void Fill(double t);
+    void Digitize(TSPEModel *model, double pulsenorm, double toffset,
+        double max_val);
+    void DigitizeOld();
     void Clear();
   };
 private:
   //SPEModel *fSPE;
   TSPEModel *fSPE;
   std::vector<Signal> fSignals;
+  // TODO: Try to use the standard TPMTSignal class (but must have
+  // the ability to provide samples)
+  //std::vector<TPMTSignal> fSignals;
 
   ClassDef(TSBSSimHCal,1)
 };

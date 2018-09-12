@@ -24,6 +24,7 @@
 #pragma link C++ defined_in "src/TSBSSimTDC.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
 #pragma link C++ defined_in "src/TSBSSpec.h";
+#pragma link C++ defined_in "src/TSBSSimDataEncoder.h";
 
 // Limited stuff in EVIO file.  We don't want to be
 // able to call the evio functions in the interpreter

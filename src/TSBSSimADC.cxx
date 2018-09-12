@@ -59,7 +59,8 @@ namespace Decoder {
     // Clear all data objects
     assert(fadc_data.size() == NADCCHAN);  // Initialization error in constructor
     for (uint32_t i = 0; i < NADCCHAN; i++) {
-      fadc_data[i].clear();
+      fadc_data[i].integral = 0;
+      fadc_data[i].samples.clear();
     }
   }
 
@@ -71,40 +72,43 @@ namespace Decoder {
   void TSBSSimADC::Init() {
     Clear();
     IsInit = kTRUE;
-    fName = "SBSSimFADC250 JLab Flash ADC Module";
+    fName = "SBSSimADC (Simple JLab Flash ADC Simulated Module)";
   }
 
   void TSBSSimADC::CheckDecoderStatus() const {
-    cout << "FADC250 Decoder has been called" << endl;
   }
 
   Int_t TSBSSimADC::LoadSlot(THaSlotData *sldat, const UInt_t *evbuffer,
       const UInt_t *pstop) {
     Clear();
-    int chan = 0, type = 0, num_samples = 0;
+    unsigned int nwords = 0;
+    unsigned short chan = 0, type = 0;
     UInt_t raw_buff;
     bool printed = false;
     while(evbuffer < pstop) {
-      // First get channel number
-      chan = *evbuffer++;
-      type = *evbuffer++;
-      if(type == 0) { // Samples mode
-        num_samples = *evbuffer++;
-        for(int i = 0; i < num_samples; i++) {
-          raw_buff = *evbuffer++;
-          fadc_data[chan].samples.push_back(raw_buff);
+      // First, decode the header
+      SimEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
+      if(type == SimEncoder::FADC250 && nwords>0) { // FADC with samples
+        SimEncoder::fadc_data tmp_fadc_data;
+        SimEncoder::FADC250Decode(tmp_fadc_data,evbuffer,nwords);
+        evbuffer += nwords; // skip ahead the total number of words read
+        for(size_t i = 0; i < tmp_fadc_data.samples.size(); i++) {
+          raw_buff = tmp_fadc_data.samples[i];
+          fadc_data[chan].samples.push_back(tmp_fadc_data.samples[i]);
           sldat->loadData("adc",chan,raw_buff,raw_buff);
+          //std::cout << " " << raw_buff;
+          //printed = true;
         }
-      } else if (type==1) { // integral of adc
+      } /*else if (type==1) { // integral of adc
         num_samples = *evbuffer++;
         for(int i = 0; i < num_samples; i++) {
           raw_buff = *evbuffer++;
-          std::cerr << " [" << chan << ", " << raw_buff << "]";
-          printed = true;
+          //std::cerr << " [" << chan << ", " << raw_buff << "]";
+          //printed = true;
           fadc_data[chan].integrals.push_back(raw_buff);
           sldat->loadData("adc",chan,raw_buff,raw_buff);
         }
-      }
+      } */
     }
     if(printed)
       std::cerr << std::endl;

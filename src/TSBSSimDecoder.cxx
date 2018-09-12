@@ -13,6 +13,7 @@
 /////////////////////////////////////////////////////////////////////
 
 #include "TSBSSimDecoder.h"
+#include "TSBSSimDataEncoder.h"
 #include "THaCrateMap.h"
 #include "THaBenchmark.h"
 #include "VarDef.h"
@@ -321,38 +322,49 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
 //				    const int chanperslot, const int slotpercrate, 
 //				    const int firstcrate, const int firstslot)
 //{
-  Int_t crate, slot, chan;
+  Int_t crate, slot;
   TDetInfo detInfo = fManager->GetDetInfo(detname);
+  unsigned int nwords = 0;
+  unsigned short data_type = 0, chan = 0;
+  int lchan;
 
-  if(detdata.fDetID == detid && detdata.fData.size() > 0) { // Data to process
+  if(detdata.fDetID == detid && detdata.fData.size() > 1) { // Data to process
     int mod =  detdata.fChannel;
     //This should be *general* and work for *every* subsystem
     // Loop over all raw data in this event
-    for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
+    UInt_t j = 0;
+    while(j < detdata.fData.size() ) {
+    //for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
       // Identify the "logical" channel number for this event
       // based on the first integer in the raw data
-      int lchan = mod + detdata.fData[j]*detInfo.NChan();
+      SimEncoder::DecodeHeader(detdata.fData[j++],data_type,chan,nwords);
+      lchan = mod + chan*detInfo.NChan();
       // Get information about this logical channel from TDetInfo
       TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
       crate = chinfo.crate;
       slot = chinfo.slot;
-      chan = chinfo.ch;
+      chan = chinfo.ch; // Now this is the channel in the simulated VME module
       Decoder::THaSlotData *sldat = 0;
-      if( crate >= 0 || slot >=  0 || chan >= 0) {
+      if( crate >= 0 || slot >=  0 ) {
         sldat = crateslot[idx(crate,slot)];
       }
       // Now get the corresponding THaSlotData based on crate and slot
       // and load it with the data
-      if(sldat) { // If module available, we are free to store data in it
+      // First, check that the module is defined in the cratemap, and
+      // that we have at least sufficient amount of data to match that defined
+      // in the header.
+      if(sldat && j+nwords-1 < detdata.fData.size()) {
         std::vector<UInt_t> *myev = &(map[sldat]);
-        myev->push_back(chan);
-        for(size_t k = 0; k < detdata.fData.size(); k++) {
-          myev->push_back(detdata.fData[k]);
-          j++;
+        // First, re-encode the proper channel info into the header
+        myev->push_back(SimEncoder::EncodeHeader(data_type,chan,nwords));
+        for(unsigned int k = 0; k < nwords; k++) {
+          myev->push_back(detdata.fData[j++]);
         }
       } else {
         std::cerr << "Yikes!! No data for " << detname << " in c: "
-          << crate << " s: " << slot << " c: " << chan << std::endl;
+          << crate << " s: " << slot << " c: " << chan
+          << " size: " << detdata.fData.size() << ", j: " << j <<", nwords: "
+          << nwords << std::endl;
       }
     }
   }

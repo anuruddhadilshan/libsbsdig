@@ -84,7 +84,8 @@ SRC   = src/g4sbs_tree.cxx \
         src/TSBSSimADC.cxx \
         src/TSBSSimTDC.cxx \
 	src/TSBSSimScint.cxx \
-        src/TSBSSpec.cxx
+        src/TSBSSpec.cxx \
+        src/TSBSSimDataEncoder.cxx
 
 
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o
