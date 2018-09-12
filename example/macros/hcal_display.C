@@ -25,6 +25,7 @@ namespace hcalt {
   Double_t row[kNumModules];
   Double_t col[kNumModules];
   Double_t samps_idx[kNumModules];
+  Int_t ndata;
 };
 
 Int_t gCurrentEntry = -1;
@@ -144,7 +145,14 @@ void displayEvent(Int_t entry = -1)
   std::cout << "Displaying event " << gCurrentEntry << std::endl;
 
   Int_t r,c,idx,n,sub;
-  for(Int_t m = 0; m < kNumModules; m++) {
+  // Clear old histograms, just in case modules are not in the tree
+  for(r = 0; r < kNrows; r++) {
+    for(c = 0; c < kNcols; c++) {
+      histos[r][c]->Reset("ICES M");
+    }
+  }
+
+  for(Int_t m = 0; m < hcalt::ndata; m++) {
     r = hcalt::row[m]-1;
     c = hcalt::col[m]-1;
     if(r < 0 || c < 0)
@@ -156,17 +164,21 @@ void displayEvent(Int_t entry = -1)
         histos[r][c]->SetBinContent(s+1,hcalt::samps[idx+s]);
       }
     } else { 
-      //std::cerr << "Skipping empty module: " << m << std::endl;
+      std::cerr << "Skipping empty module: " << m << std::endl;
       for(Int_t s = 0;  s < DISP_FADC_SAMPLES; s++) {
         histos[r][c]->SetBinContent(s+1,-404);
       }
     }
-    sub = r/6;
-    subCanv[sub]->cd(kNcols*(r%6)+c+1);
-    histos[r][c]->Draw();
-    gPad->Update();
   }
 
+  for(r = 0; r < kNrows; r++) {
+    for(c = 0; c < kNcols; c++) {
+      sub = r/6;
+      subCanv[sub]->cd(kNcols*(r%6)+c+1);
+      histos[r][c]->Draw();
+      gPad->Update();
+    }
+  }
   //gSystem->mkdir("images/",kTRUE);
   //std::cerr << "Saving canvas!" << std::endl;
   //canvas->SaveAs("images/display_hcal.png");
@@ -201,6 +213,8 @@ Int_t hcal_display(Int_t run = 156, Int_t event = -1)
     T->SetBranchAddress("sbs.hcal.samps_idx",hcalt::samps_idx);
     T->SetBranchAddress("sbs.hcal.row",hcalt::row);
     T->SetBranchAddress("sbs.hcal.col",hcalt::col);
+    T->SetBranchStatus("Ndata.sbs.hcal.row",1);
+    T->SetBranchAddress("Ndata.sbs.hcal.row",&hcalt::ndata);
     for(Int_t r = 0; r < kNrows; r++) {
       for(Int_t c = 0; c < kNcols; c++) {
         histos[r][c] = MakeHisto(r,c,DISP_FADC_SAMPLES);
