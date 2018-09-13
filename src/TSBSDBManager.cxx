@@ -296,6 +296,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   double spe_tau;
   double spe_sig;
   double spe_transit;
+  string tdc_encoder_str;
+  string adc_encoder_str;
   
   try{
     gain = new vector<double>;
@@ -307,8 +309,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       {"roimpedance",   &roimp,          kDouble,  0, ignore_pmt},
       {"adcconversion", &adcconv,        kDouble,  0, ignore_adc},
       {"adcbits",       &adcbits,        kInt,     0, ignore_adc},
+      {"adc_encoder",   &adc_encoder_str,kString,  0, ignore_adc},
       {"tdcconversion", &tdcconv,        kDouble,  0, ignore_tdc},
       {"tdcbits",       &tdcbits,        kInt,     0, ignore_tdc},
+      {"tdc_encoder",   &tdc_encoder_str,kString,  0, ignore_tdc},
       {"gain",          gain,            kDoubleV, 0, 0},
       {"pedestal",      pedestal,        kDoubleV, 0, 0},
       {"pednoise",      pednoise,        kDoubleV, 0, 0},
@@ -346,6 +350,29 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     diginfo.SetSPE_Tau(spe_tau);
     diginfo.SetSPE_Sigma(spe_sig);
     diginfo.SetSPE_TransitTime(spe_transit);
+    TSBSSimDataEncoder *enc = 0;
+    if(!adc_encoder_str.empty()) {
+      enc = TSBSSimDataEncoder::GetEncoderByName(
+            adc_encoder_str.c_str());
+      if(enc) {
+        diginfo.SetEncoderADC(enc);
+      } else {
+        std::cerr << "Error: ADC encoder " << adc_encoder_str << " not found!"
+          << std::endl;
+        return kInitError;
+      }
+    }
+    if(!tdc_encoder_str.empty()) {
+      enc = TSBSSimDataEncoder::GetEncoderByName(
+            tdc_encoder_str.c_str());
+      if(enc) {
+        diginfo.SetEncoderTDC(enc);
+      } else {
+        std::cerr << "Error: TDC encoder " << tdc_encoder_str << " not found!"
+          << std::endl;
+        return kInitError;
+      }
+    }
     
     if(fDebug>=3){
       cout << "roimp " << roimp << ", DigInfo ROinmpedance " << diginfo.ROImpedance() << endl;

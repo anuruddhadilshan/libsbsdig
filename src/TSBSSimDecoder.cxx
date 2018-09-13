@@ -337,7 +337,8 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
     //for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
       // Identify the "logical" channel number for this event
       // based on the first integer in the raw data
-      SimEncoder::DecodeHeader(detdata.fData[j++],data_type,chan,nwords);
+      TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan,
+          nwords);
       lchan = mod + chan*detInfo.NChan();
       // Get information about this logical channel from TDetInfo
       TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
@@ -356,7 +357,8 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
       if(sldat && j+nwords-1 < detdata.fData.size()) {
         std::vector<UInt_t> *myev = &(map[sldat]);
         // First, re-encode the proper channel info into the header
-        myev->push_back(SimEncoder::EncodeHeader(data_type,chan,nwords));
+        myev->push_back(TSBSSimDataEncoder::EncodeHeader(
+              data_type,chan,nwords));
         for(unsigned int k = 0; k < nwords; k++) {
           myev->push_back(detdata.fData[j++]);
         }

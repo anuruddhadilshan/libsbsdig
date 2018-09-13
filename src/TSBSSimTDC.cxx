@@ -60,8 +60,8 @@ namespace Decoder {
     // Clear all data objects
     assert(tdc_data.size() == NADCCHAN);  // Initialization error in constructor
     for (uint32_t i = 0; i < NADCCHAN; i++) {
-      tdc_data[i].lead_time = 0;
-      tdc_data[i].trail_time = 0;
+      tdc_data[i].lead_time.clear();
+      tdc_data[i].trail_time.clear();
     }
   }
 
@@ -88,13 +88,26 @@ namespace Decoder {
     SimEncoder::tdc_data tmp_tdc_data;
     while(evbuffer < pstop) {
       // First, decode the header
-      SimEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
-      if(type == SimEncoder::F1TDC && nwords > 0) { // Leading Edge
-        SimEncoder::F1TDCDecode(tmp_tdc_data,evbuffer,nwords);
+      TSBSSimDataEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
+      TSBSSimDataEncoder *enc = TSBSSimDataEncoder::GetEncoder(type);
+      if(enc && nwords>0) {
+        enc->DecodeTDC(tmp_tdc_data,evbuffer,nwords);
         evbuffer += nwords; // skip ahead the total number of words read
-        raw_buff = tmp_tdc_data.lead_time;
-        tdc_data[chan].lead_time = raw_buff;
-        sldat->loadData("tdc",chan,raw_buff,raw_buff);
+        for(size_t i = 0; i < tmp_tdc_data.time.size(); i++ ) {
+          raw_buff = tmp_tdc_data.getTime(i);
+          if(tmp_tdc_data.getEdge(i)) { // Trail
+            tdc_data[chan].lead_time.push_back(raw_buff);
+          } else { // Lead
+            tdc_data[chan].trail_time.push_back(raw_buff);
+          }
+          // TODO: Figure out what to do with the edge information
+          // I'd imagine we need to distinguish it somehow!
+          sldat->loadData("tdc",chan,raw_buff,raw_buff);
+        }
+        tmp_tdc_data.time.clear(); // Clear it to prepare for next read
+      } else {
+        std::cerr << "Could not find TDC decoder of type: " << type <<
+          std::endl;
       }
     }
    return 0;

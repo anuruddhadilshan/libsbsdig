@@ -17,6 +17,12 @@ TSBSSimHCal::TSBSSimHCal(const char* name, short id)
   fName = name;
   SetUniqueDetID(id);
   Init();
+  fHasFADC = false;
+  if(fEncoderADC && fEncoderADC->IsFADC()) {
+    fHasFADC = true;
+  }
+  std::cerr << fEncoderADC << std::endl;
+
 }
 
 TSBSSimHCal::~TSBSSimHCal()
@@ -25,6 +31,7 @@ TSBSSimHCal::~TSBSSimHCal()
 
 void TSBSSimHCal::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "HCal detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimHCal::Init() " << endl;
   
@@ -178,57 +185,10 @@ void TSBSSimHCal::Signal::Digitize(TSPEModel *model, double pulsenorm,
   // in TPMTSignal instead!
   if(met_tdc_thresh) {
     tdc_time -= mint; // Make sure tdc_time is always positive
-    tdc.lead_time = int((tdc_time/3.9e3)*65535);
+    tdc.time.push_back(int((tdc_time/3.9e3)*65535));
     //tdc_time = int((tdc_time/3.9e3)*65535);
   }
 
-}
-
-void TSBSSimHCal::Signal::DigitizeOld()
-{
-  if(npe <= 0)
-    return;
-
-  int braw = 0;
-  double max = 0;
-  sum = 0;
-  for(int bs = 0; bs < nbins; bs++) {
-    max = 0;
-    for(int br = 0; br < dnraw; br++) {
-      if(samples_raw[br+braw] > max)
-        max = samples_raw[br+braw];
-      if( !met_tdc_thresh) {
-        tdc_time += dx_raw;
-        if(samples_raw[br+braw] >= HCAL_TDC_THRESH ) {
-          met_tdc_thresh = true;
-        }
-      }
-    }
-    if(max>2)
-      max = 2;
-    //samples[bs] =int((max/2.);// *4095);
-    fadc.samples[bs] =int((max/2.)*4095);
-    std::cout << "fadc.samples: " << fadc.samples[bs] << ", max: " << max
-      << std::endl;
-    //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
-    braw += dnraw;
-    sum += fadc.samples[bs];
-  }
-
-  // Also digitize the sumedep
-  sumedep *= 1e9; // To store in eV
-
-  // If we have TDC threshold met, let's set the time in a format
-  // suitable for the F1 TDC
-  // The F1 TDC in high resolution mode has a resolution of 60 ps LSB
-  // and a range of 3.9 us (16 bits).
-  // TODO: I should also stop hard coding this! Use Eric's methods
-  // in TPMTSignal instead!
-  if(met_tdc_thresh) {
-    tdc_time -= mint; // Make sure tdc_time is always positive
-    tdc.lead_time = int((tdc_time/3.9e3)*65535);
-    //tdc_time = int((tdc_time/3.9e3)*65535);
-  }
 }
 
 void TSBSSimHCal::Digitize(TSBSSimEvent &event)
@@ -236,29 +196,27 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   bool any_events = false;
   double pulsenorm = 0;
   double max_val = pow(2,fDetInfo.DigInfo().ADCBits());
+  TSBSSimEvent::DetectorData data;
+  int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
+    mult = 0;
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
         *qe/spe_unit;
       fSignals[m].Digitize(fSPE,pulsenorm,0.0,max_val);
       any_events = true;
-      TSBSSimEvent::DetectorData data;
       data.fDetID = UniqueDetID();
       data.fChannel = m;
-      //data.fData.push_back(data.fChannel);
-      //data.fData.push_back(m);
-      //data.fData.push_back(0);
-      //data.fData.push_back(DecoderType::ADCSamples); // For samples data
-      SimEncoder::FADC250Encode(fSignals[m].fadc,fEncBuffer,
+      fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
-      CopyEncodedData(SimEncoder::FADC250,0,data.fData);
+      CopyEncodedData(fEncoderADC,mult++,data.fData);
       //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
       //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
       //for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
         //std::cout << " " << fSignals[m].samples[j];
         //data.fData.push_back(fSignals[m].samples[j]);
       //}
-      event.fDetectorData.push_back(data); // Store event data
+      //event.fDetectorData.push_back(data); // Store event data
       // Now add the sum (or edep)
       //data.fData.clear();
       //data.fData.push_back(m);
@@ -270,18 +228,12 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
 
       // Now add the TDC if the threshold was met
-      data.fData.clear();
-      if( fSignals[m].met_tdc_thresh && SimEncoder::F1TDCEncode(
+      if( fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
             fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
-        CopyEncodedData(SimEncoder::F1TDC,1,data.fData);
-        //data.fData.push_back(SimEncoder::F1TDC);
-        //data.fData.push_back(SimEncoder::F1TDCEncode(data.fChannel,
-        //      fSignals[m].tdc_time));
-        //data.fData.push_back(DecoderType::TDCLead);
-        //data.fData.push_back(1);
-        //data.fData.push_back(fSignals[m].tdc_time);
-        event.fDetectorData.push_back(data);
+        CopyEncodedData(fEncoderTDC,mult++,data.fData);
       }
+      event.fDetectorData.push_back(data);
+      data.fData.clear();
     }
   }
   SetHasDataFlag(any_events);
@@ -409,6 +361,6 @@ void TSBSSimHCal::Signal::Clear()
   npe = 0;
   met_tdc_thresh = false;
   tdc_time = mint-dx_raw;
-  tdc.lead_time = 0;
+  tdc.time.clear();
 }
 ClassImp(TSBSSimHCal) // Implements TSBSSimHCal

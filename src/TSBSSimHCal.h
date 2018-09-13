@@ -76,6 +76,7 @@ private:
   //SPEModel *fSPE;
   TSPEModel *fSPE;
   std::vector<Signal> fSignals;
+  bool fHasFADC;
   // TODO: Try to use the standard TPMTSignal class (but must have
   // the ability to provide samples)
   //std::vector<TPMTSignal> fSignals;

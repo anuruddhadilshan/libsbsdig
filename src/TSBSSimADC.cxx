@@ -87,28 +87,31 @@ namespace Decoder {
     bool printed = false;
     while(evbuffer < pstop) {
       // First, decode the header
-      SimEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
-      if(type == SimEncoder::FADC250 && nwords>0) { // FADC with samples
-        SimEncoder::fadc_data tmp_fadc_data;
-        SimEncoder::FADC250Decode(tmp_fadc_data,evbuffer,nwords);
-        evbuffer += nwords; // skip ahead the total number of words read
-        for(size_t i = 0; i < tmp_fadc_data.samples.size(); i++) {
-          raw_buff = tmp_fadc_data.samples[i];
-          fadc_data[chan].samples.push_back(tmp_fadc_data.samples[i]);
-          sldat->loadData("adc",chan,raw_buff,raw_buff);
-          //std::cout << " " << raw_buff;
-          //printed = true;
+      TSBSSimDataEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
+      TSBSSimDataEncoder *enc = TSBSSimDataEncoder::GetEncoder(type);
+      if(enc && nwords > 0) {
+        if(enc->IsFADC()) { // FADC with samples
+          SimEncoder::fadc_data tmp_fadc_data;
+          enc->DecodeFADC(tmp_fadc_data,evbuffer,nwords);
+          evbuffer += nwords; // skip ahead the total number of words read
+          for(size_t i = 0; i < tmp_fadc_data.samples.size(); i++) {
+            raw_buff = tmp_fadc_data.samples[i];
+            fadc_data[chan].samples.push_back(tmp_fadc_data.samples[i]);
+            sldat->loadData("adc",chan,raw_buff,raw_buff);
+            //std::cout << " " << raw_buff;
+            //printed = true;
+          }
+        } /*else if (type==1) { // integral of adc
+            num_samples = *evbuffer++;
+            for(int i = 0; i < num_samples; i++) {
+            raw_buff = *evbuffer++;
+        //std::cerr << " [" << chan << ", " << raw_buff << "]";
+        //printed = true;
+        fadc_data[chan].integrals.push_back(raw_buff);
+        sldat->loadData("adc",chan,raw_buff,raw_buff);
         }
-      } /*else if (type==1) { // integral of adc
-        num_samples = *evbuffer++;
-        for(int i = 0; i < num_samples; i++) {
-          raw_buff = *evbuffer++;
-          //std::cerr << " [" << chan << ", " << raw_buff << "]";
-          //printed = true;
-          fadc_data[chan].integrals.push_back(raw_buff);
-          sldat->loadData("adc",chan,raw_buff,raw_buff);
-        }
-      } */
+        } */
+      }
     }
     if(printed)
       std::cerr << std::endl;

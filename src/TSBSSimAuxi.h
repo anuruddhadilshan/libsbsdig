@@ -10,9 +10,8 @@
 //#include "TF1Convolution.h"
 #include "TH1D.h"
 #include "TRandom3.h"
-
 // An data_word encoder for the various modules (i.e. F250 ADC, Caen TDC, etc..)
-class TSBSDataEncoder;
+#include "TSBSSimDataEncoder.h"
 
 //
 // Classes for DB information
@@ -131,6 +130,10 @@ class TDigInfo : public TObject{
     
   double NpeChargeConv(int chan){return Gain(chan)*qe;};//charge in Coulomb
   
+
+  TSBSSimDataEncoder* GetEncoderADC() { return fEncoderADC; }
+  TSBSSimDataEncoder* GetEncoderTDC() { return fEncoderTDC; }
+
   void SetROImpedance(double roimp){fROimpedance = roimp;};
   void SetADCConversion(double adcconv){fADCconversion = adcconv;};
   void SetADCBits(int adcbits){fADCbits = adcbits;};
@@ -146,6 +149,8 @@ class TDigInfo : public TObject{
   void SetSPE_Tau(double spe_tau){fSPE_tau = spe_tau;};
   void SetSPE_Sigma(double spe_sig){fSPE_sigma = spe_sig;};
   void SetSPE_TransitTime(double spe_transit){fSPE_transittime = spe_transit;};
+  void SetEncoderADC(TSBSSimDataEncoder *enc) { fEncoderADC = enc; }
+  void SetEncoderTDC(TSBSSimDataEncoder *enc) { fEncoderTDC = enc; }
 
  private:
   double  fROimpedance;     // readout impedance
@@ -163,7 +168,8 @@ class TDigInfo : public TObject{
   double  fSPE_tau;            // tau param for SPE
   double  fSPE_sigma;         // sigma param for SPE
   double  fSPE_transittime;  // pmt transit time param for SPE
-  
+  TSBSSimDataEncoder *fEncoderADC;
+  TSBSSimDataEncoder *fEncoderTDC;
   TRandom3* fRN;
   
   ClassDef(TDigInfo, 1);
@@ -227,7 +233,6 @@ class TDetInfo : public TObject{
   UInt_t   NPlanes(){return fNplanes;};
   UInt_t   NModulesSize(){return fNmodules.size();};
   UInt_t   NModules(int i){return fNmodules.at(i);};
-  TSBSDataEncoder* GetDataEncoder(int i) { return fEncoders.at(i); }
   
   int GeoInfoSize(){return fGeoInfo.size();};
   TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
@@ -267,7 +272,6 @@ class TDetInfo : public TObject{
   TDigInfo fDigInfo;
   std::vector<TDigSlot> fModSlots;
   std::map<int,std::pair<int,int> > fDetMap;
-  std::vector<TSBSDataEncoder*> fEncoders;
   
 public:
   ClassDef(TDetInfo, 1);

@@ -44,8 +44,8 @@ namespace Decoder {
 
 
     struct tdc_data_struct {
-      uint32_t lead_time;
-      uint32_t trail_time;
+      std::vector<uint32_t> lead_time;
+      std::vector<uint32_t> trail_time;
     };  // tdc_data_struct
 
   private:

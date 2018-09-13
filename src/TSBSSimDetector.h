@@ -32,10 +32,13 @@ protected:
     
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
+  TSBSSimDataEncoder *fEncoderADC;
+  TSBSSimDataEncoder *fEncoderTDC;
   unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
   unsigned short fNEncBufferWords;
+  virtual void Init();
 
-  void CopyEncodedData(unsigned short type, unsigned short mult,
+  void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,
       std::vector<unsigned int> &dat);
 private:
   bool fHasData;
