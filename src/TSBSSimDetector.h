@@ -36,6 +36,9 @@ protected:
   TSBSSimDataEncoder *fEncoderTDC;
   unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
   unsigned short fNEncBufferWords;
+
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
   virtual void Init();
 
   void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,

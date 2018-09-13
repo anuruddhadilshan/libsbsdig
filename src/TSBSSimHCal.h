@@ -19,31 +19,13 @@ public:
   virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
 
-  virtual void Clear();
+  virtual void Clear(Option_t *op = "");
 
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
   // Initialize
   void Init();
-  /* 
-  struct SPEModel {
-    double gain_pmt;
-    double resistance; //ohm
-    //double qe; //
-    //double unit;
-    double scale;
-    TF1 *model;
-    SPEModel();
-    double Eval(double t);
-    TF1 *fFunc1;
-    TF1 *fFunc2;
-    TF1Convolution *fConvolution;
-    double mint;
-    double start_t;
-    double maxt;
-    double tao;
-    double sig;
-    double t0;
-  };
-  */
+
   struct Signal {
     SimEncoder::fadc_data fadc;
     SimEncoder::tdc_data tdc;

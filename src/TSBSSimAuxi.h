@@ -305,7 +305,7 @@ class TPMTSignal : public TObject {
   TPMTSignal(double npechargeconv);
   void Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal);
   void Digitize(TDigInfo diginfo, int chan);
-  void Clear();
+  void Clear(Option_t* opt = "");
   ~TPMTSignal(){Clear();};
   
   void AddSumEdep(double edep){fSumEdep+= edep;};

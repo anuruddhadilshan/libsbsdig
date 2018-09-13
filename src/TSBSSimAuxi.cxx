@@ -298,7 +298,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   fSumEdep*=1.0e9;// store in eV.
 }
 
-void TPMTSignal::Clear()
+void TPMTSignal::Clear(Option_t*)
 {
   //cout << " TPMTSignal::Clear() " << endl;
   

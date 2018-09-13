@@ -256,7 +256,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 }
 
 // Clear signals in array
-void TSBSSimCher::Clear()
+void TSBSSimCher::Clear(Option_t *)
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();

@@ -21,8 +21,6 @@ TSBSSimHCal::TSBSSimHCal(const char* name, short id)
   if(fEncoderADC && fEncoderADC->IsFADC()) {
     fHasFADC = true;
   }
-  std::cerr << fEncoderADC << std::endl;
-
 }
 
 TSBSSimHCal::~TSBSSimHCal()
@@ -339,7 +337,7 @@ double TSBSSimHCal::SPEModel::Eval(double t)
 }
 */
 
-void TSBSSimHCal::Clear()
+void TSBSSimHCal::Clear(Option_t*)
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();

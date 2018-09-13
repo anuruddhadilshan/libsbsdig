@@ -16,6 +16,8 @@ public:
   
   virtual void Clear(Option_t *opt = "");
   
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
   // Initialize
   void Init();
   
