@@ -18,6 +18,7 @@ TSBSSimDataEncoder* TSBSSimDataEncoder::GetEncoderByName(
     // ADCs
     fEncoders.push_back(new TSBSSimFADC250Encoder("fadc250",ids++));
     fEncoders.push_back(new TSBSSimADCEncoder("adc",ids++,12));
+    fEncoders.push_back(new TSBSSimADCEncoder("lecroy1881",ids++,14));
   }
 
   TString name(enc_name);
