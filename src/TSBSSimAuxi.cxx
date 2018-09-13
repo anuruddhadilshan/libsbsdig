@@ -263,6 +263,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   UInt_t tdc_value;
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
+  fTDCData.time.clear();
   if(fLeadTimes.size() && fTrailTimes.size()){
     for(size_t i = 0; i<fLeadTimes.size(); i++){
 #if DEBUG>0
@@ -276,6 +277,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
       tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
+      fTDCData.time.push_back(tdc_value);
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
       // also mark the traling time with setting bin 31 to 1
@@ -285,6 +287,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
       }
       tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
       fTDCs.push_back(tdc_value);
+      fTDCData.time.push_back(tdc_value);
       
 #if DEBUG>0
       cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;

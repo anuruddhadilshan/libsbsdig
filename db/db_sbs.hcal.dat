@@ -3,6 +3,8 @@ sbs.hcal.dettype = HCal
 
 dig.sbs.hcal.roimpedance = 50 # ohm
 dig.sbs.hcal.adcconv = 1 # ohm
+dig.sbs.hcal.adc_encoder = fadc250
+dig.sbs.hcal.tdc_encoder = f1tdc
 dig.sbs.hcal.adcbits = 12 ## I think they are 12-bit ADCs
 ## I'm just copying things exactly as they are in the cdet for now...
 ## fixing it - I had changed convention: ns/ch instead of ch/ns. sorry for confusion (EF)

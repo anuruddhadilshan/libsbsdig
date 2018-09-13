@@ -323,6 +323,7 @@ class TPMTSignal : public TObject {
   double TrailTime(int i){return fTrailTimes.at(i);};
   UInt_t TDCSize(){return fTDCs.size();};
   UInt_t TDC(int i){return fTDCs.at(i);};
+  SimEncoder::tdc_data TDCData() { return fTDCData; }
   
   
  private:
@@ -336,7 +337,8 @@ class TPMTSignal : public TObject {
   std::vector<double> fLeadTimes;
   std::vector<double> fTrailTimes;
   std::vector<UInt_t> fTDCs;
-  
+  SimEncoder::tdc_data fTDCData;
+
   ClassDef(TPMTSignal,1);
 };
 

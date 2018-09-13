@@ -3,6 +3,7 @@
 #include <TSBSSimData.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
+#include <TSBSSimDataEncoder.h>
 
 TSBSSimScint::TSBSSimScint(const char* name, short id)
 {
@@ -127,20 +128,23 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
   TSBSSimEvent::DetectorData data;
   TSBSSimEvent::SimDetectorData simdata;
 
-  UInt_t TDCword;
+  //UInt_t TDCword;
   
-  bool header[8] = {0, 0, 0, 0, 0, 0, 0, 0};//bits ...-31 
+  //bool header[8] = {0, 0, 0, 0, 0, 0, 0, 0};//bits ...-31 
   // we ignore (for the moment) all other informations for the ADC.
-  bool channel[7];//Common features between V1190A and 1877: 7 digit channel
-  bool tdc[19];
-  bool trail;
+  //bool channel[7];//Common features between V1190A and 1877: 7 digit channel
+  //bool tdc[19];
+  //bool trail;
   //hardcoded, but add all ADC/TDC bit coding in DB shall be cumbersome
-  short edgebitpos = 16;
-  short nheaderbits = 32-8-fDetInfo.DigInfo().TDCBits();
-  if(UniqueDetID()==30){
-    edgebitpos = 26;
-  }
-  short chanfirstbit = fDetInfo.DigInfo().TDCBits()+Short_t(edgebitpos==fDetInfo.DigInfo().TDCBits());
+  //short edgebitpos = 16;
+  //short nheaderbits = 32-8-fDetInfo.DigInfo().TDCBits();
+  //if(UniqueDetID()==30){
+  //  edgebitpos = 26;
+  //}
+  //short chanfirstbit = fDetInfo.DigInfo().TDCBits()+Short_t(edgebitpos==fDetInfo.DigInfo().TDCBits());
+
+  SimEncoder::adc_data adc_data;
+  short mult = 0; // logical channel multiplier (in case of ADC + TDC together)
 
   for(size_t m = 0; m < fSignals.size(); m++) {
     data.fData.clear();
@@ -155,17 +159,21 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       // 0: ADC
       // 1: TDC
       // push back a different word for ADC and TDC ?
-      if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
-	data.fData.push_back(0);//ADC data flag
-	data.fData.push_back(1);//ADC data size
-	data.fData.push_back(fSignals[m].ADC());//ADC data
+      mult = 0;
+      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+      if(fEncoderADC) {
+        adc_data.integral=fSignals[m].ADC();
+        fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
+        CopyEncodedData(fEncoderADC,mult++,data.fData);
+
 	simdata.fData.clear();
       }
-      // Fill TDC 
-      data.fData.push_back(1);//TDCs data
-      data.fData.push_back(fSignals[m].TDCSize());//TDC data size
+      // Fill TDC
       if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
 			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
+      // Note (jc2) this logic was now moved to the TSBSSimDataEncoder
+      // classes.
+  /*
       for(size_t i = 0; i<fSignals[m].TDCSize(); i++){
 	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
 	
@@ -206,6 +214,13 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	}
 	//Then feed here the TDC word to the data vector
 	data.fData.push_back(TDCword);
+  //fEncBuffer[fNEncBufferWords++] = TDCword;
+      }
+      */
+      if(fEncoderTDC) {
+        fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
+            fNEncBufferWords);
+        CopyEncodedData(fEncoderTDC,mult++,data.fData);
       }
       event.fDetectorData.push_back(data);
       data.fData.clear();
