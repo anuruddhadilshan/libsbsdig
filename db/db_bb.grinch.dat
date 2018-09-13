@@ -21,6 +21,7 @@ dig.bb.grinch.roimpedance = 50 # ohm
 #dig.bb.grinch.adcbits = 12 #optionnal for Cher
 #GRINCH uses VETROC TDC
 dig.bb.grinch.tdcconversion = 1.0 #ns/ch
+dig.bb.grinch.tdcc_encoder = vetroc #ns/ch
 dig.bb.grinch.tdcbits = 16
 dig.bb.grinch.triggerjitter = 3.0  # ns
 dig.bb.grinch.triggeroffset = 30.  # ns 
