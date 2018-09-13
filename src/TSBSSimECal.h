@@ -14,7 +14,7 @@ public:
   virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
   
-  virtual void Clear();
+  virtual void Clear(Option_t *opt = "");
   
   // Initialize
   void Init();

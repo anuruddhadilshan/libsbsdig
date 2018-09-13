@@ -19,9 +19,11 @@ geo.bb.hodo.yoffset = 0.0 #m
 #hodoscope digitization info
 dig.bb.hodo.roimpedance = 50 # ohm
 #Hodoscope may use CAEN V792 ADC for calibration only
+#dig.bb.hodo.adc_encoder = caen792
 #dig.bb.hodo.adcconversion = 100.0 #fC/ch #optionnal for Scint
 #dig.bb.hodo.adcbits = 12 #optionnal for Scint
 #Hosocope uses CAEN V1190A TDC
+dig.bb.hodo.tdc_encoder = caen1190
 dig.bb.hodo.tdcconversion = 0.1 #ns/ch
 dig.bb.hodo.tdcbits = 19
 dig.bb.hodo.triggerjitter = 3.0  # ns

@@ -16,6 +16,7 @@ geo.bb.ps.yoffset = 0.0 #m
 #PS digitization info
 dig.bb.ps.roimpedance = 50 # ohm
 #BB ECal will use Lecroy 1881M ADC
+dig.bb.ps.adc_encoder = lecroy1881
 dig.bb.ps.adcconversion = 50.0 #fC/ch 
 dig.bb.ps.adcbits = 12
 #BB ECal trigger logic will use Lecroy 1877 TDC

@@ -61,11 +61,11 @@ geo.sbs.cdet.2.3.yoffset = -0.47 #m #+42 cm -5 cm
 #cdet digitization info
 dig.sbs.cdet.roimpedance = 50 # ohm
 #CDet may use Lecroy 1881M ADC ? for calibration only
-#dig.sbs.cdet.adc_encoder lecroy1881
+#dig.sbs.cdet.adc_encoder = lecroy1881
 #dig.sbs.cdet.adcconversion = 100.0 #fC/ch #optionnal for Scint
 #dig.sbs.cdet.adcbits = 12 #optionnal for Scint
 #CDet uses Lecroy 1877 TDC
-dig.sbs.cdet.tdc_encoder lecroy1877
+dig.sbs.cdet.tdc_encoder = lecroy1877
 dig.sbs.cdet.tdcconversion = 0.5 #ns/ch
 dig.sbs.cdet.tdcbits = 16
 dig.sbs.cdet.triggerjitter = 3.0  # ns
