@@ -408,7 +408,7 @@ TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
     // Otherwise, loop through all the modules and find the one we want
     for(std::vector<TDigSlot>::iterator it = fModSlots.begin();
         it != fModSlots.end(); it++) {
-      if ( (*it).GetNchan() < lch ) {
+      if ( (*it).GetNchan() > lch ) {
         info.ch = (*it).GetChanNumber(lch);
         info.slot = (*it).GetSlot();
         info.crate = (*it).GetCrate();
