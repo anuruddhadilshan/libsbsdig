@@ -201,7 +201,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   
   Int_t ret = HED_OK;
   if (first_decode || fNeedInit) {
-    fMap->print();
+    //fMap->print();
     if( (ret = init_cmap()) != HED_OK )
       return ret;
 #if ANALYZER_VERSION_CODE < ANALYZER_VERSION(1,6,0)
@@ -290,10 +290,15 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       unsigned int nwords = 0;
       TSBSSimDataEncoder::DecodeHeader(it->second.front(),data_type,chan_mult,
           nwords);
-      //std::cerr << "Loading data for " << fDetNames[d] << ", type: "
-      // << data_type << std::endl;
-      it->first->GetModule()->LoadSlot(it->first,
-          it->second.data(),0,it->second.size() );
+      if(it->first->GetModule()==0) {
+        if(fDebug>0) {
+          std::cout << "No data available for detector "
+            << fDetNames[d] << std::endl;
+        }
+      } else {
+        it->first->GetModule()->LoadSlot(it->first,
+            it->second.data(),0,it->second.size() );
+      }
       //it->first->GetModule()->LoadSlot(it->first,
       //    it->second.data(),&(it->second.back()) );
     }

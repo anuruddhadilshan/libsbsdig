@@ -9,7 +9,7 @@
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
 TSBSDBManager::TSBSDBManager() 
-  : fErrID(-999), fErrVal(-999.)
+  : fNextGeneratedCrate(100), fErrID(-999), fErrVal(-999.)
 {
 }
 //______________________________________________________________
@@ -162,29 +162,45 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 {
   const char *here = "TSBSDBManager::LoadDetInfo()";
   TDetInfo detinfo(detname);
-  // Include SBS_DIGI_DB (standard Hall A analyzer DB path in the search)
+  // Use DB_DIR (standard Hall A analyzer DB path) for
+  // common values shared by both SBS-Offline and digitization library
+  // and then use SBS_DIGI_DB to search for digitization specific
+  // values.
+  // Include DB_DIR (standard Hall A analyzer DB path in the search)
+  // If any is not specified, the default path is ../db/
   std::string path = "../db/";
+  std::string pathCommon = "../db/";
   if(std::getenv("SBS_DIGI_DB")) {
     path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
   }
-  const string& fileName = path+"db_"+specname+"."+detname+".dat";
-  
-  /*
-  ifstream input(fileName.c_str());
-  if (!input.is_open()){
-    cout<<"cannot find geometry file "<<fileName
-	<<". Exiting the program"<<endl;
-    exit(0);
+  if(std::getenv("DB_DIR")) {
+    pathCommon = std::string(std::getenv("DB_DIR")) + "/";
   }
-  */
+  const string& fileName = path+"db_"+specname+"."+detname+".dat";
+  const string& fileNameCommon = pathCommon+"db_"+specname+"."+detname+".dat";
+
+  const string prefix = specname+"."+detname+".";
+  // First, open the common db file and parse info there, later, the
+  // digitization specific db can be used to override any values
+  FILE* fileCommon  = OpenFile( fileNameCommon.c_str(), GetInitDate() );
+  std::vector<int> detmap,chanmap;
+  int chanmap_start = 0;
+
+  // variables from common db (in SBS-offline)
+  DBRequest requestCommon[] = {
+    {"detmap", &detmap, kIntV, 0, true}, ///< Optional
+    {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional
+    {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional
+    { 0 }
+  };
+  Int_t err = LoadDB (fileCommon, GetInitDate(), requestCommon, prefix.c_str());
+  // Could close the common file already
+  fclose(fileCommon);
   
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
-  
-  const string prefix = specname+"."+detname+".";
 
   string dettype_str;
-  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0,chanmap_start = 0;
-  std::vector<int> detmap,chanmap;
+  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0;
 
   //First load the parameters which will be common to *all* detectors (including digitization parameters)
   // nlog_chan is number of "logical" channels, in case there
@@ -193,17 +209,16 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // channel for each block.
   DBRequest request[] = {
     {"dettype",        &dettype_str,    kString,  0, 0},
-    {"nchan",          &nchan,          kInt,     0, 0},
-    {"nlog_chan",      &nlog_chan,          kInt,     0, true},
-    {"chan_per_slot",  &chan_per_slot,  kInt,     0, 0},
-    {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
-    {"detmap", &detmap, kIntV,     0, true}, ///< Optional detmap
-    {"chanmap", &chanmap, kIntV,     0, true}, ///< Optional chanmap
-    {"chanmap_start", &chanmap_start, kInt,     0, true}, ///< Optional chanmap
+    {"nchan",          &nchan,          kInt,     0, 0}, ///<REQUIRED
+    {"nlog_chan",      &nlog_chan,      kInt,     0, true},
+    {"chan_per_slot",  &chan_per_slot,  kInt,     0, true},
+    {"slot_per_crate", &slot_per_crate, kInt,     0, true},
+    {"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
+    {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
+    {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
     { 0 }
   };
-  
-  Int_t err = LoadDB (file, GetInitDate(), request, prefix.c_str());
+  err = LoadDB (file, GetInitDate(), request, prefix.c_str());
   if(nlog_chan == 0) {
     nlog_chan = nchan;
   }
@@ -221,12 +236,14 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // if so, we'll use that instead of the chan_per_slot or slot_per_crate
   // values.
   if(detmap.empty()) { // No detmap, so build simple one with values defined
-    detinfo.SetChanPerSlot(chan_per_slot);
-    detinfo.SetSlotPerCrate(slot_per_crate);
-    // Should also set a reasonable first slot and crate number
-    // in case the user doesn't specify it
+    if(chan_per_slot > 0)
+      detinfo.SetChanPerSlot(chan_per_slot);
+
+    if(slot_per_crate > 0)
+      detinfo.SetSlotPerCrate(slot_per_crate);
+
     detinfo.SetFirstSlot(0);
-    detinfo.SetFirstCrate(0);
+    detinfo.SetFirstCrate(fNextGeneratedCrate++);
   } else {
     int crate,slot,ch_lo,ch_hi,chan_count, ch_count;
     chan_count = 0;
@@ -355,7 +372,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(!adc_encoder_str.empty()) {
       enc = TSBSSimDataEncoder::GetEncoderByName(
             adc_encoder_str.c_str());
-      if(enc) {
+      if(enc && enc->IsADC()) {
         diginfo.SetEncoderADC(enc);
       } else {
         std::cerr << "Error: ADC encoder " << adc_encoder_str << " not found!"
@@ -366,7 +383,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     if(!tdc_encoder_str.empty()) {
       enc = TSBSSimDataEncoder::GetEncoderByName(
             tdc_encoder_str.c_str());
-      if(enc) {
+      if(enc && enc->IsTDC()) {
         diginfo.SetEncoderTDC(enc);
       } else {
         std::cerr << "Error: TDC encoder " << tdc_encoder_str << " not found!"

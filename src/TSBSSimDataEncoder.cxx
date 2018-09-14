@@ -141,7 +141,7 @@ bool TSBSSimADCEncoder::DecodeADC(SimEncoder::adc_data &data,
     return false;
   unsigned short nread = 0;
 
-  data.integral = enc_data[nread++];
+  data.integral = enc_data[nread++]&fBitMask;
   return nread==nwords;
 }
 
