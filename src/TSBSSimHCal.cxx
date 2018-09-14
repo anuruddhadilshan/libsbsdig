@@ -197,7 +197,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   TSBSSimEvent::DetectorData data;
   int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    mult = 0;
+    data.fData.clear();
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
         *qe/spe_unit;
@@ -205,6 +205,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       any_events = true;
       data.fDetID = UniqueDetID();
       data.fChannel = m;
+      mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
       CopyEncodedData(fEncoderADC,mult++,data.fData);
@@ -226,12 +227,11 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
 
       // Now add the TDC if the threshold was met
-      if( fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
+      if(false&& fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
             fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
         CopyEncodedData(fEncoderTDC,mult++,data.fData);
       }
       event.fDetectorData.push_back(data);
-      data.fData.clear();
     }
   }
   SetHasDataFlag(any_events);

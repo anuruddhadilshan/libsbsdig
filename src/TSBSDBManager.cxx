@@ -183,7 +183,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   const string prefix = specname+"."+detname+".";
 
   string dettype_str;
-  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0;
+  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0,chanmap_start = 0;
   std::vector<int> detmap,chanmap;
 
   //First load the parameters which will be common to *all* detectors (including digitization parameters)
@@ -199,6 +199,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     {"slot_per_crate", &slot_per_crate, kInt,     0, 0},
     {"detmap", &detmap, kIntV,     0, true}, ///< Optional detmap
     {"chanmap", &chanmap, kIntV,     0, true}, ///< Optional chanmap
+    {"chanmap_start", &chanmap_start, kInt,     0, true}, ///< Optional chanmap
     { 0 }
   };
   
@@ -239,7 +240,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       // Check to make sure numbers make sense
       if(ch_count <= 0) {
         Error(Here(here), "Cannot specify detmap where first channel (%d) is "
-            "smaller than last channel (%d)",ch_lo,ch_hi);
+            "larger than last channel (%d)",ch_lo,ch_hi);
         err = kInitError;
       }
       detinfo.AddSlot(crate,slot,ch_lo,ch_hi);
@@ -262,7 +263,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
           "not match expected (%d)",int(chanmap.size()),nlog_chan);
       err = kInitError;
     } else {
-      detinfo.LoadChannelMap(chanmap);
+      detinfo.LoadChannelMap(chanmap,chanmap_start);
     }
   }
 

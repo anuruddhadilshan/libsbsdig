@@ -323,7 +323,7 @@ TDigSlot::TDigSlot() : fCrate(-1), fSlot(-1), fNchan(-1), fChanLo(-1),
 TDigSlot::TDigSlot(Int_t crate, Int_t slot, Int_t lo,
     Int_t hi) : fCrate(crate), fSlot(slot), fChanLo(lo), fChanHi(hi)
 {
-  fNchan = fChanHi - fChanLo;
+  fNchan = 1 + (fChanHi - fChanLo);
 }
 
 TDigSlot::~TDigSlot()
@@ -408,7 +408,7 @@ TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
     // Otherwise, loop through all the modules and find the one we want
     for(std::vector<TDigSlot>::iterator it = fModSlots.begin();
         it != fModSlots.end(); it++) {
-      if ( (*it).GetNchan() > lch ) {
+      if ( (*it).GetNchan() >= lch ) {
         info.ch = (*it).GetChanNumber(lch);
         info.slot = (*it).GetSlot();
         info.crate = (*it).GetCrate();
@@ -431,17 +431,22 @@ TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
 }
 
 
-void TDetInfo::LoadChannelMap(std::vector<int> chanmap)
+void TDetInfo::LoadChannelMap(std::vector<int> chanmap, int start)
 {
   // Assume DBManager has checked it for proper size and proceed blindly
   // accepting the format.
   int lch = 0;
   int nmods = fModSlots.size();
   int nch = 0;
+  int lch_off = 0;
   for(int i = 0; i < nmods; i++) {
     nch = fModSlots[i].GetNchan();
     for(int k = 0; k < nch; k++) {
-      fDetMap[lch++] = std::pair<int,int>(i,k);
+      if(lch>=int(fNchan)) {
+        lch_off += fNchan;
+      }
+      //fDetMap[(lch++)] = std::pair<int,int>(i,k);
+      fDetMap[ chanmap[lch++] - start - lch_off] = std::pair<int,int>(i,k);
     }
   }
 }
@@ -456,6 +461,8 @@ TDigInfo::TDigInfo()
   fPedestal.clear();
   fPedNoise.clear();
   fThreshold.clear();
+  fEncoderADC = 0;
+  fEncoderTDC = 0;
 }
 
 TDigInfo::~TDigInfo()

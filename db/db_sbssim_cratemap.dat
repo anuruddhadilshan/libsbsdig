@@ -1,3 +1,7 @@
+## This file is no longer in use! Use the db_sbssim_cratemap.dat
+## in the SBS-offline repository instead!!
+
+
 # -*- mode: Text -*-
 #
 # Crate map for SBS simulation input (see TSBSSimDecoder).
@@ -62,9 +66,11 @@
   22    1877  1 0x00000000 0x00000000 96   960
   23    1877  1 0x00000000 0x00000000 96   960
 
+## Crate map for PS/SH
 ==== Crate  9 type fastbus
-   0    1877  1 0x00000000 0x00000000 96   960
-   1    1877  1 0x00000000 0x00000000 96   960
+   1   50250  1 0x00000000 0x00000000 96   960
+   2   50250  1 0x00000000 0x00000000 96   960
+   3   50250  1 0x00000000 0x00000000 96   960
 # one extra for BB PS/SH
 
 ==== Crate 2 type vme

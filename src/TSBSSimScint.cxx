@@ -18,6 +18,7 @@ TSBSSimScint::~TSBSSimScint()
 
 void TSBSSimScint::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "Scintillator detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimScint::Init() " << endl;
   

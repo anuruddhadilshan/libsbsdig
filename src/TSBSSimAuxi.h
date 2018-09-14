@@ -254,7 +254,7 @@ class TDetInfo : public TObject{
 
   Int_t AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi);
   TDigChannelInfo FindLogicalChannelSlot(Int_t lch);
-  void LoadChannelMap(std::vector<int> chanmap);
+  void LoadChannelMap(std::vector<int> chanmap, int chanmap_start);
 
  private:
   std::string fDetName;      // Detector name

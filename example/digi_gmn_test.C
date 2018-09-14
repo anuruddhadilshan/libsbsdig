@@ -34,7 +34,8 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   manager->LoadGenInfo("db_geninfo_gmn.dat");
   
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer(
+      Form("digitized/simdig_%d.root",runnum));
   digitizer->SetDebug(debuglevel);
   
   // First load the input root file

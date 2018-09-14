@@ -17,6 +17,7 @@ TSBSSimECal::~TSBSSimECal()
 
 void TSBSSimECal::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "ECal detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimECal::Init() " << endl;
   
@@ -158,6 +159,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       // 1: TDC
       // push back a different word for ADC and TDC ?
       // Fill ADC 
+      mult = 0;
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);

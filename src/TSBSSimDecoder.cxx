@@ -286,8 +286,16 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   for(size_t d = 0; d < fDetNames.size(); d++) {
     for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
         detmaps[d].begin(); it != detmaps[d].end(); ++it) {
+      unsigned short data_type = 0, chan_mult = 0;
+      unsigned int nwords = 0;
+      TSBSSimDataEncoder::DecodeHeader(it->second.front(),data_type,chan_mult,
+          nwords);
+      //std::cerr << "Loading data for " << fDetNames[d] << ", type: "
+      // << data_type << std::endl;
       it->first->GetModule()->LoadSlot(it->first,
           it->second.data(),0,it->second.size() );
+      //it->first->GetModule()->LoadSlot(it->first,
+      //    it->second.data(),&(it->second.back()) );
     }
   }
 
@@ -325,7 +333,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
   Int_t crate, slot;
   TDetInfo detInfo = fManager->GetDetInfo(detname);
   unsigned int nwords = 0;
-  unsigned short data_type = 0, chan = 0;
+  unsigned short data_type = 0, chan = 0, chan_mult = 0;
   int lchan;
 
   if(detdata.fDetID == detid && detdata.fData.size() > 1) { // Data to process
@@ -337,9 +345,9 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
     //for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
       // Identify the "logical" channel number for this event
       // based on the first integer in the raw data
-      TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan,
+      TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan_mult,
           nwords);
-      lchan = mod + chan*detInfo.NChan();
+      lchan = mod + chan_mult*detInfo.NChan();
       // Get information about this logical channel from TDetInfo
       TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
       crate = chinfo.crate;
@@ -363,7 +371,8 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
           myev->push_back(detdata.fData[j++]);
         }
       } else {
-        std::cerr << "Yikes!! No data for " << detname << " in c: "
+        std::cerr << "Yikes!! No data for " << detname
+          << " (mod=" << mod << ") in c: "
           << crate << " s: " << slot << " c: " << chan
           << " size: " << detdata.fData.size() << ", j: " << j <<", nwords: "
           << nwords << std::endl;

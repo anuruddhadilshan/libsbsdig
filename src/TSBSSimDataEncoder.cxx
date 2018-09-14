@@ -139,9 +139,10 @@ bool TSBSSimADCEncoder::DecodeADC(SimEncoder::adc_data &data,
 {
   if(nwords>1)
     return false;
+  unsigned short nread = 0;
 
-  data.integral = enc_data[nwords++];
-  return nwords>true;
+  data.integral = enc_data[nread++];
+  return nread==nwords;
 }
 
 bool TSBSSimTDCEncoder::DecodeTDC(SimEncoder::tdc_data &data,

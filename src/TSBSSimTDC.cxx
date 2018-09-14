@@ -88,26 +88,34 @@ namespace Decoder {
     SimEncoder::tdc_data tmp_tdc_data;
     while(evbuffer < pstop) {
       // First, decode the header
+      chan = type = nwords = 0;
       TSBSSimDataEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
       TSBSSimDataEncoder *enc = TSBSSimDataEncoder::GetEncoder(type);
-      if(enc && nwords>0) {
-        enc->DecodeTDC(tmp_tdc_data,evbuffer,nwords);
-        evbuffer += nwords; // skip ahead the total number of words read
-        for(size_t i = 0; i < tmp_tdc_data.time.size(); i++ ) {
-          raw_buff = tmp_tdc_data.getTime(i);
-          if(tmp_tdc_data.getEdge(i)) { // Trail
-            tdc_data[chan].lead_time.push_back(raw_buff);
-          } else { // Lead
-            tdc_data[chan].trail_time.push_back(raw_buff);
-          }
-          // TODO: Figure out what to do with the edge information
-          // I'd imagine we need to distinguish it somehow!
-          sldat->loadData("tdc",chan,raw_buff,raw_buff);
-        }
-        tmp_tdc_data.time.clear(); // Clear it to prepare for next read
+      evbuffer += nwords; // Skip ahead in the buffer
+      if(!enc) {
+        std::cerr << "Could not find TDC decoder of type: " << type
+          << std::endl;
       } else {
-        std::cerr << "Could not find TDC decoder of type: " << type <<
-          std::endl;
+        if(!enc->IsTDC()) {
+          std::cerr << "Encoder " << enc->GetName() << " of type " << type
+            << " is not a TDC!" << std::endl;
+        } else if ( nwords > 0 ) {
+          enc->DecodeTDC(tmp_tdc_data,evbuffer,nwords);
+          std::cerr << "Got TDC encoder for type: " << type
+            << ", name: " << enc->GetName() << std::endl;
+          for(size_t i = 0; i < tmp_tdc_data.time.size(); i++ ) {
+            raw_buff = tmp_tdc_data.getTime(i);
+            if(tmp_tdc_data.getEdge(i)) { // Trail
+              tdc_data[chan].lead_time.push_back(raw_buff);
+            } else { // Lead
+              tdc_data[chan].trail_time.push_back(raw_buff);
+            }
+            // TODO: Figure out what to do with the edge information
+            // I'd imagine we need to distinguish it somehow!
+            sldat->loadData("tdc",chan,raw_buff,raw_buff);
+          }
+          tmp_tdc_data.time.clear(); // Clear it to prepare for next read
+        }
       }
     }
    return 0;

@@ -18,6 +18,7 @@ TSBSSimCher::~TSBSSimCher()
 
 void TSBSSimCher::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "Cherenkov detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimCher::Init() " << endl;
   
