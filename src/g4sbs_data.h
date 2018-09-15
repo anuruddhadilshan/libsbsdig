@@ -156,6 +156,13 @@ namespace TSBSGeant4 {
     std::vector<double>   *p;
     std::vector<double>   *edep;
     std::vector<double>   *beta;
+    std::vector<double>   *xin;
+    std::vector<double>   *yin;
+    std::vector<double>   *zin;
+    std::vector<double>   *xout;
+    std::vector<double>   *yout;
+    std::vector<double>   *zout;
+
     GEMData_t(){};
     virtual ~GEMData_t() {};
     virtual bool SetupBranches(TTree *t, const char *prefix);

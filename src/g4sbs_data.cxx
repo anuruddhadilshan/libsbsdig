@@ -149,6 +149,12 @@ namespace TSBSGeant4 {
     ret += SetupBranch(tree,prefix,"p",p);
     ret += SetupBranch(tree,prefix,"edep",edep);
     ret += SetupBranch(tree,prefix,"beta",beta);
+    ret += SetupBranch(tree,prefix,"xin",xin);
+    ret += SetupBranch(tree,prefix,"yin",yin);
+    ret += SetupBranch(tree,prefix,"zin",zin);
+    ret += SetupBranch(tree,prefix,"xout",xout);
+    ret += SetupBranch(tree,prefix,"yout",yout);
+    ret += SetupBranch(tree,prefix,"zout",zout);
     return (ret==0);
   }
 
