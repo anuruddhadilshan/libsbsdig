@@ -1,12 +1,14 @@
 #include "TSBSSimHCal.h"
 #include <iostream>
 #include <TSBSSimData.h>
+#include "sbs_types.h"
 //#include <TF1.h>
 //#include <TF1Convolution.h>
 //#include <TTree.h>
 //#include <TFile.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
+#include "TSBSSimDataEncoder.h"
 
 #define HCAL_TDC_THRESH 0.1
 
@@ -15,6 +17,10 @@ TSBSSimHCal::TSBSSimHCal(const char* name, short id)
   fName = name;
   SetUniqueDetID(id);
   Init();
+  fHasFADC = false;
+  if(fEncoderADC && fEncoderADC->IsFADC()) {
+    fHasFADC = true;
+  }
 }
 
 TSBSSimHCal::~TSBSSimHCal()
@@ -23,6 +29,7 @@ TSBSSimHCal::~TSBSSimHCal()
 
 void TSBSSimHCal::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "HCal detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimHCal::Init() " << endl;
   
@@ -94,42 +101,55 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 
 void TSBSSimHCal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 {
-  // Just make HCAL be 288 modules for now to make it easier....
   //Double_t mint = 1e9;
-  int mod = 0;
+  //bool signal = false;
+  int chan = 0;
   int type = 0;
   double data = 0;
-  double pulsenorm = 0;
-  // for( const g4sbshitdata *ev: evbuffer) {
   for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
     g4sbshitdata* ev = (*it);
     // Only get detector data for HCAL
-    // TODO: Don't hard code DetID here!!!
-    if(ev->GetDetType() == kHCal) {
-      mod  = ev->GetData(0);
-      type = ev->GetData(1);
-      data = ev->GetData(2);
+    if(ev->GetDetUniqueID() == UniqueDetID()) {
+      //signal = (ev->GetData(0)==0);
+      chan  = ev->GetData(1);
+      type = ev->GetData(2);
+      data = ev->GetData(3);
       if(type == 0) {
-        //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
+        //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
-	pulsenorm = fDetInfo.DigInfo().Gain(mod)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
-        //fSignals[mod].Fill(fSPE, data-75.);
-	fSignals[mod].Fill(fSPE, pulsenorm,data-75.);
+        // Data is time, so use info from the configuration
+        data += fDetInfo.DigInfo().SPE_TransitTime()-
+          fDetInfo.DigInfo().TriggerOffset() + fDetInfo.DigInfo().TriggerJitter();
+        //pulsenorm = fDetInfo.DigInfo().Gain(chan)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
+        //fSignals[chan].Fill(fSPE, data-75.);
+        fSignals[chan].Fill(data);
+        //fSignals[chan].Fill(fSPE, pulsenorm,data);
       } else if (type == 1) { // sumedep data
-        fSignals[mod].sumedep = data;
+        fSignals[chan].sumedep = data;
       }
     }
   }
   //std::cout << "Mint = " << mint << std::endl;
 }
 
-void TSBSSimHCal::Signal::Digitize()
+void TSBSSimHCal::Signal::Digitize(TSPEModel *model, double pulsenorm,
+    double toffset, double max_val)
 {
   if(npe <= 0)
     return;
 
+  // First, make the "scope" picture
+  double t = mint;
+  for(int bin = 0; bin < nbins_times; bin++) {
+    if(times_histo[bin]>0) {
+      FillNPE(model,pulsenorm*times_histo[bin],t,toffset);
+    }
+    t+=dx_raw_time;
+  }
+
+  // Now digitize
   int braw = 0;
   double max = 0;
   sum = 0;
@@ -145,13 +165,11 @@ void TSBSSimHCal::Signal::Digitize()
         }
       }
     }
-    if(max>2)
-      max = 2;
-    //samples[bs] =int((max/2.);//*4095);
-    samples[bs] =int((max/2.)*4095);
-    //samples[bs] = samples[bs] > 4095 ? 4095 : samples[bs];
+    fadc.samples[bs] =int((max/2.)*max_val);
+    if(fadc.samples[bs]>max_val)
+      fadc.samples[bs]=max_val;
     braw += dnraw;
-    sum += samples[bs];
+    sum += fadc.samples[bs];
   }
 
   // Also digitize the sumedep
@@ -165,32 +183,41 @@ void TSBSSimHCal::Signal::Digitize()
   // in TPMTSignal instead!
   if(met_tdc_thresh) {
     tdc_time -= mint; // Make sure tdc_time is always positive
-    tdc_time = int((tdc_time/3.9e3)*65535);
+    tdc.time.push_back(int((tdc_time/3.9e3)*65535));
+    //tdc_time = int((tdc_time/3.9e3)*65535);
   }
+
 }
 
 void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
+  double pulsenorm = 0;
+  double max_val = pow(2,fDetInfo.DigInfo().ADCBits());
+  TSBSSimEvent::DetectorData data;
+  int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    fSignals[m].Digitize();
+    data.fData.clear();
     if(fSignals[m].npe > 0) {
+      pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
+        *qe/spe_unit;
+      fSignals[m].Digitize(fSPE,pulsenorm,0.0,max_val);
       any_events = true;
-      TSBSSimEvent::DetectorData data;
-      data.fDetID = HCAL_UNIQUE_DETID; // 2 for fADC data
+      data.fDetID = UniqueDetID();
       data.fChannel = m;
-      //data.fData.push_back(data.fChannel);
-      //data.fData.push_back(m);
-      data.fData.push_back(0); // For samples data
-      data.fData.push_back(fSignals[m].samples.size());
+      mult = 0;
+      fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
+          fNEncBufferWords);
+      CopyEncodedData(fEncoderADC,mult++,data.fData);
+      //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
       //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
-      for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
+      //for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
         //std::cout << " " << fSignals[m].samples[j];
-        data.fData.push_back(fSignals[m].samples[j]);
-      }
-      event.fDetectorData.push_back(data);
+        //data.fData.push_back(fSignals[m].samples[j]);
+      //}
+      //event.fDetectorData.push_back(data); // Store event data
       // Now add the sum (or edep)
-      data.fData.clear();
+      //data.fData.clear();
       //data.fData.push_back(m);
       // Since it's still uncertain if we can populate the sumedet
       // parts, I'll leave this out for now...
@@ -200,13 +227,11 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
 
       // Now add the TDC if the threshold was met
-      if( fSignals[m].met_tdc_thresh) {
-        data.fData.clear();
-        data.fData.push_back(1);
-        data.fData.push_back(1);
-        data.fData.push_back(fSignals[m].tdc_time);
-        event.fDetectorData.push_back(data);
+      if(false&& fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
+            fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
+        CopyEncodedData(fEncoderTDC,mult++,data.fData);
       }
+      event.fDetectorData.push_back(data);
     }
   }
   SetHasDataFlag(any_events);
@@ -215,14 +240,28 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(1.0)
   //mint(0.0), maxt(50.), nbins(50),
 {
+  // hard coded, 'cause' why not? :D
+  dx_raw_time = 0.120;
+  nbins_times = (maxt-mint)/dx_raw_time;
+  times_histo.resize(nbins_times);
   nbins = (maxt-mint)/dx_samples;
   dx_raw = dx_samples/double(dnraw);
   nbins_raw= (maxt-mint)/dx_raw;
-  samples.resize(nbins);
+  fadc.samples.resize(nbins);
   samples_raw.resize(nbins_raw);
+  Clear();
 }
 
-void TSBSSimHCal::Signal::Fill(TSPEModel *model, double pulsenorm, double t, double toffset)
+void TSBSSimHCal::Signal::Fill(double t)
+{
+  int bin = (t-mint)/dx_raw_time;
+  if(bin < 0 || bin > nbins_times)
+    return;
+  times_histo[bin]++;
+  npe++;
+}
+
+void TSBSSimHCal::Signal::FillNPE(TSPEModel *model, double pulsenorm, double t, double toffset)
 {
   int start_bin = 0;
   if( mint > t )
@@ -241,9 +280,7 @@ void TSBSSimHCal::Signal::Fill(TSPEModel *model, double pulsenorm, double t, dou
     samples_raw[bin] += pulsenorm*model->Eval(tt);
     tt += dx_raw;
   }
-  npe++;
 }
-
 
 /* 
 //This is the old function TSBSSimHCal::Signal::Fill, which uses struct SPEModel instead of class TSPEModel:
@@ -300,7 +337,7 @@ double TSBSSimHCal::SPEModel::Eval(double t)
 }
 */
 
-void TSBSSimHCal::Clear()
+void TSBSSimHCal::Clear(Option_t*)
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();
@@ -309,13 +346,19 @@ void TSBSSimHCal::Clear()
 
 void TSBSSimHCal::Signal::Clear()
 {
-  for(size_t i = 0; i < samples.size(); i++) {
-    samples[i] = 0;
+  for(size_t i = 0; i < fadc.samples.size(); i++) {
+    fadc.samples[i] = 0;
   }
   for(size_t i = 0; i < samples_raw.size(); i++) {
     samples_raw[i] = 0;
   }
+  for(size_t i = 0; i < times_histo.size(); i++) {
+    times_histo[i] = 0;
+  }
+
   npe = 0;
   met_tdc_thresh = false;
   tdc_time = mint-dx_raw;
+  tdc.time.clear();
 }
+ClassImp(TSBSSimHCal) // Implements TSBSSimHCal

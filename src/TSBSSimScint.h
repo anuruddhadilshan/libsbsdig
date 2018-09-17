@@ -14,8 +14,10 @@ public:
   virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
   
-  virtual void Clear();
+  virtual void Clear(Option_t *opt = "");
   
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
   // Initialize
   void Init();
   

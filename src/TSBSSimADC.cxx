@@ -59,7 +59,8 @@ namespace Decoder {
     // Clear all data objects
     assert(fadc_data.size() == NADCCHAN);  // Initialization error in constructor
     for (uint32_t i = 0; i < NADCCHAN; i++) {
-      fadc_data[i].clear();
+      fadc_data[i].integral = 0;
+      fadc_data[i].samples.clear();
     }
   }
 
@@ -71,40 +72,51 @@ namespace Decoder {
   void TSBSSimADC::Init() {
     Clear();
     IsInit = kTRUE;
-    fName = "SBSSimFADC250 JLab Flash ADC Module";
+    fName = "SBSSimADC (Simple JLab Flash ADC Simulated Module)";
   }
 
   void TSBSSimADC::CheckDecoderStatus() const {
-    cout << "FADC250 Decoder has been called" << endl;
   }
 
   Int_t TSBSSimADC::LoadSlot(THaSlotData *sldat, const UInt_t *evbuffer,
       const UInt_t *pstop) {
     Clear();
-    int chan = 0, type = 0, num_samples = 0;
+    unsigned int nwords = 0;
+    unsigned short chan = 0, type;
     UInt_t raw_buff;
     bool printed = false;
+    bool is_first = true;
     while(evbuffer < pstop) {
-      // First get channel number
-      chan = *evbuffer++;
-      type = *evbuffer++;
-      if(type == 0) { // Samples mode
-        num_samples = *evbuffer++;
-        for(int i = 0; i < num_samples; i++) {
-          raw_buff = *evbuffer++;
-          fadc_data[chan].samples.push_back(raw_buff);
-          sldat->loadData("adc",chan,raw_buff,raw_buff);
-        }
-      } else if (type==1) { // integral of adc
-        num_samples = *evbuffer++;
-        for(int i = 0; i < num_samples; i++) {
-          raw_buff = *evbuffer++;
-          std::cerr << " [" << chan << ", " << raw_buff << "]";
-          printed = true;
-          fadc_data[chan].integrals.push_back(raw_buff);
-          sldat->loadData("adc",chan,raw_buff,raw_buff);
+      // First, decode the header
+      TSBSSimDataEncoder::DecodeHeader(*evbuffer++,type,chan,nwords);
+      TSBSSimDataEncoder *enc = TSBSSimDataEncoder::GetEncoder(type);
+      if(!enc) {
+        std::cerr << "Could not find ADC decoder of type: " << type
+          << ", is_first: " << is_first << std::endl;
+      } else {
+        if(!enc->IsADC()) {
+          std::cerr << "Encoder " << enc->GetName() << " of type " << type
+            << " is not an ADC!" << std::endl;
+        } else if ( nwords > 0 ) {
+          if(enc->IsFADC()) { // FADC with samples
+            SimEncoder::fadc_data tmp_fadc_data;
+            enc->DecodeFADC(tmp_fadc_data,evbuffer,nwords);
+            for(size_t i = 0; i < tmp_fadc_data.samples.size(); i++) {
+              raw_buff = tmp_fadc_data.samples[i];
+              fadc_data[chan].samples.push_back(tmp_fadc_data.samples[i]);
+              sldat->loadData("adc",chan,raw_buff,raw_buff);
+            }
+          } else if (enc->IsADC()) { // Integral of ADC
+            SimEncoder::adc_data tmp_adc_data;
+            enc->DecodeADC(tmp_adc_data,evbuffer,nwords);
+            raw_buff = tmp_adc_data.integral;
+            fadc_data[chan].integral = raw_buff;
+            sldat->loadData("adc",chan,raw_buff,raw_buff);
+          }
         }
       }
+      evbuffer += nwords; // Skip ahead the number of words processed
+      is_first = false;
     }
     if(printed)
       std::cerr << std::endl;

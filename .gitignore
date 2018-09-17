@@ -20,3 +20,5 @@ lib*.so*
 *.png
 *.patch
 *.diff
+*.swp
+*.swo

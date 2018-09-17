@@ -47,7 +47,7 @@ class TSBSSpec : public THaSpectrometer {
   //std::vector<TSBSCher*>  fCherDets;
   
  public:
-  ClassDef(TSBSSpec,0)
+  ClassDef(TSBSSpec,1)
 };
 
 #endif//__TSBSSPEC_H

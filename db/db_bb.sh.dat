@@ -16,6 +16,7 @@ geo.bb.sh.yoffset = 0.0 #m
 #SH digitization info
 dig.bb.sh.roimpedance = 50 # ohm
 #BB ECal will use Lecroy 1881M ADC
+dig.bb.sh.adc_encoder = lecroy1881
 dig.bb.sh.adcconversion = 50.0 #adc channel/C
 dig.bb.sh.adcbits = 12 # not 1 TDC per channel
 #BB ECal trigger logic will use Lecroy 1877 TDC
@@ -38,13 +39,6 @@ dig.bb.sh.spe_transit = 19.0  # ns
 #dig.bb.sh.crosstalk_mean = 0.1
 #dig.bb.sh.crosstalk_sigma = 0.03
 #dig.bb.sh.crosstalk_chan_apart = 8
-
-#bb sh detector map
-# crate slot ch_min ch_max
-bb.sh.detmap =
-   0     1       0      63
-   0     2       0      63
-   0     3       0      60
 
 
 ##############################################################

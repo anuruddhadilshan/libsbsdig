@@ -1,7 +1,16 @@
 #include "TSBSSimAuxi.h"
-#include "TSBSDBManager.h"
 #define DEBUG 0
 
+//ClassImp(TSpectroInfo) // Implements TSpectroInfo
+ClassImp(TGeoInfo) // Implements TGeoInfo
+ClassImp(TDigInfo) // Implements TDigInfo
+ClassImp(TDigSlot) // Implements TDigSlot
+ClassImp(TDetInfo) // Implements TDetInfo
+ClassImp(TSPEModel) // Implements TSPEModel
+ClassImp(TPMTSignal) // Implements TPMTSignal
+ClassImp(TSignalInfo) // Implements TSignalInfo
+
+using namespace std;
 //
 // Class TNPEModel
 //
@@ -254,6 +263,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   UInt_t tdc_value;
   
   // For the sake of going forward, we assume that the signal is the first entry of each vector
+  fTDCData.time.clear();
   if(fLeadTimes.size() && fTrailTimes.size()){
     for(size_t i = 0; i<fLeadTimes.size(); i++){
 #if DEBUG>0
@@ -267,6 +277,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
       tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
+      fTDCData.time.push_back(tdc_value);
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
       // also mark the traling time with setting bin 31 to 1
@@ -276,6 +287,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
       }
       tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
       fTDCs.push_back(tdc_value);
+      fTDCData.time.push_back(tdc_value);
       
 #if DEBUG>0
       cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
@@ -286,7 +298,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   fSumEdep*=1.0e9;// store in eV.
 }
 
-void TPMTSignal::Clear()
+void TPMTSignal::Clear(Option_t*)
 {
   //cout << " TPMTSignal::Clear() " << endl;
   
@@ -311,7 +323,7 @@ TDigSlot::TDigSlot() : fCrate(-1), fSlot(-1), fNchan(-1), fChanLo(-1),
 TDigSlot::TDigSlot(Int_t crate, Int_t slot, Int_t lo,
     Int_t hi) : fCrate(crate), fSlot(slot), fChanLo(lo), fChanHi(hi)
 {
-  fNchan = fChanHi - fChanLo;
+  fNchan = 1 + (fChanHi - fChanLo);
 }
 
 TDigSlot::~TDigSlot()
@@ -396,7 +408,7 @@ TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
     // Otherwise, loop through all the modules and find the one we want
     for(std::vector<TDigSlot>::iterator it = fModSlots.begin();
         it != fModSlots.end(); it++) {
-      if ( (*it).GetNchan() < lch ) {
+      if ( (*it).GetNchan() > lch ) {
         info.ch = (*it).GetChanNumber(lch);
         info.slot = (*it).GetSlot();
         info.crate = (*it).GetCrate();
@@ -419,17 +431,22 @@ TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
 }
 
 
-void TDetInfo::LoadChannelMap(std::vector<int> chanmap)
+void TDetInfo::LoadChannelMap(std::vector<int> chanmap, int start)
 {
   // Assume DBManager has checked it for proper size and proceed blindly
   // accepting the format.
   int lch = 0;
   int nmods = fModSlots.size();
   int nch = 0;
+  int lch_off = 0;
   for(int i = 0; i < nmods; i++) {
     nch = fModSlots[i].GetNchan();
     for(int k = 0; k < nch; k++) {
-      fDetMap[lch++] = std::pair<int,int>(i,k);
+      if(lch>=int(fNchan)) {
+        lch_off += fNchan;
+      }
+      //fDetMap[(lch++)] = std::pair<int,int>(i,k);
+      fDetMap[ chanmap[lch++] - start - lch_off] = std::pair<int,int>(i,k);
     }
   }
 }
@@ -444,6 +461,8 @@ TDigInfo::TDigInfo()
   fPedestal.clear();
   fPedNoise.clear();
   fThreshold.clear();
+  fEncoderADC = 0;
+  fEncoderTDC = 0;
 }
 
 TDigInfo::~TDigInfo()

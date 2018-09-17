@@ -19,34 +19,20 @@ public:
   virtual void LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer);
   virtual void Digitize(TSBSSimEvent &event);
 
-  virtual void Clear();
+  virtual void Clear(Option_t *op = "");
 
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
   // Initialize
   void Init();
-  /* 
-  struct SPEModel {
-    double gain_pmt;
-    double resistance; //ohm
-    //double qe; //
-    //double unit;
-    double scale;
-    TF1 *model;
-    SPEModel();
-    double Eval(double t);
-    TF1 *fFunc1;
-    TF1 *fFunc2;
-    TF1Convolution *fConvolution;
-    double mint;
-    double start_t;
-    double maxt;
-    double tao;
-    double sig;
-    double t0;
-  };
-  */
+
   struct Signal {
-    std::vector<double> samples;
+    SimEncoder::fadc_data fadc;
+    SimEncoder::tdc_data tdc;
+    //std::vector<double> samples;
     std::vector<double> samples_raw;
+    std::vector<double> times_histo;
+    int nbins_times;
     double sumedep;
     double mint;
     double maxt;
@@ -59,16 +45,23 @@ public:
     int dnraw;
     double dx_samples;
     double dx_raw;
+    double dx_raw_time;
     Signal();
-    //void Fill(SPEModel *model,double t, double toffset = 0.0);
-    void Fill(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
-    void Digitize();
+    void FillNPE(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
+    void Fill(double t);
+    void Digitize(TSPEModel *model, double pulsenorm, double toffset,
+        double max_val);
+    void DigitizeOld();
     void Clear();
   };
 private:
   //SPEModel *fSPE;
   TSPEModel *fSPE;
   std::vector<Signal> fSignals;
+  bool fHasFADC;
+  // TODO: Try to use the standard TPMTSignal class (but must have
+  // the ability to provide samples)
+  //std::vector<TPMTSignal> fSignals;
 
   ClassDef(TSBSSimHCal,1)
 };

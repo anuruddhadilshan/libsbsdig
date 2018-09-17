@@ -1,36 +1,28 @@
+#include <iostream>
 
-#include "TSystem.h"
-#include "TList.h"
-#include "THaRun.h"
+// Only include these headers if we are compiling this macro
+// (there is a strange dictionary behavior otherwise...)
+#if !defined(__CLING__) || defined(__ROOTCLING__)
+#include "THaAnalyzer.h"
+#include "THaInterface.h"
 #include "THaEvent.h"
 #include "THaEvtTypeHandler.h"
-#include "THaAnalyzer.h"
-#include "THaApparatus.h"
-#include "THaVarList.h"
+#include <TSystem.h>
 
-//#include "SBSGEMStand.h"
-//#include "SBSBigBite.h"
 #include "SBSEArm.h"
 #include "SBSCalorimeter.h"
+
+#include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
-#include "THaInterface.h"
 #include "TSBSSimDecoder.h"
 #include "TSBSSimFile.h"
-//R__ADD_LIBRARY_PATH($SBS_ANALYSIS)
-//R__ADD_LIBRARY_PATH(../)
-//R__LOAD_LIBRARY(libsbs.so)
-//R__LOAD_LIBRARY(libsbsdig.so)
+#endif
 
 void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
   const char* detsuffix = "grinch";
 
-  //gSystem->Load(Form("${SBS_ANALYSIS}/libsbs.so"));
-  //gSystem->Load(Form("/home/cornejo/SBS/analysis/sbs_offline/devel/libsbs.so"));
-  //gSystem->Load("../libsbsdig.so");
-
-
   //
-  //  Steering script for Hall A analyzer demo
+  //  Steering script for SBS replay demo
   //
 
   // Set up the equipment to be analyzed.
@@ -43,7 +35,6 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
      THaApparatus* DECDAT = new THaDecData("D","Misc. Decoder Data");
      gHaApps->Add( DECDAT );
      */
-
 
   // Set up the analyzer - we use the standard one,
   // but this could be an experiment-specific one as well.
@@ -70,7 +61,7 @@ void replay_sim_hcal_test(Int_t runnum = 931, Int_t lastEvent = -1){
   // We just set up one, but this could be many.
   //  THaRun* run = new THaRun( "prod12_4100V_TrigRate25_4.dat" );
   //THaRun* run = new THaRun(TString::Format("digitized/simin_%d.root",runnum) );
-  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/simin_%d.root",runnum) );
+  THaRunBase *run = new TSBSSimFile(TString::Format("digitized/simdig_%d.root",runnum) );
   run->SetFirstEvent(0);
   run->SetLastEvent(lastEvent);
 

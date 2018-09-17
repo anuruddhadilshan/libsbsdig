@@ -3,6 +3,7 @@
 #include <TSBSSimData.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
+#include "sbs_types.h"
 
 TSBSSimCher::TSBSSimCher(const char* name, short id)
 {
@@ -17,6 +18,7 @@ TSBSSimCher::~TSBSSimCher()
 
 void TSBSSimCher::Init()
 {
+  TSBSSimDetector::Init();
   if(fDebug>=1)
     cout << "Cherenkov detector with UniqueDetID = " << UniqueDetID() << ": TSBSSimCher::Init() " << endl;
   
@@ -123,14 +125,16 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
   TSBSSimEvent::DetectorData data;
   TSBSSimEvent::SimDetectorData simdata;
   
-  UInt_t VETROCword;
+  //UInt_t VETROCword;
   
-  bool header[8] = {0, 0, 0, 0, 0, 0, 1, 1};
-  bool channel[8];
-  bool tdc[16];
-  bool trail;
-  short edgebitpos = 26;
+  //bool header[8] = {0, 0, 0, 0, 0, 0, 1, 1};
+  //bool channel[8];
+  //bool tdc[16];
+  //bool trail;
+  //short edgebitpos = 26;
   
+  SimEncoder::adc_data adc_data;
+  int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
     data.fData.clear();
     simdata.fData.clear();
@@ -145,13 +149,25 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       // 1: TDC
       // push back a different word for ADC and TDC ?
       // Fill ADC => only if 
-      if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
-	data.fData.push_back(0);//ADC data flag
-	data.fData.push_back(1);//ADC data size
-	data.fData.push_back(fSignals[m].ADC());//ADC data
-	simdata.fData.clear();
+      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+      mult = 0;
+      if(fEncoderADC) {
+        adc_data.integral=fSignals[m].ADC();
+        fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
+        CopyEncodedData(fEncoderADC,mult++,data.fData);
+        simdata.fData.clear();
       }
       // Fill TDC 
+      // (with new encoder logic)
+      if(fEncoderTDC) {
+        fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
+            fNEncBufferWords);
+        CopyEncodedData(fEncoderTDC,mult++,data.fData);
+      }
+      event.fDetectorData.push_back(data);
+      data.fData.clear();
+/*
+      data.fData.push_back(1);// Logical channel multiplier (TDCs second)
       data.fData.push_back(1);//Digitized data
       data.fData.push_back(fSignals[m].TDCSize());
       if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  
@@ -198,6 +214,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       }
       event.fDetectorData.push_back(data);
       data.fData.clear();
+      */
       
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
@@ -240,9 +257,10 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 }
 
 // Clear signals in array
-void TSBSSimCher::Clear()
+void TSBSSimCher::Clear(Option_t *)
 {
   for(size_t i = 0; i < fSignals.size(); i++ ) {
     fSignals[i].Clear();
   }
 }
+ClassImp(TSBSSimCher) // Implements TSBSSimCher

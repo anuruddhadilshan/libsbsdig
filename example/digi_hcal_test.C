@@ -7,19 +7,8 @@
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 
-/*
-#include "TSBSCher.h"
-#include "TSystem.h"
-#include "TSBSSpec.h"
-#include "TSBSSimCherDigitization.h"
-#include "TSBSDBManager.h"
-#include "TSBSGeant4File.h"
-#include "TSBSSimEvent.h"
-*/
 
-R__LOAD_LIBRARY(../libsbsdig)
-
-void digi_hcal_test(int nentries = 100, int debuglevel = 1)
+void digi_hcal_test(int runnum = 931, int nentries = 100, int debuglevel = 1)
 
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
@@ -27,6 +16,7 @@ void digi_hcal_test(int nentries = 100, int debuglevel = 1)
 
   TDatime run_time = 991231;
 
+  gSystem->AddDynamicPath("${SBS_ANALYSIS}");
   gSystem->Load("../libsbsdig.so");
 
   ////////////////////////////////////////////////////////////////
@@ -39,10 +29,11 @@ void digi_hcal_test(int nentries = 100, int debuglevel = 1)
 
 
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer(
+      Form("digitized/simdig_%d.root",runnum));
 
   // First load the input root file
-  TSBSGeant4File *f = new TSBSGeant4File("data/sbsin_931.root");
+  TSBSGeant4File *f = new TSBSGeant4File(Form("data/sbsin_%d.root",runnum));
   
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal",0);
   digitizer->AddDetector(hcal);

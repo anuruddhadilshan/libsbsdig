@@ -7,12 +7,13 @@
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
+#include "TSBSSimDataEncoder.h"
 //#include "TF1Convolution.h"
 
 class g4sbshitdata;
 class TSBSSimEvent;
 class TSBSDBManager;
-class THaAnalysisObject;
+//class THaAnalysisObject;
 
 class TSBSSimDetector : public THaAnalysisObject {
 public:
@@ -31,10 +32,21 @@ protected:
     
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
+  TSBSSimDataEncoder *fEncoderADC;
+  TSBSSimDataEncoder *fEncoderTDC;
+  unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
+  unsigned short fNEncBufferWords;
+
+  // Silence compiler warnings about Init from parent class
+  using THaAnalysisObject::Init;
+  virtual void Init();
+
+  void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,
+      std::vector<unsigned int> &dat);
 private:
   bool fHasData;
   short fUniqueDetID;
-  
+
   ClassDef(TSBSSimDetector,1)
 };
 

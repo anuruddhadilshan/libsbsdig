@@ -44,8 +44,8 @@ namespace Decoder {
 
 
     struct tdc_data_struct {
-      uint32_t lead_time;
-      uint32_t trail_time;
+      std::vector<uint32_t> lead_time;
+      std::vector<uint32_t> trail_time;
     };  // tdc_data_struct
 
   private:
@@ -53,7 +53,7 @@ namespace Decoder {
     static TypeIter_t fgThisType;
     std::vector<tdc_data_struct> tdc_data;
 
-    ClassDef(TSBSSimTDC,0)  //  Generic SimTDC module
+    ClassDef(TSBSSimTDC,1)  //  Generic SimTDC module
 
   };  // TSBSSimTDC class
 

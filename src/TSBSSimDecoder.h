@@ -12,10 +12,10 @@
 #include "ha_compiledata.h"
 #include <cassert>
 #include <map>
-#include "TSBSDBManager.h"
+//#include "TSBSDBManager.h"
 #include <stdint.h>
 
-class THaCrateMap;
+//class THaCrateMap;
 
 //-----------------------------------------------------------------------------
 // SBS digitized simulation decoder class
@@ -76,7 +76,7 @@ protected:
   Int_t PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const;
   // Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan ) const;
   */
-  ClassDef(TSBSSimDecoder,0) // Decoder for simulated SoLID spectrometer data
+  ClassDef(TSBSSimDecoder,1) // Decoder for simulated SoLID spectrometer data
 };
 
 

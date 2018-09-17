@@ -88,3 +88,4 @@ TSBSSpec::Print() const
   }
   */
 }
+ClassImp(TSBSSpec) // Implements TSBSSpec

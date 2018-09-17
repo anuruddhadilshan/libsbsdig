@@ -291,10 +291,11 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->hcalpart.E) {
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {
       if(fTree->hcalpart.detected->at(k)) {
-        g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,3);
-        hcalpmthit->SetData(0,fTree->hcalpart.part_PMT->at(k));
-        hcalpmthit->SetData(1,0); // data type 0 == optical photon
-        hcalpmthit->SetData(2,fTree->hcalpart.t->at(k));
+        g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
+        hcalpmthit->SetData(0,fSource);
+        hcalpmthit->SetData(1,fTree->hcalpart.part_PMT->at(k));
+        hcalpmthit->SetData(2,0); // data type 0 == optical photon
+        hcalpmthit->SetData(3,fTree->hcalpart.t->at(k));
         fg4sbsHitData.push_back(hcalpmthit);
       }
     }
@@ -303,10 +304,11 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // scintillators. This can be changed later, I suppose...
   if(fTree->hcalscint.sumedep) {
     for(size_t k = 0; k < fTree->hcalscint.sumedep->size(); k++) {
-      g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_UNIQUE_DETID,3);
-      hcalscinthit->SetData(0,fTree->hcalscint.cell->at(k));
-      hcalscinthit->SetData(1,1); // data type 1 == sumedep
-      hcalscinthit->SetData(2,fTree->hcalscint.sumedep->at(k));
+      g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
+      hcalscinthit->SetData(0,fSource);
+      hcalscinthit->SetData(1,fTree->hcalscint.cell->at(k));
+      hcalscinthit->SetData(2,1); // data type 1 == sumedep
+      hcalscinthit->SetData(3,fTree->hcalscint.sumedep->at(k));
       fg4sbsHitData.push_back(hcalscinthit);
     }
   }

@@ -13,6 +13,7 @@
 #include "PipeliningModule.h"
 #include "stdint.h"
 #include <vector>
+#include "TSBSSimDataEncoder.h"
 
 namespace Decoder {
 
@@ -41,6 +42,7 @@ namespace Decoder {
     Int_t LoadThisBlock(THaSlotData*, std::vector<UInt_t >) {return 0;};// needs return something for compilation
     Int_t Decode(const UInt_t *) { return 0; }; // use DecodeOneWord instead
 
+    /*
     struct fadc_data_struct {
       std::vector<uint32_t> samples;
       std::vector<uint32_t> integrals;
@@ -49,13 +51,14 @@ namespace Decoder {
         integrals.clear();
       }
     };  // fadc_data_struct
+    */
 
   private:
     static const size_t NADCCHAN = 64; // Max ADC channels
     static TypeIter_t fgThisType;
-    std::vector<fadc_data_struct> fadc_data;
+    std::vector<SimEncoder::fadc_data> fadc_data;
 
-    ClassDef(TSBSSimADC,0)  //  Generic SimADC module
+    ClassDef(TSBSSimADC,1)  //  Generic SimADC module
 
   };  // TSBSSimADC class
 
