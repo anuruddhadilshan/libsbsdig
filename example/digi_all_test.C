@@ -1,16 +1,17 @@
 // Example "replay" script
 //#define DEBUG 1
+#if !defined(__CLING__) || defined(__ROOTCLING__)
 #include "TSystem.h"
 #include "TDatime.h"
 #include "TSBSGeant4File.h"
 #include "TSBSSimHCal.h"
+#include "TSBSSimECal.h"
 #include "TSBSSimScint.h"
 #include "TSBSSimCher.h"
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 #include "THaAnalysisObject.h"
-
-R__LOAD_LIBRARY(../libsbsdig)
+#endif
 
 void digi_all_test(int nentries = 100, int debuglevel = 1)
 {
@@ -19,6 +20,7 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
 
   TDatime run_time = 991231;
 
+  gSystem->AddDynamicPath("${SBS_ANALYSIS}");
   gSystem->Load("../libsbsdig.so");
 
   ////////////////////////////////////////////////////////////////
@@ -36,8 +38,8 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
   f->SetSource(0);
-  TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
-  f_b->SetSource(1);
+  //TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
+  //f_b->SetSource(1);
   
   
   digitizer->AddInputFile(f, 1);

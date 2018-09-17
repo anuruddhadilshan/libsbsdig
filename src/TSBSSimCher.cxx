@@ -3,7 +3,7 @@
 #include <TSBSSimData.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
-#include "sbs_types.h"
+//#include "sbs_types.h"
 
 TSBSSimCher::TSBSSimCher(const char* name, short id)
 {

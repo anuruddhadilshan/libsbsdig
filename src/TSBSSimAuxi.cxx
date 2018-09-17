@@ -1,4 +1,5 @@
 #include "TSBSSimAuxi.h"
+#include "TMath.h"
 #define DEBUG 0
 
 //ClassImp(TSpectroInfo) // Implements TSpectroInfo
