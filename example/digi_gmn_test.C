@@ -13,6 +13,7 @@
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 #include "THaAnalysisObject.h"
+#include "TSBSSimGEM.h"
 #endif
 
 void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
@@ -54,13 +55,13 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
   digitizer->AddDetector(hcal);
   
-  TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  hodo->SetDebug(debuglevel);
-  digitizer->AddDetector(hodo);
+  //TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
+  //hodo->SetDebug(debuglevel);
+  //digitizer->AddDetector(hodo);
   
-  TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  cdet->SetDebug(debuglevel);
-  digitizer->AddDetector(cdet);
+  //TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
+  //cdet->SetDebug(debuglevel);
+  //digitizer->AddDetector(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
   grinch->SetDebug(debuglevel);
@@ -73,6 +74,10 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   TSBSSimECal *sh = new TSBSSimECal("sh", 11);
   sh->SetDebug(debuglevel);
   digitizer->AddDetector(sh);
+
+  TSBSSimGEM *bb_gem = new TSBSSimGEM("gem", 40);
+  bb_gem->SetDebug(debuglevel);
+  digitizer->AddDetector(bb_gem);
   
   digitizer->Process(f, nentries);
   //digitizer->Process(nentries);

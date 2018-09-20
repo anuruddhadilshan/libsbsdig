@@ -5,6 +5,7 @@
 #include "TVector2.h"
 #include "TRandom3.h"
 #include "TString.h"
+#include "TGEMSBSDBManager.h"
 
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
@@ -207,8 +208,33 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // are multiple channels that correspond to one physical detector
   // component.  For example, HCAL will have one ADC channel and one TDC
   // channel for each block.
-  DBRequest request[] = {
+  DBRequest requestDetType[] = {
     {"dettype",        &dettype_str,    kString,  0, 0},
+    { 0 }
+  };
+
+  err = LoadDB (file, GetInitDate(), requestDetType, prefix.c_str());
+
+  if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
+  if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
+  if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
+  if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
+  // GEMs are their own thing for now...so process them differently
+  if(dettype_str.compare("GEM")==0) {
+    detinfo.SetDetType(kGEM);
+    // Create a new DB manager for this detector
+    std::cerr << std::endl << std::endl << std::endl
+      << "Loading file: " << fileName.c_str() << std::endl;
+    TGEMSBSDBManager *gemdb = new TGEMSBSDBManager(specname.c_str(),
+        detname.c_str());
+    gemdb->LoadGeneralInfo(fileName.c_str());
+    gemdb->LoadGeoInfo(fileName.c_str());
+    detinfo.SetGEMDB(gemdb);
+    fDetInfo.push_back(detinfo);
+    return err;
+  }
+
+  DBRequest request[] = {
     {"nchan",          &nchan,          kInt,     0, 0}, ///<REQUIRED
     {"nlog_chan",      &nlog_chan,      kInt,     0, true},
     {"chan_per_slot",  &chan_per_slot,  kInt,     0, true},
@@ -222,13 +248,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   if(nlog_chan == 0) {
     nlog_chan = nchan;
   }
-  
-  if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
-  if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
-  if(dettype_str.compare("Cher")==0) detinfo.SetDetType(kCher);
-  if(dettype_str.compare("Scint")==0) detinfo.SetDetType(kScint);
-  if(dettype_str.compare("GEM")==0) detinfo.SetDetType(kGEM);
-  
+
   detinfo.SetNChan(nchan);
   detinfo.SetNLogChan(nlog_chan);
 

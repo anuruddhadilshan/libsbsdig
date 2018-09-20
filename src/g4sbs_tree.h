@@ -30,6 +30,18 @@
 #include "g4sbs_types.h"
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
+struct gem_branch {
+   int id;
+   const char* name;
+   TSBSGeant4::GEMData_t tree;
+   const char* Track_name;
+   TSBSGeant4::TrackerData_t Track_tree;
+   gem_branch(int det_id = 0, const char *b_name = 0, const char *b_Track_name = 0)
+     : id(det_id), name(b_name), Track_name(b_Track_name)
+   {
+   }
+};
+
 class g4sbs_tree {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -83,6 +95,7 @@ public :
    Int_t           ev_hadr;
    Int_t           ev_earmaccept;
    Int_t           ev_harmaccept;
+   /*
    Double_t        gen_thbb;
    Double_t        gen_thsbs;
    Double_t        gen_dbb;
@@ -91,10 +104,14 @@ public :
    Double_t        gen_drich;
    Double_t        gen_dsbstrkr;
    Double_t        gen_Ebeam;
-   
+   */
+
+   // GEM variables
+   std::vector<gem_branch> GEMs;
+
    //BB GEMs variables
-   TSBSGeant4::GEMData_t     Earm_BBGEM;
-   TSBSGeant4::TrackerData_t Earm_BBGEM_Track;
+   //TSBSGeant4::GEMData_t     Earm_BBGEM;
+   //TSBSGeant4::TrackerData_t Earm_BBGEM_Track;
 
    // BB timing hodoscope
    TSBSGeant4::CalData_t  Earm_BBHodoScint;
@@ -183,7 +200,7 @@ public :
    
    // List of branches
    TBranch        *b_ev;   //!
-   TBranch        *b_gen;   //!
+   //TBranch        *b_gen;   //!
 
    TBranch        *b_primaries_Sigma;   //!
    TBranch        *b_primaries_Ebeam;   //!

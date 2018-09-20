@@ -1,11 +1,13 @@
 #include "TSBSSimDetector.h"
 #include "TSBSDBManager.h"
 
+
+int TSBSSimDetector::fEvNum = 0;
+
 TSBSSimDetector::TSBSSimDetector() : fEncoderADC(0),
   fEncoderTDC(0), fHasData(false)
 {
   fDBmanager = TSBSDBManager::GetInstance();
-
 }
 
 void TSBSSimDetector::Init()

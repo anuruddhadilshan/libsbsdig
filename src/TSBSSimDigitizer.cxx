@@ -48,7 +48,13 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
     if(fDebug>=3)cout << "clear event " << endl;
     fEvent->Clear();
     has_data = false;
-    
+    // Tell detectors a new event has started
+    for(size_t det = 0; det < fDetectors.size(); det++) {
+      if(fDebug>=3)cout << "event start det " << fDetectors[det]->GetName() << endl;
+      fDetectors[det]->EventStart();
+    }
+   
+    TSBSSimDetector::SetEventNum(nevent); ///< Needed by GEMs for some reason
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
       if(fDebug>=3){
@@ -73,6 +79,12 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
       fOutTree->Fill();
       if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
     }
+    // Tell detectors the event ended
+    for(size_t det = 0; det < fDetectors.size(); det++) {
+      if(fDebug>=3)cout << "event end det " << fDetectors[det]->GetName() << endl;
+      fDetectors[det]->EventEnd();
+    }
+
 
     nevent++;
   }

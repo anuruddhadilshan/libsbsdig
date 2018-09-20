@@ -98,12 +98,16 @@ void g4sbs_tree::Init(TTree *tree)
    //fChain->SetMakeClass(1);
 
    fChain->SetBranchAddress("ev", &ev_count, &b_ev);
-   fChain->SetBranchAddress("gen", &gen_thbb, &b_gen);
+   // This branch no longer exits in G4SBS
+   //fChain->SetBranchAddress("gen", &gen_thbb, &b_gen);
    
    //BigBite detector package: all expts except GEp
    if(fExpt==kGMn || fExpt==kGEn || fExpt==kSIDIS || fExpt==kA1n){
-     SetupDetBranch(Earm_BBGEM,"Earm.BBGEM.hit");
-     SetupDetBranch(Earm_BBGEM_Track,"Earm.BBGEM.Track");
+     gem_branch gem(BBGEM_UNIQUE_DETID,"Earm.BBGEM.hit","Earm.BBGEM.Track");
+     GEMs.push_back(gem);
+     //GEM_Track_name.push_back("Earm.BBGEM.Track");
+     //SetupDetBranch(Earm_BBGEM,"Earm.BBGEM.hit");
+     //SetupDetBranch(Earm_BBGEM_Track,"Earm.BBGEM.Track");
      SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
 
      if(fEcalBox){
@@ -169,8 +173,12 @@ void g4sbs_tree::Init(TTree *tree)
    }
    
    if(fExpt==kSIDIS || fExpt==kA1n || fExpt==kTDIS || fExpt==kDVCS){
-     SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
-     SetupDetBranch(Harm_SBSGEM_Track, "Harm.SBSGEM.Track");
+     gem_branch gem(SBSGEM_UNIQUE_DETID,"Harm.SBSGEM.hit","Harm.SBSGEM.Track");
+     GEMs.push_back(gem);
+     //GEM_name.push_back("Harm_SBSGEM.hit");
+     //GEM_Track_name.push_back("Harm_SBSGEM.Track");
+     //SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
+     //SetupDetBranch(Harm_SBSGEM_Track, "Harm.SBSGEM.Track");
 
      SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
    }
@@ -213,7 +221,15 @@ void g4sbs_tree::Init(TTree *tree)
      fChain->SetBranchAddress("Primaries.theta", &Primaries_theta, &b_Primaries_theta);
      fChain->SetBranchAddress("Primaries.phi", &Primaries_phi, &b_Primaries_phi);
    }
-   
+
+   // Now config all the GEM branches and trees
+   for(std::vector<gem_branch>::iterator it = GEMs.begin();
+       it != GEMs.end(); it++) {
+     SetupDetBranch(it->tree,it->name);
+     SetupDetBranch(it->Track_tree,it->Track_name);
+   }
+
+
    Notify();
 }
 

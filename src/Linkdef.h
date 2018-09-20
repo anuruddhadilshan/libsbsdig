@@ -20,11 +20,28 @@
 #pragma link C++ defined_in "src/TSBSSimCher.h";
 #pragma link C++ defined_in "src/TSBSSimECal.h";
 #pragma link C++ defined_in "src/TSBSSimHCal.h";
+#pragma link C++ defined_in "src/TSBSSimGEM.h";
 #pragma link C++ defined_in "src/TSBSSimADC.h";
 #pragma link C++ defined_in "src/TSBSSimTDC.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
 #pragma link C++ defined_in "src/TSBSSpec.h";
 #pragma link C++ defined_in "src/TSBSSimDataEncoder.h";
+
+// Then include all the TGEM stuff
+#pragma link C++ defined_in "libsbsgem/TGEMSBSBox.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSDBManager.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSGeant4File.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSGEMChamber.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSGEMHit.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSGEMPlane.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSGEMSimHitData.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSimAuxi.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSimDecoder.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSimDigitization.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSimEvent.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSimFile.h";
+#pragma link C++ defined_in "libsbsgem/TGEMSBSSpec.h";
+
 
 // Limited stuff in EVIO file.  We don't want to be
 // able to call the evio functions in the interpreter

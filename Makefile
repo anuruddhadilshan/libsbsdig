@@ -5,7 +5,7 @@ include Makefile.arch
 
 NAME    := libsbsdig
 
-SOLINCLUDE := -I$(shell pwd)/src
+SOLINCLUDE := -I$(shell pwd)/src -I$(shell pwd)/libsbsgem
 
 #------------------------------------------------------------------------------
 # Hall A Analyzer
@@ -67,6 +67,21 @@ SOLINCLUDE += $(addprefix -I, $(SBSINCDIRS) )
 CXXFLAGS += $(SOLINCLUDE)
 
 DICT	= $(NAME)_dict
+
+GEMSRC = libsbsgem/TGEMSBSBox.cxx \
+         libsbsgem/TGEMSBSDBManager.cxx \
+         libsbsgem/TGEMSBSGEMChamber.cxx \
+         libsbsgem/TGEMSBSGEMHit.cxx \
+         libsbsgem/TGEMSBSGEMPlane.cxx \
+         libsbsgem/TGEMSBSGEMSimHitData.cxx \
+         libsbsgem/TGEMSBSSimAuxi.cxx \
+         libsbsgem/TGEMSBSSimDecoder.cxx \
+         libsbsgem/TGEMSBSSimEvent.cxx \
+         libsbsgem/TGEMSBSSimFile.cxx \
+         libsbsgem/TGEMSBSSimDigitization.cxx \
+         libsbsgem/TGEMSBSSpec.cxx
+         #libsbsgem/TGEMSBSGeant4File.cxx
+
 SRC   = src/g4sbs_tree.cxx \
         src/g4sbs_data.cxx \
         src/TSBSDBManager.cxx \
@@ -85,7 +100,9 @@ SRC   = src/g4sbs_tree.cxx \
         src/TSBSSimTDC.cxx \
 	src/TSBSSimScint.cxx \
         src/TSBSSpec.cxx \
-        src/TSBSSimDataEncoder.cxx
+        src/TSBSSimDataEncoder.cxx \
+        src/TSBSSimGEM.cxx
+SRC += $(GEMSRC)
 
 
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o

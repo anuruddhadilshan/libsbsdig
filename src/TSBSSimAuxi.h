@@ -13,6 +13,8 @@
 // An data_word encoder for the various modules (i.e. F250 ADC, Caen TDC, etc..)
 #include "TSBSSimDataEncoder.h"
 
+class TGEMSBSDBManager;
+
 //
 // Classes for DB information
 //
@@ -255,6 +257,9 @@ class TDetInfo : public TObject{
   Int_t AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi);
   TDigChannelInfo FindLogicalChannelSlot(Int_t lch);
   void LoadChannelMap(std::vector<int> chanmap, int chanmap_start);
+  Bool_t IsGEM() { return fDetType == kGEM; };
+  TGEMSBSDBManager* GetGEMDB() { return fGEMDB; }
+  void SetGEMDB(TGEMSBSDBManager *db) { fGEMDB = db; }
 
  private:
   std::string fDetName;      // Detector name
@@ -272,6 +277,7 @@ class TDetInfo : public TObject{
   TDigInfo fDigInfo;
   std::vector<TDigSlot> fModSlots;
   std::map<int,std::pair<int,int> > fDetMap;
+  TGEMSBSDBManager *fGEMDB;
   
 public:
   ClassDef(TDetInfo, 1);

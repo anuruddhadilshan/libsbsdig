@@ -24,12 +24,19 @@ public:
   virtual void Digitize(TSBSSimEvent &event) = 0;
   virtual bool HasData() { return fHasData; }
   void SetUniqueDetID(short id){fUniqueDetID = id;};
+  virtual void EventEnd() {}; // Normally do nothing, but user can override
+  virtual void EventStart() {}; // Normally do nothing, but user can override
+  static void SetEventNum(int evn) { fEvNum = evn; }
+  static int GetEventNum() { return fEvNum; }
+
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
   short  UniqueDetID() {return fUniqueDetID; };
   det_type GetDetType() {return (det_type)((fUniqueDetID-fUniqueDetID%10)/10); };
   short  GetDetID() {return fUniqueDetID%10;};
-    
+
+  static int fEvNum;
+
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
   TSBSSimDataEncoder *fEncoderADC;
@@ -43,6 +50,7 @@ protected:
 
   void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,
       std::vector<unsigned int> &dat);
+  int fDebug;
 private:
   bool fHasData;
   short fUniqueDetID;

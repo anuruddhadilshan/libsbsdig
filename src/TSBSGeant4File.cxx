@@ -271,6 +271,59 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(cdetpmthit);
     }
   }
+
+  // Now process the GEM data
+  for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
+       it != fTree->GEMs.end(); it++) {
+
+    TSBSGeant4::GEMData_t &t = it->tree;
+    if(t.plane) {
+      for(int k = 0; k < t.nhits; k++) {
+        // Don't bother with events that deposited no energy
+        if(t.edep->at(k)>0) {
+          g4sbshitdata *gemhit = new g4sbshitdata(it->id, 35);
+          // For now, just copy the whole tree, we'll trim it later I guess
+          // (with slight modifications as prescribed in libsbsgem)
+          gemhit->SetData(0,fSource);
+          gemhit->SetData(1,t.plane->at(k));
+          gemhit->SetData(2,t.strip->at(k));
+          gemhit->SetData(3,t.x->at(k));
+          gemhit->SetData(4,t.y->at(k));
+          gemhit->SetData(5,t.z->at(k));
+          gemhit->SetData(6,t.polx->at(k));
+          gemhit->SetData(7,t.poly->at(k));
+          gemhit->SetData(8,t.polz->at(k));
+          gemhit->SetData(9,t.t->at(k));
+          gemhit->SetData(10,t.trms->at(k));
+          gemhit->SetData(11,t.tmin->at(k));
+          gemhit->SetData(12,t.tmax->at(k));
+          gemhit->SetData(13,t.tx->at(k));
+          gemhit->SetData(14,t.ty->at(k));
+          gemhit->SetData(15,t.txp->at(k));
+          gemhit->SetData(16,t.typ->at(k));
+          gemhit->SetData(17,t.xg->at(k));
+          gemhit->SetData(18,t.yg->at(k));
+          gemhit->SetData(19,t.zg->at(k));
+          gemhit->SetData(20,t.trid->at(k));
+          gemhit->SetData(21,t.mid->at(k)+1);
+          gemhit->SetData(22,t.pid->at(k));
+          gemhit->SetData(23,t.vx->at(k));
+          gemhit->SetData(24,t.vy->at(k));
+          gemhit->SetData(25,t.vz->at(k));
+          gemhit->SetData(26,t.p->at(k));
+          gemhit->SetData(27,t.edep->at(k)); // convert to MeV?
+          gemhit->SetData(28,t.beta->at(k));
+          gemhit->SetData(29,t.xin->at(k));
+          gemhit->SetData(30,t.yin->at(k));
+          gemhit->SetData(31,t.zin->at(k));
+          gemhit->SetData(32,t.xout->at(k));
+          gemhit->SetData(33,t.yout->at(k));
+          gemhit->SetData(34,t.zout->at(k));
+          fg4sbsHitData.push_back(gemhit);
+        }
+      }
+    }
+  }
   /*
   // For the time being, use the g4sbs npe estimation for CDET, divided by 5.
   // (the p.e. yield for cosmics form g4sbs is about 5 times more the one measured)
