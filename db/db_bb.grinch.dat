@@ -49,3 +49,17 @@ bb.grinch.detmap =
    2     1       0     127
    2     2       0     127
    2     3       0     125
+
+bb.grinch.xyz = -0.9145 -0.124 0.0 #m # we don't really need z
+
+##############################################################
+# inconvenient: some of the stuff will need to be redeclared - 
+# but let's not change everything before we're sure it's needed
+
+bb.grinch.nrows = 60
+bb.grinch.ncols = 9
+bb.grinch.xsize = 1.86
+bb.grinch.ysize = 0.279
+bb.grinch.zpos = 1.3824 #m
+bb.grinch.xoffset = 0.0 #m
+bb.grinch.yoffset = 0.0 #m

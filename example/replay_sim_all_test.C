@@ -83,12 +83,12 @@ void replay_sim_all_test(Int_t runnum = 931, Int_t lastEvent = -1){
   SBSCalorimeter *sh = new SBSCalorimeter("sh","BB shower");
   //SBSTimingHodoscope *hodo = new SBSTimingHodoscope("hodo","BB timing hodoscope");
   SBSCalorimeter *ps = new SBSCalorimeter("ps","BB preshower");
-  //SBSGRINCH *grinch = new SBSGRINCH("grinch","GRINCH");
+  SBSGRINCH *grinch = new SBSGRINCH("grinch","GRINCH");
   SBSEArm *earm = new SBSEArm("bb","Big Bite electron arm");
   earm->AddDetector(sh);
   //earm->AddDetector(hodo);
   earm->AddDetector(ps);
-  //earm->AddDetector(grinch);
+  earm->AddDetector(grinch);
   gHaApps->Add(earm);
   
   analyzer->SetOdefFile("output_hcal_test.def");
