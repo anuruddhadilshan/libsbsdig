@@ -20,7 +20,7 @@ class TGEMSBSGEMSimHitData;
 class TGEMSBSGEMHit;
 class TGEMSBSSpec;
 class TGEMSBSSimEvent;
-class TGEMSBSGeant4File;
+class TGEMSBSDBManager;
 
 // First an auxiliary class
 
@@ -33,6 +33,7 @@ private:
 
   //TODO: make this a struct inside an STL vector or similar
   TArrayI fStripADC;  
+  TArrayI fStripSimADC;  
   Short_t *fType;  // Type of track (primary, secondary) which left the hit for each strip
   Int_t   *fTotADC;  // number of ADC counts for each strip
 
@@ -70,6 +71,8 @@ public:
   Float_t  GetTime (Int_t n) const {return fTime[n];}
   Float_t  GetCharge (Int_t n) const {return fCharge[n];}
   Int_t    GetADC (Int_t n, Int_t ks) const {return fStripADC[n*fNSamples+ks];}
+  Int_t    GetSimADC (Int_t n, Int_t ks) const {return fStripSimADC[n*fNSamples+ks];}
+  void SetSimADC (Int_t n, Int_t ks, Int_t adc){fStripSimADC[n*fNSamples+ks] = adc;}
   UShort_t GetNSamples() const {return fNSamples;}
   UShort_t GetNStrips() const {return fNStrips;}
 
@@ -90,7 +93,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
  public:
   //Constructor and destructor
   TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
-			  const char* name = "ratedig");
+			  const char* name = "ratedig", TGEMSBSDBManager *manager = 0);
   virtual ~TGEMSBSSimDigitization();
   
   //full initialization of all parameters with database
@@ -140,6 +143,8 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   Float_t GetTime (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetTime (n);}
   Float_t GetCharge (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetCharge (n);}
   Int_t   GetADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetADC (n, ks);}
+  Int_t   GetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetSimADC (n, ks);}
+  void SetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks, Int_t adc) const {return fDP[ich][ip]->SetSimADC (n, ks,adc);}
   UInt_t   GetNChambers() const {return fNChambers;};
   UInt_t   GetNPlanes (const UInt_t i) const {return fNPlanes[i];}
   UShort_t GetNSamples (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNSamples();}
@@ -267,8 +272,9 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
 
   Bool_t fFilledStrips;   // True if no data changed since last SetTreeStrips
 
-  void MakePrefix() { THaAnalysisObject::MakePrefix(0); }
+  void MakePrefix();
   void DeleteObjects();
+  TGEMSBSDBManager *fManager;
 
   ClassDef (TGEMSBSSimDigitization, 0)
 };

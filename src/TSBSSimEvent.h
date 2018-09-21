@@ -50,8 +50,8 @@ public:
     std::vector<double> fData;
   };
   struct DetectorData {
-    Short_t fDetID;  // Source detector number
-    Short_t fChannel; // Channel number for this hit
+    UShort_t fDetID;  // Source detector number
+    UShort_t fChannel; // Channel number for this hit
     //not sure we want to use that yet - there might be a reason why it is what it is
     // Short_t fDataType; // Data type for this hit: 0: Npe, 1: Time, 2: SumEdep
     // Short_t fNdata;  // number of data stored

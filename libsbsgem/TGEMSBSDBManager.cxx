@@ -21,6 +21,7 @@ TGEMSBSDBManager::TGEMSBSDBManager(const char *spec, const char* det)
     fCaloThr(0), fgCaloZ(0), fgCaloRes(0), fgDoCalo(0), fgZ0(0),
     fErrID(-999), fErrVal(-999.), fSpecName(spec), fDetName(det)
 {
+  fPrefix = fSpecName+"."+fDetName;
 }
 //______________________________________________________________
 TGEMSBSDBManager::~TGEMSBSDBManager()
@@ -82,7 +83,7 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
         exit(0);
     }
     //const string prefix = "generalinfo.";
-    const string prefix = fSpecName+"."+fDetName+".info.";
+    const string prefix = fPrefix + ".info.";
 
     std::vector<Int_t>* NModule = new vector<Int_t>;
     DBRequest request[] = {

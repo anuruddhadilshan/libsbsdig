@@ -31,7 +31,7 @@
 
 using namespace std;
 
-static TGEMSBSDBManager* manager = TGEMSBSDBManager::GetInstance();
+//static TGEMSBSDBManager* manager = TGEMSBSDBManager::GetInstance();
 //for some reasons, if these parameters are declared as flags in the .h, it doesn't work...
 Int_t    TGEMSBSSimDigitization::fDoCrossTalk = 0;
 Int_t    TGEMSBSSimDigitization::fNCStripApart = 0;
@@ -54,6 +54,7 @@ TGEMSBSDigitizedPlane::TGEMSBSDigitizedPlane (UShort_t nstrip,
   fOverThr = new Short_t[nstrip];
 
   fStripADC.Set(fNSamples*fNStrips);
+  fStripSimADC.Set(fNSamples*fNStrips);
   fStripClusters.resize(fNStrips);
   fStripWeightInCluster.resize(fNStrips);
   for(int i=0; i<nsample; i++)
@@ -74,6 +75,7 @@ void
 TGEMSBSDigitizedPlane::Clear()
 {
   fStripADC.Reset();
+  fStripSimADC.Reset();
   memset( fType,   0, fNStrips*sizeof(Short_t) );
   memset( fTotADC, 0, fNStrips*sizeof(Int_t) );
   memset( fCharge, 0, fNStrips*sizeof(Float_t) );
@@ -196,15 +198,15 @@ TGEMSBSDigitizedPlane::Threshold( Int_t thr )
 
 
 TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
-						const char* name)
+						const char* name, TGEMSBSDBManager *manager)
   : THaAnalysisObject(name, "GEM simulation digitizer"),
     fDoMapSector(false), fSignalSector(0), fDP(0), fdh(0), fNChambers(0), fNPlanes(0),
-    fRNIon(0), fOFile(0), fOTree(0), fEvent(0)
+    fRNIon(0), fOFile(0), fOTree(0), fEvent(0), fManager(manager)
 {
   Init();
   Initialize (spect);
   fRIon.resize(fMaxNIon);
-  fTriggerOffset.resize(manager->GetNChamber());
+  fTriggerOffset.resize(fManager->GetNChamber());
 
   fEvent = new TGEMSBSSimEvent(5);
 }
@@ -213,6 +215,11 @@ TGEMSBSSimDigitization::~TGEMSBSSimDigitization()
 {
   fEvent->Clear("all");
   DeleteObjects();
+}
+
+void TGEMSBSSimDigitization::MakePrefix()
+{
+  THaAnalysisObject::MakePrefix(fManager->GetSpecName().c_str());
 }
 
 void TGEMSBSSimDigitization::DeleteObjects()
@@ -247,6 +254,7 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
   fNChambers = spect.GetNChambers();
   fDP = new TGEMSBSDigitizedPlane**[fNChambers];
   fNPlanes = new UInt_t[fNChambers];
+  UInt_t nchan = 0;
   for (UInt_t ic = 0; ic < fNChambers; ++ic)
     {
       fNPlanes[ic] = spect.GetChamber(ic).GetNPlanes();
@@ -256,9 +264,11 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
 	  new TGEMSBSDigitizedPlane( spect.GetChamber(ic).GetPlane(ip).GetNStrips(),
 				  fEleSamplingPoints, // # ADC samples
 				  0 );                // threshold is zero for now
+        nchan+= spect.GetChamber(ic).GetPlane(ip).GetNStrips();
       }
     }
   fdh = NULL;
+  std::cout << "Initialized " << nchan << " GEM strips." << std::endl;
   
   // Estimated max size of the charge collection area in AvaModel
   Double_t pitch = 0.4; // [mm]
@@ -274,10 +284,11 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
 Int_t
 TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 {
-  FILE* file = OpenFile (date);
+  FILE* file = OpenFile (fManager->GetDBFileName().c_str(),date);
   if (!file) return kFileError;
   
   vector<Double_t>* offset = 0;
+  const char *prefix = Form("dig.%s",fPrefix);
 
   try{
     offset = new vector<Double_t>;
@@ -323,13 +334,13 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 	{ 0 }
       };
     
-    Int_t err = LoadDB (file, date, request, fPrefix);
+    Int_t err = LoadDB (file, date, request, prefix);
     fclose(file);
     if (err)
       return kInitError;
     
-    cout << manager->GetNChamber() << "  " << offset->size() << endl;
-    assert((Int_t)offset->size() == manager->GetNChamber());
+    cout << fManager->GetNChamber() << "  " << offset->size() << endl;
+    assert((Int_t)offset->size() == fManager->GetNChamber());
     for (UInt_t i=0; i<offset->size(); i++){
       fTriggerOffset.push_back(offset->at(i));
     }
@@ -996,7 +1007,7 @@ TGEMSBSSimDigitization::Print(Option_t*) const
 
   cout << "  Electronics parameters:" << endl;
   cout << "    Trigger offsets: "; //<< fTriggerOffset 
-  for(int i = 0; i<manager->GetNChamber(); i++)cout << fTriggerOffset[i] << " ";
+  for(int i = 0; i<fManager->GetNChamber(); i++)cout << fTriggerOffset[i] << " ";
   cout << endl;
   cout << "    Trigger jitter: " << fTriggerJitter << endl;
   cout << "    Sampling Period: " << fEleSamplingPeriod << endl;
@@ -1129,6 +1140,8 @@ TGEMSBSSimDigitization::SetTreeEvent (const TGEMSBSGEMSimHitData& tsgd,
   fEvent->fSignalSector = fSignalSector;
 }
 
+*/
+
 Short_t
 TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
 				    const TGEMSBSSpec& spect,
@@ -1142,8 +1155,8 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
   TGEMSBSSimEvent::GEMCluster clust;
   
   UInt_t igem = tsgd.GetHitChamber(ih);
-  clust.fPlane = manager->GetPlaneID(igem);
-  clust.fModule = manager->GetModuleID(igem);
+  clust.fPlane = fManager->GetPlaneID(igem);
+  clust.fModule = fManager->GetModuleID(igem);
   clust.fSector   = 0;// disabling sector info for now, working to remove fSector//clust.fRealSector; // May change if mapped, see below
   clust.fSource   = tsgd.GetSource();  // Source of this hit (0=signal, >0 background)
   clust.fType     = tsgd.GetParticleType(ih);   // =1->primary,     >1 ->secondary
@@ -1216,7 +1229,7 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
   
 
   
-  / *
+  /*
   cout << endl << "Cluster ID " << clust.fID << ", sector (realsector) " 
        << clust.fSector << " " << clust.fRealSector
        << ", source " << clust.fSource << ", plane " << clust.fPlane << endl;
@@ -1232,7 +1245,7 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
   cout << "Strips sizes (1, 2): " << clust.fSize[0] << " " << clust.fSize[1] 
        << ", starts (1, 2): " << clust.fStart[0] << " " << clust.fStart[1]
        << ", Xproj (1, 2): " << clust.fXProj[0] << " " << clust.fXProj[1] << endl << endl;
-  * /
+  */
     
   fEvent->fGEMClust.push_back( clust );
   
@@ -1245,7 +1258,6 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
   
   return clust.fID;
 }
-*/
 
 void
 TGEMSBSSimDigitization::SetTreeStrips()
@@ -1260,8 +1272,8 @@ TGEMSBSSimDigitization::SetTreeStrips()
   for (UInt_t ich = 0; ich < GetNChambers(); ++ich) {
     
     strip.fSector=0;
-    strip.fPlane=manager->GetPlaneID(ich);
-    strip.fModule=manager->GetModuleID(ich);
+    strip.fPlane=fManager->GetPlaneID(ich);
+    strip.fModule=fManager->GetModuleID(ich);
     // cout<<ich<<" : "<<(3*strip.fPlane+strip.fModule)<<endl;
     
     //cout << "ich " << ich << " strip sector " <<  strip.fSector << " strip plane " << strip.fPlane << endl;
@@ -1292,6 +1304,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	      // cout << strip.fADC[ss] << " ";
 	      saturation = 4000;
 	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
+        SetSimADC(ich,ip,idx,ss,strip.fADC[ss]);
 	      const vector<Int_t>& sclust = GetStripClusterADC(ich, ip, idx, ss);
 	      
 	      strip.fClusterRatio[ss].Set( sclust.size(), &sclust[0] );

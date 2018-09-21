@@ -227,7 +227,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
 
       // Now add the TDC if the threshold was met
-      if(false&& fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
+      if(fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
             fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
         CopyEncodedData(fEncoderTDC,mult++,data.fData);
       }

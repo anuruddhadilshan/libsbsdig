@@ -81,6 +81,12 @@ public:
     
     int GetModuleIDFromPos(int iplane, double x, double y = 0);
     double GetPosFromModuleStrip(int iproj, int iplane, int isector, int istrip);
+    void SetDBFileName(const std::string &filename) { fDBFileName = filename; }
+    const std::string& GetDBFileName() { return fDBFileName; }
+
+    const std::string& GetPrefix() { return fPrefix; }
+    const std::string& GetSpecName() { return fSpecName; }
+    const std::string& GetDetName() { return fDetName; }
 
 protected:
     int    LoadDB(std::ifstream& inp, DBRequest* request, const std::string& prefix);
@@ -147,7 +153,8 @@ protected:
     std::map< int, std::vector<GeoInfo> > fPMGeoInfo; //plane module format geo info
     std::string fSpecName;
     std::string fDetName;
-    
+    std::string fDBFileName;
+    std::string fPrefix;
 };
 
 #endif

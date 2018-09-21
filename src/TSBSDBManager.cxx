@@ -223,12 +223,11 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   if(dettype_str.compare("GEM")==0) {
     detinfo.SetDetType(kGEM);
     // Create a new DB manager for this detector
-    std::cerr << std::endl << std::endl << std::endl
-      << "Loading file: " << fileName.c_str() << std::endl;
     TGEMSBSDBManager *gemdb = new TGEMSBSDBManager(specname.c_str(),
         detname.c_str());
-    gemdb->LoadGeneralInfo(fileName.c_str());
-    gemdb->LoadGeoInfo(fileName.c_str());
+    gemdb->SetDBFileName(fileName);
+    gemdb->LoadGeneralInfo(fileName);
+    gemdb->LoadGeoInfo(fileNameCommon);
     detinfo.SetGEMDB(gemdb);
     fDetInfo.push_back(detinfo);
     return err;
