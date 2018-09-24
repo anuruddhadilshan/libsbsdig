@@ -37,33 +37,11 @@ void TSBSSimGEM::Init()
 
   // Hard code the MPD encoder for GEMs
   fEncoderADC = TSBSSimDataEncoder::GetEncoderByName("mpd");
-  // Make spectrometer
-  fSpec = new TGEMSBSSpec(fManager->GetPrefix().c_str(),
-      Form("Temporary GEM spectrometer for %s",fName.Data()));
-  // And make all the GEM chambers for this spectrometer
-  TGEMSBSGEMChamber *dGEM;
-  for(Int_t plane = 0; plane < fManager->GetNGEMPlane(); plane++) {
-    for(Int_t mod = 0; mod < fManager->GetNModule(plane); mod++) {
-      dGEM = new TGEMSBSGEMChamber(Form("plane%d.module%d",
-            /*fManager->GetPrefix().c_str(),*/plane,mod),Form(
-            "Test chamber for %s on Plane: %d, Module: %d",
-              fName.Data(),plane,mod));
-      dGEM->SetApparatus(fSpec);
-      if(dGEM->Init()) { // true == error
-          std::cerr << "ERROR!: TSBSSimGEM::Init(), UniqueDetID = "
-          << UniqueDetID() << " error initializing GEM: " <<
-          Form("%s.plane%d.module%d",fManager->GetPrefix().c_str(),plane,mod)
-          << std::endl;
-      } else {
-        fSpec->AddGEM(dGEM);
-      }
-    }
-  }
 
   // At this point, we should build all the GEM chambers that exist for
   // this 
 
-  fGEMDigi = new TGEMSBSSimDigitization(*fSpec,fName,fManager);
+  fGEMDigi = new TGEMSBSSimDigitization(fManager->GetSpec(),fName,fManager);
 }
 
 
@@ -280,7 +258,7 @@ void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 
 
   // Once this is done, now call fGEMDigi to actually process these hits
-  fGEMDigi->AdditiveDigitize (gd, *fSpec);
+  fGEMDigi->AdditiveDigitize (gd, fManager->GetSpec());
   gd.ClearEvent();
 }
 

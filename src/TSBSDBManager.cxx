@@ -10,7 +10,7 @@
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
 TSBSDBManager::TSBSDBManager() 
-  : fNextGeneratedCrate(100), fErrID(-999), fErrVal(-999.)
+  : fErrID(-999), fErrVal(-999.)
 {
 }
 //______________________________________________________________
@@ -201,7 +201,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
 
   string dettype_str;
-  int nchan, chan_per_slot, slot_per_crate, nlog_chan = 0;
+  int nchan, nlog_chan = 0;
+  int first_crate = -1, first_slot = 0;
+  bool ignore_slotcrate = true;
+  int slot_per_crate = 22, chan_per_slot = 16; //< Just an arbitrary values
 
   //First load the parameters which will be common to *all* detectors (including digitization parameters)
   // nlog_chan is number of "logical" channels, in case there
@@ -210,6 +213,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // channel for each block.
   DBRequest requestDetType[] = {
     {"dettype",        &dettype_str,    kString,  0, 0},
+    {"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
+    {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
+    {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
     { 0 }
   };
 
@@ -228,9 +234,15 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     gemdb->SetDBFileName(fileName);
     gemdb->LoadGeneralInfo(fileName);
     gemdb->LoadGeoInfo(fileNameCommon);
+    gemdb->InitializeGEMs();
     detinfo.SetGEMDB(gemdb);
+    nchan = gemdb->GetNChan();
     fDetInfo.push_back(detinfo);
     return err;
+  }
+
+  if(detmap.empty()) { // If no detmap, then user MUST specify slot/crate info
+    ignore_slotcrate = false;
   }
 
   DBRequest request[] = {
@@ -238,9 +250,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     {"nlog_chan",      &nlog_chan,      kInt,     0, true},
     {"chan_per_slot",  &chan_per_slot,  kInt,     0, true},
     {"slot_per_crate", &slot_per_crate, kInt,     0, true},
-    {"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
-    {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
-    {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
+    {"first_crate", &first_crate, kInt,     0, ignore_slotcrate},
+    {"first_slot", &first_slot, kInt,     0, ignore_slotcrate},
     { 0 }
   };
   err = LoadDB (file, GetInitDate(), request, prefix.c_str());
@@ -255,14 +266,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // if so, we'll use that instead of the chan_per_slot or slot_per_crate
   // values.
   if(detmap.empty()) { // No detmap, so build simple one with values defined
-    if(chan_per_slot > 0)
-      detinfo.SetChanPerSlot(chan_per_slot);
-
-    if(slot_per_crate > 0)
-      detinfo.SetSlotPerCrate(slot_per_crate);
-
-    detinfo.SetFirstSlot(0);
-    detinfo.SetFirstCrate(fNextGeneratedCrate++);
+    detinfo.SetChanPerSlot(chan_per_slot);
+    detinfo.SetFirstSlot(first_slot);
+    detinfo.SetSlotPerCrate(slot_per_crate);
+    detinfo.SetFirstCrate(first_crate);
   } else {
     int crate,slot,ch_lo,ch_hi,chan_count, ch_count;
     chan_count = 0;

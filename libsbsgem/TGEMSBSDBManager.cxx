@@ -1,5 +1,6 @@
 #include "TGEMSBSDBManager.h"
-#include "TGEMSBSSimDecoder.h"
+#include "TGEMSBSSpec.h"
+#include "TGEMSBSGEMChamber.h"
 #include <cassert>
 #include <cmath>
 #include "TMath.h"
@@ -9,7 +10,7 @@
 
 using namespace std;
 
-TGEMSBSDBManager * TGEMSBSDBManager::fManager = NULL;
+//TGEMSBSDBManager * TGEMSBSDBManager::fManager = NULL;
 
 TGEMSBSDBManager::TGEMSBSDBManager(const char *spec, const char* det)
   : fDoMapSector(0), fMappedSector(0), fDoSelfDefinedSector(0),
@@ -27,6 +28,38 @@ TGEMSBSDBManager::TGEMSBSDBManager(const char *spec, const char* det)
 TGEMSBSDBManager::~TGEMSBSDBManager()
 {
 }
+
+//______________________________________________________________
+void TGEMSBSDBManager::InitializeGEMs()
+{
+  // Make spectrometer
+  fSpec = new TGEMSBSSpec(fPrefix.c_str(),
+      Form("Temporary GEM spectrometer for %s",fDetName.c_str()));
+  // And make all the GEM chambers for this spectrometer
+  TGEMSBSGEMChamber *dGEM;
+  fNChan = 0;
+  for(Int_t plane = 0; plane < GetNGEMPlane(); plane++) {
+    for(Int_t mod = 0; mod < GetNModule(plane); mod++) {
+      dGEM = new TGEMSBSGEMChamber(Form("plane%d.module%d",
+            /*GetPrefix().c_str(),*/plane,mod),Form(
+            "Test chamber for %s on Plane: %d, Module: %d",
+            fDetName.c_str(),plane,mod));
+      dGEM->SetApparatus(fSpec);
+      if(dGEM->Init()) { // true == error
+        std::cerr << "ERROR!: TGEMSBSDBManager::InitializeGEMs() error "
+          " error initializing GEM: " << Form("%s.plane%d.module%d",
+              fPrefix.c_str(),plane,mod) << std::endl;
+      } else {
+        // Get total number of strips (channels)
+        fNChan += dGEM->GetNStripTotal();
+        fSpec->AddGEM(dGEM);
+      }
+    }
+  }
+  std::cout << "Initialized " << fSpecName
+    << "." << fDetName << " with " << fNChan << " GEM strips." << std::endl;
+}
+
 
 //______________________________________________________________
 static bool OpenInput( const string& filename, ifstream& ifs )

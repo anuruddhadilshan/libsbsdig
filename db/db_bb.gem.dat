@@ -1,0 +1,89 @@
+950101
+
+bb.gem.dettype = GEM
+
+
+bb.gem.info.do_map_sector = 0
+bb.gem.info.self_define_sector = 0
+bb.gem.info.sector_mapped = 0
+bb.gem.info.nchamber = 5
+bb.gem.info.nsector = 1
+bb.gem.info.nplane = 5
+bb.gem.info.nmodule = 3 3 3 3 4
+bb.gem.info.nreadout = 2
+bb.gem.info.gem_drift_id = 6
+bb.gem.info.gem_copper_front_id = 5
+bb.gem.info.gem_copper_back_id = 7
+bb.gem.info.gem_strip_id = 19
+bb.gem.info.faec_id = 3110000
+bb.gem.info.laec_id = 3210000
+bb.gem.info.chan_per_slot = 2048
+bb.gem.info.modules_per_readout = 1
+
+bb.gem.info.nsignal = 1
+bb.gem.info.signal1.pid = 11
+bb.gem.info.signal1.tid = 1
+
+bb.gem.info.g4sbs_detectortype = 1
+bb.gem.info.g4sbs_z_specoffset = 0.8031825 #0.800000
+
+bb.gem.info.calo_thr = 2.4 # GeV
+bb.gem.info.calo_z = 2.704 #Z of BB ECal at max shower energy deposit, in m
+bb.gem.info.calo_res = 0.010000
+bb.gem.info.docalo = 0
+bb.gem.info.z0 = 0.850000
+
+## Slot and crate info
+bb.gem.first_crate = 100
+bb.gem.first_slot  = 0
+
+
+# Gas parameters:
+dig.bb.gem.gasionwidth = 26.  # eV
+dig.bb.gem.gasdiffusion = 100000.  # mm2/s
+dig.bb.gem.gasdriftvelocity = 5.5e7 # mm/s
+dig.bb.gem.avalanchefiducialband = 10.0 # n sigma
+dig.bb.gem.avalanchechargestatistics = 1 # 0 Furry, 1 Gaussian
+dig.bb.gem.ava_model = 2 #0 HeavySide, 1 Gaussian, 2 Cauchy-Lorentz
+dig.bb.gem.ava_gain = 20.0
+dig.bb.gem.gainmean = 8000.0 #4000 for HeavySide
+dig.bb.gem.gain0 = 20.0
+dig.bb.gem.avalateraluncertainty = 0. #mm
+dig.bb.gem.avalanche_range = 18.0
+dig.bb.gem.max_ion = 10000
+
+# Electronics parameters:
+dig.bb.gem.triggeroffset = 121.0 121.5 122.0 122.5 126.0 # ns # to have everything land on 0 when no jitters
+dig.bb.gem.triggerjitter = 9.  # ns
+dig.bb.gem.apv_time_jitter = 0.  # ns 
+dig.bb.gem.elesamplingpoints = 6
+dig.bb.gem.elesamplingperiod = 25.  # ns 
+dig.bb.gem.adcoffset = 0.
+dig.bb.gem.adcgain = 1
+dig.bb.gem.adcbits = 12
+dig.bb.gem.gatewidth = 250.  # ns 
+
+# GEM pedestal noise
+dig.bb.gem.pulsenoisesigma = 20.    #ADC values
+dig.bb.gem.pulsenoiseperiod = 200. #ns
+dig.bb.gem.pulsenoiseampconst = 0. #ADC values
+dig.bb.gem.pulsenoiseampsigma = 0. #ADC values
+
+# Pulse shaping parameters:
+dig.bb.gem.pulseshapetau0 = 56 #38.3  # ns
+dig.bb.gem.pulseshapetau1 = -1 #129.  # ns
+
+# Geometry
+dig.bb.gem.zrout = 9.185   # mm
+dig.bb.gem.use_tracker_frame = 0
+dig.bb.gem.entrance_ref = -1.5 # mm # -4.6825
+
+#numerical integration parameter
+dig.bb.gem.y_integral_step_per_pitch = 4#8
+dig.bb.gem.x_integral_step_per_pitch = 4#8
+
+#APV25 cross talk parameter
+dig.bb.gem.do_crosstalk = 1
+dig.bb.gem.crosstalk_mean = 0.1
+dig.bb.gem.crosstalk_sigma = 0.03
+dig.bb.gem.crosstalk_strip_apart = 32

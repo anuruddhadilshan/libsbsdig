@@ -5,8 +5,6 @@
 #include "TSBSSimAuxi.h"
 
 class TGEMSBSSimDigitization;
-class TGEMSBSGEMChamber;
-class TGEMSBSSpec;
 class TGEMSBSDBManager;
 
 class TSBSSimGEM : public TSBSSimDetector {
@@ -30,7 +28,6 @@ public:
   ClassDef(TSBSSimGEM,1)
 private:
     TGEMSBSSimDigitization *fGEMDigi;
-    TGEMSBSSpec *fSpec; ///< A bit much to create our own spectrometer, but oh well...
     TGEMSBSDBManager *fManager;
 };
 

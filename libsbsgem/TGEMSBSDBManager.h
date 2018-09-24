@@ -12,15 +12,17 @@
 #include "TMath.h"
 #include "types.h"
 
+class TGEMSBSSpec;
+
 class TGEMSBSDBManager {
 public:
     ~TGEMSBSDBManager();
     TGEMSBSDBManager(const char *spec = "bb", const char *det = "gem");
     //TODO: Remove this static instance!
-    static TGEMSBSDBManager* GetInstance() {
-        if (fManager == NULL) fManager = new TGEMSBSDBManager();
-        return fManager;
-    }
+    //static TGEMSBSDBManager* GetInstance() {
+    //    if (fManager == NULL) fManager = new TGEMSBSDBManager();
+    //    return fManager;
+    //}
     
     void LoadGeneralInfo(const std::string& fileName);
     void LoadGeoInfo(const std::string& fileName);
@@ -88,12 +90,17 @@ public:
     const std::string& GetSpecName() { return fSpecName; }
     const std::string& GetDetName() { return fDetName; }
 
+    TGEMSBSSpec& GetSpec() { return *fSpec; }
+    int GetNChan() { return fNChan; }
+
+    void InitializeGEMs();
+
 protected:
     int    LoadDB(std::ifstream& inp, DBRequest* request, const std::string& prefix);
     std::string FindKey( std::ifstream& inp, const std::string& key ) const;
     bool   CheckIndex(int i, int j=0, int k=0) const;
     
-    static TGEMSBSDBManager* fManager;
+    //static TGEMSBSDBManager* fManager;
 
     //variable for data base information
     int fDoMapSector;
@@ -155,6 +162,9 @@ protected:
     std::string fDetName;
     std::string fDBFileName;
     std::string fPrefix;
+
+    TGEMSBSSpec *fSpec;
+    int fNChan;
 };
 
 #endif

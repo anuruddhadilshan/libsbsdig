@@ -42,7 +42,6 @@ public:
   //New database parameters:
   exp_type fSBSExpType;
   UInt_t fNSpecs;
-  UInt_t fNextGeneratedCrate;
   std::vector<string> fSpecNames;
   std::vector<TSpectroInfo> fSpectroInfo;
   std::vector<TDetInfo> fDetInfo;

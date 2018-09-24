@@ -254,7 +254,6 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
   fNChambers = spect.GetNChambers();
   fDP = new TGEMSBSDigitizedPlane**[fNChambers];
   fNPlanes = new UInt_t[fNChambers];
-  UInt_t nchan = 0;
   for (UInt_t ic = 0; ic < fNChambers; ++ic)
     {
       fNPlanes[ic] = spect.GetChamber(ic).GetNPlanes();
@@ -264,11 +263,14 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
 	  new TGEMSBSDigitizedPlane( spect.GetChamber(ic).GetPlane(ip).GetNStrips(),
 				  fEleSamplingPoints, // # ADC samples
 				  0 );                // threshold is zero for now
-        nchan+= spect.GetChamber(ic).GetPlane(ip).GetNStrips();
+  UInt_t nchan = spect.GetChamber(ic).GetPlane(ip).GetNStrips();
+  UInt_t nslot = 1 + nchan/128.;
+  std::cerr << "ich: " << ic << ", ip: " << ip
+    << ", nstrip: " << nchan
+    << ", nslots: " << nslot << std::endl;
       }
     }
   fdh = NULL;
-  std::cout << "Initialized " << nchan << " GEM strips." << std::endl;
   
   // Estimated max size of the charge collection area in AvaModel
   Double_t pitch = 0.4; // [mm]

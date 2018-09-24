@@ -98,6 +98,7 @@ class TGEMSBSGEMChamber : public THaDetector {
   // Access to the info of TGEMSBSGEMPlane which is regarded as a subdetector of TGEMSBSGEMChamber.
   // (see comments in the code of class TGEMSBSGEMPlane)
    UInt_t GetNPlanes() const {return fNPlanes;};
+   UInt_t GetNStripTotal();
     
   TGEMSBSGEMPlane& GetPlane (UInt_t i) const {return *(fPlanes[i]);};
   Int_t InitPlane (const UInt_t i, const char* name, const char* desc);
@@ -107,6 +108,7 @@ class TGEMSBSGEMChamber : public THaDetector {
   TGEMSBSGEMPlane** fPlanes; // List of planes
   UInt_t fNPlanes;
   TGEMSBSBox* fBox;  // Box geometry
+  UInt_t fNStripTotal = 0;
 
   ClassDef(TGEMSBSGEMChamber,0)
 

@@ -17,6 +17,7 @@ TGEMSBSGEMChamber::TGEMSBSGEMChamber( const char *name, const char *desc )
   fNPlanes = 2;
   fPlanes = new TGEMSBSGEMPlane*[fNPlanes];
   fBox = new TGEMSBSBox;
+  fNStripTotal = 0;
 
   return;
 }
@@ -331,3 +332,14 @@ TGEMSBSGEMChamber::PlaneToHallCenter (TVector3& X_) const {
   X_[1] = y;
   X_[2] = z;
 };  // input and output in mm
+
+
+UInt_t
+TGEMSBSGEMChamber::GetNStripTotal() {
+  if(fNStripTotal==0) { // Strip count not initialized
+    for(UInt_t ip = 0; ip < fNPlanes; ip++) {
+      fNStripTotal += fPlanes[ip]->GetNStrips();
+    }
+  }
+  return fNStripTotal;
+}
