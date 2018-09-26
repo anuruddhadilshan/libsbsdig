@@ -10,8 +10,6 @@
 #pragma link C++ defined_in "src/TSBSGeant4File.h";
 #pragma link C++ defined_in "src/TSBSSimAuxi.h";
 #pragma link C++ defined_in "src/TSBSSimDecoder.h";
-#pragma link C++ defined_in "src/TSBSSimADC.h";
-#pragma link C++ defined_in "src/TSBSSimTDC.h";
 #pragma link C++ defined_in "src/TSBSSimEvent.h";
 #pragma link C++ defined_in "src/TSBSSimFile.h";
 #pragma link C++ defined_in "src/TSBSSimData.h";
@@ -23,6 +21,7 @@
 #pragma link C++ defined_in "src/TSBSSimGEM.h";
 #pragma link C++ defined_in "src/TSBSSimADC.h";
 #pragma link C++ defined_in "src/TSBSSimTDC.h";
+#pragma link C++ defined_in "src/TSBSSimMPD.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
 #pragma link C++ defined_in "src/TSBSSpec.h";
 #pragma link C++ defined_in "src/TSBSSimDataEncoder.h";

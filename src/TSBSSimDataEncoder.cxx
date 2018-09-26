@@ -265,8 +265,9 @@ TSBSSimMPDEncoder::TSBSSimMPDEncoder(const char *enc_name,
 {
   fChannelBitMask  = MakeBitMask(8);
   fDataBitMask     = MakeBitMask(12);
-  fOverflowBitMask = (1<<13);
+  fOverflowBitMask = (1<<12);
   fSampleBitMask   = fDataBitMask|fOverflowBitMask;
+  fValidBitMask    = (1<<13);
 }
 
 bool TSBSSimMPDEncoder::EncodeMPD(SimEncoder::mpd_data data,
@@ -304,7 +305,7 @@ bool TSBSSimMPDEncoder::EncodeMPD(SimEncoder::mpd_data data,
   }
   if( s < nsamps ) { // Still have one more sample to process
     buff[0] = EncodeSingleSample(data.samples[s]);
-    buff[1] = 0x2000; // Mark last sample in this two-sample word as not valid
+    buff[1] = fValidBitMask; // Mark last sample in this two-sample word as not valid
     enc_data[nwords++] = (buff[0]<<16) | buff[1];
   }
   return (nwords>1);
@@ -324,10 +325,10 @@ void TSBSSimMPDEncoder::UnpackSamples(unsigned int enc_data,
 {
   unsigned int tmp;
   for(int k = 0; k < 2; k++) {
-    tmp = (k==0 ? (enc_data>>16) : enc_data)&0x3FFF;
-    buff[k] = tmp&0xFFF;
-    overflow[k] = tmp&0x1000;
-    valid[k] = !(tmp&0x2000);
+    tmp = k==0 ? (enc_data>>16) : enc_data;
+    buff[k] = tmp&fDataBitMask;
+    overflow[k] = tmp&fOverflowBitMask;
+    valid[k] = !(tmp&fValidBitMask);
   }
 }
 
@@ -374,6 +375,7 @@ bool TSBSSimMPDEncoder::DecodeMPD(SimEncoder::mpd_data &data,
   // First, decode the header
   DecodeMPDHeader(enc_data,data);
   int nsamples_read = 0;
+  data.samples.clear(); // Clear out any samples already in the data
 
   unsigned int buff[2] = {0,0};
   bool overflow[2] = { false, false};
@@ -389,7 +391,7 @@ bool TSBSSimMPDEncoder::DecodeMPD(SimEncoder::mpd_data &data,
   }
 
   if(nsamples_read != data.nstrips*data.nsamples) {
-    std::cerr << "Error, number of samples read (" << nsamples_read
+    std::cerr << "Error, number of samples read (" << std::dec << nsamples_read
       << "), does not match number of expected samples ("
       << data.nstrips*data.nsamples << ")." << std::endl;
     return false;

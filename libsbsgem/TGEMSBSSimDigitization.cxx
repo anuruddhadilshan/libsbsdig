@@ -116,6 +116,7 @@ TGEMSBSDigitizedPlane::Cumulate (const TGEMSBSGEMHit *vv, Short_t type,
 	Int_t iadc = idx*fNSamples+k;
 	//cout << fStripADC[iadc] << " ";
 	fStripADC[iadc] = fStripADC[iadc] + nnn;
+  fStripSimADC[iadc] = 0;
 
 	//cout << fStripADC[iadc] << " ";
 	fTotADC[idx] += nnn;
@@ -162,6 +163,7 @@ TGEMSBSDigitizedPlane::Cumulate (const TGEMSBSGEMHit *vv, Short_t type,
 	if( nnn == 0 ) continue;
 	Int_t iadc = idxInduce*fNSamples+k;
 	fStripADC[iadc] = fStripADC[iadc] + nnn;
+  fStripSimADC[iadc] = 0;
 	fTotADC[idxInduce] += nnn;
       }
       if( was_below && fTotADC[idxInduce] > fThreshold ) {
@@ -1306,6 +1308,9 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	      // cout << strip.fADC[ss] << " ";
 	      saturation = 4000;
 	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
+        // TODO: Shouldn't common mode be added at some point? Specially
+        // before encoding it into unsigned integers which don't
+        // take kindly to negative values?
         SetSimADC(ich,ip,idx,ss,strip.fADC[ss]);
 	      const vector<Int_t>& sclust = GetStripClusterADC(ich, ip, idx, ss);
 	      

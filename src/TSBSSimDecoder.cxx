@@ -372,11 +372,11 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
         crate = gemslot.GetCrate();
         slot  = gemslot.GetSlot();
         tmp_mpd.mpd_id = gemslot.GetMPDId();
-        tmp_mpd. gem_id = gemslot.GetGEMId();
-        tmp_mpd. adc_id = gemslot.GetADCId();
-        tmp_mpd. i2c = gemslot.GetI2C();
-        tmp_mpd. pos = gemslot.GetPos();
-        tmp_mpd. invert = gemslot.GetInvert();
+        tmp_mpd.gem_id = gemslot.GetGEMId();
+        tmp_mpd.adc_id = gemslot.GetADCId();
+        tmp_mpd.i2c = gemslot.GetI2C();
+        tmp_mpd.pos = gemslot.GetPos();
+        tmp_mpd.invert = gemslot.GetInvert();
         // And now, re-encode the MPD header
         fEncoderMPD->EncodeMPDHeader(tmp_mpd,&(detdata.fData[j]),chan);
       }

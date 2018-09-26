@@ -176,6 +176,7 @@ protected:
   unsigned int fDataBitMask;
   unsigned int fOverflowBitMask;
   unsigned int fSampleBitMask;
+  unsigned int fValidBitMask;
 
 protected:
   unsigned int EncodeSingleSample(unsigned int dat);

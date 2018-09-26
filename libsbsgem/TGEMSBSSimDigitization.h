@@ -144,7 +144,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   Float_t GetCharge (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetCharge (n);}
   Int_t   GetADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetADC (n, ks);}
   Int_t   GetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetSimADC (n, ks);}
-  void SetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks, Int_t adc) const {return fDP[ich][ip]->SetSimADC (n, ks,adc);}
+  void SetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks, Int_t adc) {fDP[ich][ip]->SetSimADC (n, ks,adc);}
   UInt_t   GetNChambers() const {return fNChambers;};
   UInt_t   GetNPlanes (const UInt_t i) const {return fNPlanes[i];}
   UShort_t GetNSamples (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNSamples();}

@@ -277,6 +277,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   mpd_data.channel = 0;
   Int_t adc = 0;
   UInt_t nstrip = 0;
+  UInt_t strip;
   mpd_data.adc_id = 0; // For now, increment with each APV25
   // The other info will be encoded properly when the Decoder pass happens
   mpd_data.mpd_id = 0;
@@ -284,11 +285,11 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   mpd_data.i2c = 0;
   mpd_data.pos = 0;
   mpd_data.invert = 0;
+  UInt_t idx = 0;
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
     for(UInt_t ip = 0; ip < fGEMDigi->GetNPlanes(ich); ip++) {
-      data.fData.clear();
       mpd_data.nsamples = fGEMDigi->GetNSamples(ich,ip);
       // This is the total number of APV25's we'd need
       nstrip = fGEMDigi->GetNStrips(ich,ip);
@@ -297,18 +298,20 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       // extra strip that seems unreasonable, since I doubt we'd get one
       // APV25 chip just for one strip. Hence, I'm going to assume that's
       // not the intent and skip anything with only one strip left.
+      strip = 0;
       while(nstrip > 1) {
-      //for(UInt_t istrip = 0; istrip < fGEMDigi->GetNStrips(ich,ip); istrip++) {
+        data.fData.clear();
         mpd_data.samples.clear();
         mpd_data.nstrips = nstrip >= SBS_APV25_NCH ? SBS_APV25_NCH : nstrip;
         nstrip -= mpd_data.nstrips;
         mpd_data.samples.resize(mpd_data.nsamples*mpd_data.nstrips);
-        for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++) {
+        idx = 0;
+        for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
-            adc = fGEMDigi->GetSimADC(ich,ip,istrip,s);
+            adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
             // Negative values convert poorly to unsigned integers, so just
             // set them to zero if the actual ADC is negative
-            mpd_data.samples[s] = (adc>0 ? adc : 0);
+            mpd_data.samples[idx++] = (adc>0 ? adc : 0);
           }
         }
         fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
