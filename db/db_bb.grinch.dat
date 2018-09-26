@@ -1,6 +1,7 @@
 950101
 #grinch general info
 bb.grinch.dettype = Cher
+bb.grinch.unique_id = 20
 bb.grinch.nchan = 510
 bb.grinch.chan_per_slot = 128
 bb.grinch.slot_per_crate = 16

@@ -1,5 +1,6 @@
 ## Detector map, format:
 sbs.hcal.dettype = HCal
+sbs.hcal.unique_id = 0
 
 dig.sbs.hcal.roimpedance = 50 # ohm
 dig.sbs.hcal.adcconv = 1 # ohm

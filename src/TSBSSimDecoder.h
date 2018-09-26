@@ -18,6 +18,7 @@
 //class THaCrateMap;
 
 class TSBSSimMPDEncoder; // For decoding simulation GEMs
+class TDetInfo;
 
 //-----------------------------------------------------------------------------
 // SBS digitized simulation decoder class
@@ -63,12 +64,13 @@ protected:
 			    int& crateperslot, int& slotpercrate, 
 			    int& firstcrate, int& firstslot);
   */
+  //Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
+  //    const char *detname, TSBSSimEvent::DetectorData detdata, const int detid);
   Int_t LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
-      const char *detname, TSBSSimEvent::DetectorData detdata, const int detid);
+      TDetInfo& detinfo, TSBSSimEvent::DetectorData detdata);
 
   bool fCheckedForEnabledDetectors;
-  std::vector<const char*> fDetNames;
-  std::vector<short> fDetIDs;
+  std::vector<TDetInfo> fDetectors;
   void CheckForEnabledDetectors();
   void CheckForDetector(const char *detname, short id);
 

@@ -170,6 +170,8 @@ protected:
     TGEMSBSSpec *fSpec;
     int fNChan;
     std::vector<int> fChanMap;
+
+    ClassDef(TGEMSBSDBManager,1);
 };
 
 #endif

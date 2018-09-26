@@ -8,6 +8,8 @@
 #include "TRandom3.h"
 #include "TSystem.h"
 
+ClassImp(TGEMSBSDBManager);
+
 using namespace std;
 
 //TGEMSBSDBManager * TGEMSBSDBManager::fManager = NULL;

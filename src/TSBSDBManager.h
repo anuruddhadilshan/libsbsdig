@@ -33,8 +33,12 @@ public:
   // const int    &   GetChanPerSlot()  { return 0; }//fChanPerSlot;  }
   // const int    &   GetSlotPerCrate() { return 0; }//fSlotPerCrate; }
   
+  const std::vector<TDetInfo>& GetAllDetInfo() { return fDetInfo; }
+  const std::vector<TSpectroInfo>& GetAllSpectroInfo() { return fSpectroInfo; }
   const TDetInfo & GetDetInfo(const char* detname);
+  const TDetInfo& GetDetInfoById(Int_t id);
   bool IsDetInfoAvailable(const char* detname); // Check if a detector is defined
+  bool IsDetInfoAvailableById(Int_t id); // Check if a detector is defined by ID
   
  protected:
   TSBSDBManager();

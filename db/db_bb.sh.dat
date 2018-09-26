@@ -1,5 +1,6 @@
 950101
 bb.sh.dettype = ECal
+bb.sh.unique_id = 11
 bb.sh.chan_per_slot = 128
 bb.sh.slot_per_crate = 16
 bb.sh.nchan = 189

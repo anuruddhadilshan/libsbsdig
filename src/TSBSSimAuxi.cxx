@@ -384,11 +384,12 @@ TDetInfo::TDetInfo()
   fGEMSlots.clear();
   fNmodules.clear();
   fGeoInfo.clear();
+  fDetUniqueId = -1;
 }
 
-TDetInfo::TDetInfo(const std::string detname)
+TDetInfo::TDetInfo(const std::string detname, const std::string specname)
 {
-  fDetName = detname;
+  SetDetName(detname,specname);
   fNmodules.clear();
   fGeoInfo.clear();
 }
@@ -398,6 +399,18 @@ TDetInfo::~TDetInfo()
   fNmodules.clear();
   fGeoInfo.clear();
 }
+
+
+void TDetInfo::SetDetName(std::string detname, std::string specname)
+{
+  fDetName = detname;
+  if(!specname.empty()){
+    fDetFullName = specname +"."+detname;
+  } else {
+    fDetFullName = detname;
+  }
+}
+
 
 Int_t TDetInfo::AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi)
 {

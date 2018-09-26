@@ -246,10 +246,11 @@ struct TDigChannelInfo {
 class TDetInfo : public TObject{
  public:
   TDetInfo();
-  TDetInfo(const std::string detname);
+  TDetInfo(const std::string detname, const std::string specname = "");
   ~TDetInfo();
   
   std::string DetName(){return fDetName;};
+  std::string DetFullName(){return fDetFullName;};
   det_type DetType(){return fDetType;};
   UInt_t   NChan(){return fNchan;};
   UInt_t   NLogChan(){return fNlogChan;};
@@ -260,13 +261,15 @@ class TDetInfo : public TObject{
   UInt_t   NPlanes(){return fNplanes;};
   UInt_t   NModulesSize(){return fNmodules.size();};
   UInt_t   NModules(int i){return fNmodules.at(i);};
+  Int_t   DetUniqueId(){ return fDetUniqueId; }
   
   int GeoInfoSize(){return fGeoInfo.size();};
   TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
   TDigInfo DigInfo(){return fDigInfo;};
   
-  void SetDetName(std::string detname){fDetName = detname;};
+  void SetDetName(std::string detname, std::string specname = "");//{fDetName = detname;};
   void SetDetType(det_type type){fDetType = type;};
+  void SetDetUniqueId(Int_t id) { fDetUniqueId = id;};
   void SetNChan(UInt_t nchan){fNchan = nchan;};
   void SetNLogChan(UInt_t nchan){fNlogChan = nchan;};
   void SetChanPerSlot(UInt_t chanperslot){fChanPerSlot = chanperslot;};
@@ -291,6 +294,7 @@ class TDetInfo : public TObject{
 
  private:
   std::string fDetName;      // Detector name
+  std::string fDetFullName;      // Detector name with spectro prefix
   det_type     fDetType;      // DetectorType
   UInt_t        fNchan;        // Total number of channels over all detector
   UInt_t         fNlogChan;        // Total number of *logical* channels over all detector
@@ -307,6 +311,7 @@ class TDetInfo : public TObject{
   std::vector<TDigGEMSlot> fGEMSlots;
   std::map<int,std::pair<int,int> > fDetMap;
   TGEMSBSDBManager *fGEMDB;
+  Int_t fDetUniqueId;
   
 public:
   ClassDef(TDetInfo, 1);

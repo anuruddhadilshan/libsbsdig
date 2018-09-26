@@ -149,7 +149,10 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     
     // then loop on detectors
     for(size_t i_det = 0; i_det<specinfo.NDets(); i_det++){
-      LoadDetInfo(fSpecNames.at(i_spec), specinfo.DetName(i_det));
+      err = LoadDetInfo(fSpecNames.at(i_spec), specinfo.DetName(i_det));
+      if(err) {
+        exit(3);
+      }
     }
     
   }// end spectrometer loop
@@ -162,7 +165,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
 Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 {
   const char *here = "TSBSDBManager::LoadDetInfo()";
-  TDetInfo detinfo(detname);
+  TDetInfo detinfo(detname,specname);
   // Use DB_DIR (standard Hall A analyzer DB path) for
   // common values shared by both SBS-Offline and digitization library
   // and then use SBS_DIGI_DB to search for digitization specific
@@ -201,6 +204,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
 
   string dettype_str;
+  int det_id = -1;
   int nchan, nlog_chan = 0;
   int first_crate = -1, first_slot = 0;
   bool ignore_slotcrate = true;
@@ -213,6 +217,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // channel for each block.
   DBRequest requestDetType[] = {
     {"dettype",        &dettype_str,    kString,  0, 0},
+    ///< REQUIRED! See g4sbs_types.h for list of unique IDs
+    {"unique_id",      &det_id,    kInt,  0, 0},
     {"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
     {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
     {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
@@ -220,6 +226,22 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   };
 
   err = LoadDB (file, GetInitDate(), requestDetType, prefix.c_str());
+  if(err)
+    return kInitError;
+
+  if(det_id < 0) {
+    std::cerr << "ERROR: Detector ID cannot be negative." << std::endl;
+    return kInitError;
+  }
+  if (IsDetInfoAvailableById(det_id)) { // Check that the det_id is unique
+    TDetInfo conflict_det = GetDetInfoById(det_id);
+    std::cerr << "Detector: "<< specname << "." << detname << " with ID: "
+      << det_id << " is not unique! Conflicts with: "
+      << conflict_det.DetFullName() << ", with ID: "
+      << conflict_det.DetUniqueId() << std::endl;
+    return kInitError;
+  }
+  detinfo.SetDetUniqueId(det_id);
 
   if(dettype_str.compare("HCal")==0)detinfo.SetDetType(kHCal);
   if(dettype_str.compare("ECal")==0)detinfo.SetDetType(kECal);
@@ -682,16 +704,50 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   return(kOK);
 }
 
-bool TSBSDBManager::IsDetInfoAvailable(const char* detname)
+bool TSBSDBManager::IsDetInfoAvailableById(Int_t id)
 {
   // Loop through all detectors to see if this one is available
   for(size_t i = 0; i<fDetInfo.size(); i++){
-    if(fDetInfo.at(i).DetName().compare(detname)==0){
+    if(fDetInfo.at(i).DetUniqueId()==id){
       return true;
     }
   }
 
   return false;
+}
+
+bool TSBSDBManager::IsDetInfoAvailable(const char* detname)
+{
+  // Loop through all detectors to see if this one is available
+  for(size_t i = 0; i<fDetInfo.size(); i++){
+    if(fDetInfo.at(i).DetName().compare(detname)==0 ||
+        fDetInfo.at(i).DetFullName().compare(detname)==0){
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+const TDetInfo& TSBSDBManager::GetDetInfoById(Int_t id)
+{
+  //check if the detectors databases is loaded in the first place
+  if(fDetInfo.size()==0){
+    std::cerr << "Detector info has not been loaded by the manager yet; Exiting." << endl;
+    std::cerr << "To avoid this, make sure you load the DB information with the DB manager before you declare any detector." << endl;
+    exit(2);
+  }
+  // if so, loop on list of detectors.
+  for(size_t i = 0; i<fDetInfo.size(); i++){
+    if(fDetInfo.at(i).DetUniqueId() == id){
+      return fDetInfo.at(i);
+    }
+  }
+
+  // if no valid detectors have been found exit with error message
+  cout << "No detector corresponding to id:" << id << " found in database. Check program or database" << endl;
+  exit(2);
 }
 
 //function to retrieve the coorect detector information from the detector name

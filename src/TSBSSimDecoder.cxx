@@ -245,7 +245,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     CheckForEnabledDetectors();
 
   std::vector<std::map<Decoder::THaSlotData*, std::vector<UInt_t> > > detmaps;
-  detmaps.resize(fDetNames.size());
+  detmaps.resize(fDetectors.size());
 
   // Loop through the TSBSSimEvent vector and load the data onto
   // all declared detectors.
@@ -253,8 +253,9 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       simEvent->fDetectorData.begin(); it != simEvent->fDetectorData.end();
       ++it )
   {
-    for(size_t d = 0; d < fDetNames.size(); d++) {
-      LoadDetector(detmaps[d], fDetNames[d], (*it), fDetIDs[d]);
+    for(size_t d = 0; d < fDetectors.size(); d++) {
+      LoadDetector(detmaps[d], fDetectors[d], (*it));
+      //LoadDetector(detmaps[d], fDetNames[d], (*it), fDetIDs[d]);
     }
     // what if we were just coding the stuff above in a function ?
     // what would this function need ? name (or CPS/SPC) +detID of det, and map ???? 
@@ -286,7 +287,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   }
 
   // Now call LoadSlot for the different detectors
-  for(size_t d = 0; d < fDetNames.size(); d++) {
+  for(size_t d = 0; d < fDetectors.size(); d++) {
     for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
         detmaps[d].begin(); it != detmaps[d].end(); ++it) {
       //unsigned short data_type = 0, chan_mult = 0;
@@ -296,7 +297,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       if(it->first->GetModule()==0) {
         if(fDebug>0) {
           std::cout << "No data available for detector "
-            << fDetNames[d] << std::endl;
+            << fDetectors[d].DetName() << std::endl;
         }
       } else {
         it->first->GetModule()->LoadSlot(it->first,
@@ -327,10 +328,12 @@ Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname,
 }
 */
 
-Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > &map,
-      const char *detname, TSBSSimEvent::DetectorData detdata, const int detid)
+Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
+    std::vector<UInt_t> > &map, TDetInfo &detinfo,
+    TSBSSimEvent::DetectorData detdata)
+      //const char *detname, TSBSSimEvent::DetectorData detdata, const int detid)
 {
-  TDetInfo detinfo = fManager->GetDetInfo(detname);
+  //TDetInfo detinfo = fManager->GetDetInfo(detname);
 
 //Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<UInt_t> > map,
 //				    TSBSSimEvent::DetectorData detdata, 
@@ -338,8 +341,8 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
 //				    const int chanperslot, const int slotpercrate, 
 //				    const int firstcrate, const int firstslot)
 //{
+  int detid = detinfo.DetUniqueId();
   Int_t crate, slot;
-  TDetInfo detInfo = fManager->GetDetInfo(detname);
   unsigned int nwords = 0;
   unsigned short data_type = 0, chan = 0, chan_mult = 0;
   int lchan;
@@ -355,17 +358,17 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
       TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan_mult,
           nwords);
       // The channel mapping works different for GEMs vs all other detectors
-      if(detInfo.DetType() != kGEM) {
-        lchan = mod + chan_mult*detInfo.NChan();
+      if(detinfo.DetType() != kGEM) {
+        lchan = mod + chan_mult*detinfo.NChan();
         // Get information about this logical channel from TDetInfo
-        TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
+        TDigChannelInfo chinfo = detinfo.FindLogicalChannelSlot(lchan);
         crate = chinfo.crate;
         slot = chinfo.slot;
         chan = chinfo.ch; // Now this is the channel in the simulated VME module
       } else {
         fEncoderMPD->DecodeMPDHeader(&(detdata.fData[j]),tmp_mpd);
         // First, decode the header information
-        TDigGEMSlot gemslot = detInfo.GetGEMSlot(chan_mult);
+        TDigGEMSlot gemslot = detinfo.GetGEMSlot(chan_mult);
         crate = gemslot.GetCrate();
         slot  = gemslot.GetSlot();
         tmp_mpd.mpd_id = gemslot.GetMPDId();
@@ -395,7 +398,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
           myev->push_back(detdata.fData[j++]);
         }
       } else {
-        std::cerr << "Yikes!! No data for " << detname
+        std::cerr << "Yikes!! No data for " << detinfo.DetName()
           << " (mod=" << mod << ") in c: "
           << crate << " s: " << slot << " c: " << chan
           << " size: " << detdata.fData.size() << ", j: " << j <<", nwords: "
@@ -410,23 +413,12 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
 
 void TSBSSimDecoder::CheckForEnabledDetectors()
 {
-  fDetNames.clear();
-  fDetIDs.clear();
-  CheckForDetector("hcal",HCAL_UNIQUE_DETID);
-  CheckForDetector("cdet", CDET_UNIQUE_DETID);
-  CheckForDetector("sh", BBSH_UNIQUE_DETID);
-  CheckForDetector("hodo", HODO_UNIQUE_DETID);
-  CheckForDetector("ps", BBPS_UNIQUE_DETID);
-  CheckForDetector("grinch", GRINCH_UNIQUE_DETID);
-  CheckForDetector("bbgem", BBGEM_UNIQUE_DETID);
-  fCheckedForEnabledDetectors = true;
-}
-
-void TSBSSimDecoder::CheckForDetector(const char *detname, short id)
-{
-  if(fManager->IsDetInfoAvailable(detname)) {
-    std::cerr << "Enabling detector: " << detname << std::endl;
-    fDetNames.push_back(detname);
-    fDetIDs.push_back(id);
+  fDetectors = fManager->GetAllDetInfo();
+  if(fDebug>0) {
+    for(size_t i = 0; i < fDetectors.size(); i++) {
+      std::cout << "Found detector: " << fDetectors[i].DetFullName() << ", ID: "
+        << fDetectors[i].DetUniqueId() << std::endl;
+    }
   }
+  fCheckedForEnabledDetectors = true;
 }

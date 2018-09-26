@@ -1,7 +1,7 @@
 950101
 
 bb.gem.dettype = GEM
-
+bb.gem.unique_id = 41
 
 bb.gem.info.do_map_sector = 0
 bb.gem.info.self_define_sector = 0
