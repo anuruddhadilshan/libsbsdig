@@ -17,6 +17,8 @@
 
 //class THaCrateMap;
 
+class TSBSSimMPDEncoder; // For decoding simulation GEMs
+
 //-----------------------------------------------------------------------------
 // SBS digitized simulation decoder class
 class TSBSSimDecoder : public Podd::SimDecoder {
@@ -69,6 +71,8 @@ protected:
   std::vector<short> fDetIDs;
   void CheckForEnabledDetectors();
   void CheckForDetector(const char *detname, short id);
+
+  TSBSSimMPDEncoder *fEncoderMPD;
 
   /*
   // void  PMTtoROC( Int_t s_plane, Int_t s_sector, Int_t s_proj, Int_t s_chan,

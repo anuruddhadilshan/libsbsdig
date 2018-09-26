@@ -6,6 +6,7 @@
 ClassImp(TGeoInfo) // Implements TGeoInfo
 ClassImp(TDigInfo) // Implements TDigInfo
 ClassImp(TDigSlot) // Implements TDigSlot
+ClassImp(TDigGEMSlot) // Implements TDigSlot
 ClassImp(TDetInfo) // Implements TDetInfo
 ClassImp(TSPEModel) // Implements TSPEModel
 ClassImp(TPMTSignal) // Implements TPMTSignal
@@ -331,6 +332,22 @@ TDigSlot::~TDigSlot()
 {
 }
 
+TDigGEMSlot::TDigGEMSlot() : TDigSlot()
+{
+};
+
+TDigGEMSlot::TDigGEMSlot(Int_t crate, Int_t slot, Int_t mpd_id,
+    Int_t gem_id, Int_t adc_id, Int_t i2c, Int_t pos, Int_t inv) :
+  TDigSlot(crate,slot,0,1), fMPDId(mpd_id), fGEMId(gem_id),
+  fADCId(adc_id), fI2C(i2c), fPos(pos), fInvert(inv)
+{
+}
+
+TDigGEMSlot::~TDigGEMSlot()
+{
+}
+
+
 Int_t TDigSlot::GetChanNumber(Int_t ch)
 {
   Int_t lch = fChanLo + ch;
@@ -364,6 +381,7 @@ Int_t TDigDetMap::Fill(std::vector<Int_t> vals)
 TDetInfo::TDetInfo()
 {
   fModSlots.clear();
+  fGEMSlots.clear();
   fNmodules.clear();
   fGeoInfo.clear();
 }
@@ -388,6 +406,14 @@ Int_t TDetInfo::AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi)
   return modslot.GetNchan();
 }
 
+Int_t TDetInfo::AddGEMSlot(Int_t crate, Int_t slot, Int_t mpd_id, Int_t gem_id,
+    Int_t adc_id, Int_t i2c, Int_t pos, Int_t invert)
+{
+  TDigGEMSlot modslot(crate,slot,mpd_id,gem_id,
+      adc_id,i2c,pos,invert);
+  fGEMSlots.push_back(modslot);
+  return modslot.GetNchan();
+}
 
 TDigChannelInfo TDetInfo::FindLogicalChannelSlot(Int_t lch)
 {

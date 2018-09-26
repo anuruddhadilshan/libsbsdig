@@ -1,6 +1,7 @@
 #ifndef TGEMSBSDBMANAGER_H
 #define TGEMSBSDBMANAGER_H
 
+#include "THaAnalysisObject.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -14,7 +15,7 @@
 
 class TGEMSBSSpec;
 
-class TGEMSBSDBManager {
+class TGEMSBSDBManager : public THaAnalysisObject {
 public:
     ~TGEMSBSDBManager();
     TGEMSBSDBManager(const char *spec = "bb", const char *det = "gem");
@@ -26,6 +27,7 @@ public:
     
     void LoadGeneralInfo(const std::string& fileName);
     void LoadGeoInfo(const std::string& fileName);
+    std::vector<int>& GetChanMap() { return fChanMap; }
    
     int       DoMapSector() const          { return fDoMapSector;         }
     int       DoSelfDefineSector() const   { return fDoSelfDefinedSector; }
@@ -96,8 +98,8 @@ public:
     void InitializeGEMs();
 
 protected:
-    int    LoadDB(std::ifstream& inp, DBRequest* request, const std::string& prefix);
-    std::string FindKey( std::ifstream& inp, const std::string& key ) const;
+    //int    LoadDB(std::ifstream& inp, DBRequest* request, const std::string& prefix);
+    //std::string FindKey( std::ifstream& inp, const std::string& key ) const;
     bool   CheckIndex(int i, int j=0, int k=0) const;
     
     //static TGEMSBSDBManager* fManager;
@@ -108,9 +110,11 @@ protected:
     int fDoSelfDefinedSector;
     
     int    fNChamber;
+    std::vector<std::string> fChambers;
     int    fNSector;
     int    fNGEMPlane;
     std::vector<Int_t> fNModule;
+    std::vector<std::vector<std::string> > fModules;
     std::map<Int_t,std::map<Int_t, Int_t> > fmPMtoIgem;
     std::map<Int_t, Int_t> fmIgemtoPlane;
     std::map<Int_t, Int_t> fmIgemtoModule;
@@ -165,6 +169,7 @@ protected:
 
     TGEMSBSSpec *fSpec;
     int fNChan;
+    std::vector<int> fChanMap;
 };
 
 #endif

@@ -237,6 +237,21 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     gemdb->InitializeGEMs();
     detinfo.SetGEMDB(gemdb);
     nchan = gemdb->GetNChan();
+    // Now, process the channel map for these GEMs
+    int crate,slot,mpd_id,gem_id,adc_id,i2c,gem_pos,gem_invert;
+    std::vector<int> gem_map = gemdb->GetChanMap();
+    for(size_t k = 0; k < gem_map.size(); k+=8) {
+      crate      = gem_map[k  ];
+      slot       = gem_map[k+1];
+      mpd_id     = gem_map[k+2];
+      gem_id     = gem_map[k+3];
+      adc_id     = gem_map[k+4];
+      i2c        = gem_map[k+5];
+      gem_pos    = gem_map[k+6];
+      gem_invert = gem_map[k+7];
+      detinfo.AddGEMSlot(crate,slot,mpd_id,gem_id,adc_id,i2c,gem_pos,
+          gem_invert);
+    }
     fDetInfo.push_back(detinfo);
     return err;
   }

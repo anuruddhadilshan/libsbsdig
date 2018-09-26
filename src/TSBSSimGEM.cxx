@@ -36,7 +36,7 @@ void TSBSSimGEM::Init()
   fManager = fDetInfo.GetGEMDB();
 
   // Hard code the MPD encoder for GEMs
-  fEncoderADC = TSBSSimDataEncoder::GetEncoderByName("mpd");
+  fEncoderMPD = TSBSSimDataEncoder::GetEncoderByName("mpd");
 
   // At this point, we should build all the GEM chambers that exist for
   // this 
@@ -264,29 +264,58 @@ void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 
 void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 {
+  if(!fEncoderMPD) {
+    std::cerr << "Wow! No MPD encoder!!" << std::endl;
+    return;
+  }
   fGEMDigi->SetTreeStrips();
   TSBSSimEvent::DetectorData data;
   data.fDetID = UniqueDetID();
+  // Here data.fChannel corresponds to plane
   data.fChannel = 0;
-  SimEncoder::fadc_data fadc_data;
+  SimEncoder::mpd_data mpd_data;
+  mpd_data.channel = 0;
   Int_t adc = 0;
+  UInt_t nstrip = 0;
+  mpd_data.adc_id = 0; // For now, increment with each APV25
+  // The other info will be encoded properly when the Decoder pass happens
+  mpd_data.mpd_id = 0;
+  mpd_data.gem_id = 0;
+  mpd_data.i2c = 0;
+  mpd_data.pos = 0;
+  mpd_data.invert = 0;
+  // Here, Chamber is equivalent to a "Tracking-Plane" which is really
+  // what the TGEMSBSSimDigitization uses
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
     for(UInt_t ip = 0; ip < fGEMDigi->GetNPlanes(ich); ip++) {
-      for(UInt_t istrip = 0; istrip < fGEMDigi->GetNStrips(ich,ip); istrip++) {
-        data.fData.clear();
-        fadc_data.samples.clear();
-        fadc_data.samples.resize(fGEMDigi->GetNSamples(ich,ip));
-        for(UShort_t s = 0; s < fGEMDigi->GetNSamples(ich,ip); s++) {
-          adc = fGEMDigi->GetSimADC(ich,ip,istrip,s);
-          // Negative values convert poorly to unsigned integers, so just
-          // set them to zero if the actual ADC is negative
-          fadc_data.samples[s] = (adc>0 ? adc : 0);
+      data.fData.clear();
+      mpd_data.nsamples = fGEMDigi->GetNSamples(ich,ip);
+      // This is the total number of APV25's we'd need
+      nstrip = fGEMDigi->GetNStrips(ich,ip);
+      // Break up the data in number of strips that fit in an APV25
+      // (128 channels). I found that TGEMSBSSimDigitization somehow gets one
+      // extra strip that seems unreasonable, since I doubt we'd get one
+      // APV25 chip just for one strip. Hence, I'm going to assume that's
+      // not the intent and skip anything with only one strip left.
+      while(nstrip > 1) {
+      //for(UInt_t istrip = 0; istrip < fGEMDigi->GetNStrips(ich,ip); istrip++) {
+        mpd_data.samples.clear();
+        mpd_data.nstrips = nstrip >= SBS_APV25_NCH ? SBS_APV25_NCH : nstrip;
+        nstrip -= mpd_data.nstrips;
+        mpd_data.samples.resize(mpd_data.nsamples*mpd_data.nstrips);
+        for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++) {
+          for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
+            adc = fGEMDigi->GetSimADC(ich,ip,istrip,s);
+            // Negative values convert poorly to unsigned integers, so just
+            // set them to zero if the actual ADC is negative
+            mpd_data.samples[s] = (adc>0 ? adc : 0);
+          }
         }
-        fEncoderADC->EncodeFADC(fadc_data,fEncBuffer,fNEncBufferWords);
-        CopyEncodedData(fEncoderADC,0,data.fData);
+        fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
+        CopyEncodedData(fEncoderMPD,mpd_data.adc_id++,data.fData);
         event.fDetectorData.push_back(data);
-        data.fChannel++;
       }
+      data.fChannel++;
     }
   }
 }

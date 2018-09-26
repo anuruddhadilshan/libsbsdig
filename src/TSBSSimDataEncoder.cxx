@@ -2,6 +2,27 @@
 #include <TString.h>
 #include <iostream>
 
+#define SBS_MPD_NSAMPLES_BIT  27
+#define SBS_MPD_NSTRIPS_BIT   15
+#define SBS_MPD_POS_BIT       7
+#define SBS_MPD_INV_BIT       6
+#define SBS_MPD_I2C_BIT       0
+
+#define SBS_MPD_ADC_ID_BIT    20
+#define SBS_MPD_MPD_ID_BIT    10
+#define SBS_MPD_GEM_ID_BIT    0
+
+// Word 1
+#define SBS_MPD_NSAMPLES_MASK 0xF8000000
+#define SBS_MPD_NSTRIPS_MASK  0x07FF8000
+#define SBS_MPD_POS_MASK      0x00007F80
+#define SBS_MPD_INV_MASK      0x10000040
+#define SBS_MPD_I2C_MASK      0x0000003F
+// Word 2
+#define SBS_MPD_ADC_ID_MASK   0x3FF00000
+#define SBS_MPD_MPD_ID_MASK   0x000FFC00
+#define SBS_MPD_GEM_ID_MASK   0x000003FF
+
 // This one is static, so define it again here
 std::vector<TSBSSimDataEncoder*> TSBSSimDataEncoder::fEncoders;
 
@@ -20,7 +41,7 @@ TSBSSimDataEncoder* TSBSSimDataEncoder::GetEncoderByName(
     fEncoders.push_back(new TSBSSimADCEncoder("adc",ids++,12));
     fEncoders.push_back(new TSBSSimADCEncoder("lecroy1881",ids++,14));
     fEncoders.push_back(new TSBSSimADCEncoder("caen792",ids++,12));
-    fEncoders.push_back(new TSBSSimFADC250Encoder("mpd",ids++));
+    fEncoders.push_back(new TSBSSimMPDEncoder("mpd",ids++));
   }
 
   TString name(enc_name);
@@ -236,5 +257,144 @@ unsigned short TSBSSimDataEncoder::DecodeType(unsigned int hdr) {
 
 unsigned short TSBSSimDataEncoder::DecodeNwords(unsigned int hdr) {
   return hdr&SBS_NWORDS_MASK;
+}
+
+
+TSBSSimMPDEncoder::TSBSSimMPDEncoder(const char *enc_name,
+    unsigned short enc_id) : TSBSSimDataEncoder(enc_name,enc_id)
+{
+  fChannelBitMask  = MakeBitMask(8);
+  fDataBitMask     = MakeBitMask(12);
+  fOverflowBitMask = (1<<13);
+  fSampleBitMask   = fDataBitMask|fOverflowBitMask;
+}
+
+bool TSBSSimMPDEncoder::EncodeMPD(SimEncoder::mpd_data data,
+    unsigned int *enc_data, unsigned short &nwords)
+{
+  // Word 1:
+  //   31-27 = nsamples per strip (i.e. 3 or 6)
+  //   26-15 = nstrips
+  //   14-7  = pos
+  //    6    = inv
+  //    5-0  = i2c
+  // Word 2:
+  //   31-30 = not used
+  //   29-20 = adc_id
+  //   19-10 = mpd_id
+  //    9-0  = gem_id
+  // Word 3 - N: (Same logic as FADC250)
+  //   31-30 = Not used for simulation
+  //   29    = sample x not valid
+  //   28–16 = ADC sample x (includes overflow bit)
+  //   15–14 = Not used for simulation
+  //   13 = sample x + 1 not valid
+  //   12–0 = ADC sample x + 1 (includes overflow bit)
+  nwords = 0;
+  unsigned int nsamps = data.nsamples*data.nstrips;
+  if(nsamps != data.samples.size())
+    return false;
+  EncodeMPDHeader(data,enc_data,nwords);
+  unsigned int s = 0;
+  unsigned int buff[2] = {0,0};
+  for(s = 0; s < nsamps-1; s+=2) {
+    buff[0] = EncodeSingleSample(data.samples[s]);
+    buff[1] = EncodeSingleSample(data.samples[s+1]);
+    enc_data[nwords++] = (buff[0]<<16) | buff[1];
+  }
+  if( s < nsamps ) { // Still have one more sample to process
+    buff[0] = EncodeSingleSample(data.samples[s]);
+    buff[1] = 0x2000; // Mark last sample in this two-sample word as not valid
+    enc_data[nwords++] = (buff[0]<<16) | buff[1];
+  }
+  return (nwords>1);
+}
+
+
+unsigned int TSBSSimMPDEncoder::EncodeSingleSample(unsigned int dat)
+{
+  if(dat>fDataBitMask) { // Data too large, turn on overflow
+    dat |= fOverflowBitMask;
+  }
+  return dat&fSampleBitMask;
+}
+
+void TSBSSimMPDEncoder::UnpackSamples(unsigned int enc_data,
+    unsigned int *buff, bool *overflow, bool *valid)
+{
+  unsigned int tmp;
+  for(int k = 0; k < 2; k++) {
+    tmp = (k==0 ? (enc_data>>16) : enc_data)&0x3FFF;
+    buff[k] = tmp&0xFFF;
+    overflow[k] = tmp&0x1000;
+    valid[k] = !(tmp&0x2000);
+  }
+}
+
+void TSBSSimMPDEncoder::EncodeMPDHeader(SimEncoder::mpd_data data,
+    unsigned int *enc_data, unsigned short &nwords)
+{
+  enc_data[nwords++] =
+    ((data.nsamples<<SBS_MPD_NSAMPLES_BIT)&SBS_MPD_NSAMPLES_MASK) |
+    ((data.nstrips<<SBS_MPD_NSTRIPS_BIT)&SBS_MPD_NSTRIPS_MASK) |
+    ((data.pos<<SBS_MPD_POS_BIT)&SBS_MPD_POS_MASK) |
+    ((data.invert<<SBS_MPD_INV_BIT)&SBS_MPD_INV_MASK) |
+    (data.i2c&SBS_MPD_I2C_MASK);
+  enc_data[nwords++] =
+    ((data.adc_id<<SBS_MPD_ADC_ID_BIT)&SBS_MPD_ADC_ID_MASK) |
+    ((data.mpd_id<<SBS_MPD_MPD_ID_BIT)&SBS_MPD_MPD_ID_MASK) |
+    (data.gem_id&SBS_MPD_GEM_ID_BIT);
+}
+
+
+void TSBSSimMPDEncoder::DecodeMPDHeader(const unsigned int *hdr,
+    SimEncoder::mpd_data &data)
+{
+  // Word 1
+  data.nsamples = (*hdr&SBS_MPD_NSAMPLES_MASK)>>SBS_MPD_NSAMPLES_BIT;
+  data.nstrips  = (*hdr&SBS_MPD_NSTRIPS_MASK)>>SBS_MPD_NSTRIPS_BIT;
+  data.pos      = (*hdr&SBS_MPD_POS_MASK)>>SBS_MPD_POS_BIT;
+  data.invert   = (*hdr&SBS_MPD_INV_MASK)>>SBS_MPD_INV_BIT;
+  data.i2c      = (*hdr++&SBS_MPD_I2C_MASK);
+  // Word 2
+  data.adc_id   = (*hdr&SBS_MPD_ADC_ID_MASK)>>SBS_MPD_ADC_ID_BIT;
+  data.mpd_id   = (*hdr&SBS_MPD_MPD_ID_MASK)>>SBS_MPD_MPD_ID_BIT;
+  data.gem_id   = (*hdr&SBS_MPD_GEM_ID_MASK)>>SBS_MPD_GEM_ID_BIT;
+}
+
+bool TSBSSimMPDEncoder::DecodeMPD(SimEncoder::mpd_data &data,
+    const unsigned int *enc_data,unsigned short nwords)
+{
+  if(nwords<=1) {
+    std::cerr << "Error, not enough words to read. Expected more than one,"
+      << " got only: " << nwords << std::endl;
+    return false;
+  }
+
+  // First, decode the header
+  DecodeMPDHeader(enc_data,data);
+  int nsamples_read = 0;
+
+  unsigned int buff[2] = {0,0};
+  bool overflow[2] = { false, false};
+  bool valid[2] = {false, false};
+  for(unsigned short n = 2; n < nwords; n++) {
+    UnpackSamples(enc_data[n],buff,overflow,valid);
+    for(short k = 0; k < 2; k++) {
+      if(valid[k]) {
+        data.samples.push_back(buff[k]);
+        nsamples_read++;
+      }
+    }
+  }
+
+  if(nsamples_read != data.nstrips*data.nsamples) {
+    std::cerr << "Error, number of samples read (" << nsamples_read
+      << "), does not match number of expected samples ("
+      << data.nstrips*data.nsamples << ")." << std::endl;
+    return false;
+  }
+  return true;
+
 }
 

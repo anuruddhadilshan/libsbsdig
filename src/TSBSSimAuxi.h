@@ -206,6 +206,31 @@ private:
   ClassDef(TDigSlot,1);
 };
 
+class TDigGEMSlot : public TDigSlot {
+public:
+  TDigGEMSlot();
+  TDigGEMSlot(Int_t crate, Int_t slot, Int_t mpd_id, Int_t gem_id,
+      Int_t adc_id, Int_t i2c, Int_t pos, Int_t inv);
+  virtual ~TDigGEMSlot();
+
+  Int_t GetMPDId() { return fMPDId; }
+  Int_t GetGEMId() { return fGEMId; }
+  Int_t GetADCId() { return fADCId; }
+  Int_t GetI2C() { return fI2C; }
+  Int_t GetPos() { return fPos; }
+  Int_t GetInvert() { return fInvert; }
+
+private:
+  Int_t fMPDId;
+  Int_t fGEMId;
+  Int_t fADCId;
+  Int_t fI2C;
+  Int_t fPos;
+  Int_t fInvert;
+
+  ClassDef(TDigGEMSlot,1);
+};
+
 //______________________________
 //
 // Contains information about the logical channel, such as "digital" slot
@@ -255,7 +280,10 @@ class TDetInfo : public TObject{
   void SetDigInfo(TDigInfo diginfo){fDigInfo = diginfo;};
 
   Int_t AddSlot(Int_t crate, Int_t slot, Int_t lo, Int_t hi);
+  Int_t AddGEMSlot(Int_t crate, Int_t slot, Int_t mpd_id, Int_t gem_id,
+    Int_t adc_id, Int_t i2c, Int_t pos, Int_t invert);
   TDigChannelInfo FindLogicalChannelSlot(Int_t lch);
+  TDigGEMSlot& GetGEMSlot(Int_t lch) { return fGEMSlots[lch]; };
   void LoadChannelMap(std::vector<int> chanmap, int chanmap_start);
   Bool_t IsGEM() { return fDetType == kGEM; };
   TGEMSBSDBManager* GetGEMDB() { return fGEMDB; }
@@ -276,6 +304,7 @@ class TDetInfo : public TObject{
   std::vector<TGeoInfo> fGeoInfo;
   TDigInfo fDigInfo;
   std::vector<TDigSlot> fModSlots;
+  std::vector<TDigGEMSlot> fGEMSlots;
   std::map<int,std::pair<int,int> > fDetMap;
   TGEMSBSDBManager *fGEMDB;
   

@@ -56,6 +56,9 @@ TSBSSimDecoder::TSBSSimDecoder() : fCheckedForEnabledDetectors(false)
   DefineVariables();
 
   gSystem->Load("libEG.so");  // for TDatabasePDG
+  // Get MPD encoder for GEMs
+  fEncoderMPD = dynamic_cast<TSBSSimMPDEncoder*>(
+      TSBSSimDataEncoder::GetEncoderByName("mpd"));
 }
 
 //-----------------------------------------------------------------------------
@@ -286,10 +289,10 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   for(size_t d = 0; d < fDetNames.size(); d++) {
     for( std::map<Decoder::THaSlotData*, std::vector<UInt_t> >::iterator it =
         detmaps[d].begin(); it != detmaps[d].end(); ++it) {
-      unsigned short data_type = 0, chan_mult = 0;
-      unsigned int nwords = 0;
-      TSBSSimDataEncoder::DecodeHeader(it->second.front(),data_type,chan_mult,
-          nwords);
+      //unsigned short data_type = 0, chan_mult = 0;
+      //unsigned int nwords = 0;
+      //TSBSSimDataEncoder::DecodeHeader(it->second.front(),data_type,chan_mult,
+      //    nwords);
       if(it->first->GetModule()==0) {
         if(fDebug>0) {
           std::cout << "No data available for detector "
@@ -340,6 +343,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
   unsigned int nwords = 0;
   unsigned short data_type = 0, chan = 0, chan_mult = 0;
   int lchan;
+  SimEncoder::mpd_data tmp_mpd;
 
   if(detdata.fDetID == detid && detdata.fData.size() > 1) { // Data to process
     int mod =  detdata.fChannel;
@@ -347,17 +351,32 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*, std::vector<
     // Loop over all raw data in this event
     UInt_t j = 0;
     while(j < detdata.fData.size() ) {
-    //for( UInt_t j = 0; j < detdata.fData.size(); j++ ) {
       // Identify the "logical" channel number for this event
-      // based on the first integer in the raw data
       TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan_mult,
           nwords);
-      lchan = mod + chan_mult*detInfo.NChan();
-      // Get information about this logical channel from TDetInfo
-      TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
-      crate = chinfo.crate;
-      slot = chinfo.slot;
-      chan = chinfo.ch; // Now this is the channel in the simulated VME module
+      // The channel mapping works different for GEMs vs all other detectors
+      if(detInfo.DetType() != kGEM) {
+        lchan = mod + chan_mult*detInfo.NChan();
+        // Get information about this logical channel from TDetInfo
+        TDigChannelInfo chinfo = detInfo.FindLogicalChannelSlot(lchan);
+        crate = chinfo.crate;
+        slot = chinfo.slot;
+        chan = chinfo.ch; // Now this is the channel in the simulated VME module
+      } else {
+        fEncoderMPD->DecodeMPDHeader(&(detdata.fData[j]),tmp_mpd);
+        // First, decode the header information
+        TDigGEMSlot gemslot = detInfo.GetGEMSlot(chan_mult);
+        crate = gemslot.GetCrate();
+        slot  = gemslot.GetSlot();
+        tmp_mpd.mpd_id = gemslot.GetMPDId();
+        tmp_mpd. gem_id = gemslot.GetGEMId();
+        tmp_mpd. adc_id = gemslot.GetADCId();
+        tmp_mpd. i2c = gemslot.GetI2C();
+        tmp_mpd. pos = gemslot.GetPos();
+        tmp_mpd. invert = gemslot.GetInvert();
+        // And now, re-encode the MPD header
+        fEncoderMPD->EncodeMPDHeader(tmp_mpd,&(detdata.fData[j]),chan);
+      }
       Decoder::THaSlotData *sldat = 0;
       if( crate >= 0 || slot >=  0 ) {
         sldat = crateslot[idx(crate,slot)];
@@ -399,12 +418,14 @@ void TSBSSimDecoder::CheckForEnabledDetectors()
   CheckForDetector("hodo", HODO_UNIQUE_DETID);
   CheckForDetector("ps", BBPS_UNIQUE_DETID);
   CheckForDetector("grinch", GRINCH_UNIQUE_DETID);
+  CheckForDetector("bbgem", BBGEM_UNIQUE_DETID);
   fCheckedForEnabledDetectors = true;
 }
 
 void TSBSSimDecoder::CheckForDetector(const char *detname, short id)
 {
   if(fManager->IsDetInfoAvailable(detname)) {
+    std::cerr << "Enabling detector: " << detname << std::endl;
     fDetNames.push_back(detname);
     fDetIDs.push_back(id);
   }

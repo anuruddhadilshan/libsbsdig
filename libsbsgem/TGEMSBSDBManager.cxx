@@ -40,15 +40,17 @@ void TGEMSBSDBManager::InitializeGEMs()
   fNChan = 0;
   for(Int_t plane = 0; plane < GetNGEMPlane(); plane++) {
     for(Int_t mod = 0; mod < GetNModule(plane); mod++) {
-      dGEM = new TGEMSBSGEMChamber(Form("plane%d.module%d",
-            /*GetPrefix().c_str(),*/plane,mod),Form(
-            "Test chamber for %s on Plane: %d, Module: %d",
-            fDetName.c_str(),plane,mod));
+      dGEM = new TGEMSBSGEMChamber(Form("%s.%s",
+            /*GetPrefix().c_str(),*/fChambers[plane].c_str(),
+            fModules[plane][mod].c_str()),Form("%s: SimGEMChamber on %s.%s",
+            fDetName.c_str(),fChambers[plane].c_str(),
+            fModules[plane][mod].c_str()));
       dGEM->SetApparatus(fSpec);
       if(dGEM->Init()) { // true == error
         std::cerr << "ERROR!: TGEMSBSDBManager::InitializeGEMs() error "
-          " error initializing GEM: " << Form("%s.plane%d.module%d",
-              fPrefix.c_str(),plane,mod) << std::endl;
+          " error initializing GEM: " << Form("%s.%s.%s",
+              fPrefix.c_str(),fChambers[plane].c_str(),
+              fModules[plane][mod].c_str()) << std::endl;
       } else {
         // Get total number of strips (channels)
         fNChan += dGEM->GetNStripTotal();
@@ -62,6 +64,7 @@ void TGEMSBSDBManager::InitializeGEMs()
 
 
 //______________________________________________________________
+/*
 static bool OpenInput( const string& filename, ifstream& ifs )
 {
   // Open input stream 'ifs' for file 'filename'.
@@ -101,6 +104,7 @@ static bool OpenInput( const string& filename, ifstream& ifs )
   }
   return false;
 }
+*/
 
 //______________________________________________________________
 void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
@@ -109,8 +113,9 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
   //Instead, "Plane-Module" is introduced. "Plane" means tracking plane and 
   //"Module" means a independent GEM module which is a sub division of the "Plane"
   
-    ifstream input;
-    if ( !OpenInput(fileName,input) ){
+    FILE *input = OpenFile( fileName.c_str(), GetInitDate() );
+    //if ( !OpenInput(fileName,input, GetInitDate()) ){
+    if(!input) {
         cout<<"cannot find general information file "<<fileName
             <<". Exiting the program"<<endl;
         exit(0);
@@ -118,15 +123,15 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
     //const string prefix = "generalinfo.";
     const string prefix = fPrefix + ".info.";
 
-    std::vector<Int_t>* NModule = new vector<Int_t>;
+    //std::vector<Int_t>* NModule = new vector<Int_t>;
     DBRequest request[] = {
         {"do_map_sector",       &fDoMapSector         , kInt,    0, 1},
         {"self_define_sector",  &fDoSelfDefinedSector , kInt,    0, 1},
         {"sector_mapped",       &fMappedSector        , kInt,    0, 1},
 	{"nchamber",            &fNChamber            , kInt,    0, 1},
         {"nsector",             &fNSector             , kInt,    0, 1},
-	{"nplane",              &fNGEMPlane           , kInt,    0, 1},
-	{"nmodule",             NModule               , kIntV        },
+	//{"nplane",              &fNGEMPlane           , kInt,    0, 1},
+	//{"nmodule",             NModule               , kIntV        },
         {"nreadout",            &fNReadOut            , kInt,    0, 1},
         {"gem_drift_id",        &fGEMDriftID          , kInt,    0, 1},
         {"gem_copper_front_id", &fGEMCopperFrontID    , kInt,    0, 1},
@@ -153,9 +158,10 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
         { 0 }
     };
 
-    int err = LoadDB( input, request,  prefix);
+    int err = LoadDB( input, GetInitDate(), request,  prefix.c_str());
     if( err ) {cout<<"Load DB error"<<endl;exit(2);} 
     
+    /*
     if(fNGEMPlane!=(int)NModule->size()) {
       cout<<"Check consistency of number of GEM Planes"<<endl;
       exit(2);
@@ -173,13 +179,22 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
 	    nGEMtot++;
 	  }
       }
+    for (int i=0; i<GetNGEMPlane(); i++){
+      vector<GeoInfo> thisInfo;
+      thisInfo.clear();
+      fPMGeoInfo[i] = thisInfo;
+    }
+
+    //delete NModule;
+
+    */
    
     
     for (int i=0; i<fNSigParticle; i++){
         ostringstream signal_prefix(prefix, ios_base::ate);
         signal_prefix<<"signal"<<i+1<<".";
         
-        err = LoadDB(input, signalRequest, signal_prefix.str());
+        err = LoadDB(input, GetInitDate(), signalRequest, signal_prefix.str().c_str());
         
         fSigPID.push_back(pid);
         fSigTID.push_back(tid);
@@ -187,33 +202,48 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
 	if( err ) exit(2); 
     }
         
-    for (int i=0; i<GetNGEMPlane(); i++){
-      vector<GeoInfo> thisInfo;
-      thisInfo.clear();
-      fPMGeoInfo[i] = thisInfo;
-    }
-
-    delete NModule;
 
     //fModulesPerChamber = fModulesPerReadOut * fNReadOut;
     
     // fChambersPerCrate = 
     // (TGEMSBSSimDecoder::GetMAXSLOT()/fModulesPerChamber/fNChamber) * fNChamber;
-    input.close();
+    //input.close();
+    fclose(input);
 }
 
 void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
 {
   //const string& fileName = "db_"+prefix+".dat";
-  const string prefix = fSpecName+"."+fDetName;
+  const string prefix = fSpecName+"."+fDetName+".";
     
-  ifstream input;
-  if( !OpenInput(fileName,input) ) {
+  //ifstream input;
+  FILE *input = OpenFile(fileName.c_str(), GetInitDate());;
+  //if( !OpenInput(fileName,input) ) {
+  if(!input) {
     cout<<"cannot find geometry file "<<fileName
 	<<". Exiting the program"<<endl;
     exit(0);
+  } else {
+    cerr << "Opened file " << fileName << " yay!!!" << std::endl;
   }
-      
+
+  // First, get the number of chambers
+
+  std::string chambers = "";
+  DBRequest chambers_request[] = {
+    // Chambers are called "Tracker" planes in this simulation, apparently
+    {"chambers", &chambers, kString, }, ///< REQUIRED!
+    { 0 }
+  };
+  int err = LoadDB(input, GetInitDate(), chambers_request, prefix.c_str());
+  if(err) {
+    std::cerr << "Got this error: " << err << std::endl;
+    exit(2);
+    return;
+  }
+  fChambers.clear();
+  fChambers = THaAnalysisObject::vsplit(chambers);
+
   GeoInfo thisGeo;
   
   DBRequest request[] = {
@@ -228,36 +258,77 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
     { 0 }
   };
   
+  std::vector<Int_t> x_chanmap;
+  std::vector<Int_t> y_chanmap;
+  fChanMap.clear();
   DBRequest plane_request[] = {
     { "x.stripangle",     &thisGeo.stripangle_u,   kDouble, 0, 1},
     { "x.pitch",          &thisGeo.pitch_u,        kDouble, 0, 1},
     { "y.stripangle",     &thisGeo.stripangle_v,   kDouble, 0, 1},
     { "y.pitch",          &thisGeo.pitch_v,        kDouble, 0, 1},
+    { "x.chanmap",        &x_chanmap,      kIntV, 0, true},
+    { "y.chanmap",        &y_chanmap,      kIntV, 0, true},
     { 0 }
   };
+  std::string modules;
+  DBRequest modules_request[] = {
+    {"modules", &modules, kString, 0, false }, ///< REQUIRED!
+    { 0 }
+  };
+  fNGEMPlane = fChambers.size();
+  fModules.resize(fNGEMPlane);
+  int nGEMtot=0;
+  fChanMap.clear();
   for (int i=0; i<fNGEMPlane; i++){
-    map<int, vector<GeoInfo> >::iterator it = fPMGeoInfo.find(i);
-    if (it == fPMGeoInfo.end()) { cout<<"unexpected GEM Plane "<<i<<endl; }
+    vector<GeoInfo> thisInfoVec;
+    fPMGeoInfo[i] = thisInfoVec;
+    ostringstream plane_prefix(prefix, ios_base::ate);
+    plane_prefix<<fChambers[i]<<".";
+    err = LoadDB(input, GetInitDate(), modules_request, plane_prefix.str().c_str());
+    if( err) exit(2);
+    fModules[i] = THaAnalysisObject::vsplit(modules);
+    fNModule.push_back(fModules[i].size());
     
     for (int j=0; j<fNModule[i]; j++){
-      ostringstream plane_prefix(prefix, ios_base::ate);
+      fmPMtoIgem[i][j]=nGEMtot;
+      fmIgemtoPlane[nGEMtot]=i;
+      fmIgemtoModule[nGEMtot]=j;
+      nGEMtot++;
+
+      ostringstream module_prefix(plane_prefix.str(), ios_base::ate);
       //      int idx = j;
-      plane_prefix<<".plane"<<i<<".module"<<j<<".";
+      module_prefix<<fModules[i][j]<<".";
       
-      int err = LoadDB(input, request, plane_prefix.str());
+      int err = LoadDB(input, GetInitDate(), request, module_prefix.str().c_str());
       if( err ) exit(2);
      
-      err = LoadDB(input, plane_request, plane_prefix.str());
+      x_chanmap.clear();
+      y_chanmap.clear();
+      err = LoadDB(input, GetInitDate(), plane_request, module_prefix.str().c_str());
       if (err) exit(2);
+
+      // Now process the channel map
+      for(std::vector<Int_t>::iterator it = x_chanmap.begin(); it !=
+          x_chanmap.end(); it++) {
+        fChanMap.push_back(*it);
+      }
+      for(std::vector<Int_t>::iterator it = y_chanmap.begin(); it !=
+          y_chanmap.end(); it++) {
+        fChanMap.push_back(*it);
+      }
       
       fPMGeoInfo[i].push_back(thisGeo);
     }
   }
-  input.close();
+
+  // And now that we are done, process the channel map
+  //input.close();
+  fclose(input);
 }
 
 
 
+/*
 //______________________________________________________________
 string TGEMSBSDBManager::FindKey( ifstream& inp, const string& key ) const
 {
@@ -279,6 +350,7 @@ string TGEMSBSDBManager::FindKey( ifstream& inp, const string& key ) const
   }
   return empty;
 }
+*/
 //_________________________________________________________________________
 bool TGEMSBSDBManager::CheckIndex(int i, int j, int k) const//(plane, module, readoutAxis)
 {
@@ -295,6 +367,7 @@ bool TGEMSBSDBManager::CheckIndex(int i, int j, int k) const//(plane, module, re
     }
     return true;
 }
+/*
 //_________________________________________________________________
 int TGEMSBSDBManager::LoadDB( ifstream& inp, DBRequest* request, const string& prefix )
 {
@@ -308,6 +381,9 @@ int TGEMSBSDBManager::LoadDB( ifstream& inp, DBRequest* request, const string& p
     if( !val.empty() ) {
       istringstream sv(val);
       switch(item->type){
+        case kString:
+          *((std::string*)item->var) = val;
+          break;
         case kDouble:
           sv >> *((double*)item->var);
           break;
@@ -338,6 +414,7 @@ int TGEMSBSDBManager::LoadDB( ifstream& inp, DBRequest* request, const string& p
   }
   return 0;
 }
+*/
 //_____________________________________________________________________
 int TGEMSBSDBManager::GetSigPID(unsigned int i) const
 {

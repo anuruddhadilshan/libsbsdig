@@ -19,7 +19,7 @@ geninfo.bb.signal.pid = 11
 geninfo.bb.signal.tid = 1
 geninfo.bb.ndets = 4
 #geninfo.bb.detnames = sh ps hodo grinch 
-geninfo.bb.detnames = sh ps grinch gem
+geninfo.bb.detnames = sh ps grinch bbgem
 #gem 
 # For the moment GEM has its own thing. 
 # While we should be thoughtful of how to include it in the future, 

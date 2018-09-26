@@ -75,7 +75,7 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   sh->SetDebug(debuglevel);
   digitizer->AddDetector(sh);
 
-  TSBSSimGEM *bb_gem = new TSBSSimGEM("gem", 40);
+  TSBSSimGEM *bb_gem = new TSBSSimGEM("bbgem", 40);
   bb_gem->SetDebug(debuglevel);
   digitizer->AddDetector(bb_gem);
   
