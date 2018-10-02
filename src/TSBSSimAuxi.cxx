@@ -530,15 +530,23 @@ void TDetInfo::LoadChannelMap(std::vector<int> chanmap, int start)
   int lch = 0;
   int nmods = fModSlots.size();
   int nch = 0;
-  int lch_off = 0;
+  int lch_off = -fNchan;
   for(int i = 0; i < nmods; i++) {
     nch = fModSlots[i].GetNchan();
     for(int k = 0; k < nch; k++) {
-      if(lch>=int(fNchan)) {
+      if(lch%int(fNchan)==0) {
         lch_off += fNchan;
       }
       //fDetMap[(lch++)] = std::pair<int,int>(i,k);
-      fDetMap[ chanmap[lch++] - start - lch_off] = std::pair<int,int>(i,k);
+      /*
+      std::cerr << chanmap[lch] - start + lch_off << " = "
+        << i << ", " << k  << " :: chanmap[" << lch
+        << "] : " << chanmap[lch] << ", start: " << start
+        << ", lch_off: " << lch_off
+        << std::endl;
+        */
+      //fDetMap[ lch++ - start ] = std::pair<int,int>(i,k);
+      fDetMap[ chanmap[lch++] - start + lch_off] = std::pair<int,int>(i,k);
     }
   }
 }
