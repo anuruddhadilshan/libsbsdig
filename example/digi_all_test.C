@@ -51,13 +51,13 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
   digitizer->AddDetector(hcal);
   
-  TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  hodo->SetDebug(debuglevel);
-  digitizer->AddDetector(hodo);
+  //TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
+  //hodo->SetDebug(debuglevel);
+  //digitizer->AddDetector(hodo);
   
-  TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  cdet->SetDebug(debuglevel);
-  digitizer->AddDetector(cdet);
+  //TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
+  //cdet->SetDebug(debuglevel);
+  //digitizer->AddDetector(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
   grinch->SetDebug(debuglevel);

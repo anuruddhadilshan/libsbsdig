@@ -14,6 +14,25 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree = new TTree("digtree","");
   //fOutTree->Branch("fEvents",&fEvent);
   fOutTree->Branch("event",&fEvent);
+  fOutTree->Branch("RunID",&fEvent->fRunID);
+  fOutTree->Branch("EvtID",&fEvent->fEvtID);
+  fOutTree->Branch("Weight",&fEvent->fWeight);
+  fOutTree->Branch("NSignal",&fEvent->fNSignal);
+
+  fOutTree->Branch("SimDetData_size",&fEvent->NSimDetData);
+  fOutTree->Branch("SimDetData_DetID",&fEvent->SimDetID);
+  fOutTree->Branch("SimDetData_Channel",&fEvent->SimDetChannel);
+  fOutTree->Branch("SimDetData_DataType",&fEvent->SimDetDataType);
+  fOutTree->Branch("SimDetData_Ndata",&fEvent->SimDetNData);
+  fOutTree->Branch("SimDetData_Data",&fEvent->SimDetData);
+  fOutTree->Branch("DetData_size",&fEvent->NDetData);
+  fOutTree->Branch("DetData_DetID",&fEvent->DetID);
+  fOutTree->Branch("DetData_Channel",&fEvent->DetChannel);
+  fOutTree->Branch("DetData_Ndata",&fEvent->DetNData);
+  fOutTree->Branch("DetData_Data",&fEvent->DetData);
+  
+  //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
+  //fOutTree->Branch("DetectorData",&fEvent->fSimDetectorData);
 }
 
 TSBSSimDigitizer::~TSBSSimDigitizer()

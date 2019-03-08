@@ -33,6 +33,21 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   fNSignal = 0;
   fDetectorData.clear();
   fSimDetectorData.clear();
+  
+  NSimDetData = 0;
+  SimDetID.clear();
+  SimDetID.clear();
+  SimDetChannel.clear();
+  SimDetDataType.clear();
+  SimDetNData.clear();
+  SimDetData.clear();
+  
+  NDetData = 0;
+  DetID.clear();
+  DetChannel.clear();
+  // DetDataType;
+  DetNData.clear();
+  DetData.clear();
 }
 
 //-----------------------------------------------------------------------------

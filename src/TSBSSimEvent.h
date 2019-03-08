@@ -42,6 +42,7 @@ public:
   Double_t  fWeight;              // Event weight
   Int_t     fNSignal;             // Number of clusters from trigger track (signal)
   
+  
   struct SimDetectorData {
     Short_t fDetID;  // Source detector number
     Short_t fChannel; // Channel number for this hit
@@ -59,7 +60,21 @@ public:
   };
   std::vector<DetectorData> fDetectorData;
   std::vector<SimDetectorData> fSimDetectorData;
-
+  /**/
+  Int_t NSimDetData;
+  std::vector<Short_t> SimDetID;
+  std::vector<Short_t> SimDetChannel;
+  std::vector<Short_t> SimDetDataType;
+  std::vector<Short_t> SimDetNData;
+  std::vector< std::vector<double> > SimDetData;
+  
+  Int_t NDetData;
+  std::vector<Short_t> DetID;
+  std::vector<Short_t> DetChannel;
+  //std::vector<Short_t> DetDataType;
+  std::vector<Short_t> DetNData;
+  std::vector< std::vector<uint32_t> > DetData;
+  
   ClassDef(TSBSSimEvent, 6) // Simulated data for one event
 };
 

@@ -17,10 +17,10 @@ ANAINCDIRS  := $(wildcard  $(addprefix $(ANALYZER)/, include src hana_decode han
 ifeq ($(strip $(ANAINCDIRS)),)
   $(error No Analyzer header files found. Check $$ANALYZER)
 endif
-SBSINCDIRS = $(SBS_ANALYSIS)
-ifeq ($(strip $(SBSINCDIRS)),)
-  $(error No Analyzer header files found. Check $$SBS_ANALYSIS)
-endif
+#SBSINCDIRS = $(SBS_ANALYSIS)
+#ifeq ($(strip $(SBSINCDIRS)),)
+#  $(error No Analyzer header files found. Check $$SBS_ANALYSIS)
+#endif
 
 
 #------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ endif
 # Some of the analyzer include dirs conflict with headers in
 # EVIO
 SOLINCLUDE += $(addprefix -I, $(ANAINCDIRS) )
-SOLINCLUDE += $(addprefix -I, $(SBSINCDIRS) )
+#SOLINCLUDE += $(addprefix -I, $(SBSINCDIRS) )
 
 #------------------------------------------------------------------------------
 

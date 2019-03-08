@@ -194,21 +194,23 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   bool any_events = false;
   double pulsenorm = 0;
   double max_val = pow(2,fDetInfo.DigInfo().ADCBits());
-  TSBSSimEvent::DetectorData data;
+  //TSBSSimEvent::DetectorData data;
+  std::vector<uint32_t> data;
   int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    data.fData.clear();
+    //data.fData.clear();
+    data.clear();
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
         *qe/spe_unit;
       fSignals[m].Digitize(fSPE,pulsenorm,0.0,max_val);
       any_events = true;
-      data.fDetID = UniqueDetID();
-      data.fChannel = m;
+      //data.fDetID = UniqueDetID();
+      //data.fChannel = m;
       mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
-      CopyEncodedData(fEncoderADC,mult++,data.fData);
+      CopyEncodedData(fEncoderADC,mult++,data);//.fData);
       //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
       //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
       //for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
@@ -229,9 +231,18 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       // Now add the TDC if the threshold was met
       if(fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
             fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
-        CopyEncodedData(fEncoderTDC,mult++,data.fData);
+        CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
-      event.fDetectorData.push_back(data);
+      
+      event.DetID.push_back(Short_t(UniqueDetID()));
+      event.DetChannel.push_back(Short_t(m));
+      event.DetNData.push_back(Short_t(data.size()));
+      event.DetData.push_back(data);
+      event.NDetData++;
+
+      //event.fDetectorData.push_back(data);
+      //data.fData.clear();
+      data.clear();
     }
   }
   SetHasDataFlag(any_events);

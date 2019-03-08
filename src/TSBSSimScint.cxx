@@ -126,8 +126,8 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
   
-  TSBSSimEvent::DetectorData data;
-  TSBSSimEvent::SimDetectorData simdata;
+  //TSBSSimEvent::DetectorData data;
+  //TSBSSimEvent::SimDetectorData simdata;
 
   //UInt_t TDCword;
   
@@ -145,17 +145,45 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
   //short chanfirstbit = fDetInfo.DigInfo().TDCBits()+Short_t(edgebitpos==fDetInfo.DigInfo().TDCBits());
 
   SimEncoder::adc_data adc_data;
+  std::vector<uint32_t> data;
+  std::vector<double> simdata;
   short mult = 0; // logical channel multiplier (in case of ADC + TDC together)
 
   for(size_t m = 0; m < fSignals.size(); m++) {
-    data.fData.clear();
-    simdata.fData.clear();
+    //data.fData.clear();
+    //simdata.fData.clear();
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
-      data.fDetID = UniqueDetID();
-      data.fChannel = m;
+      //data.fDetID = UniqueDetID();
+      //data.fChannel = m;
       
+      event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel.push_back(Short_t(m));
+      event.SimDetDataType.push_back(1);
+      event.SimDetNData.push_back(1);
+      simdata.push_back(fSignals[m].Npe());
+      event.SimDetData.push_back(simdata);
+      event.NSimDetData++;
+      simdata.clear();
+      
+      event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel.push_back(Short_t(m));
+      event.SimDetDataType.push_back(2);
+      event.SimDetNData.push_back(Short_t(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize()));
+      for(size_t i = 0; i<fSignals[m].LeadTimesSize(); i++){
+	simdata.push_back(fSignals[m].LeadTime(i));
+	
+	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;
+      }
+      for(size_t i = 0; i<fSignals[m].TrailTimesSize(); i++){
+	simdata.push_back(fSignals[m].TrailTime(i));
+	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
+      }
+      event.SimDetData.push_back(simdata);
+      event.NSimDetData++;
+      simdata.clear();
+
       //define convention for type:
       // 0: ADC
       // 1: TDC
@@ -165,9 +193,9 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
-        CopyEncodedData(fEncoderADC,mult++,data.fData);
+        CopyEncodedData(fEncoderADC,mult++,data);//.fData);
 
-	simdata.fData.clear();
+	//simdata.fData.clear();
       }
       // Fill TDC
       if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  
@@ -221,11 +249,20 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       if(fEncoderTDC) {
         fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
-        CopyEncodedData(fEncoderTDC,mult++,data.fData);
+        CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
-      event.fDetectorData.push_back(data);
-      data.fData.clear();
       
+      event.DetID.push_back(Short_t(UniqueDetID()));
+      event.DetChannel.push_back(Short_t(m));
+      event.DetNData.push_back(Short_t(data.size()));
+      event.DetData.push_back(data);
+      event.NDetData++;
+
+      //event.fDetectorData.push_back(data);
+      //data.fData.clear();
+      data.clear();
+     
+      /*
       //Now take care of simulated data
       simdata.fDetID = UniqueDetID();
       simdata.fChannel = m;
@@ -271,6 +308,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       }
       event.fSimDetectorData.push_back(simdata);
       simdata.fData.clear();
+      */
     }
   }
   SetHasDataFlag(any_events);
