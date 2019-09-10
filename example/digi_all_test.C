@@ -36,7 +36,7 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   digitizer->SetDebug(debuglevel);
   
   // First load the input root file
-  TSBSGeant4File *f = new TSBSGeant4File("/work/halla/sbs/efuchey/gmn13.5_elastic_sig_20180709_22/elastic_0.root");
+  TSBSGeant4File *f = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20190725_15/elastic_0.root");
   f->SetSource(0);
   //TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
   //f_b->SetSource(1);

@@ -44,6 +44,7 @@ public:
   
   
   struct SimDetectorData {
+    //Short_t fDetID;  // Source detector number
     Short_t fDetID;  // Source detector number
     Short_t fChannel; // Channel number for this hit
     Short_t fDataType; // Data type for this hit: 0: Npe, 1: Time, 2: SumEdep

@@ -2,8 +2,10 @@
 bb.ps.dettype = ECal
 bb.ps.unique_id = 10
 bb.ps.nchan = 54
-bb.ps.chan_per_slot = 128
-bb.ps.slot_per_crate = 16
+bb.ps.first_crate = 0
+bb.ps.first_slot = 0
+bb.ps.chan_per_slot = 64
+bb.ps.slot_per_crate = 20
 
 #PS geometry info
 geo.bb.ps.nrows = 27

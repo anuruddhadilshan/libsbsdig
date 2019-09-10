@@ -2,8 +2,11 @@
 #cdet general info
 sbs.cdet.dettype = Scint
 sbs.cdet.unique_id = 31
-sbs.cdet.chan_per_slot = 128
-sbs.cdet.slot_per_crate = 16
+
+sbs.cdet.first_crate = 8
+sbs.cdet.first_slot = 0
+sbs.cdet.chan_per_slot = 96
+sbs.cdet.slot_per_crate = 20
 sbs.cdet.nchan = 2352
 sbs.cdet.nplanes = 2
 sbs.cdet.nmodules = 3 3

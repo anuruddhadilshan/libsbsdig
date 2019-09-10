@@ -85,6 +85,7 @@ Double_t TGEMSBSSimTrack::RcFitPhiDir() const
 }
 */
 
+/*
 //-----------------------------------------------------------------------------
 TGEMSBSECalCluster::TGEMSBSECalCluster()
   : fEnergy(0), fXPos(0), fYPos(0), fTime(0)
@@ -103,6 +104,7 @@ TGEMSBSSimEvent::TGEMSBSSimEvent()
     fSectorsMapped(false), fSignalSector(0)
 {
 }
+*/
 
 //-----------------------------------------------------------------------------
 TGEMSBSSimEvent::TGEMSBSSimEvent( UInt_t ntracks )
@@ -145,7 +147,7 @@ void TGEMSBSSimEvent::Clear( Option_t* opt )
   fGEMStrips.clear();
  
   if( sopt.Contains("all",TString::kIgnoreCase) ) {
-    fECalClusters.clear();   
+    //fECalClusters.clear();   
     if( fMCTracks ) {
       fMCTracks->Clear(opt);
     }
@@ -241,4 +243,4 @@ void TGEMSBSSimEvent::Print( Option_t* opt ) const
 //-----------------------------------------------------------------------------
 ClassImp(TGEMSBSSimEvent)
 ClassImp(TGEMSBSSimTrack)
-ClassImp(TGEMSBSECalCluster)
+//ClassImp(TGEMSBSECalCluster)

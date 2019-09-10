@@ -1,8 +1,10 @@
 950101
 bb.sh.dettype = ECal
 bb.sh.unique_id = 11
-bb.sh.chan_per_slot = 128
-bb.sh.slot_per_crate = 16
+bb.sh.first_crate = 0
+bb.sh.first_slot = 1
+bb.sh.chan_per_slot = 64
+bb.sh.slot_per_crate = 20
 bb.sh.nchan = 189
 
 #SH geometry info

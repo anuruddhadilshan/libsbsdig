@@ -3,6 +3,8 @@
 bb.grinch.dettype = Cher
 bb.grinch.unique_id = 20
 bb.grinch.nchan = 510
+bb.grinch.first_crate = 6
+bb.grinch.first_slot = 0
 bb.grinch.chan_per_slot = 128
 bb.grinch.slot_per_crate = 16
 

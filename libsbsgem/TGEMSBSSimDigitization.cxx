@@ -400,8 +400,8 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
   // Randomize the event time for background events
   Float_t event_time=0,time_zero=0;
   // Trigger time jitter, This should be a fixed value for different hits in a certain event.
-  Double_t trigger_jitter = fTrnd.Gaus(0,fTriggerJitter);
-  fTrnd.Uniform(-fAPVTimeJitter/2, fAPVTimeJitter/2);
+  Double_t trigger_jitter = fTrnd.Gaus(0,fTriggerJitter)//;
+    +fTrnd.Uniform(-fAPVTimeJitter/2, fAPVTimeJitter/2);
 
   for (UInt_t ih = 0; ih < nh; ++ih) {  
     UInt_t igem = gdata.GetHitChamber (ih);
@@ -432,7 +432,8 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
       // For background data, uniformly randomize event time between
       // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
       // Not using HitTime from simulation file but randomize HitTime to cycle use background files
-      event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
+      event_time = fTrnd.Uniform(-fGateWidth, 6*fEleSamplingPeriod);
+      //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
     } else {
       // Signal events occur at t = 0, 
       event_time = gdata.GetHitTime(ih);
@@ -933,7 +934,7 @@ TGEMSBSSimDigitization::AvaModel(const Int_t ic,
       Double_t us = 0.;
       for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
 	Double_t integralY_tmp = 0;
-	int kx = j * fXIntegralStepsPerPitch * ny;
+	int kx = (j * fXIntegralStepsPerPitch + k) * ny;
 	for( Int_t jy = ny; jy != 0; --jy )
 	  integralY_tmp += fSumA[kx++];
 	

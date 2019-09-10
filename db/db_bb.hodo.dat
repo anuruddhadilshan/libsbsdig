@@ -2,6 +2,8 @@
 #hodoscope general info
 bb.hodo.dettype = Scint
 bb.hodo.nchan = 180
+bb.grinch.first_crate = 5
+bb.grinch.first_slot = 0
 bb.hodo.chan_per_slot = 128
 bb.hodo.slot_per_crate = 12
 bb.hodo.nplanes = 1

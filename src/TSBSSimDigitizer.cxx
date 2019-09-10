@@ -148,6 +148,8 @@ int TSBSSimDigitizer::Process(int max_events)
   }
   */
   //go through the file stack and open all of them...
+  // determine which is primary:
+  Double_t PrimWeight = 0;
   for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
     int res = fG4FileStack_.at(i_f)->Open();
     if( res != 1) {
@@ -156,6 +158,7 @@ int TSBSSimDigitizer::Process(int max_events)
 		<< "Failed with error code: " << res << std::endl;
       return 0;
     }
+    if(fG4FileStack_.at(i_f)->GetSource()==0)PrimWeight = fG4FileWeights.at(i_f);
   }
   
   if ( max_events <= 0 || max_events > fG4FileStack_.at(0)->GetEntries() )
@@ -181,8 +184,13 @@ int TSBSSimDigitizer::Process(int max_events)
       cout << " i_f "  << i_f << endl;
       nevt_b = 0;
       //f_b = fG4FileStack.at(i_f);
-      while( f->ReadNextEvent(fDebug) && 
-	     nevt_b<(fG4FileWeights.at(i_f)/fG4FileWeights.at(0)) ) {//Keep adding as many events as indicated by the weight
+      //if(fG4FileWeights.at(i_f)>=0){}
+      
+      // while( f->ReadNextEvent(fDebug) && 
+      // 	     nevt_b<(fG4FileWeights.at(i_f)/PrimWeight) ) {//Keep adding as many events as indicated by the weight
+      while( f->ReadNextEvent(fDebug) ) {
+	if(fG4FileWeights.at(i_f)>=0 && 
+	   nevt_b>=(fG4FileWeights.at(i_f)/PrimWeight) )break;
 	// Loop through all detectors and have them parse data vector
 	for(size_t det = 0; det < fDetectors.size(); det++) {
 	  if(fDebug>=3){
@@ -202,8 +210,6 @@ int TSBSSimDigitizer::Process(int max_events)
       }
       i_f++;
     }
-    
-    
     
     // Now digitize all detectors
     for(size_t det = 0; det < fDetectors.size(); det++) {

@@ -40,7 +40,7 @@ private:
   std::vector< TSBSGeant4File* > fG4FileStack_;
   // vector of vector if strings: 
   // the global vector contains the type of file, the inner vector contains the list of names of files.
-  std::vector< std::vector<TString> > fG4FileStack;
+  //std::vector< std::vector<TString> > fG4FileStack;
   std::vector< UInt_t > fG4FileWeights;
   
   

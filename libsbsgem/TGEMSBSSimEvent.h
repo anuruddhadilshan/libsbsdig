@@ -51,6 +51,7 @@ public:
   ClassDef(TGEMSBSSimTrack,3)  // A MC physics track in SBS
 };
 
+/*
 //
 class TGEMSBSECalCluster : public TObject {
  public:
@@ -76,6 +77,7 @@ class TGEMSBSECalCluster : public TObject {
   
   ClassDef(TGEMSBSECalCluster,1)  // A MC physics track in SBS
 };
+*/
 
 //-----------------------------------------------------------------------------
 // Kludgy hardcoded parameters necessary because I can't get ROOT to allocate
@@ -169,7 +171,7 @@ public:
   
   std::vector<DigiGEMStrip> fGEMStrips; // Digitized strip amplitudes of the GEMs
   
-  std::vector<TGEMSBSECalCluster> fECalClusters; // ECal clusters
+  //std::vector<TGEMSBSECalCluster> fECalClusters; // ECal clusters
   
   ClassDef(TGEMSBSSimEvent, 5) // Simulated data for one event
 };
