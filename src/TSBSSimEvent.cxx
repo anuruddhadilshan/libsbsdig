@@ -12,6 +12,8 @@
 #include "TClonesArray.h"
 #include "TString.h"
 #include "TMath.h"
+#include "TSBSSimAuxi.h"
+#include "TSBSDBManager.h"
 
 #include <iostream>
 
@@ -20,7 +22,25 @@ using namespace std;
 //-----------------------------------------------------------------------------
 TSBSSimEvent::TSBSSimEvent()
   : fRunID(0), fEvtID(0), fNSignal(0)//, fMCTracks(0)
-{
+{  
+  const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
+  for(uint i = 0; i<AllDetInfo.size(); i++){
+    //SimDetData_Channel
+    TDetInfo DetInfo_i = AllDetInfo.at(i);
+    std::string fulldetname = DetInfo_i.DetFullName();
+    
+    NSimDetData[fulldetname] = 0;
+    SimDetChannel[fulldetname].clear();
+    SimDetDataType[fulldetname].clear();
+    SimDetNData[fulldetname].clear();
+    SimDetData[fulldetname].clear();
+    
+    NDetData[fulldetname] = 0;
+    DetChannel[fulldetname].clear();
+    DetNData[fulldetname].clear();
+    DetData[fulldetname].clear();
+  }
+    
 }
 
 //-----------------------------------------------------------------------------
@@ -40,19 +60,24 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   fDetectorData.clear();
   fSimDetectorData.clear();
   
-  NSimDetData.clear();
-  //SimDetID.clear();
-  SimDetChannel.clear();
-  SimDetDataType.clear();
-  SimDetNData.clear();
-  SimDetData.clear();
-  
-  NDetData.clear();
-  //DetID.clear();
-  DetChannel.clear();
-  // DetDataType;
-  DetNData.clear();
-  DetData.clear();
+  const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
+  for(uint i = 0; i<AllDetInfo.size(); i++){
+    TDetInfo DetInfo_i = AllDetInfo.at(i);
+    std::string fulldetname = DetInfo_i.DetFullName();
+    NSimDetData[fulldetname] = 0;
+    //SimDetID.clear();
+    SimDetChannel[fulldetname].clear();
+    SimDetDataType[fulldetname].clear();
+    SimDetNData[fulldetname].clear();
+    SimDetData[fulldetname].clear();
+    
+    NDetData[fulldetname] = 0;
+    //DetID.clear();
+    DetChannel[fulldetname].clear();
+    // DetDataType;
+    DetNData[fulldetname].clear();
+    DetData[fulldetname].clear();
+  }
 }
 
 //-----------------------------------------------------------------------------
