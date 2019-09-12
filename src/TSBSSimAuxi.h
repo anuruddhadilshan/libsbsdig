@@ -5,7 +5,7 @@
 #include <map>
 #include "g4sbs_types.h"
 //#include "THaAnalysisObject.h"
-#include "g4sbs_types.h"
+//#include "g4sbs_types.h"
 #include "TF1.h"
 //#include "TF1Convolution.h"
 #include "TH1D.h"

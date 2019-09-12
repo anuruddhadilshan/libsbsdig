@@ -79,6 +79,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
   for(size_t i_spec = 0; i_spec<fNSpecs; i_spec++){
     TSpectroInfo specinfo;
+    //specinfo.SetName(fSpecNames.at(i_spec));
     double mcangle;
     int ndets;
     string dets_str;

@@ -2,12 +2,16 @@
 #include "TSBSGeant4File.h"
 #include "TSBSSimDetector.h"
 #include "TSBSSimEvent.h"
+#include "TSBSSimAuxi.h"
+#include "TSBSDBManager.h"
 #include <TTree.h>
 #include <TFile.h>
 
 TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 {
   if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
+  fManager = TSBSDBManager::GetInstance();
+  
   fEvent = new TSBSSimEvent();
   fOutFile = new TFile(outputfilename,"RECREATE");
   //fOutTree = new TTree("TSBSDigi","");
@@ -31,6 +35,27 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree->Branch("DetData_Ndata",&fEvent->DetNData);
   fOutTree->Branch("DetData_Data",&fEvent->DetData);
   
+  /*
+  const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
+  for(uint i = 0; i<AllDetInfo.size(); i++){
+    //SimDetData_Channel
+    TDetInfo DetInfo_i = AllDetInfo.at(i);
+    std::string fulldetname = DetInfo_i.DetFullName();
+    fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel);
+    fOutTree->Branch(Form("SimData_%s_Type", fulldetname.c_str()),&fEvent->SimDetDataType);
+    fOutTree->Branch(Form("SimData_%s_Ndata", fulldetname.c_str()),&fEvent->SimDetNData);
+    fOutTree->Branch(Form("SimData_%s_Data", fulldetname.c_str()),&fEvent->SimDetData);
+    
+    fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel);
+    fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData);
+    fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData);
+  }
+  */
+  //const std::vector<TSpectroInfo> = fManager->GetAllSpectroInfo();
+  //std::vector<TDetInfo> = fManager->GetAllDetInfo();
+  
+  //const TSpectroInfo SpecInfo = fManager->GetAllSpectroInfo();
+  //for()
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
   //fOutTree->Branch("DetectorData",&fEvent->fSimDetectorData);
 }

@@ -10,6 +10,7 @@ class TSBSSimEvent;
 class TFile;
 class TTree;
 class THaAnalysisObject;
+class TSBSDBManager;
 
 class TSBSSimDigitizer : public THaAnalysisObject {
 public:
@@ -43,6 +44,7 @@ private:
   //std::vector< std::vector<TString> > fG4FileStack;
   std::vector< UInt_t > fG4FileWeights;
   
+  TSBSDBManager *fManager;
   
   ClassDef(TSBSSimDigitizer,1)
 };
