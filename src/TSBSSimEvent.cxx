@@ -24,6 +24,12 @@ TSBSSimEvent::TSBSSimEvent()
 }
 
 //-----------------------------------------------------------------------------
+TSBSSimEvent::TSBSSimEvent(int run, int evt, int signal)
+  : fRunID(run), fEvtID(evt), fNSignal(signal)//, fMCTracks(0)
+{
+}
+
+//-----------------------------------------------------------------------------
 void TSBSSimEvent::Clear( const Option_t* opt )
 {
   // Clear the event in preparation for reading next tree entry
@@ -34,16 +40,15 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   fDetectorData.clear();
   fSimDetectorData.clear();
   
-  NSimDetData = 0;
-  SimDetID.clear();
-  SimDetID.clear();
+  NSimDetData.clear();
+  //SimDetID.clear();
   SimDetChannel.clear();
   SimDetDataType.clear();
   SimDetNData.clear();
   SimDetData.clear();
   
-  NDetData = 0;
-  DetID.clear();
+  NDetData.clear();
+  //DetID.clear();
   DetChannel.clear();
   // DetDataType;
   DetNData.clear();

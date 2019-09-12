@@ -147,20 +147,20 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       any_events = true;
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;
-
-      event.SimDetID.push_back(Short_t(UniqueDetID()));
-      event.SimDetChannel.push_back(Short_t(m));
-      event.SimDetDataType.push_back(1);
-      event.SimDetNData.push_back(1);
+      
+      //event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetDataType[fDetInfo.DetFullName()].push_back(1);
+      event.SimDetNData[fDetInfo.DetFullName()].push_back(1);
       simdata.push_back(fSignals[m].Npe());
-      event.SimDetData.push_back(simdata);
-      event.NSimDetData++;
+      event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
+      event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
       
-      event.SimDetID.push_back(Short_t(UniqueDetID()));
-      event.SimDetChannel.push_back(Short_t(m));
-      event.SimDetDataType.push_back(2);
-      event.SimDetNData.push_back(Short_t(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize()));
+      //event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetDataType[fDetInfo.DetFullName()].push_back(2);
+      event.SimDetNData[fDetInfo.DetFullName()].push_back(Short_t(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize()));
       for(size_t i = 0; i<fSignals[m].LeadTimesSize(); i++){
 	simdata.push_back(fSignals[m].LeadTime(i));
 	
@@ -170,10 +170,10 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	simdata.push_back(fSignals[m].TrailTime(i));
 	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
       }
-      event.SimDetData.push_back(simdata);
-      event.NSimDetData++;
+      event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
+      event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
-     
+      
       
       //define convention for type:
       // 0: ADC
@@ -195,11 +195,11 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
       
-      event.DetID.push_back(Short_t(UniqueDetID()));
-      event.DetChannel.push_back(Short_t(m));
-      event.DetNData.push_back(Short_t(data.size()));
-      event.DetData.push_back(data);
-      event.NDetData++;
+      //event.DetID.push_back(Short_t(UniqueDetID()));
+      event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
+      event.DetData[fDetInfo.DetFullName()].push_back(data);
+      event.NDetData[fDetInfo.DetFullName()]++;
 
       //event.fDetectorData.push_back(data);
       //data.fData.clear();

@@ -23,6 +23,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree->Branch("Weight",&fEvent->fWeight);
   fOutTree->Branch("NSignal",&fEvent->fNSignal);
 
+  /*
   fOutTree->Branch("SimDetData_size",&fEvent->NSimDetData);
   fOutTree->Branch("SimDetData_DetID",&fEvent->SimDetID);
   fOutTree->Branch("SimDetData_Channel",&fEvent->SimDetChannel);
@@ -34,23 +35,23 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree->Branch("DetData_Channel",&fEvent->DetChannel);
   fOutTree->Branch("DetData_Ndata",&fEvent->DetNData);
   fOutTree->Branch("DetData_Data",&fEvent->DetData);
+  */
   
-  /*
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
     //SimDetData_Channel
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
-    fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel);
-    fOutTree->Branch(Form("SimData_%s_Type", fulldetname.c_str()),&fEvent->SimDetDataType);
-    fOutTree->Branch(Form("SimData_%s_Ndata", fulldetname.c_str()),&fEvent->SimDetNData);
-    fOutTree->Branch(Form("SimData_%s_Data", fulldetname.c_str()),&fEvent->SimDetData);
+    fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
+    fOutTree->Branch(Form("SimData_%s_Type", fulldetname.c_str()),&fEvent->SimDetDataType[fulldetname.c_str()]);
+    fOutTree->Branch(Form("SimData_%s_Ndata", fulldetname.c_str()),&fEvent->SimDetNData[fulldetname.c_str()]);
+    fOutTree->Branch(Form("SimData_%s_Data", fulldetname.c_str()),&fEvent->SimDetData[fulldetname.c_str()]);
     
-    fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel);
-    fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData);
-    fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData);
+    fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
+    fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData[fulldetname.c_str()]);
+    fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
   }
-  */
+  
   //const std::vector<TSpectroInfo> = fManager->GetAllSpectroInfo();
   //std::vector<TDetInfo> = fManager->GetAllDetInfo();
   

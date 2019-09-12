@@ -157,22 +157,22 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       //data.fChannel = m;
       
       //Fill the simulation data
-      event.SimDetID.push_back(Short_t(UniqueDetID()));
-      event.SimDetChannel.push_back(Short_t(m));
-      event.SimDetDataType.push_back(0);
-      event.SimDetNData.push_back(1);
+      //event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetDataType[fDetInfo.DetFullName()].push_back(0);
+      event.SimDetNData[fDetInfo.DetFullName()].push_back(1);
       simdata.push_back(fSignals[m].SumEdep());
-      event.SimDetData.push_back(simdata);
-      event.NSimDetData++;
+      event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
+      event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
       
-      event.SimDetID.push_back(Short_t(UniqueDetID()));
-      event.SimDetChannel.push_back(Short_t(m));
-      event.SimDetDataType.push_back(1);
-      event.SimDetNData.push_back(1);
+      //event.SimDetID.push_back(Short_t(UniqueDetID()));
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetDataType[fDetInfo.DetFullName()].push_back(1);
+      event.SimDetNData[fDetInfo.DetFullName()].push_back(1);
       simdata.push_back(fSignals[m].Npe());
-      event.SimDetData.push_back(simdata);
-      event.NSimDetData++;
+      event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
+      event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
       
       if(fDebug>=3)cout << "TSBSSimECal::Digitize() : Unique Det ID " << UniqueDetID() 
@@ -196,11 +196,11 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
 
-      event.DetID.push_back(Short_t(UniqueDetID()));
-      event.DetChannel.push_back(Short_t(m));
-      event.DetNData.push_back(Short_t(data.size()));
-      event.DetData.push_back(data);
-      event.NDetData++;
+      //event.DetID.push_back(Short_t(UniqueDetID()));
+      event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
+      event.DetData[fDetInfo.DetFullName()].push_back(data);
+      event.NDetData[fDetInfo.DetFullName()]++;
       
       //event.fDetectorData.push_back(data);
       //data.fData.clear();

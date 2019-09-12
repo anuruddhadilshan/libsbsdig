@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 class TClonesArray;
+class TSBSDBManager;
 
 //-----------------------------------------------------------------------------
 // Kludgy hardcoded parameters necessary because I can't get ROOT to allocate
@@ -30,6 +31,7 @@ class TClonesArray;
 class TSBSSimEvent : public TObject {
 public:
   TSBSSimEvent();                 // Default constructor, for ROOT I/O
+  TSBSSimEvent(int run, int evt, int signal = 0);                 // Default constructor, for ROOT I/O
   virtual ~TSBSSimEvent(){};
   
   virtual void Clear( const Option_t* opt="" );
@@ -41,6 +43,8 @@ public:
 
   Double_t  fWeight;              // Event weight
   Int_t     fNSignal;             // Number of clusters from trigger track (signal)
+  
+  //TODO: introduce data arrays that depend on which detectors are involved
   
   
   struct SimDetectorData {
@@ -61,7 +65,7 @@ public:
   };
   std::vector<DetectorData> fDetectorData;
   std::vector<SimDetectorData> fSimDetectorData;
-  /**/
+  /*
   Int_t NSimDetData;
   std::vector<Short_t> SimDetID;
   std::vector<Short_t> SimDetChannel;
@@ -75,6 +79,29 @@ public:
   //std::vector<Short_t> DetDataType;
   std::vector<Short_t> DetNData;
   std::vector< std::vector<uint32_t> > DetData;
+  */
+  
+  std::map<std::string, Int_t> NSimDetData;
+  std::map<std::string, std::vector<Short_t>> SimDetChannel;
+  std::map<std::string, std::vector<Short_t>> SimDetDataType;
+  std::map<std::string, std::vector<Short_t>> SimDetNData;
+  std::map<std::string, std::vector<std::vector<Double_t>>> SimDetData;
+
+  std::map<std::string, Int_t> NDetData;
+  std::map<std::string, std::vector<Short_t>> DetChannel;
+  std::map<std::string, std::vector<Short_t>> DetNData;
+  std::map<std::string, std::vector<std::vector<uint32_t>>> DetData;
+  
+  /*
+    map<string, TSBSDetOutput> DetData;
+    map<string,TSBSSimHCaloutput> HCaldata;
+    map<string,TSBSSimECaloutput> ECaldata;
+    map<string,TSBSSimCheroutput> Cherdata;
+    map<string,TSBSSimScintOutput> Scintdata;
+    map<string,TSBSSimGEMoutput> GEMdata;
+  */
+  
+  TSBSDBManager *fManager;
   
   ClassDef(TSBSSimEvent, 6) // Simulated data for one event
 };

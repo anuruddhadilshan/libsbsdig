@@ -234,11 +234,11 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
       
-      event.DetID.push_back(Short_t(UniqueDetID()));
-      event.DetChannel.push_back(Short_t(m));
-      event.DetNData.push_back(Short_t(data.size()));
-      event.DetData.push_back(data);
-      event.NDetData++;
+      //event.DetID.push_back(Short_t(UniqueDetID()));
+      event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
+      event.DetData[fDetInfo.DetFullName()].push_back(data);
+      event.NDetData[fDetInfo.DetFullName()]++;
 
       //event.fDetectorData.push_back(data);
       //data.fData.clear();
