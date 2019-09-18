@@ -3,6 +3,7 @@
 #define DEBUG 0
 
 //ClassImp(TSpectroInfo) // Implements TSpectroInfo
+ClassImp(TRndmManager) // Implements TRndmManager
 ClassImp(TGeoInfo) // Implements TGeoInfo
 ClassImp(TDigInfo) // Implements TDigInfo
 ClassImp(TDigSlot) // Implements TDigSlot
@@ -13,6 +14,20 @@ ClassImp(TPMTSignal) // Implements TPMTSignal
 ClassImp(TSignalInfo) // Implements TSignalInfo
 
 using namespace std;
+//
+// Class TRndmManager
+//
+TRndmManager * TRndmManager::fRndmMan = NULL;
+
+TRndmManager::TRndmManager() 
+{
+}
+//______________________________________________________________
+TRndmManager::~TRndmManager()
+{
+}
+
+
 //
 // Class TNPEModel
 //
@@ -118,6 +133,8 @@ TPMTSignal::TPMTSignal()
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  fRN = TRndmManager::GetInstance();
 }
 
 TPMTSignal::TPMTSignal(double npechargeconv)
@@ -251,7 +268,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
 #endif
   
-  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+diginfo.GenPedestal(chan));
+  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+fRN->Gaus(diginfo.Pedestal(chan), diginfo.PedestalNoise(chan)));
   //if ADC value bigger than number of ADC bits, ADC saturates
   if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
     fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
@@ -496,7 +513,7 @@ void TDetInfo::LoadChannelMap(std::vector<int> chanmap, int start)
 //
 TDigInfo::TDigInfo()
 {
-  fRN = new TRandom3(0);
+  //fRN = new TRandom3(0);
   fGain.clear();
   fPedestal.clear();
   fPedNoise.clear();

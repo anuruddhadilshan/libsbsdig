@@ -10,8 +10,9 @@
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
 TSBSDBManager::TSBSDBManager() 
-  : fErrID(-999), fErrVal(-999.)
+  : fErrID(-999), fErrVal(-999.), fBkgdSpreadTimeWindowHW(0.)
 {
+  fRN = TRndmManager::GetInstance();
 }
 //______________________________________________________________
 TSBSDBManager::~TSBSDBManager()
@@ -42,6 +43,8 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   
   const string prefix = "geninfo.";
   
+  int rnseed = 0;
+  
   string exp_str;
   string specs_str;
   
@@ -50,9 +53,12 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     {"sbsexptype", &exp_str,   kString, 0, 0},
     {"nspecs",     &fNSpecs,   kInt,    0, 0},
     {"specnames",  &specs_str, kString, 0, 0},
+    {"randomseed", &rnseed,    kInt,    0, 1},
     { 0 }
   };
-
+  
+  fRN->SetSeed(rnseed);
+  
   //int err = LoadDB( input, request,  prefix);
   int err = LoadDB(file, GetInitDate(), request,  prefix.c_str());
   
@@ -158,6 +164,8 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     
   }// end spectrometer loop
   //input.close();
+  cout << "Background spread time window half width = " << fBkgdSpreadTimeWindowHW << " ns." <<endl;
+  
   fclose(file);
   return(kOK);
 }
@@ -419,6 +427,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       fclose(file);
       return kInitError;
     }
+    
+    if(gatewidth>fBkgdSpreadTimeWindowHW)fBkgdSpreadTimeWindowHW = gatewidth;
     
     //detinfo.DigInfo()
     diginfo.SetROImpedance(roimp);

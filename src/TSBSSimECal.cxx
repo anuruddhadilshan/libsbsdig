@@ -97,7 +97,7 @@ void TSBSSimECal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
       type = ev->GetData(2);
-      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
+      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter() + fTimeZero;//add 
       data = ev->GetData(4);
       
       if(fDebug>=3)

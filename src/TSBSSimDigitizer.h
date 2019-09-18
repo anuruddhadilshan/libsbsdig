@@ -3,6 +3,7 @@
 
 #include "THaAnalysisObject.h"
 #include <vector>
+//#include "TRandom3.h"
 
 class TSBSGeant4File;
 class TSBSSimDetector;
@@ -11,6 +12,7 @@ class TFile;
 class TTree;
 class THaAnalysisObject;
 class TSBSDBManager;
+class TRndmManager;
 
 class TSBSSimDigitizer : public THaAnalysisObject {
 public:
@@ -35,7 +37,7 @@ private:
   TSBSSimEvent *fEvent;
   TFile *fOutFile;
   TTree *fOutTree;
-  
+    
   // Lists of files with weight to perform additive digitization.
   // Files and weights are added at the same time, and cannot be accessed from the outside... 
   std::vector< TSBSGeant4File* > fG4FileStack_;
@@ -45,6 +47,8 @@ private:
   std::vector< UInt_t > fG4FileWeights;
   
   TSBSDBManager *fManager;
+  
+  TRndmManager *fRN;
   
   ClassDef(TSBSSimDigitizer,1)
 };

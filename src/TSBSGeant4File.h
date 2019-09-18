@@ -13,7 +13,10 @@
 #include "g4sbs_tree.h"
 //#include "TSBSCherData.h"
 #include "TSBSDBManager.h"
+#include "TSBSSimAuxi.h"
 
+//class TSBSDBManager;
+//class TRndmManager;
 
 class g4sbshitdata;
 class g4sbsgendata;
@@ -72,7 +75,6 @@ class TSBSGeant4File {
   TFile *fFile;
   g4sbs_tree *fTree;// needed to easily unfold root file data
   Int_t fSource;   // User-defined source ID (e.g. MC run number)  
-  TRandom3 *fRN;
   //hit data arrays
   vector<g4sbshitdata *> fg4sbsHitData;
   vector<g4sbsgendata *> fg4sbsGenData;
@@ -80,6 +82,9 @@ class TSBSGeant4File {
   unsigned int fEvNum;// global event incrementer
 
   TSBSDBManager *fManager;
+  TRndmManager *fRN;
+  
+  ClassDef(TSBSGeant4File,1)
 };
 
 

@@ -28,7 +28,9 @@ public:
   virtual void EventStart() {}; // Normally do nothing, but user can override
   static void SetEventNum(int evn) { fEvNum = evn; }
   static int GetEventNum() { return fEvNum; }
-
+  double GetTimeZero(){return fTimeZero;};
+  void SetTimeZero(double t0){fTimeZero = t0;};
+  
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }
   short  UniqueDetID() {return fUniqueDetID; };
@@ -36,14 +38,16 @@ protected:
   short  GetDetID() {return fUniqueDetID%10;};
 
   static int fEvNum;
-
+  
+  double fTimeZero;
+  
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
   TSBSSimDataEncoder *fEncoderADC;
   TSBSSimDataEncoder *fEncoderTDC;
   unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
   unsigned short fNEncBufferWords;
-
+  
   // Silence compiler warnings about Init from parent class
   using THaAnalysisObject::Init;
   virtual void Init();

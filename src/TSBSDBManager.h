@@ -40,6 +40,9 @@ public:
   bool IsDetInfoAvailable(const char* detname); // Check if a detector is defined
   bool IsDetInfoAvailableById(Int_t id); // Check if a detector is defined by ID
   
+  double GetBkgdSpreadTimeWindowHW(){return fBkgdSpreadTimeWindowHW;};
+  //void SetBkgdSpreadTimeWindowHW(int bstwhw){fBkgdSpreadTimeWindowHW = bstwhw;};
+  
  protected:
   TSBSDBManager();
   
@@ -111,6 +114,10 @@ public:
   
   int    fErrID;
   double fErrVal;
+  
+  Double_t fBkgdSpreadTimeWindowHW;
+  
+  TRndmManager *fRN;
   
   ClassDef(TSBSDBManager,1)
 };

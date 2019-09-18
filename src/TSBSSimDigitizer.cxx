@@ -11,6 +11,8 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 {
   if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
   fManager = TSBSDBManager::GetInstance();
+  fRN = TRndmManager::GetInstance();
+  
   
   fEvent = new TSBSSimEvent();
   fOutFile = new TFile(outputfilename,"RECREATE");
@@ -55,11 +57,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
   }
   
-  //const std::vector<TSpectroInfo> = fManager->GetAllSpectroInfo();
-  //std::vector<TDetInfo> = fManager->GetAllDetInfo();
-  
-  //const TSpectroInfo SpecInfo = fManager->GetAllSpectroInfo();
-  //for()
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
   //fOutTree->Branch("DetectorData",&fEvent->fSimDetectorData);
 }
@@ -109,6 +106,7 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
 	cout << "load event for det " << fDetectors[det]->GetName() << endl;
 	cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
       }
+      fDetectors[det]->SetTimeZero(0.);
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
     // Now digitize all detectors
@@ -229,9 +227,13 @@ int TSBSSimDigitizer::Process(int max_events)
 	  if(f->GetSource()==0){
 	    //"LoadEventData" for signal - we want teverything cleanded up for signal
 	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+	    fDetectors[det]->SetTimeZero(0.);
 	    fDetectors[det]->LoadEventData(f->GetDataVector());
 	  }else{
 	    //"LoadAccumulateData" for any other stuff we want to superimposeto signal
+	    double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
+				     fManager->GetBkgdSpreadTimeWindowHW());
+	    fDetectors[det]->SetTimeZero(t0);
 	    fDetectors[det]->LoadAccumulateData(f->GetDataVector());
 	  }
 	}

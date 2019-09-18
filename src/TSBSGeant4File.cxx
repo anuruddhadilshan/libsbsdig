@@ -1,4 +1,5 @@
 #include "TSBSGeant4File.h"
+#include "TSBSSimAuxi.h"
 #include "TSBSSimData.h"
 #include "g4sbs_types.h"
 #include "fstream"
@@ -18,7 +19,7 @@ TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
   //TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
   SetFilename(f);
   fManager = TSBSDBManager::GetInstance();
-  fRN = new TRandom3(0);
+  fRN = TRndmManager::GetInstance();
   //Filling the table that will be used to calculate the low energy electron range in the gas. 
 #if D_FLAG>1
   cout << "Initialization completed" << endl;

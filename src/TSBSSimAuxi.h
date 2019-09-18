@@ -15,6 +15,24 @@
 
 class TGEMSBSDBManager;
 
+class TRndmManager : public TRandom3 {
+  public:
+  ~TRndmManager();//{TRandom3();};
+  static TRndmManager* GetInstance() {
+    if (fRndmMan == NULL) fRndmMan = new TRndmManager();
+    return fRndmMan;
+  }
+  
+ protected:
+  TRndmManager();
+
+ private:
+  static TRndmManager* fRndmMan;
+  //TRandom3* fRN;
+  
+  ClassDef(TRndmManager,1);
+};
+
 //
 // Classes for DB information
 //
@@ -120,7 +138,7 @@ class TDigInfo : public TObject{
   double Pedestal(UInt_t chan);
   UInt_t PedestalNoiseSize(){return fPedNoise.size();};
   double PedestalNoise(UInt_t chan);
-  double GenPedestal(UInt_t chan){return fRN->Gaus(Pedestal(chan), PedestalNoise(chan));};
+  //double GenPedestal(UInt_t chan){return fRN->Gaus(Pedestal(chan), PedestalNoise(chan));};
   UInt_t ThresholdSize(){return fThreshold.size();};
   double Threshold(UInt_t chan);
   double TriggerJitter(){return fTriggerJitter;};
@@ -172,7 +190,6 @@ class TDigInfo : public TObject{
   double  fSPE_transittime;  // pmt transit time param for SPE
   TSBSSimDataEncoder *fEncoderADC;
   TSBSSimDataEncoder *fEncoderTDC;
-  TRandom3* fRN;
   
   ClassDef(TDigInfo, 1);
 };
@@ -378,9 +395,25 @@ class TPMTSignal : public TObject {
   std::vector<double> fTrailTimes;
   std::vector<UInt_t> fTDCs;
   SimEncoder::tdc_data fTDCData;
+  TRndmManager* fRN;
 
   ClassDef(TPMTSignal,1);
 };
+
+/*
+class TRndmManager : public TObject {
+ public:
+  static TRndmManager* GetInstance() {
+    if (fManager == NULL) fManager = new TRndmManager();
+    return fManager;
+  }
+  TRandom3* Rndm()
+    
+ private:
+  TRandom3* fRN;
+  static TRndmManager* fManager;
+}
+*/
 
 
 /*
