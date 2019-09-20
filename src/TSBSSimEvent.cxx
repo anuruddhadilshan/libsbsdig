@@ -22,12 +22,17 @@ using namespace std;
 //-----------------------------------------------------------------------------
 TSBSSimEvent::TSBSSimEvent()
   : fRunID(0), fEvtID(0), fNSignal(0)//, fMCTracks(0)
-{  
+{
+  cout << "Initializing TSBSSimEvent" << endl;
+  fManager = TSBSDBManager::GetInstance();
+  
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
+  cout << AllDetInfo.size() << endl;
   for(uint i = 0; i<AllDetInfo.size(); i++){
     //SimDetData_Channel
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
+    cout << i << " " << fulldetname.c_str() << endl;
     
     NSimDetData[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();

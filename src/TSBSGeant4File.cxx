@@ -90,7 +90,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     
   bool res = false;
   if(d_flag>1){
-    printf("Reading event %d\n", fEvNum);
+    printf("Reading event %d\n", fEvNum+1);
   }
   fEvNum++;
 
@@ -366,7 +366,11 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(hcalscinthit);
     }
   }
-
+  
+  if(d_flag>1){
+    printf("Just read event %d\n", fEvNum);
+  }
+  
   return 1;
 }
 

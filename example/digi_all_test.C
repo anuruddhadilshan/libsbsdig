@@ -27,37 +27,47 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
   manager->SetDebug(debuglevel);
+  
+  if(debuglevel>=1)cout << "About to read database " << endl;
+
   //manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
   //manager->LoadGeoInfo("g4sbs_grinch");
   manager->LoadGenInfo("db_geninfo_gmn.dat");
+  
+  if(debuglevel>=1)cout << "Setup digitizer " << endl;
   
   // Create the SBS Digitizer (will control the digitization process)
   TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
   digitizer->SetDebug(debuglevel);
   
+  if(debuglevel>=1)cout << "Setup input file " << endl;
+  
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20190725_15/elastic_0.root");
   f->SetSource(0);
-  //TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
-  //f_b->SetSource(1);
+  TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190417_11/beam_bkgd_0.root");
+  f_b->SetSource(1);
   
+  if(debuglevel>=1)cout << "Add file to digitizer " << endl;
   
   digitizer->AddInputFile(f, 1);
-  //digitizer->AddInputFile(f_b, 10);
+  //digitizer->AddInputFile(f_b, -1);
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h
   
+  if(debuglevel>=1)cout << "Declare detectors and add them to digitizer " << endl;
+  
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
   digitizer->AddDetector(hcal);
   
-  //TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  //hodo->SetDebug(debuglevel);
-  //digitizer->AddDetector(hodo);
+  TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
+  hodo->SetDebug(debuglevel);
+  digitizer->AddDetector(hodo);
   
-  //TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  //cdet->SetDebug(debuglevel);
-  //digitizer->AddDetector(cdet);
+  TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
+  cdet->SetDebug(debuglevel);
+  digitizer->AddDetector(cdet);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
   grinch->SetDebug(debuglevel);
@@ -71,8 +81,10 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   sh->SetDebug(debuglevel);
   digitizer->AddDetector(sh);
   
-  digitizer->Process(f, nentries);
-  //digitizer->Process(nentries);
+  if(debuglevel>=1)cout << "About to process digitization for " << nentries << "events " << endl;
+  
+  //digitizer->Process(f, nentries);
+  digitizer->Process(nentries);
   
   //cout << "delete detectors" << endl;
   //delete hodo;

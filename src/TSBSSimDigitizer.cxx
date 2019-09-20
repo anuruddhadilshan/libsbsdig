@@ -9,22 +9,27 @@
 
 TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 {
-  if(fDebug>=1)cout << "Initialize TSBSSimDigitzer " << endl;
+  cout << "Initialize TSBSSimDigitzer " << endl;
   fManager = TSBSDBManager::GetInstance();
   fRN = TRndmManager::GetInstance();
   
+  cout << "instantiated DB and RN managers" << endl;
   
-  fEvent = new TSBSSimEvent();
+  fEvent = new TSBSSimEvent();//problem here
+  cout << "instantiated SimEvent" << endl;
   fOutFile = new TFile(outputfilename,"RECREATE");
   //fOutTree = new TTree("TSBSDigi","");
   fOutTree = new TTree("digtree","");
   //fOutTree->Branch("fEvents",&fEvent);
-  fOutTree->Branch("event",&fEvent);
+  //fOutTree->Branch("event",&fEvent);
   fOutTree->Branch("RunID",&fEvent->fRunID);
   fOutTree->Branch("EvtID",&fEvent->fEvtID);
   fOutTree->Branch("Weight",&fEvent->fWeight);
   fOutTree->Branch("NSignal",&fEvent->fNSignal);
-
+  
+  cout << "declared event info for the output tree" << endl;
+  
+  
   /*
   fOutTree->Branch("SimDetData_size",&fEvent->NSimDetData);
   fOutTree->Branch("SimDetData_DetID",&fEvent->SimDetID);
@@ -39,11 +44,14 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree->Branch("DetData_Data",&fEvent->DetData);
   */
   
+  
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
     //SimDetData_Channel
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
+    
+    cout << fulldetname.c_str() << endl;
     
     fOutTree->Branch(Form("NSimData_%s", fulldetname.c_str()),&fEvent->NSimDetData[fulldetname.c_str()]);
     fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
@@ -152,8 +160,8 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
 
 int TSBSSimDigitizer::Process(int max_events)
 {
-  cout << "Warning:  TSBSSimDigitizer::Process(int) is not functional yet." << endl 
-       << "Please use int TSBSSimDigitizer::Process(TSBSGeant4File, int)" << endl;
+  //cout << "Warning:  TSBSSimDigitizer::Process(int) is not functional yet." << endl 
+  //     << "Please use int TSBSSimDigitizer::Process(TSBSGeant4File, int)" << endl;
   if(fG4FileStack_.size()==0)
     return 0;
   
@@ -255,8 +263,8 @@ int TSBSSimDigitizer::Process(int max_events)
     }
     if(has_data) {
       // Write to the tree
-      fOutTree->Fill();
       if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
+      fOutTree->Fill();
     }
     
     nevent++;

@@ -164,7 +164,11 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     
   }// end spectrometer loop
   //input.close();
-  cout << "Background spread time window half width = " << fBkgdSpreadTimeWindowHW << " ns." <<endl;
+  
+  if(fDebug>=2){
+    cout << "Size of Spectro Info: " << fSpectroInfo.size() << "; size of Detector Info: " << fDetInfo.size() << endl;
+    cout << "Background spread time window half width = " << fBkgdSpreadTimeWindowHW << " ns." <<endl;
+  }
   
   fclose(file);
   return(kOK);
