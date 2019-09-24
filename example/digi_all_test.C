@@ -45,17 +45,21 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   // First load the input root file
   TSBSGeant4File *f = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20190725_15/elastic_0.root");
   f->SetSource(0);
-  TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190417_11/beam_bkgd_0.root");
-  f_b->SetSource(1);
-  
   if(debuglevel>=1)cout << "Add file to digitizer " << endl;
-  
   digitizer->AddInputFile(f, 1);
-  //for(int i = 0; i<nentries; i++){
-  //if()
-  //
-  digitizer->AddInputFile(f_b, 3);
-  //}
+
+  int nmiss = 0;
+  int nbkgd = 1;
+  for(int i = 0; i<nentries*nbkgd+nmiss; i++){
+    //if()
+    TSBSGeant4File *f_b = new TSBSGeant4File(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i));
+    if(!f_b->Open()){
+      continue;
+      nmiss++;
+    }
+    f_b->SetSource(1);
+    digitizer->AddInputFile(f_b, -nbkgd);
+  }
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h

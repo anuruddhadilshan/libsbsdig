@@ -203,6 +203,7 @@ int TSBSSimDigitizer::Process(int max_events)
   // Now loop through the file and digitize entries
   //int d_flag_readevent = 0;
   int nevent = 0;
+  int nfile = 0;
   int i_f = 0;
   UInt_t nevt_b;
   //int ngood = 0;
@@ -213,11 +214,13 @@ int TSBSSimDigitizer::Process(int max_events)
     fEvent->Clear();
     has_data = false;
     i_f = 0;
+    nfile = 0;
     // Accumulate data here...
     //for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
     for(std::vector<TSBSGeant4File*>::const_iterator it = fG4FileStack_.begin(); it!=fG4FileStack_.end(); ++it){
       TSBSGeant4File* f = (*it);
       nevt_b = 0;
+      if(fG4FileWeights.at(i_f)>0)nfile = 0;
       //f_b = fG4FileStack.at(i_f);
       //if(fG4FileWeights.at(i_f)>=0){}
       
@@ -227,7 +230,8 @@ int TSBSSimDigitizer::Process(int max_events)
 	cout << " i_f "  << i_f << " weight " << fG4FileWeights.at(i_f) << " source " << f->GetSource() << endl;
       
       while( (fG4FileWeights.at(i_f)>0 && nevt_b<fG4FileWeights.at(i_f)/PrimWeight) ||
-	     fG4FileWeights.at(i_f)<0 ){
+	     (fG4FileWeights.at(i_f)<0 && nfile<fabs(fG4FileWeights.at(i_f)/PrimWeight)) 
+	     ){
 	if(!f->ReadNextEvent(fDebug))break;
 	if(fDebug>=3){
 	  cout << " nevt_b " << nevt_b << " file global evt number " << f->GetEvNum() << endl;
@@ -256,6 +260,7 @@ int TSBSSimDigitizer::Process(int max_events)
 	}
 	nevt_b++;
       }
+      nfile++;
       i_f++;
     }
     
