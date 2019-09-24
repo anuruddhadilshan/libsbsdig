@@ -45,7 +45,7 @@ TSBSSimEvent::TSBSSimEvent()
     DetNData[fulldetname].clear();
     DetData[fulldetname].clear();
   }
-    
+  
 }
 
 //-----------------------------------------------------------------------------

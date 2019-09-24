@@ -51,7 +51,11 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   if(debuglevel>=1)cout << "Add file to digitizer " << endl;
   
   digitizer->AddInputFile(f, 1);
-  //digitizer->AddInputFile(f_b, -1);
+  //for(int i = 0; i<nentries; i++){
+  //if()
+  //
+  digitizer->AddInputFile(f_b, 3);
+  //}
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h

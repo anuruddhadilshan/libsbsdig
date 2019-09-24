@@ -29,7 +29,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   
   cout << "declared event info for the output tree" << endl;
   
-  
   /*
   fOutTree->Branch("SimDetData_size",&fEvent->NSimDetData);
   fOutTree->Branch("SimDetData_DetID",&fEvent->SimDetID);
@@ -43,7 +42,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fOutTree->Branch("DetData_Ndata",&fEvent->DetNData);
   fOutTree->Branch("DetData_Data",&fEvent->DetData);
   */
-  
   
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
@@ -77,6 +75,9 @@ TSBSSimDigitizer::~TSBSSimDigitizer()
 
 int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
 {
+  cout << "Warning:  TSBSSimDigitizer::Process(TSBSGeant4File *, int) is deprecated." << endl << "Please use int TSBSSimDigitizer::Process(int)" << endl;
+  
+  
   if(!f)
     return 0;
 
@@ -216,16 +217,23 @@ int TSBSSimDigitizer::Process(int max_events)
     //for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
     for(std::vector<TSBSGeant4File*>::const_iterator it = fG4FileStack_.begin(); it!=fG4FileStack_.end(); ++it){
       TSBSGeant4File* f = (*it);
-      cout << " i_f "  << i_f << endl;
       nevt_b = 0;
       //f_b = fG4FileStack.at(i_f);
       //if(fG4FileWeights.at(i_f)>=0){}
       
       // while( f->ReadNextEvent(fDebug) && 
       // 	     nevt_b<(fG4FileWeights.at(i_f)/PrimWeight) ) {//Keep adding as many events as indicated by the weight
-      while( f->ReadNextEvent(fDebug) ) {
-	if(fG4FileWeights.at(i_f)>=0 && 
-	   nevt_b>=(fG4FileWeights.at(i_f)/PrimWeight) )break;
+      if(fDebug>=3)
+	cout << " i_f "  << i_f << " weight " << fG4FileWeights.at(i_f) << " source " << f->GetSource() << endl;
+      
+      while( (fG4FileWeights.at(i_f)>0 && nevt_b<fG4FileWeights.at(i_f)/PrimWeight) ||
+	     fG4FileWeights.at(i_f)<0 ){
+	if(!f->ReadNextEvent(fDebug))break;
+	if(fDebug>=3){
+	  cout << " nevt_b " << nevt_b << " file global evt number " << f->GetEvNum() << endl;
+	}
+	//if(fG4FileWeights.at(i_f)>=0 && 
+	//nevt_b>=(fG4FileWeights.at(i_f)/PrimWeight) )break;
 	// Loop through all detectors and have them parse data vector
 	for(size_t det = 0; det < fDetectors.size(); det++) {
 	  if(fDebug>=3){
@@ -239,6 +247,7 @@ int TSBSSimDigitizer::Process(int max_events)
 	    fDetectors[det]->LoadEventData(f->GetDataVector());
 	  }else{
 	    //"LoadAccumulateData" for any other stuff we want to superimposeto signal
+	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	    double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
 				     fManager->GetBkgdSpreadTimeWindowHW());
 	    fDetectors[det]->SetTimeZero(t0);
