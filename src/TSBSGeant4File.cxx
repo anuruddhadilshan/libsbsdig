@@ -11,11 +11,11 @@
 #define D_FLAG 0 //0: nothing; 1: warning; 2: debug;
 #endif
 
-TSBSGeant4File::TSBSGeant4File() : fFile(0), fSource(0) {
+TSBSGeant4File::TSBSGeant4File() : fFile(0), fTree(0), fSource(0) {
   fFilename[0] = '\0';
 }
 
-TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
+TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fTree(0), fSource(0) {
   //TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
   SetFilename(f);
   fManager = TSBSDBManager::GetInstance();
@@ -50,17 +50,17 @@ Int_t TSBSGeant4File::Open(){
     
     TChain* C1 = (TChain*)fFile->Get("T");//Get the tree from the file
 
-#if D_FLAG>1 
-    cout << "Been there, done that" << endl;
-#endif
-    
     fTree = new g4sbs_tree(C1, fManager->GetExpType());
     // g4sbs_tree declare all variables, branches, etc... 
     // to read, event by event, the varaibles stored in the tree. 
     // See comments in g4sbs_tree for more details...
     
     fEvNum = -1;
- 
+    
+#if D_FLAG>1 
+    cout << "Just opened file " << fFilename << endl;
+#endif
+    
     return 1;
 }
 

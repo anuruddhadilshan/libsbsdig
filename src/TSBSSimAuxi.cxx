@@ -35,6 +35,9 @@ TSPEModel::TSPEModel(const char* detname,
 		     double tau, double sigma, 
 		     double t0, double tmin, double tmax)
 {
+#if DEBUG>=1
+  cout << " making new TSPEmodel for detector " << detname << endl;
+#endif  
   TF1 fFunc1(Form("fFunc1%s",detname),
   	     TString::Format("TMath::Max(0.,(x/%g)*TMath::Exp(-x/(%g)))", 
   			     tau*tau, tau),
@@ -68,7 +71,7 @@ TSPEModel::TSPEModel(const char* detname,
     }
   }
   
-  cout << endl<< detname << " pulse histo built" << endl;
+  cout << endl<< detname << " pulse histo built with address << " << fPulseHisto << endl;
 #if DEBUG>2
   for(int i = 0; i<NbinsTotal; i++){
     if(fPulseHisto->GetBinContent(i)>0)cout << fPulseHisto->GetBinContent(i) << " ";
@@ -81,7 +84,9 @@ TSPEModel::TSPEModel(const char* detname,
 bool TSPEModel::PulseOverThr(double charge, double thr)
 {
 #if DEBUG>0
-  cout << "unnormalized pulse max (ns -1) " << fPulseModel->GetMaximum() << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
+  cout << "fPulseHisto address " << fPulseHisto << endl;
+  cout //<< "unnormalized pulse max (ns -1) " << fPulseHisto->GetMaximum() 
+       << ", threshold (C/ns) " << thr << ", charge (C) " << charge << endl;
 #endif
   //if(fPulseModel->GetMaximum()<thr/charge){
   if(fPulseHisto->GetMaximum()<thr/charge){
@@ -93,6 +98,10 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
  
 void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail)
 {
+#if DEBUG>0
+  cout << "Find Lead and Trail time for pulse charge " << charge << " over threshold " << thr << endl;
+  if(fPulseHisto->IsZombie())cout << "fPulseHisto " << fPulseHisto << "is Zombie " << endl;
+#endif
   if(!PulseOverThr(charge, thr)){
     t_lead = 1.0e38;
     t_trail = 1.0e38;
@@ -151,7 +160,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
-  //cout << "TPMTSignal::Fill : fNpeChargeConv = " << fNpeChargeConv << endl;
+#if DEBUG>0
+  cout << "TPMTSignal::Fill : fNpeChargeConv = " << fNpeChargeConv << endl;
+#endif
   
   //determine lead and trail times
   double t_lead, t_trail;

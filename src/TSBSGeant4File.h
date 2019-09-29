@@ -42,6 +42,14 @@ class TSBSGeant4File {
   Int_t Open();
   Int_t Close();
   
+  bool IsOpen(){
+    if(fFile->IsOpen()){
+      return true;
+    }else{
+      return false;
+    }
+  };
+  
   Long64_t GetEntries(){
     return fTree->GetEntries();
   };

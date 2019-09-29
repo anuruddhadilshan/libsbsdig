@@ -187,7 +187,8 @@ int TSBSSimDigitizer::Process(int max_events)
   // determine which is primary:
   Double_t PrimWeight = 0;
   for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
-    int res = fG4FileStack_.at(i_f)->Open();
+    int res = 1;
+    if(!fG4FileStack_.at(i_f)->IsOpen())fG4FileStack_.at(i_f)->Open();
     if( res != 1) {
       std::cerr << "Failed to open g4sbs rootfile " << std::endl
 		<< fG4FileStack_.at(i_f)->GetFileName() << std::endl 
@@ -227,7 +228,7 @@ int TSBSSimDigitizer::Process(int max_events)
       // while( f->ReadNextEvent(fDebug) && 
       // 	     nevt_b<(fG4FileWeights.at(i_f)/PrimWeight) ) {//Keep adding as many events as indicated by the weight
       if(fDebug>=3)
-	cout << " i_f "  << i_f << " weight " << fG4FileWeights.at(i_f) << " source " << f->GetSource() << endl;
+	cout << " i_f "  << i_f << " weight " << fG4FileWeights.at(i_f) << " source " << f->GetSource() << " nfile " << nfile << endl;
       
       while( (fG4FileWeights.at(i_f)>0 && nevt_b<fG4FileWeights.at(i_f)/PrimWeight) ||
 	     (fG4FileWeights.at(i_f)<0 && nfile<fabs(fG4FileWeights.at(i_f)/PrimWeight)) 
@@ -245,12 +246,12 @@ int TSBSSimDigitizer::Process(int max_events)
 		 << " det " << fDetectors[det]->GetName() << endl;
 	  }
 	  if(f->GetSource()==0){
-	    //"LoadEventData" for signal - we want teverything cleanded up for signal
+	    //"LoadEventData" for signal - we want everything cleaned up for signal
 	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	    fDetectors[det]->SetTimeZero(0.);
 	    fDetectors[det]->LoadEventData(f->GetDataVector());
 	  }else{
-	    //"LoadAccumulateData" for any other stuff we want to superimposeto signal
+	    //"LoadAccumulateData" for any other stuff we want to superimpose to signal
 	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	    double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
 				     fManager->GetBkgdSpreadTimeWindowHW());
