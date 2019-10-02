@@ -2,6 +2,23 @@
 sbs.hcal.dettype = HCal
 sbs.hcal.unique_id = 0
 
+sbs.hcal.nchan = 288
+sbs.hcal.nlog_chan = 576
+sbs.hcal.chan_per_slot = 16
+sbs.hcal.slot_per_crate = 18
+sbs.hcal.first_crate = 2
+sbs.hcal.first_slot = 4
+
+#hcal geometry
+geo.sbs.hcal.nrows = 24
+geo.sbs.hcal.ncols = 12
+geo.sbs.hcal.xsize = 3.6576 #m
+geo.sbs.hcal.ysize = 1.8288 #m
+geo.sbs.hcal.zpos = 17.00 #m
+geo.sbs.hcal.xoffset = -0.45 #m  #in transport coordinates
+geo.sbs.hcal.yoffset = 0.0 #m  #in transport coordinates
+
+#hcal digitization info
 dig.sbs.hcal.roimpedance = 50 # ohm
 dig.sbs.hcal.adcconv = 1 # ohm
 dig.sbs.hcal.adc_encoder = fadc250
@@ -9,18 +26,9 @@ dig.sbs.hcal.tdc_encoder = f1tdc
 dig.sbs.hcal.adcbits = 12 ## I think they are 12-bit ADCs
 ## I'm just copying things exactly as they are in the cdet for now...
 ## fixing it - I had changed convention: ns/ch instead of ch/ns. sorry for confusion (EF)
-#CDet uses Lecroy 1877 TDC / HCal uses ?
 dig.sbs.hcal.tdcconversion = 0.5 #ns/ch 5.0 #tdc channel/ns
 dig.sbs.hcal.tdcbits = 16 #
-sbs.hcal.nchan = 288
-sbs.hcal.nlog_chan = 576
-sbs.hcal.chan_per_slot = 16
-sbs.hcal.slot_per_crate = 18
-sbs.hcal.first_crate = 2
-sbs.hcal.first_slot = 4
-#dig.sbs.hcal.gain = 1.0e5
-#dig.sbs.hcal.pedestal = 0.0
-#dig.sbs.hcal.pednoise = 0.0
+
 dig.sbs.hcal.threshold = 0.003 #V
 dig.sbs.hcal.triggerjitter = 3.0  # ns
 dig.sbs.hcal.triggeroffset = 100.  # ns 
@@ -30,10 +38,15 @@ dig.sbs.hcal.gatewidth = 50 #ns
 #dig.sbs.hcal.spe_sigma = 1.05  # ns
 #dig.sbs.hcal.spe_transit = 19.0  # ns
 
-
-dig.sbs.hcal.spe_sigma = 2.20  # ns
+#PMT paramters
 dig.sbs.hcal.spe_tau = 2.08  # ns
+dig.sbs.hcal.spe_sigma = 2.20  # ns
 dig.sbs.hcal.spe_transit = 19.0  # ns
+
+#one per channel...
+#dig.sbs.hcal.gain = 1.0e5
+#dig.sbs.hcal.pedestal = 0.0
+#dig.sbs.hcal.pednoise = 0.0
 
 ## Set the default pedestals
 dig.sbs.hcal.pedestal =                           # Row-[ColRange]

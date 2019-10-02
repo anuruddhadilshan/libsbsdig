@@ -54,7 +54,8 @@ void analysis_GMn(const char *inputfilename,
   //Declaring histos
   TH1D* h1_grinchMCtime = new TH1D("h1_grinchMCtime", "Grinch;MC_time (ns)", 200, -100, 100);
   TH1D* h1_hodoMCtime = new TH1D("h1_hodoMCtime", "Hodoscope;MC_time (ns)", 200, -100, 100);
-
+  TH1D* h1_cdetMCtime = new TH1D("h1_cdetMCtime", "CDet;MC_time (ns)", 200, -100, 100);
+  
   int file_num = 0;
     
   // --------------------------
@@ -104,7 +105,19 @@ void analysis_GMn(const char *inputfilename,
 	  }
 	}
       }
+      
+      if(T1->NSimData_sbs_cdet){
+	
+	for(int i = 0; i<T1->NSimData_sbs_cdet; i++){
+	  if(T1->SimData_sbs_cdet_Type->at(i)==2){
+	    for(int j = 0; j<T1->SimData_sbs_cdet_Ndata->at(j); j++){
+	      h1_cdetMCtime->Fill( (T1->SimData_sbs_cdet_Data->at(i))[j] );
+	    }
+	  }
+	}
+      }
     }//end loop on events
+
     
     
     
@@ -114,12 +127,14 @@ void analysis_GMn(const char *inputfilename,
     
   }//end loop on files
   
-  TCanvas* C1 = new TCanvas("C1", "C1", 1000, 500);
-  C1->Divide(2,1);
+  TCanvas* C1 = new TCanvas("C1", "C1", 1000, 800);
+  C1->Divide(2,2);
   C1->cd(1);
   h1_grinchMCtime->Draw("");
   C1->cd(2);
   h1_hodoMCtime->Draw("");
+  C1->cd(3);
+  h1_cdetMCtime->Draw("");
   
   fout->Write();
   
