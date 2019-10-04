@@ -233,8 +233,13 @@ int TSBSSimDigitizer::Process(int max_events)
       while( (fG4FileWeights.at(i_f)>0 && nevt_b<fG4FileWeights.at(i_f)/PrimWeight) ||
 	     (fG4FileWeights.at(i_f)<0 && nfile<fabs(fG4FileWeights.at(i_f)/PrimWeight)) 
 	     ){
-	if(!f->ReadNextEvent(fDebug))break;
-	if(fDebug>=3){
+	if(!f->ReadNextEvent(fDebug)){
+	  if(nevt_b==0)nfile = -1;
+	  //cout << "youhoo" << endl;
+	  break;
+	}
+	if(nevt_b==0 && fDebug>=3)cout << "file " << f->GetFileName() << endl;
+	if(fDebug>=5){
 	  cout << " nevt_b " << nevt_b << " file global evt number " << f->GetEvNum() << endl;
 	}
 	//if(fG4FileWeights.at(i_f)>=0 && 
@@ -261,7 +266,8 @@ int TSBSSimDigitizer::Process(int max_events)
 	}
 	nevt_b++;
       }
-      nfile++;
+      //cout << "nfile" << nfile << endl;
+      if(fG4FileWeights.at(i_f)<0)nfile++;
       i_f++;
     }
     
@@ -306,7 +312,7 @@ void TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
   fDetectors.push_back(detector);
 }
 
-void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, UInt_t weight)
+void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, Int_t weight)
 {
   //fG4FileStack.push_back(std::make_pair<file, weight>);
   // Files and weights are added at the same time, and cannot be accessed from the outside... 

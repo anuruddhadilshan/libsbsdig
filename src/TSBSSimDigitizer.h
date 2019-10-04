@@ -30,7 +30,7 @@ public:
   void AddDetector(TSBSSimDetector* detector);
 
   // Add a new file to the file stack
-  void AddInputFile(TSBSGeant4File* file, UInt_t weight = 1);
+  void AddInputFile(TSBSGeant4File* file, Int_t weight = 1);
   
 private:
   std::vector<TSBSSimDetector*> fDetectors;
@@ -44,7 +44,7 @@ private:
   // vector of vector if strings: 
   // the global vector contains the type of file, the inner vector contains the list of names of files.
   //std::vector< std::vector<TString> > fG4FileStack;
-  std::vector< UInt_t > fG4FileWeights;
+  std::vector< Int_t > fG4FileWeights;
   
   TSBSDBManager *fManager;
   

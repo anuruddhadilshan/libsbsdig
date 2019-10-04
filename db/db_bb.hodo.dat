@@ -2,13 +2,14 @@
 #hodoscope general info
 bb.hodo.dettype = Scint
 bb.hodo.unique_id = 30
+
 bb.hodo.nchan = 180
+bb.hodo.nplanes = 1
+bb.hodo.nmodules = 1
 bb.hodo.first_crate = 5
 bb.hodo.first_slot = 0
 bb.hodo.chan_per_slot = 128
 bb.hodo.slot_per_crate = 12
-bb.hodo.nplanes = 1
-bb.hodo.nmodules = 1
 
 #hodoscope geometry info
 geo.bb.hodo.nrows = 90
@@ -29,13 +30,11 @@ dig.bb.hodo.roimpedance = 50 # ohm
 dig.bb.hodo.tdc_encoder = caen1190
 dig.bb.hodo.tdcconversion = 0.1 #ns/ch
 dig.bb.hodo.tdcbits = 19
-dig.bb.hodo.triggerjitter = 3.0  # ns
-dig.bb.hodo.triggeroffset = 0.  # ns 
-dig.bb.hodo.gatewidth = 100. #ns
-dig.bb.hodo.gain = 1.0e5
-dig.bb.hodo.pedestal = 0.0
-dig.bb.hodo.pednoise = 0.0
+
 dig.bb.hodo.threshold = 0.006 #V
+dig.bb.hodo.triggerjitter = 3.0  # ns
+dig.bb.hodo.triggeroffset = 42.  # ns 
+dig.bb.hodo.gatewidth = 100. #ns
 
 dig.bb.hodo.spe_tau = 0.65  # ns
 dig.bb.hodo.spe_sigma = 1.05  # ns
@@ -45,3 +44,36 @@ dig.bb.hodo.spe_transit = 19.0  # ns
 #dig.bb.hodo.crosstalk_mean = 0.1
 #dig.bb.hodo.crosstalk_sigma = 0.03
 #dig.bb.hodo.crosstalk_chan_apart = 8
+
+dig.bb.hodo.pedestal = 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+
+dig.bb.hodo.pednoise = 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+ 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+
+dig.bb.hodo.gain = 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 
+ 1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5  1.0e5 

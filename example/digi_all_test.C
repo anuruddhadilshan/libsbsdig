@@ -13,7 +13,7 @@
 #include "THaAnalysisObject.h"
 #endif
 
-void digi_all_test(int nentries = 100, int debuglevel = 1)
+void digi_all_test(int nentries = 100, int nbkgd = 0, int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
@@ -52,7 +52,6 @@ void digi_all_test(int nentries = 100, int debuglevel = 1)
   digitizer->AddInputFile(f, 1);
 
   int nmiss = 0;
-  int nbkgd = 10;
   for(int i = 0; i<nentries*nbkgd+nmiss; i++){
     TSBSGeant4File *f_b = new TSBSGeant4File(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i));
     if(debuglevel>=2)cout << "Add to digitizer file " << f_b->GetFileName() << endl;

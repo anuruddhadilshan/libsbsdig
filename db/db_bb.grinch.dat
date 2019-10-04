@@ -31,7 +31,7 @@ dig.bb.grinch.tdcbits = 16
 
 dig.bb.grinch.threshold = 0.003 #V
 dig.bb.grinch.triggerjitter = 3.0  # ns
-dig.bb.grinch.triggeroffset = 30.  # ns 
+dig.bb.grinch.triggeroffset = 55.  # ns 
 dig.bb.grinch.gatewidth = 100. #ns
 
 dig.bb.grinch.spe_tau = 2.08  # ns
