@@ -20,7 +20,7 @@ public:
   virtual ~TSBSSimDigitizer();
 
   // Parsses the passed file event by event and digitizes
-  int Process(TSBSGeant4File *file, int max_events = 0);
+  int AddFileToEvent(TSBSGeant4File *file);
   // File superposition: Procession of a stack of files ?
   // make the file stack a member of TSBSSimDigitizer, and just "Process" it with function below 
   // -> not functional yet :/
@@ -41,6 +41,7 @@ private:
   // Lists of files with weight to perform additive digitization.
   // Files and weights are added at the same time, and cannot be accessed from the outside... 
   std::vector< TSBSGeant4File* > fG4FileStack_;
+  //TChain* FileChain;
   // vector of vector if strings: 
   // the global vector contains the type of file, the inner vector contains the list of names of files.
   //std::vector< std::vector<TString> > fG4FileStack;

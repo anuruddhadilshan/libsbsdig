@@ -11,13 +11,16 @@
 #define D_FLAG 0 //0: nothing; 1: warning; 2: debug;
 #endif
 
-TSBSGeant4File::TSBSGeant4File() : fFile(0), fTree(0), fSource(0) {
-  fFilename[0] = '\0';
+TSBSGeant4File::TSBSGeant4File() : //fFile(0), 
+  TFile::TFile(""), fTree(0), fSource(0) {
+  //fFilename[0] = '\0';
 }
 
-TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fTree(0), fSource(0) {
+TSBSGeant4File::TSBSGeant4File(const char *f) : //fFile(0), 
+  TFile::TFile(f), fTree(0), fSource(0) {
   //TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fSource(0) {
-  SetFilename(f);
+  //SetFilename(f);
+  //TFile::TFile(f)
   fManager = TSBSDBManager::GetInstance();
   fRN = TRndmManager::GetInstance();
   //Filling the table that will be used to calculate the low energy electron range in the gas. 
@@ -28,53 +31,59 @@ TSBSGeant4File::TSBSGeant4File(const char *f) : fFile(0), fTree(0), fSource(0) {
 
 TSBSGeant4File::~TSBSGeant4File() {
   Clear();
-  delete fFile;
+  Delete();
+  //delete fFile;
 }
 
+/* // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
 void TSBSGeant4File::SetFilename( const char *f ){
   if( !f ) return;
   strcpy( fFilename, f );
 }
+*/
 
 Int_t TSBSGeant4File::Open(){
     // Return 0 on fail, 1 on success
-    if( fFilename[0] == '\0' ){ return 0; }
+  if( GetName() == '\0' ){ return 0; }
 
-    delete fFile;
-    fFile = new TFile(fFilename);
+  //delete fFile;
+  //fFile = new TFile(fFilename);
     
-    if( !fFile->IsOpen() ){ 
-      fprintf(stderr, "%s: File could not be made\n",__PRETTY_FUNCTION__);
-      return 0; 
-    }
-    
-    TChain* C1 = (TChain*)fFile->Get("T");//Get the tree from the file
-
-    fTree = new g4sbs_tree(C1, fManager->GetExpType());
-    // g4sbs_tree declare all variables, branches, etc... 
-    // to read, event by event, the varaibles stored in the tree. 
-    // See comments in g4sbs_tree for more details...
-    
-    fEvNum = -1;
-    
+  //if( !fFile->IsOpen() ){ 
+  if( !IsOpen() ){ 
+    fprintf(stderr, "%s: File could not be made\n",__PRETTY_FUNCTION__);
+    return 0; 
+  }
+  
+  TChain* C1 = (TChain*)fFile->Get("T");//Get the tree from the file
+  
+  fTree = new g4sbs_tree(C1, fManager->GetExpType());
+  // g4sbs_tree declare all variables, branches, etc... 
+  // to read, event by event, the varaibles stored in the tree. 
+  // See comments in g4sbs_tree for more details...
+  
+  fEvNum = -1;
+  
 #if D_FLAG>1 
-    cout << "Just opened file " << fFilename << endl;
+  cout << "Just opened file " << GetName() << endl;
 #endif
-    
-    return 1;
+  
+  return 1;
 }
 
+/* // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
 Int_t TSBSGeant4File::Close(){
-    // Return 0 on fail, 1 on success
-    Int_t ret = 1;
-    
-    if( !fFile->IsOpen() ){ return 0; }
-    
-    fFile->Close();
-    
-    delete fFile; fFile = 0;
-    return ret;
+  // Return 0 on fail, 1 on success
+  Int_t ret = 1;
+  
+  if( !fFile->IsOpen() ){ return 0; }
+  
+  fFile->Close();
+  
+  delete fFile; fFile = 0;
+  return ret;
 }
+*/
 
 Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Return 1 on success
@@ -248,7 +257,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
   }
   */
-  
+   
   // Hadron Arm
   // Process CDet data
   if(fTree->Harm_CDET_Scint.nhits){

@@ -175,6 +175,14 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
       
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetDataType[fDetInfo.DetFullName()].push_back(2);
+      event.SimDetNData[fDetInfo.DetFullName()].push_back(1);
+      simdata.push_back(fSignals[m].EventTime());
+      event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
+      event.NSimDetData[fDetInfo.DetFullName()]++;
+      simdata.clear();
+      
       if(fDebug>=3)cout << "TSBSSimECal::Digitize() : Unique Det ID " << UniqueDetID() 
 			<< " = > fSignals[m].ADC() " << fSignals[m].ADC() << endl;
       //define convention for type:

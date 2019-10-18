@@ -9,6 +9,27 @@ bb.ps.first_slot = 0
 bb.ps.chan_per_slot = 64
 bb.ps.slot_per_crate = 20
 
+##############################################################
+# inconvenient: some of the stuff will need to be redeclared - 
+# but let's not change everythingbefore we're sure it's needed
+
+## Positions in [m] where +z is roated by bb.theta ????
+#bb.ps.position = 0 0 2.5319
+
+## Test settings for one sub-assembly
+#bb.ps.size = 0.74  2.295  0.085
+
+#bb.ps.ncols = 2
+#bb.ps.nrows = 27
+ 
+## Position of first module
+#bb.ps.xy    =  -1.105  0.185
+## Space between modules
+#bb.ps.dxdy  =  0.0  0.0
+
+## Mininum energy  for a cluster center (not really used right now)
+#bb.ps.emin  = 0.0
+
 #PS geometry info
 geo.bb.ps.nrows = 27
 geo.bb.ps.ncols = 2
@@ -31,7 +52,7 @@ dig.bb.ps.adcbits = 12
 
 dig.bb.ps.threshold = 0.006 #V
 dig.bb.ps.triggerjitter = 3.0  # ns
-dig.bb.ps.triggeroffset = 20.  # ns 
+dig.bb.ps.triggeroffset = 25.  # ns 
 dig.bb.ps.gatewidth = 100. #ns
 
 dig.bb.ps.spe_tau = 0.65  # ns
@@ -46,33 +67,6 @@ dig.bb.ps.spe_transit = 19.0  # ns
 #dig.bb.ps.gain = 5.0e5
 #dig.bb.ps.pedestal = 300.0 # ADC channels 
 #dig.bb.ps.pednoise = 50.0 # ADC channels 
-
-##############################################################
-# inconvenient: some of the stuff will need to be redeclared - 
-# but let's not change everythingbefore we're sure it's needed
-
-## Positions in [m] where +z is roated by bb.theta ????
-#bb.ps.position = 0 0 2.5319
-
-## HCal is composed of 4 sub-assemblies each of 6x12 (row,col) modules
-
-## Test settings for one sub-assembly
-#bb.ps.size = 0.74  2.295  0.085
-
-## HCal is a matrix with nrows and ncols
-## Numbers below are just a test so that it maches the number of used fADC's
-#bb.ps.ncols = 2
-#bb.ps.nrows = 27
-#bb.ps.ncols = 1
-#bb.ps.nrows = 1
-
-## Position of first module
-#bb.ps.xy    =  -1.105  0.185
-## Space between modules
-#bb.ps.dxdy  =  0.0  0.0
-
-## Mininum energy  for a cluster center (not really used right now)
-#bb.ps.emin  = 0.0
 
 dig.bb.ps.pedestal = # pedestal per ch - ADC channels 
  300  300 

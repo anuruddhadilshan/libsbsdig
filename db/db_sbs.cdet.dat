@@ -75,7 +75,7 @@ dig.sbs.cdet.tdcbits = 16
 
 dig.sbs.cdet.threshold = 0.005 #V
 dig.sbs.cdet.triggerjitter = 3.0  # ns
-dig.sbs.cdet.triggeroffset = 0.0  # ns 
+dig.sbs.cdet.triggeroffset = 80.0  # ns 
 dig.sbs.cdet.gatewidth = 100. #ns
 
 #PMT paramters
@@ -86,20 +86,14 @@ dig.sbs.cdet.spe_tau = 0.6  # ns
 dig.sbs.cdet.spe_sigma = 3.8  # ns
 dig.sbs.cdet.spe_transit = 12.0  # ns
 
-# pedestal noise 
-#dig.sbs.cdet.pulsenoiseconst = 30.   #ADC values
-#dig.sbs.cdet.pulsenoisesigma = 7.    #ADC values
-
 #NINO cross talk parameter
 #sbs.cdet.do_crosstalk = 0
 #sbs.cdet.crosstalk_mean = 0.1
 #sbs.cdet.crosstalk_sigma = 0.03
 #sbs.cdet.crosstalk_chan_apart = 8
 
-#cdet detector map
 # crate slot ch_min ch_max
 
-#eventually will need one per channel - put off for the moment as there are 2352
 dig.sbs.cdet.pedestal = 
  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 

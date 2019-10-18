@@ -56,6 +56,10 @@ void analysis_GMn(const char *inputfilename,
   TH1D* h1_hodoMCtime = new TH1D("h1_hodoMCtime", "Hodoscope;MC_time (ns)", 200, -100, 100);
   TH1D* h1_cdetMCtime = new TH1D("h1_cdetMCtime", "CDet;MC_time (ns)", 200, -100, 100);
   
+  TH1D* h1_bbpsMCtime = new TH1D("h1_bbpsMCtime", "BB Preshower;MC_time (ns)", 200, -100, 100);
+  TH1D* h1_bbshMCtime = new TH1D("h1_bbshMCtime", "BB shower;MC_time (ns)", 200, -100, 100);
+  TH1D* h1_hcalMCtime = new TH1D("h1_hcalMCtime", "HCal;MC_time (ns)", 200, -100, 100);
+  
   int file_num = 0;
     
   // --------------------------
@@ -85,10 +89,9 @@ void analysis_GMn(const char *inputfilename,
       T1->GetEntry(nevent);
       //Plot MC time for GRINCH as an example
       if(T1->NSimData_bb_grinch){
-	     
 	for(int i = 0; i<T1->NSimData_bb_grinch; i++){
 	  if(T1->SimData_bb_grinch_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(j); j++){
+	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
 	      h1_grinchMCtime->Fill( (T1->SimData_bb_grinch_Data->at(i))[j] );
 	    }
 	  }
@@ -96,10 +99,9 @@ void analysis_GMn(const char *inputfilename,
       }
 
       if(T1->NSimData_bb_hodo){
-	
 	for(int i = 0; i<T1->NSimData_bb_hodo; i++){
 	  if(T1->SimData_bb_hodo_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(j); j++){
+	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(i); j++){
 	      h1_hodoMCtime->Fill( (T1->SimData_bb_hodo_Data->at(i))[j] );
 	    }
 	  }
@@ -107,15 +109,35 @@ void analysis_GMn(const char *inputfilename,
       }
       
       if(T1->NSimData_sbs_cdet){
-	
 	for(int i = 0; i<T1->NSimData_sbs_cdet; i++){
 	  if(T1->SimData_sbs_cdet_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_sbs_cdet_Ndata->at(j); j++){
+	    for(int j = 0; j<T1->SimData_sbs_cdet_Ndata->at(i); j++){
 	      h1_cdetMCtime->Fill( (T1->SimData_sbs_cdet_Data->at(i))[j] );
 	    }
 	  }
 	}
       }
+
+      if(T1->NSimData_bb_ps){
+	for(int i = 0; i<T1->NSimData_bb_ps; i++){
+	  if(T1->SimData_bb_ps_Type->at(i)==2){
+	    for(int j = 0; j<T1->SimData_bb_ps_Ndata->at(i); j++){
+	      h1_bbpsMCtime->Fill( (T1->SimData_bb_ps_Data->at(i))[j] );
+	    }
+	  }
+	}
+      }
+      
+      if(T1->NSimData_bb_sh){
+	for(int i = 0; i<T1->NSimData_bb_sh; i++){
+	  if(T1->SimData_bb_sh_Type->at(i)==2){
+	    for(int j = 0; j<T1->SimData_bb_sh_Ndata->at(i); j++){
+	      h1_bbshMCtime->Fill( (T1->SimData_bb_sh_Data->at(i))[j] );
+	    }
+	  }
+	}
+      }
+      
     }//end loop on events
 
     
@@ -127,14 +149,21 @@ void analysis_GMn(const char *inputfilename,
     
   }//end loop on files
   
-  TCanvas* C1 = new TCanvas("C1", "C1", 1000, 800);
-  C1->Divide(2,2);
+  TCanvas* C1 = new TCanvas("C1", "C1", 1200, 800);
+  C1->Divide(3,2);
   C1->cd(1);
   h1_grinchMCtime->Draw("");
   C1->cd(2);
   h1_hodoMCtime->Draw("");
   C1->cd(3);
   h1_cdetMCtime->Draw("");
+  
+  C1->cd(4);
+  h1_bbpsMCtime->Draw("");
+  C1->cd(5);
+  h1_bbshMCtime->Draw("");
+  C1->cd(6);
+  h1_hcalMCtime->Draw("");
   
   fout->Write();
   

@@ -60,8 +60,8 @@ void chan2pos_SH(int chan, double& xpos, double& ypos){
   ypos = 110.5-8.5*row;
 }
 
-void analysis_GMn(const char *inputfilename, 
-		  const int Evt2display, const char* filesave = "")
+void EvtDisplay_GMn(const char *inputfilename, 
+		    const int Evt2display, const char* filesave = "")
 {
   gStyle->SetOptStat(0);
   gStyle->SetPalette(55);
@@ -129,16 +129,15 @@ void analysis_GMn(const char *inputfilename,
       if(T1->NSimData_bb_grinch){
 	for(int i = 0; i<T1->NSimData_bb_grinch; i++){
 	  chan2pos_GRINCH(T1->SimData_bb_grinch_Chan->at(i), xpos, ypos);
-	  if(T1->SimData_bb_grinch_Type->at(i)==2){
-	    // tmean = 0;
-	    h1_GRINCH->Fill(xpos, ypos, T1->SimData_bb_grinch_Ndata->at(i));
+	  if(T1->SimData_bb_grinch_Type->at(i)==1){
 	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
-	    //   tmean+= (T1->SimData_bb_grinch_Data->at(i))[j];
-	      
+	      h1_GRINCH->Fill(xpos, ypos, (T1->SimData_bb_grinch_Data->at(i))[j]);
+	    }
+	  }
+	  if(T1->SimData_bb_grinch_Type->at(i)==2){
+	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
 	      h1_GRINCH_time->Fill(T1->SimData_bb_grinch_Chan->at(i), (T1->SimData_bb_grinch_Data->at(i))[j]);
 	    }
-	    // tmean/= T1->SimData_bb_grinch_Ndata->at(i);
-	    // h1_GRINCH->Fill(xpos, ypos, tmean);
 	  }
 	}
       }
@@ -146,15 +145,15 @@ void analysis_GMn(const char *inputfilename,
       if(T1->NSimData_bb_hodo){
 	for(int i = 0; i<T1->NSimData_bb_hodo; i++){
 	  chan2pos_TH(T1->SimData_bb_hodo_Chan->at(i), xpos, ypos);
+	  if(T1->SimData_bb_grinch_Type->at(i)==1){
+	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
+	      h1_TH->Fill(xpos, ypos, (T1->SimData_bb_hodo_data->at(i))[j]);
+	    }
+	  }
 	  if(T1->SimData_bb_hodo_Type->at(i)==2){
-	    //tmean = 0;
-	    h1_TH->Fill(xpos, ypos, T1->SimData_bb_hodo_Ndata->at(i));
 	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(i); j++){
-	      //tmean+= (T1->SimData_bb_hodo_Data->at(i))[j];
 	      h1_TH_time->Fill(T1->SimData_bb_hodo_Chan->at(i), (T1->SimData_bb_hodo_Data->at(i))[j]);
 	    }
-	    //tmean/= T1->SimData_bb_hodo_Ndata->at(i);
-	    //h1_TH->Fill(xpos, ypos, tmean);
 	  }
 	}
       }

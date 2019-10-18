@@ -24,7 +24,7 @@ class g4sbsgendata;
 ///////////////////////////////////////////////////////////////////////////////
 
 
-class TSBSGeant4File {
+class TSBSGeant4File : public TFile {
 
  public:
   //constructor may be inputed a data file to input some of the paramaters used by this class
@@ -36,7 +36,7 @@ class TSBSGeant4File {
   //void ReadGasData(const char* filename); // NB: See comment lines 128-129 
   
   // Standard getters and setters
-  void  SetFilename( const char *name );
+  //void  SetFilename( const char *name );
   void  SetSource( Int_t i ) { fSource = i; }
   void  Clear();
   Int_t Open();
@@ -54,7 +54,8 @@ class TSBSGeant4File {
     return fTree->GetEntries();
   };
   
-  const char* GetFileName() const { return fFilename; }
+  // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
+  //const char* GetFileName() const { return fFilename; }
   Int_t GetSource() const { return fSource; }
   
   // This is actually where the data is read: 
@@ -79,8 +80,9 @@ class TSBSGeant4File {
   
  private:
   // Members
-  char  fFilename[255];
-  TFile *fFile;
+  // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
+  //char  fFilename[255];
+  //TFile *fFile;
   g4sbs_tree *fTree;// needed to easily unfold root file data
   Int_t fSource;   // User-defined source ID (e.g. MC run number)  
   //hit data arrays

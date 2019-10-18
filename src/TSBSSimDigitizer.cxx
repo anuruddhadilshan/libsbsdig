@@ -73,10 +73,9 @@ TSBSSimDigitizer::~TSBSSimDigitizer()
   fG4FileStack_.clear();
 }
 
-int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
+int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
 {
-  cout << "Warning:  TSBSSimDigitizer::Process(TSBSGeant4File *, int) is deprecated." << endl << "Please use int TSBSSimDigitizer::Process(int)" << endl;
-  
+  if(fDebug>=3)cout << "Add in full file " << f->GetName() << endl; 
   
   if(!f)
     return 0;
@@ -90,73 +89,31 @@ int TSBSSimDigitizer::Process(TSBSGeant4File *f, int max_events)
     return 0;
   }
 
-  if ( max_events <= 0 || max_events > f->GetEntries() )
-    max_events = f->GetEntries();
+  //if ( max_events <= 0 || max_events > f->GetEntries() )
+  int max_events = f->GetEntries();
 
   // Now loop through the file and digitize entries
   //int d_flag_readevent = 0;
   int nevent = 0;
   //int ngood = 0;
-  bool has_data;
+  //bool has_data;
   while( f->ReadNextEvent(fDebug) && nevent<max_events ) {
-    if(fDebug>=3)cout << "clear event " << endl;
-    fEvent->Clear();
-    has_data = false;
-    // Tell detectors a new event has started
-    for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "event start det " << fDetectors[det]->GetName() << endl;
-      fDetectors[det]->EventStart();
-    }
-   
-    TSBSSimDetector::SetEventNum(nevent); ///< Needed by GEMs for some reason
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
       if(fDebug>=3){
 	cout << "load event for det " << fDetectors[det]->GetName() << endl;
 	cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
       }
-      fDetectors[det]->SetTimeZero(0.);
+      double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
+			       fManager->GetBkgdSpreadTimeWindowHW());
+      fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
-    // Now digitize all detectors
-    for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;
-      fDetectors[det]->Digitize(*fEvent);
-    }
-    fEvent->fEvtID = nevent;
-
-    // Fill in tree if any of the detectors have data to fill
-    for(size_t det = 0; det < fDetectors.size() && !has_data; det++) {
-      has_data = fDetectors[det]->HasData();
-    }
-    if(has_data) {
-      // Write to the tree
-      fOutTree->Fill();
-      if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
-    }
-    // Tell detectors the event ended
-    for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "event end det " << fDetectors[det]->GetName() << endl;
-      fDetectors[det]->EventEnd();
-    }
-
-
+    
     nevent++;
   }
   
-  if(fDebug>=1)cout << "write output file " << endl;
-  fOutFile->Write();
-  // Close files
-  
-  //cout << "close output file " << endl;
-  //fOutFile->Close();
-  
-  //cout << "close geeant 4 file " << endl;
-  //f->Close();
-  
-  if(fDebug>=1)cout << "Done closing files " << endl;
-
-  return 0;
+  return 1;
 }
 
 int TSBSSimDigitizer::Process(int max_events)
@@ -176,7 +133,7 @@ int TSBSSimDigitizer::Process(int max_events)
       int res = fG4FileStack_.at(i_f)->Open();
       if( res != 1) {
 	std::cerr << "Failed to open g4sbs rootfile " << std::endl
-		  << fG4FileStack_.at(i_f)->GetFileName() << std::endl 
+		  << fG4FileStack_.at(i_f)->GetName() << std::endl 
 		  << "Failed with error code: " << res << std::endl;
 	return 0;
       }
@@ -191,7 +148,7 @@ int TSBSSimDigitizer::Process(int max_events)
     if(!fG4FileStack_.at(i_f)->IsOpen())fG4FileStack_.at(i_f)->Open();
     if( res != 1) {
       std::cerr << "Failed to open g4sbs rootfile " << std::endl
-		<< fG4FileStack_.at(i_f)->GetFileName() << std::endl 
+		<< fG4FileStack_.at(i_f)->GetName() << std::endl 
 		<< "Failed with error code: " << res << std::endl;
       return 0;
     }
@@ -221,7 +178,17 @@ int TSBSSimDigitizer::Process(int max_events)
     for(std::vector<TSBSGeant4File*>::const_iterator it = fG4FileStack_.begin(); it!=fG4FileStack_.end(); ++it){
       TSBSGeant4File* f = (*it);
       nevt_b = 0;
-      if(fG4FileWeights.at(i_f)>0)nfile = 0;
+      //Stop if no primary signal ?
+      //if(f->GetSource()>0 && !has_data)break;
+      if(fG4FileWeights.at(i_f)>0){
+	nfile = 0;
+      }
+      /*
+	else if(has_data){
+	for()
+	AddFileToEvent();
+	}
+      */
       //f_b = fG4FileStack.at(i_f);
       //if(fG4FileWeights.at(i_f)>=0){}
       
@@ -238,7 +205,7 @@ int TSBSSimDigitizer::Process(int max_events)
 	  //cout << "youhoo" << endl;
 	  break;
 	}
-	if(nevt_b==0 && fDebug>=3)cout << "file " << f->GetFileName() << endl;
+	if(nevt_b==0 && fDebug>=3)cout << "file " << f->GetName() << endl;
 	if(fDebug>=5){
 	  cout << " nevt_b " << nevt_b << " file global evt number " << f->GetEvNum() << endl;
 	}
@@ -247,7 +214,7 @@ int TSBSSimDigitizer::Process(int max_events)
 	// Loop through all detectors and have them parse data vector
 	for(size_t det = 0; det < fDetectors.size(); det++) {
 	  if(fDebug>=3){
-	    cout << "load event " << nevt_b << " for file " << f->GetFileName() 
+	    cout << "load event " << nevt_b << " for file " << f->GetName() 
 		 << " det " << fDetectors[det]->GetName() << endl;
 	  }
 	  if(f->GetSource()==0){
