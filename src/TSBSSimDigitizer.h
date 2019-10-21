@@ -3,12 +3,14 @@
 
 #include "THaAnalysisObject.h"
 #include <vector>
+#include <set>
 //#include "TRandom3.h"
 
 class TSBSGeant4File;
 class TSBSSimDetector;
 class TSBSSimEvent;
 class TFile;
+class TChain;
 class TTree;
 class THaAnalysisObject;
 class TSBSDBManager;
@@ -46,6 +48,12 @@ private:
   // the global vector contains the type of file, the inner vector contains the list of names of files.
   //std::vector< std::vector<TString> > fG4FileStack;
   std::vector< Int_t > fG4FileWeights;
+  
+  std::set<TString> fSigFiles;
+  std::set<TString> fBkgdFiles;
+  
+  TChain* fSigChain;
+  TChain* fBkgdChain;
   
   TSBSDBManager *fManager;
   

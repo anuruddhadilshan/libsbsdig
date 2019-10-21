@@ -5,6 +5,7 @@
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
 #include <TTree.h>
+#include <TChain.h>
 #include <TFile.h>
 
 TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
@@ -14,6 +15,9 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   fRN = TRndmManager::GetInstance();
   
   cout << "instantiated DB and RN managers" << endl;
+  
+  fSigChain = new TChain("T");
+  fBkgdChain = new TChain("T");
   
   fEvent = new TSBSSimEvent();//problem here
   cout << "instantiated SimEvent" << endl;
@@ -281,6 +285,14 @@ void TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
 
 void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, Int_t weight)
 {
+  if(file->GetSource()==0){
+    fSigChain->Add(file->GetName());
+    fSigFiles.insert(TString(file->GetName()));
+  }else{
+    fBkgdChain->Add(file->GetName());
+    fBkgdFiles.insert(TString(file->GetName()));
+  }
+  
   //fG4FileStack.push_back(std::make_pair<file, weight>);
   // Files and weights are added at the same time, and cannot be accessed from the outside... 
   // No need to inforce them to be bound together by a quirky object
