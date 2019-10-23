@@ -7,17 +7,23 @@
 #include <TTree.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TChainElement.h>
 
 TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 {
   cout << "Initialize TSBSSimDigitzer " << endl;
+  //clear everything - in case.
+  fSources.clear();
+  fSourceChainMap.clear();
+  fSourceWeightMap.clear();
+  
   fManager = TSBSDBManager::GetInstance();
   fRN = TRndmManager::GetInstance();
   
   cout << "instantiated DB and RN managers" << endl;
   
-  fSigChain = new TChain("T");
-  fBkgdChain = new TChain("T");
+  //fSigChain = new TChain("T");
+  //fBkgdChain = new TChain("T");
   
   fEvent = new TSBSSimEvent();//problem here
   cout << "instantiated SimEvent" << endl;
@@ -74,7 +80,9 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 TSBSSimDigitizer::~TSBSSimDigitizer()
 {
   fDetectors.clear();
-  fG4FileStack_.clear();
+  fSources.clear();
+  fSourceChainMap.clear();
+  fSourceWeightMap.clear();
 }
 
 int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
@@ -85,7 +93,6 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
     return 0;
 
   // Can we open the file?
-  f->SetSource(0);
   int res = f->Open();
   if( res != 1) {
     std::cerr << "Failed to open g4sbs rootfile. Failed with error code: "
@@ -93,15 +100,9 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
     return 0;
   }
 
-  //if ( max_events <= 0 || max_events > f->GetEntries() )
-  int max_events = f->GetEntries();
-
   // Now loop through the file and digitize entries
-  //int d_flag_readevent = 0;
-  int nevent = 0;
-  //int ngood = 0;
   //bool has_data;
-  while( f->ReadNextEvent(fDebug) && nevent<max_events ) {
+  while( f->ReadNextEvent(fDebug) ) {
     // Loop through all detectors and have them parse data vector
     for(size_t det = 0; det < fDetectors.size(); det++) {
       if(fDebug>=3){
@@ -113,15 +114,142 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
       fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadEventData(f->GetDataVector());
     }
-    
-    nevent++;
   }
   
   return 1;
 }
 
-int TSBSSimDigitizer::Process(int max_events)
+int TSBSSimDigitizer::Process(ULong_t max_events)
 {
+  if(fSourceChainMap.empty())return 0;
+  
+  int nevent = 0;
+  int nfile = 0;
+  UInt_t nevt_b;
+  //int ngood = 0;
+  bool has_data;  
+
+  TObjArray *SigFileList = fSourceChainMap[0]->GetListOfFiles();
+  TIter next_sig(SigFileList);
+
+  TChainElement *chEl_sig = 0;
+  
+  while( (chEl_sig=(TChainElement*)next_sig()) && 
+	 nevent<max_events ){
+    TSBSGeant4File* f = new TSBSGeant4File(chEl_sig->GetTitle());
+    f->SetSource(0);
+    //G4SBSRunData *rd;
+    
+    while( nevent<max_events ) {
+      if(fDebug>=3)cout << "clear event " << endl;
+      fEvent->Clear();
+      has_data = false;
+      // Accumulate data here...
+      //f->
+      
+      // if(!f->ReadNextEvent(fDebug)){
+      // 	if(nevt_b==0)nfile = -1;
+      // 	//cout << "youhoo" << endl;
+      // 	break;
+      // }
+      //while( f->ReadNextEvent(fDebug) ){
+      if(!f->ReadNextEvent(fDebug))continue;
+ 
+      for(size_t det = 0; det < fDetectors.size(); det++) {
+	if(fDebug>=3){
+	  cout << "load event " << nevt_b << " for file " << f->GetName() 
+	       << " det " << fDetectors[det]->GetName() << endl;
+	}
+	//"LoadEventData" for signal - we want everything cleaned up for signal
+	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+	fDetectors[det]->SetTimeZero(0.);
+	fDetectors[det]->LoadEventData(f->GetDataVector());
+	/*
+	//"LoadAccumulateData" for any other stuff we want to superimpose to signal
+	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+	double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
+				 fManager->GetBkgdSpreadTimeWindowHW());
+	fDetectors[det]->SetTimeZero(t0);
+	fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+	*/
+      }
+      
+      //now loop on other chains to add background
+      for(int i = 0; i<fSources.size(); i++){
+	if(fSources[i]==0)continue;//signal - we're already treating it
+	
+	TObjArray *BkgdFileList = fSourceChainMap[fSources[i]]->GetListOfFiles();
+	TIter next_bkgd(BkgdFileList);
+	
+	TChainElement *chEl_bkgd = 0;
+	
+	if(fSourceWeightMap[fSources[i]]<0){
+	  nfile = 0;
+	  while( (chEl_bkgd=(TChainElement*)next_bkgd()) && 
+		 nfile<abs(fSourceWeightMap[fSources[i]]) ){
+	    TSBSGeant4File* f_b = new TSBSGeant4File(chEl_bkgd->GetTitle());
+	    f_b->SetSource(fSources[i]);
+	    
+	    AddFileToEvent(f_b);
+	    fSourceChainMap[fSources[i]]->RecursiveRemove(f_b);
+	    nfile++;
+	  }
+	}else{
+	  nevt_b = 0;
+	  while( (chEl_bkgd=(TChainElement*)next_bkgd()) && 
+		 nevt_b<fSourceWeightMap[fSources[i]] ){
+	    TSBSGeant4File* f_b = new TSBSGeant4File(chEl_bkgd->GetTitle());
+	    f_b->SetSource(fSources[i]);
+	    
+	    for(size_t det = 0; det < fDetectors.size(); det++) {
+	      if(fDebug>=3){
+		cout << "load event " << nevt_b << " for file " << f->GetName() 
+		     << " det " << fDetectors[det]->GetName() << endl;
+	      }
+	      //"LoadAccumulateData" for any other stuff we want to superimpose to signal
+	      if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
+	      double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
+				       fManager->GetBkgdSpreadTimeWindowHW());
+	      fDetectors[det]->SetTimeZero(t0);
+	      fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+	    }
+	    //AddFileToEvent(f_b);
+	    //fSourceChainMap[fSources[i]]->RecursiveRemove(f_b);
+	  }
+	}
+	/*
+	  TObjArray *BkgdFileList = fSourceChainMap[fSources[i]]->GetListOfFiles();
+	  TIter next_bkgd(BkgdFileList);
+	  
+	  TChainElement *chEl_bkgd = 0;
+	*/
+      }
+      
+      for(size_t det = 0; det < fDetectors.size(); det++) {
+	if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;
+	fDetectors[det]->Digitize(*fEvent);
+      }
+      fEvent->fEvtID = nevent;
+      
+      // Fill in tree if any of the detectors have data to fill
+      for(size_t det = 0; det < fDetectors.size() && !has_data; det++) {
+	has_data = fDetectors[det]->HasData();
+      }
+      if(has_data) {
+	// Write to the tree
+	if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
+	fOutTree->Fill();
+      }
+      nevent++;
+    }//end loop on events
+    
+  }//end loop on signal files
+  
+  //for(int i = 0; i<fSourceChainMap.size(); i++){
+    
+  //}
+  
+  /*
   //cout << "Warning:  TSBSSimDigitizer::Process(int) is not functional yet." << endl 
   //     << "Please use int TSBSSimDigitizer::Process(TSBSGeant4File, int)" << endl;
   if(fG4FileStack_.size()==0)
@@ -131,7 +259,7 @@ int TSBSSimDigitizer::Process(int max_events)
   //TSBSGeant4File* f; = fG4FileStack.at(0);
   //TSBSGeant4File* f_b;
   // Can we open the files?
-  /*
+
   for(int i_f = 0; i_f<fG4FileStack.size(); i_f++){
     for(int j_f = 0; j_f<fG4FileStack.at(i_f).size(); j_f++){
       int res = fG4FileStack_.at(i_f)->Open();
@@ -143,7 +271,7 @@ int TSBSSimDigitizer::Process(int max_events)
       }
     }
   }
-  */
+
   //go through the file stack and open all of them...
   // determine which is primary:
   Double_t PrimWeight = 0;
@@ -187,12 +315,12 @@ int TSBSSimDigitizer::Process(int max_events)
       if(fG4FileWeights.at(i_f)>0){
 	nfile = 0;
       }
-      /*
+
 	else if(has_data){
 	for()
 	AddFileToEvent();
 	}
-      */
+
       //f_b = fG4FileStack.at(i_f);
       //if(fG4FileWeights.at(i_f)>=0){}
       
@@ -273,7 +401,7 @@ int TSBSSimDigitizer::Process(int max_events)
   //f->Close();
   
   if(fDebug>=1)cout << "Done closing files " << endl;
-
+      */
   return 0;
 }
 
@@ -283,6 +411,7 @@ void TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
   fDetectors.push_back(detector);
 }
 
+/*
 void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, Int_t weight)
 {
   if(file->GetSource()==0){
@@ -300,5 +429,17 @@ void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, Int_t weight)
   fG4FileWeights.push_back(weight);
   
 }
+*/
+
+void TSBSSimDigitizer::AddInputFile(const char* filename, Int_t source, Int_t weight)
+{
+  fSources.push_back(source);
+  //if Chain does not exist yet, create it.
+  if(fSourceChainMap[source]==0)fSourceChainMap[source] = new TChain("T");
+  fSourceChainMap[source]->Add(filename);
+  fSourceWeightMap[source] = weight;
+}
+
+
 
 ClassImp(TSBSSimDigitizer)

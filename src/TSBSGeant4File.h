@@ -42,6 +42,7 @@ class TSBSGeant4File : public TFile {
   Int_t Open();
   Int_t Close();
   
+  /* // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
   bool IsOpen(){
     if(fFile->IsOpen()){
       return true;
@@ -49,6 +50,7 @@ class TSBSGeant4File : public TFile {
       return false;
     }
   };
+  */
   
   Long64_t GetEntries(){
     return fTree->GetEntries();

@@ -4,6 +4,7 @@
 #include "THaAnalysisObject.h"
 #include <vector>
 #include <set>
+#include <map>
 //#include "TRandom3.h"
 
 class TSBSGeant4File;
@@ -26,13 +27,14 @@ public:
   // File superposition: Procession of a stack of files ?
   // make the file stack a member of TSBSSimDigitizer, and just "Process" it with function below 
   // -> not functional yet :/
-  int Process(int max_events = 0);// Process the mmeber file stack
+  int Process(ULong_t max_events = -1);// Process the signal chain
   
   // Add a new detector to the list
   void AddDetector(TSBSSimDetector* detector);
 
   // Add a new file to the file stack
-  void AddInputFile(TSBSGeant4File* file, Int_t weight = 1);
+  //void AddInputFile(TSBSGeant4File* file, Int_t weight = 1);
+  void AddInputFile(const char* filename, Int_t source, Int_t weight = 1);
   
 private:
   std::vector<TSBSSimDetector*> fDetectors;
@@ -40,20 +42,10 @@ private:
   TFile *fOutFile;
   TTree *fOutTree;
     
-  // Lists of files with weight to perform additive digitization.
-  // Files and weights are added at the same time, and cannot be accessed from the outside... 
-  std::vector< TSBSGeant4File* > fG4FileStack_;
-  //TChain* FileChain;
-  // vector of vector if strings: 
-  // the global vector contains the type of file, the inner vector contains the list of names of files.
-  //std::vector< std::vector<TString> > fG4FileStack;
-  std::vector< Int_t > fG4FileWeights;
-  
-  std::set<TString> fSigFiles;
-  std::set<TString> fBkgdFiles;
-  
-  TChain* fSigChain;
-  TChain* fBkgdChain;
+  // maps of files and weights with source to perform additive digitization.
+  std::vector<Int_t> fSources;
+  std::map<Int_t, TChain*> fSourceChainMap;
+  std::map<Int_t, Int_t> fSourceWeightMap;
   
   TSBSDBManager *fManager;
   
