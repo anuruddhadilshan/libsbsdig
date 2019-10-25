@@ -96,15 +96,16 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
   //bool has_data;
   while( f->ReadNextEvent(fDebug) ) {
     // Loop through all detectors and have them parse data vector
+     if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
     for(size_t det = 0; det < fDetectors.size(); det++) {
       if(fDebug>=3){
 	cout << "load event for det " << fDetectors[det]->GetName() << endl;
-	cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
       }
       double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
 			       fManager->GetBkgdSpreadTimeWindowHW());
       fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+      if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
     }
   }
   
@@ -135,7 +136,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
   for(it; it!=fSources.end(); ++it){
     source = *it;
     if(source==0)continue;//signal - we're already treating it
-    cout << "source number " << source << endl;
+    if(fDebug>=2)cout << "source number " << source << endl;
     Sources.push_back(source);
     BkgdFileLists.push_back(fSourceChainMap[source]->GetListOfFiles());
     BkgdIters.push_back(TIter(BkgdFileLists.back()));
@@ -213,7 +214,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	    AddFileToEvent(f_b);
 	    //chEl_bkgd
 	    //fSourceChainMap[source]->RecursiveRemove(f_b);
-	    //f_b->~TSBSGeant4File();
+	    f_b->~TSBSGeant4File();
 	    nfile++;
 	  }
 	}else{
@@ -228,17 +229,18 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	    f_b->SetSource(source);
 	    if(!f_b->IsOpen())f_b->Open();
 	    
+	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f_b->GetDataVector().size() << endl;
 	    for(size_t det = 0; det < fDetectors.size(); det++) {
 	      if(fDebug>=3){
 		cout << "load event " << f_b->GetEvNum() << " for file " << f_b->GetName() 
 		     << " det " << fDetectors[det]->GetName() << endl;
 	      }
 	      //"LoadAccumulateData" for any other stuff we want to superimpose to signal
-	      if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	      double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
 				       fManager->GetBkgdSpreadTimeWindowHW());
 	      fDetectors[det]->SetTimeZero(t0);
 	      fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+	      if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
 	    }
 	    //AddFileToEvent(f_b);
 	    //fSourceChainMap[source]->RecursiveRemove(f_b);

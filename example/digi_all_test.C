@@ -53,8 +53,8 @@ void digi_all_test(int nentries = 100, int nbkgd = 0, int debuglevel = 1)
   
   digitizer->AddInputFile("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20190725_15/elastic_0.root", 0, 1);
   
-  int nmiss = 0;
-  for(int i = 0; i<nentries*nbkgd+nmiss; i++){
+  //int nmiss = 0;
+  for(int i = 0; i<2000; i++){
     // TSBSGeant4File *f_b = new TSBSGeant4File(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i));
     // if(debuglevel>=2)cout << "Add to digitizer file " << f_b->GetName() << endl;
     // if(!f_b->Open()){
