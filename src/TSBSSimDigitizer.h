@@ -43,7 +43,7 @@ private:
   TTree *fOutTree;
     
   // maps of files and weights with source to perform additive digitization.
-  std::vector<Int_t> fSources;
+  std::set<Int_t> fSources;
   std::map<Int_t, TChain*> fSourceChainMap;
   std::map<Int_t, Int_t> fSourceWeightMap;
   

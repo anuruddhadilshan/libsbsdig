@@ -62,6 +62,7 @@ void digi_all_test(int nentries = 100, int nbkgd = 0, int debuglevel = 1)
     //   nmiss++;
     // }
     //f_b->SetSource(1);
+    if(debuglevel>=2)cout << i << Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i) << endl;
     digitizer->AddInputFile(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i), 1, -nbkgd);
   }
   

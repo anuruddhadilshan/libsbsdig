@@ -98,7 +98,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   Clear();
     
   bool res = false;
-  if(d_flag>1){
+  if(d_flag>=3){
     printf("Reading event %d\n", fEvNum+1);
   }
   fEvNum++;
@@ -109,7 +109,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   //Test that the next entry exist
   if( !res ){
     // Don't need to print this out.  Not really an error
-    if(d_flag>1){
+    if(d_flag>=2){
       fprintf(stderr, "%s %s line %d: Channel read return is false...  probably end of file\n",
 	      __FILE__, __FUNCTION__, __LINE__ );
     } //DEBUG
@@ -376,7 +376,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
   }
   
-  if(d_flag>1){
+  if(d_flag>=3){
     printf("Just read event %d\n", fEvNum);
   }
   
