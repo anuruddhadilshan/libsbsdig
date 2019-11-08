@@ -122,6 +122,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
 
+  if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  << endl;
+  
   //TSBSSimEvent::DetectorData data;
   //TSBSSimEvent::SimDetectorData simdata;
   
@@ -148,6 +150,9 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;
       
+      if(fDebug>=4)cout << " = > fSignals[" << m << "].TDCSize() " << fSignals[m].TDCSize() << endl;
+      
+      /*
       //event.SimDetID.push_back(Short_t(UniqueDetID()));
       event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
       event.SimDetDataType[fDetInfo.DetFullName()].push_back(1);
@@ -173,20 +178,41 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       event.SimDetData[fDetInfo.DetFullName()].push_back(simdata);
       event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
+      */
       
+      for(int i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
+	event.NSimDetHits[fDetInfo.DetFullName()]++;
+	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitNpe(i_mc));
+	event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTime(i_mc));
+	event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitLeadTime(i_mc));
+	event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTrailTime(i_mc));
+      }
+       
       
       //define convention for type:
       // 0: ADC
       // 1: TDC
       // push back a different word for ADC and TDC ?
       // Fill ADC => only if 
-      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
       mult = 0;
+      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
       }
+      
+      // Fill ADC
+      for(int i = 0; i<data.size(); i++){
+	event.NDetHits[fDetInfo.DetFullName()]++;
+	event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
+	event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+      }
+      data.clear();
+      
       // Fill TDC 
       // (with new encoder logic)
       if(fEncoderTDC) {
@@ -195,6 +221,17 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
       }
       
+      // Fill TDC
+      for(int i = 0; i<data.size(); i++){
+	event.NDetHits[fDetInfo.DetFullName()]++;
+	event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i));
+      }
+      data.clear();
+      
+      /*
       //event.DetID.push_back(Short_t(UniqueDetID()));
       event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
       event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
@@ -204,92 +241,6 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
       //data.fData.clear();
       data.clear();
-     
-/*
-      data.fData.push_back(1);// Logical channel multiplier (TDCs second)
-      data.fData.push_back(1);//Digitized data
-      data.fData.push_back(fSignals[m].TDCSize());
-      if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  
-			<< " = > fSignals[m].TDCSize() " << fSignals[m].TDCSize() << endl;
-      for(size_t i = 0; i<fSignals[m].TDCSize(); i++){
-	if(fDebug>=3)cout << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
-	// Build here the vetroc word:
-	// we can afford to do very ad-hoc code because 
-	// all Cherenkov detectors are presumably going to use this.
-	// code bits one by one... a bit tedious (and slow...)
-	for(int j = 0; j<fDetInfo.DigInfo().TDCBits(); j++){
-	  if(j<8){
-	    //cout << j+24 << " " << header[j] << endl;
-	    //cout << j+16 << " " << channel[j] << endl;
-	    VETROCword ^= (-header[j] ^ VETROCword) & (1 << (j+24));
-	    channel[j] = (m >> j) & 1;
-	    VETROCword ^= (-channel[j] ^ VETROCword) & (1 << (j+16));
-	  }
-	  tdc[j] = (fSignals[m].TDC(i) >> j) & 1;
-	  //cout << j << " " << tdc[j] << endl;
-	  VETROCword ^= (-tdc[j] ^ VETROCword) & (1UL << j);
-	}
-	trail  = (fSignals[m].TDC(i) >> 31) & 1;
-	VETROCword ^= (-trail ^ VETROCword) & (1UL << edgebitpos);
-	//data.fData.push_back(fSignals[m].TDC(i));
-	if(fDebug>=3){
-	  cout << "channel " << m << " TDC " << i << " = " << fSignals[m].TDC(i) << endl;
-	  if(fDebug>=5){
-	    cout << "signal tdc: " << endl;
-	    for(int j = 31; j>=0; j--){
-	      bool bit = (fSignals[m].TDC(i) >> j) & 1;
-	      cout << bit;
-	    }
-	    cout << endl << "vetroc word: " << endl;
-	    for(int j = 31; j>=0; j--){
-	      bool bit = (VETROCword >> j) & 1;
-	      cout << bit;
-	    }
-	    cout << endl;
-	  }
-	}
-	//Then feed here the vetroc word to the data vector
-	data.fData.push_back(VETROCword);
-      }
-      event.fDetectorData.push_back(data);
-      data.fData.clear();
-      */
-      /*
-      //Now take care of simulated data
-      simdata.fDetID = UniqueDetID();
-      simdata.fChannel = m;
-      //define convention for type:
-      // 1: Npe
-      // 2: Time
-      // Fill Npe
-      simdata.fDataType = 1;
-      simdata.fNdata = 1;
-      // simdata.fData.push_back(1);
-      // simdata.fData.push_back(1);
-      simdata.fData.push_back(fSignals[m].Npe());
-      event.fSimDetectorData.push_back(simdata);
-      simdata.fData.clear();
-      // Fill Times
-      simdata.fDataType = 2;
-      simdata.fNdata = fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize();
-      // simdata.fData.push_back(2);
-      // simdata.fData.push_back(fSignals[m].LeadTimesSize()+fSignals[m].TrailTimesSize());
-      if(fDebug>=3){
-	cout << "SumEdep = " << fSignals[m].SumEdep() 
-	     << ", Charge " << fSignals[m].Charge() 
-	     << ", Npe = " << fSignals[m].Npe() << endl;
-      }
-      //data.fData.push_back(fSignals[m].Npe());
-      for(size_t i = 0; i<fSignals[m].LeadTimesSize(); i++){
-	simdata.fData.push_back(fSignals[m].LeadTime(i));
-	if(fDebug>=3)cout << " leadtime " << i << " = " << fSignals[m].LeadTime(i) << endl;
-      }
-      for(size_t i = 0; i<fSignals[m].TrailTimesSize(); i++){
-	simdata.fData.push_back(fSignals[m].TrailTime(i));
-	if(fDebug>=3)cout << " trail time " << i << " = " << fSignals[m].TrailTime(i) << endl;;
-      }
-      event.fSimDetectorData.push_back(simdata);
-      simdata.fData.clear();
       */
     }
   }
