@@ -60,7 +60,8 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     std::string fulldetname = DetInfo_i.DetFullName();
     det_type dettype = DetInfo_i.DetType();
     cout << fulldetname.c_str() << endl;
-    
+
+    /*
     fOutTree->Branch(Form("NSimData_%s", fulldetname.c_str()),&fEvent->NSimDetData[fulldetname.c_str()]);
     fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("SimData_%s_Type", fulldetname.c_str()),&fEvent->SimDetDataType[fulldetname.c_str()]);
@@ -71,7 +72,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
-
+    */
 
     fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);

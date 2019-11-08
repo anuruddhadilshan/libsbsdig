@@ -34,6 +34,7 @@ TSBSSimEvent::TSBSSimEvent()
     std::string fulldetname = DetInfo_i.DetFullName();
     cout << i << " " << fulldetname.c_str() << endl;
     
+    /*
     NSimDetData[fulldetname] = 0;
     //SimDetChannel[fulldetname].clear();
     SimDetDataType[fulldetname].clear();
@@ -44,6 +45,7 @@ TSBSSimEvent::TSBSSimEvent()
     //DetChannel[fulldetname].clear();
     DetNData[fulldetname].clear();
     DetData[fulldetname].clear();
+    */
     
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
@@ -83,6 +85,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   for(uint i = 0; i<AllDetInfo.size(); i++){
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
+    /*
     NSimDetData[fulldetname] = 0;
     // SimDetID.clear();
     // SimDetChannel[fulldetname].clear();
@@ -96,6 +99,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     // DetDataType;
     DetNData[fulldetname].clear();
     DetData[fulldetname].clear();
+    */
     
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
