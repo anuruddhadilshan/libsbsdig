@@ -82,15 +82,31 @@ public:
   */
   
   std::map<std::string, Int_t> NSimDetData;
-  std::map<std::string, std::vector<Short_t>> SimDetChannel;
+  //std::map<std::string, std::vector<Short_t>> SimDetChannel;
   std::map<std::string, std::vector<Short_t>> SimDetDataType;
   std::map<std::string, std::vector<Short_t>> SimDetNData;
   std::map<std::string, std::vector<std::vector<Double_t>>> SimDetData;
 
   std::map<std::string, Int_t> NDetData;
-  std::map<std::string, std::vector<Short_t>> DetChannel;
+  //std::map<std::string, std::vector<Short_t>> DetChannel;
   std::map<std::string, std::vector<Short_t>> DetNData;
   std::map<std::string, std::vector<std::vector<uint32_t>>> DetData;
+  
+  /* */
+  
+  std::map< std::string, Int_t >         NSimDetHits;
+  std::map< std::string, std::vector<Short_t> >  SimDetChannel;
+  std::map< std::string, std::vector<Double_t> > SimDetEdep;
+  std::map< std::string, std::vector<Int_t> >    SimDetNpe;
+  std::map< std::string, std::vector<Double_t> > SimDetTime;
+  std::map< std::string, std::vector<Double_t> > SimDetLeadTime;
+  std::map< std::string, std::vector<Double_t> > SimDetTrailTime;
+
+  std::map< std::string, Int_t >                 NDetHits;
+  std::map< std::string, std::vector<Short_t> >  DetChannel;
+  std::map< std::string, std::vector<uint32_t> > DetDataWord;//encoded values
+  std::map< std::string, std::vector<Int_t> > DetADC;//decoded values
+  std::map< std::string, std::vector<Int_t> > DetTDC;//decoded values
   
   /*
     map<string, TSBSDetOutput> DetData;

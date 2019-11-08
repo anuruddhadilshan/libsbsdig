@@ -25,15 +25,12 @@ public:
   // Parsses the passed file event by event and digitizes
   int AddFileToEvent(TSBSGeant4File *file);
   // File superposition: Procession of a stack of files ?
-  // make the file stack a member of TSBSSimDigitizer, and just "Process" it with function below 
-  // -> not functional yet :/
   int Process(ULong_t max_events = -1);// Process the signal chain
   
   // Add a new detector to the list
   void AddDetector(TSBSSimDetector* detector);
 
-  // Add a new file to the file stack
-  //void AddInputFile(TSBSGeant4File* file, Int_t weight = 1);
+  // Add a file to the chain referenced by the source number 
   void AddInputFile(const char* filename, Int_t source, Int_t weight = 1);
   
 private:

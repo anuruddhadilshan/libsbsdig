@@ -365,13 +365,16 @@ class TPMTSignal : public TObject {
   void Clear(Option_t* opt = "");
   ~TPMTSignal(){Clear();};
   
-  void AddSumEdep(double edep){fSumEdep+= edep;};
+  void AddSumEdep(double edep){
+    fSumEdep+= edep;
+    fMCHitEdep.push_back(edep);
+  };
   void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
     
   double SumEdep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
   double Charge(){return fNpe*fNpeChargeConv;};
-  Int_t  ADC(){return fADC;};
+  UInt_t ADC(){return fADC;};
 
   double EventTime(){return fEventTime;};
   UInt_t LeadTimesSize(){return fLeadTimes.size();};
@@ -382,12 +385,20 @@ class TPMTSignal : public TObject {
   UInt_t TDC(int i){return fTDCs.at(i);};
   SimEncoder::tdc_data TDCData() { return fTDCData; }
   
+  //MC variables
+  UInt_t MCHitSize(){return fMCHitSize;};
+  double MCHitEdep(uint i){return fMCHitEdep.at(i);};//Not forced to use it for everything
+  UInt_t MCHitNpe(uint i){return fMCHitNpe.at(i);};
+  double MCHitTime(uint i){return fMCHitTime.at(i);};
+  double MCHitLeadTime(uint i){return fMCHitLeadTimes.at(i);};
+  double MCHitTrailTime(uint i){return fMCHitTrailTimes.at(i);};
   
  private:
+  //summing variables for dig...
   double fSumEdep;//Not forced to use it for everything
   UInt_t fNpe;
   double fNpeChargeConv;
-  Int_t  fADC;// One unique ADC value ?
+  UInt_t fADC;// One unique ADC value ?
 
   double fEventTime;
   //TDCs: multiple values possible.
@@ -397,6 +408,14 @@ class TPMTSignal : public TObject {
   SimEncoder::tdc_data fTDCData;
   TRndmManager* fRN;
 
+  //MC variables
+  UInt_t fMCHitSize;
+  std::vector<double> fMCHitEdep;//Not forced to use it for everything
+  std::vector<UInt_t> fMCHitNpe;
+  std::vector<double> fMCHitTime;
+  std::vector<double> fMCHitLeadTimes;
+  std::vector<double> fMCHitTrailTimes;
+  
   ClassDef(TPMTSignal,1);
 };
 

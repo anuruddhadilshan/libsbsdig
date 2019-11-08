@@ -152,6 +152,12 @@ TPMTSignal::TPMTSignal(double npechargeconv)
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  fMCHitEdep.clear();
+  fMCHitNpe.clear();
+  fMCHitTime.clear();
+  fMCHitLeadTimes.clear();
+  fMCHitTrailTimes.clear();
 }
 
 void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal)
@@ -170,6 +176,12 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   t_lead+=evttime;
   t_trail+=evttime;
+
+  fMCHitNpe.push_back(npe);
+  fMCHitTime.push_back(evttime);
+  fMCHitLeadTimes.push_back(t_lead);
+  fMCHitTrailTimes.push_back(t_trail);
+  
   if(t_lead<1e30 && t_trail<1e30){
     //Filter here the lead and trail times
     if(fLeadTimes.size()>0){

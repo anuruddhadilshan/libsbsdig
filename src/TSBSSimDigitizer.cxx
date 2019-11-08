@@ -58,7 +58,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     //SimDetData_Channel
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
-    
+    det_type dettype = DetInfo_i.DetType();
     cout << fulldetname.c_str() << endl;
     
     fOutTree->Branch(Form("NSimData_%s", fulldetname.c_str()),&fEvent->NSimDetData[fulldetname.c_str()]);
@@ -71,6 +71,22 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
+        
+    fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_simhit_Chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
+    if(dettype!=kCher)fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->SimDetEdep[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_simhit_Npe", fulldetname.c_str()),&fEvent->SimDetNpe[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_simhit_Time", fulldetname.c_str()),&fEvent->SimDetTime[fulldetname.c_str()]);
+    if(dettype!=kECal){
+      fOutTree->Branch(Form("%s_simhit_t_lt", fulldetname.c_str()),&fEvent->SimDetLeadTime[fulldetname.c_str()]);
+      fOutTree->Branch(Form("%s_simhit_t_lt", fulldetname.c_str()),&fEvent->SimDetTrailTime[fulldetname.c_str()]);
+    }
+    
+    fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
+    if(dettype==kECal || dettype==kHCal)fOutTree->Branch(Form("%s_ADC", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+    if(dettype==kScint || dettype==kCher || dettype==kHCal)fOutTree->Branch(Form("%s_TDC", fulldetname.c_str()),&fEvent->DetTDC[fulldetname.c_str()]);
   }
   
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
@@ -117,9 +133,9 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
   if(fSourceChainMap.empty())return 0;
   
   int source = 0;
-  int nevent = 0;
+  ULong_t nevent = 0;
   int nfile = 0;
-  UInt_t nevt_b;
+  Int_t nevt_b;
   //int ngood = 0;
   bool has_data;  
 
@@ -132,8 +148,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
   std::vector<TObjArray*> BkgdFileLists;
   std::vector<TIter> BkgdIters;
     
-  std::set<Int_t>::iterator it = fSources.begin();
-  for(it; it!=fSources.end(); ++it){
+  for(std::set<Int_t>::iterator it = fSources.begin(); it!=fSources.end(); ++it){
     source = *it;
     if(source==0)continue;//signal - we're already treating it
     if(fDebug>=2)cout << "source number " << source << endl;
@@ -193,7 +208,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       //std::set<Int_t>::iterator it = fSources.begin();
       //for(it; it!=fSources.end(); ++it){
       //  source = *it;
-      for(int i = 0; i<Sources.size(); i++){
+      for(uint i = 0; i<Sources.size(); i++){
 	source = Sources[i];
 	if(source==0)continue;//signal - we're already treating it
 	cout << "source number " << source << endl;
@@ -274,163 +289,6 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
     
   }//end loop on signal files
   
-  //for(int i = 0; i<fSourceChainMap.size(); i++){
-    
-  //}
-  
-  /*
-  //cout << "Warning:  TSBSSimDigitizer::Process(int) is not functional yet." << endl 
-  //     << "Please use int TSBSSimDigitizer::Process(TSBSGeant4File, int)" << endl;
-  if(fG4FileStack_.size()==0)
-    return 0;
-  
-  //Loop on files:
-  //TSBSGeant4File* f; = fG4FileStack.at(0);
-  //TSBSGeant4File* f_b;
-  // Can we open the files?
-
-  for(int i_f = 0; i_f<fG4FileStack.size(); i_f++){
-    for(int j_f = 0; j_f<fG4FileStack.at(i_f).size(); j_f++){
-      int res = fG4FileStack_.at(i_f)->Open();
-      if( res != 1) {
-	std::cerr << "Failed to open g4sbs rootfile " << std::endl
-		  << fG4FileStack_.at(i_f)->GetName() << std::endl 
-		  << "Failed with error code: " << res << std::endl;
-	return 0;
-      }
-    }
-  }
-
-  //go through the file stack and open all of them...
-  // determine which is primary:
-  Double_t PrimWeight = 0;
-  for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
-    int res = 1;
-    if(!fG4FileStack_.at(i_f)->IsOpen())fG4FileStack_.at(i_f)->Open();
-    if( res != 1) {
-      std::cerr << "Failed to open g4sbs rootfile " << std::endl
-		<< fG4FileStack_.at(i_f)->GetName() << std::endl 
-		<< "Failed with error code: " << res << std::endl;
-      return 0;
-    }
-    if(fG4FileStack_.at(i_f)->GetSource()==0)PrimWeight = fG4FileWeights.at(i_f);
-  }
-  
-  if ( max_events <= 0 || max_events > fG4FileStack_.at(0)->GetEntries() )
-    max_events = fG4FileStack_.at(0)->GetEntries();
-  
-  // Now loop through the file and digitize entries
-  //int d_flag_readevent = 0;
-  int nevent = 0;
-  int nfile = 0;
-  int i_f = 0;
-  UInt_t nevt_b;
-  //int ngood = 0;
-  bool has_data;
-  
-  while( nevent<max_events ) {
-    if(fDebug>=3)cout << "clear event " << endl;
-    fEvent->Clear();
-    has_data = false;
-    i_f = 0;
-    nfile = 0;
-    // Accumulate data here...
-    //for(size_t i_f = 0; i_f<fG4FileStack_.size(); i_f++){
-    for(std::vector<TSBSGeant4File*>::const_iterator it = fG4FileStack_.begin(); it!=fG4FileStack_.end(); ++it){
-      TSBSGeant4File* f = (*it);
-      nevt_b = 0;
-      //Stop if no primary signal ?
-      //if(f->GetSource()>0 && !has_data)break;
-      if(fG4FileWeights.at(i_f)>0){
-	nfile = 0;
-      }
-
-	else if(has_data){
-	for()
-	AddFileToEvent();
-	}
-
-      //f_b = fG4FileStack.at(i_f);
-      //if(fG4FileWeights.at(i_f)>=0){}
-      
-      // while( f->ReadNextEvent(fDebug) && 
-      // 	     nevt_b<(fG4FileWeights.at(i_f)/PrimWeight) ) {//Keep adding as many events as indicated by the weight
-      if(fDebug>=3)
-	cout << " i_f "  << i_f << " weight " << fG4FileWeights.at(i_f) << " source " << f->GetSource() << " nfile " << nfile << endl;
-      
-      while( (fG4FileWeights.at(i_f)>0 && nevt_b<fG4FileWeights.at(i_f)/PrimWeight) ||
-	     (fG4FileWeights.at(i_f)<0 && nfile<fabs(fG4FileWeights.at(i_f)/PrimWeight)) 
-	     ){
-	if(!f->ReadNextEvent(fDebug)){
-	  if(nevt_b==0)nfile = -1;
-	  //cout << "youhoo" << endl;
-	  break;
-	}
-	if(nevt_b==0 && fDebug>=3)cout << "file " << f->GetName() << endl;
-	if(fDebug>=5){
-	  cout << " nevt_b " << nevt_b << " file global evt number " << f->GetEvNum() << endl;
-	}
-	//if(fG4FileWeights.at(i_f)>=0 && 
-	//nevt_b>=(fG4FileWeights.at(i_f)/PrimWeight) )break;
-	// Loop through all detectors and have them parse data vector
-	for(size_t det = 0; det < fDetectors.size(); det++) {
-	  if(fDebug>=3){
-	    cout << "load event " << nevt_b << " for file " << f->GetName() 
-		 << " det " << fDetectors[det]->GetName() << endl;
-	  }
-	  if(f->GetSource()==0){
-	    //"LoadEventData" for signal - we want everything cleaned up for signal
-	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
-	    fDetectors[det]->SetTimeZero(0.);
-	    fDetectors[det]->LoadEventData(f->GetDataVector());
-	  }else{
-	    //"LoadAccumulateData" for any other stuff we want to superimpose to signal
-	    if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
-	    double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
-				     fManager->GetBkgdSpreadTimeWindowHW());
-	    fDetectors[det]->SetTimeZero(t0);
-	    fDetectors[det]->LoadAccumulateData(f->GetDataVector());
-	  }
-	}
-	nevt_b++;
-      }
-      //cout << "nfile" << nfile << endl;
-      if(fG4FileWeights.at(i_f)<0)nfile++;
-      i_f++;
-    }
-    
-    // Now digitize all detectors
-    for(size_t det = 0; det < fDetectors.size(); det++) {
-      if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;
-      fDetectors[det]->Digitize(*fEvent);
-    }
-    fEvent->fEvtID = nevent;
-
-    // Fill in tree if any of the detectors have data to fill
-    for(size_t det = 0; det < fDetectors.size() && !has_data; det++) {
-      has_data = fDetectors[det]->HasData();
-    }
-    if(has_data) {
-      // Write to the tree
-      if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
-      fOutTree->Fill();
-    }
-    
-    nevent++;
-  }
-  
-  if(fDebug>=1)cout << "write output file " << endl;
-  fOutFile->Write();
-  // Close files
-  
-  //cout << "close output file " << endl;
-  //fOutFile->Close();
-  
-  //cout << "close geeant 4 file " << endl;
-  //f->Close();
-  
-  if(fDebug>=1)cout << "Done closing files " << endl;
-      */
   return 0;
 }
 
@@ -439,26 +297,6 @@ void TSBSSimDigitizer::AddDetector(TSBSSimDetector* detector)
 {
   fDetectors.push_back(detector);
 }
-
-/*
-void TSBSSimDigitizer::AddInputFile(TSBSGeant4File* file, Int_t weight)
-{
-  if(file->GetSource()==0){
-    fSigChain->Add(file->GetName());
-    fSigFiles.insert(TString(file->GetName()));
-  }else{
-    fBkgdChain->Add(file->GetName());
-    fBkgdFiles.insert(TString(file->GetName()));
-  }
-  
-  //fG4FileStack.push_back(std::make_pair<file, weight>);
-  // Files and weights are added at the same time, and cannot be accessed from the outside... 
-  // No need to inforce them to be bound together by a quirky object
-  fG4FileStack_.push_back(file);
-  fG4FileWeights.push_back(weight);
-  
-}
-*/
 
 void TSBSSimDigitizer::AddInputFile(const char* filename, Int_t source, Int_t weight)
 {

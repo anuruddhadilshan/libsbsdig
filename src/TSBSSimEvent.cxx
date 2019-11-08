@@ -35,15 +35,29 @@ TSBSSimEvent::TSBSSimEvent()
     cout << i << " " << fulldetname.c_str() << endl;
     
     NSimDetData[fulldetname] = 0;
-    SimDetChannel[fulldetname].clear();
+    //SimDetChannel[fulldetname].clear();
     SimDetDataType[fulldetname].clear();
     SimDetNData[fulldetname].clear();
     SimDetData[fulldetname].clear();
     
     NDetData[fulldetname] = 0;
-    DetChannel[fulldetname].clear();
+    //DetChannel[fulldetname].clear();
     DetNData[fulldetname].clear();
     DetData[fulldetname].clear();
+    
+    NSimDetHits[fulldetname] = 0;
+    SimDetChannel[fulldetname].clear();
+    SimDetEdep[fulldetname].clear();
+    SimDetNpe[fulldetname].clear();
+    SimDetTime[fulldetname].clear();
+    SimDetLeadTime[fulldetname].clear();
+    SimDetTrailTime[fulldetname].clear();
+    
+    NDetHits[fulldetname] = 0;
+    DetChannel[fulldetname].clear();
+    DetDataWord[fulldetname].clear();
+    DetADC[fulldetname].clear();
+    DetTDC[fulldetname].clear();
   }
   
 }
@@ -70,18 +84,33 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
     NSimDetData[fulldetname] = 0;
-    //SimDetID.clear();
-    SimDetChannel[fulldetname].clear();
+    // SimDetID.clear();
+    // SimDetChannel[fulldetname].clear();
     SimDetDataType[fulldetname].clear();
     SimDetNData[fulldetname].clear();
     SimDetData[fulldetname].clear();
     
     NDetData[fulldetname] = 0;
-    //DetID.clear();
-    DetChannel[fulldetname].clear();
+    // DetID.clear();
+    // DetChannel[fulldetname].clear();
     // DetDataType;
     DetNData[fulldetname].clear();
     DetData[fulldetname].clear();
+    
+    NSimDetHits[fulldetname] = 0;
+    SimDetChannel[fulldetname].clear();
+    SimDetEdep[fulldetname].clear();
+    SimDetNpe[fulldetname].clear();
+    SimDetTime[fulldetname].clear();
+    SimDetLeadTime[fulldetname].clear();
+    SimDetTrailTime[fulldetname].clear();
+    
+    NDetHits[fulldetname] = 0;
+    DetChannel[fulldetname].clear();
+    DetDataWord[fulldetname].clear();
+    DetADC[fulldetname].clear();
+    DetTDC[fulldetname].clear();
+
   }
 }
 

@@ -13,7 +13,7 @@
 #include "THaAnalysisObject.h"
 #endif
 
-void digi_all_test(int nentries = 100, int nbkgd = 0, int debuglevel = 1)
+void digi_all_test(ULong64_t nentries = 100, int nbkgd = 0, int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
