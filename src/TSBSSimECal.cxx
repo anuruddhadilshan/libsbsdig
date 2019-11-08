@@ -146,12 +146,12 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
   int mult = 0;
   SimEncoder::adc_data adc_data;
   std::vector<uint32_t> data;
-  std::vector<double> simdata;
+  //std::vector<double> simdata;
   for(size_t m = 0; m < fSignals.size(); m++) {
     //data.fData.clear();
     //simdata.fData.clear();
     data.clear();
-    simdata.clear();
+    //simdata.clear();
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
@@ -205,6 +205,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
       // 0: ADC
       // 1: TDC
       mult = 0;
+      
       // Fill ADC 
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();

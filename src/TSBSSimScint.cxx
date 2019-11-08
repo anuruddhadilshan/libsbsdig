@@ -148,13 +148,13 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 
   SimEncoder::adc_data adc_data;
   std::vector<uint32_t> data;
-  data.clear();
   //std::vector<double> simdata;
   short mult = 0; // logical channel multiplier (in case of ADC + TDC together)
 
   for(size_t m = 0; m < fSignals.size(); m++) {
     //data.fData.clear();
     //simdata.fData.clear();
+    data.clear();
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;

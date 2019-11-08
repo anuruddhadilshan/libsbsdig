@@ -207,10 +207,32 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       any_events = true;
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;
+      
+      /*
+      event.NSimDetHits[fDetInfo.DetFullName()]++;
+      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+      event.SimDetEdep[fDetInfo.DetFullName()].push_back(fSignals[m].sumedep);
+      event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].npe);
+      //not sure yet it is sensible...
+      event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc_time);
+      event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(i));
+      event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(i));
+      */
+      
       mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
       CopyEncodedData(fEncoderADC,mult++,data);//.fData);
+      
+      for(uint i = 0; i<data.size(); i++){
+	event.NDetHits[fDetInfo.DetFullName()]++;
+	event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].fadc.samples.at(i));
+	event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+      }
+      data.clear();
+      
       //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
       //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
       //for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
@@ -229,11 +251,22 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
 
       // Now add the TDC if the threshold was met
-      if(fSignals[m].met_tdc_thresh && fEncoderTDC->EncodeTDC(
-            fSignals[m].tdc,fEncBuffer,fNEncBufferWords) ) {
+      if(fSignals[m].met_tdc_thresh && 
+	 fEncoderTDC->EncodeTDC(fSignals[m].tdc,fEncBuffer,fNEncBufferWords)){
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
+	
+	for(uint i = 0; i<data.size(); i++){
+	  event.NDetHits[fDetInfo.DetFullName()]++;
+	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	  if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(i));
+	}
+	data.clear();
       }
       
+
+      /*
       //event.DetID.push_back(Short_t(UniqueDetID()));
       event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
       event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
@@ -243,6 +276,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //event.fDetectorData.push_back(data);
       //data.fData.clear();
       data.clear();
+      */
     }
   }
   SetHasDataFlag(any_events);
