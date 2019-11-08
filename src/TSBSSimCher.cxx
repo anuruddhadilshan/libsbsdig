@@ -180,56 +180,54 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       simdata.clear();
       */
       
-      for(int i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
+      for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.NSimDetHits[fDetInfo.DetFullName()]++;
 	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitNpe(i_mc));
 	event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTime(i_mc));
-	event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitLeadTime(i_mc));
-	event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTrailTime(i_mc));
+	if(fEncoderTDC){
+	  event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitLeadTime(i_mc));
+	  event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTrailTime(i_mc));
+	}
       }
        
       
       //define convention for type:
       // 0: ADC
       // 1: TDC
-      // push back a different word for ADC and TDC ?
-      // Fill ADC => only if 
       mult = 0;
-      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+
+      // Fill ADC
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
-      }
       
-      // Fill ADC
-      for(int i = 0; i<data.size(); i++){
-	event.NDetHits[fDetInfo.DetFullName()]++;
-	event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
-	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
-	event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	for(uint i = 0; i<data.size(); i++){
+	  event.NDetHits[fDetInfo.DetFullName()]++;
+	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	  event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
+	  if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	}
+	data.clear();
       }
-      data.clear();
       
       // Fill TDC 
-      // (with new encoder logic)
       if(fEncoderTDC) {
         fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
-      }
       
-      // Fill TDC
-      for(int i = 0; i<data.size(); i++){
-	event.NDetHits[fDetInfo.DetFullName()]++;
-	event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
-	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i));
+	for(uint i = 0; i<data.size(); i++){
+	  event.NDetHits[fDetInfo.DetFullName()]++;
+	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	  if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i));
+	}
+	data.clear();
       }
-      data.clear();
       
       /*
       //event.DetID.push_back(Short_t(UniqueDetID()));

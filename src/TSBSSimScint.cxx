@@ -191,7 +191,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       simdata.clear();
       */
       
-      for(int i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
+      for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.NSimDetHits[fDetInfo.DetFullName()]++;
 	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	event.SimDetEdep[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitEdep(i_mc));
@@ -205,32 +205,33 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       
       
       //define convention for type:
+      // 0: ADC
+      // 1: TDC
       mult = 0;
-      //if(fDetInfo.DigInfo().ADCBits()>0 && fDetInfo.DigInfo().ADCConversion()>0){
+      
+      // Fill ADC
       if(fEncoderADC) {
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
 
-	for(int i = 0; i<data.size(); i++){
+	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  if(fEncoderTDC)event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
-	  event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
+	  if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
 	}
 	data.clear();
-	//simdata.fData.clear();
       }
       
-      // Fill ADC
+      // Fill TDC
       if(fEncoderTDC) {
         fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
 	
-	// Fill TDC
-	for(int i = 0; i<data.size(); i++){
+	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));

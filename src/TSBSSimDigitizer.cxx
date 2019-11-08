@@ -71,13 +71,14 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData[fulldetname.c_str()]);
     fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
-        
+
+
     fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
     if(dettype!=kCher)fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->SimDetEdep[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_npe", fulldetname.c_str()),&fEvent->SimDetNpe[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->SimDetTime[fulldetname.c_str()]);
-    if(dettype!=kECal){
+    if(DetInfo_i.DigInfo().TDCBits()>0){//if(dettype!=kECal){
       fOutTree->Branch(Form("%s_simhit_t_lead", fulldetname.c_str()),&fEvent->SimDetLeadTime[fulldetname.c_str()]);
       fOutTree->Branch(Form("%s_simhit_t_trail", fulldetname.c_str()),&fEvent->SimDetTrailTime[fulldetname.c_str()]);
     }
@@ -85,11 +86,10 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
-    //if(dettype==kECal || dettype==kHCal)
-    fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
-    if(dettype!=kECal){//if(dettype==kScint || dettype==kCher || dettype==kHCal)
+    if(DetInfo_i.DigInfo().ADCBits()>0)
+      fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+    if(DetInfo_i.DigInfo().TDCBits()>0)
       fOutTree->Branch(Form("%s_tdc", fulldetname.c_str()),&fEvent->DetTDC[fulldetname.c_str()]);
-    }
   }
   
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
