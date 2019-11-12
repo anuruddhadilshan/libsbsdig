@@ -54,7 +54,7 @@ protected:
 
   void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,
       std::vector<unsigned int> &dat);
-  int fDebug;
+  //int fDebug;
 private:
   bool fHasData;
   short fUniqueDetID;

@@ -137,7 +137,7 @@ double TSPEModel::GetHistoX(double y, double x1, double x2)
 // Class TPMTSignal
 //
 TPMTSignal::TPMTSignal()
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fMCHitSize(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
@@ -147,7 +147,7 @@ TPMTSignal::TPMTSignal()
 }
 
 TPMTSignal::TPMTSignal(double npechargeconv)
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fMCHitSize(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
@@ -176,7 +176,8 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   t_lead+=evttime;
   t_trail+=evttime;
-
+  
+  fMCHitSize++;
   fMCHitNpe.push_back(npe);
   fMCHitTime.push_back(evttime);
   fMCHitLeadTimes.push_back(t_lead);
@@ -293,7 +294,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
   
   fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+fRN->Gaus(diginfo.Pedestal(chan), diginfo.PedestalNoise(chan)));
   //if ADC value bigger than number of ADC bits, ADC saturates
-  if( fADC>TMath::Nint( TMath::Power(2, diginfo.ADCBits()) ) ){
+  if( fADC>UInt_t(TMath::Nint( TMath::Power(2, diginfo.ADCBits()) )) ){
     fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
   }
   //cout << "TPMTSignal::Digitize():  " << fLeadTimes.size() << " - " << fTrailTimes.size() << endl;
@@ -352,6 +353,13 @@ void TPMTSignal::Clear(Option_t*)
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  fMCHitSize = 0;
+  fMCHitEdep.clear();
+  fMCHitNpe.clear();
+  fMCHitTime.clear();
+  fMCHitLeadTimes.clear();
+  fMCHitTrailTimes.clear();
 }
 
 //

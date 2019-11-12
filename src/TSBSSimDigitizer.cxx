@@ -87,10 +87,10 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
-    if(DetInfo_i.DigInfo().ADCBits()>0)
-      fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
-    if(DetInfo_i.DigInfo().TDCBits()>0)
-      fOutTree->Branch(Form("%s_tdc", fulldetname.c_str()),&fEvent->DetTDC[fulldetname.c_str()]);
+    // if(DetInfo_i.DigInfo().ADCBits()>0)
+    //   fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+    // if(DetInfo_i.DigInfo().TDCBits()>0)
+    //   fOutTree->Branch(Form("%s_tdc", fulldetname.c_str()),&fEvent->DetTDC[fulldetname.c_str()]);
   }
   
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
@@ -173,6 +173,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
     //G4SBSRunData *rd;
     
     while( nevent<max_events ) {
+      if(nevent%100==0)cout << nevent << " / " << max_events << endl;
       if(fDebug>=3)cout << "clear event " << endl;
       if(fDebug>=1)cout << "Process event " << nevent << endl;
       fEvent->Clear();
@@ -215,7 +216,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       for(uint i = 0; i<Sources.size(); i++){
 	source = Sources[i];
 	if(source==0)continue;//signal - we're already treating it
-	cout << "source number " << source << endl;
+	if(fDebug>=2)cout << "source number " << source << endl;
 	//TObjArray *BkgdFileList = fSourceChainMap[source]->GetListOfFiles();
 	//TIter next_bkgd(BkgdFileLists[i]);
 	
@@ -285,13 +286,21 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       }
       if(has_data) {
 	// Write to the tree
-	if(fDebug>=1)std::cout << "Have data for event: " << nevent << std::endl;
+	if(fDebug>=2)std::cout << "Have data for event: " << nevent << std::endl;
 	fOutTree->Fill();
       }
       nevent++;
     }//end loop on events
     
   }//end loop on signal files
+  
+  //if(fDebug>=1)
+  cout << "Done processing all events, write output file " << endl;
+  fOutFile->Write();
+  // Close files
+  
+  if(fDebug>=2)cout << "close output file " << endl;
+  fOutFile->Close();
   
   return 0;
 }

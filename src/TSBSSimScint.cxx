@@ -126,7 +126,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
   
-  if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID()  << endl;
+  if(fDebug>=3)cout << "TSBSSimScint::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
   
   //TSBSSimEvent::DetectorData data;
   //TSBSSimEvent::SimDetectorData simdata;
@@ -190,7 +190,10 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       event.NSimDetData[fDetInfo.DetFullName()]++;
       simdata.clear();
       */
-      
+      if(fDebug>=4){
+	cout << fDetInfo.DetFullName() << ": check MC vec size" << endl;
+	fSignals[m].check_vec_size();
+      }
       for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.NSimDetHits[fDetInfo.DetFullName()]++;
 	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
@@ -214,29 +217,41 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
-
+	cout << "ADC: data size " << data.size() << endl;
 	for(uint i = 0; i<data.size(); i++){
+	  cout << i << "/" << data.size() << endl;
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
-	  if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // if(i==0){//header
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }else{
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
+	  //   if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }
 	}
 	data.clear();
       }
-      
       // Fill TDC
       if(fEncoderTDC) {
         fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
-        CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
+	CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
 	
 	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	  event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i));
+	  // if(i==0){//header
+	  //   if(fDebug>=4)cout << endl;
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }else{
+	  //   if(fDebug>=4)cout << " " << fSignals[m].TDC(i-1) << endl;
+	  //   if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1));
+	  // }
 	}
 	data.clear();
       }

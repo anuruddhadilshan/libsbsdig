@@ -122,7 +122,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
 
-  if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID()  << endl;
+  if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
   
   //TSBSSimEvent::DetectorData data;
   //TSBSSimEvent::SimDetectorData simdata;
@@ -180,6 +180,10 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       simdata.clear();
       */
       
+      if(fDebug>=4){
+	cout << fDetInfo.DetFullName() << ": check MC vec size" << endl;
+	fSignals[m].check_vec_size();
+      }
       for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.NSimDetHits[fDetInfo.DetFullName()]++;
 	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
@@ -207,8 +211,13 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
-	  if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // if(i==0){//header
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }else{
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
+	  //   if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }
 	}
 	data.clear();
       }
@@ -223,8 +232,13 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	  event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i));
+	  // if(i==0){//header
+	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
+	  // }else{
+	  //   if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
+	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1));
+	  // }
 	}
 	data.clear();
       }

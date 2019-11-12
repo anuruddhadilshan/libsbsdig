@@ -58,8 +58,8 @@ TSBSSimEvent::TSBSSimEvent()
     NDetHits[fulldetname] = 0;
     DetChannel[fulldetname].clear();
     DetDataWord[fulldetname].clear();
-    DetADC[fulldetname].clear();
-    DetTDC[fulldetname].clear();
+    // DetADC[fulldetname].clear();
+    // DetTDC[fulldetname].clear();
   }
   
 }
@@ -112,8 +112,8 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     NDetHits[fulldetname] = 0;
     DetChannel[fulldetname].clear();
     DetDataWord[fulldetname].clear();
-    DetADC[fulldetname].clear();
-    DetTDC[fulldetname].clear();
+    // DetADC[fulldetname].clear();
+    // DetTDC[fulldetname].clear();
 
   }
 }

@@ -72,6 +72,7 @@ void digi_all_test(ULong64_t nentries = 100, int nbkgd = 0, int debuglevel = 1)
   if(debuglevel>=1)cout << "Declare detectors and add them to digitizer " << endl;
   
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
+  hcal->SetDebug(debuglevel);
   digitizer->AddDetector(hcal);
   
   TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);

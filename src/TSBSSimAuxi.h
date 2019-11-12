@@ -393,6 +393,33 @@ class TPMTSignal : public TObject {
   double MCHitLeadTime(uint i){return fMCHitLeadTimes.at(i);};
   double MCHitTrailTime(uint i){return fMCHitTrailTimes.at(i);};
   
+  //check vectors size
+  bool check_vec_size(){
+    bool b = true;
+    if(fMCHitSize!=fMCHitEdep.size()){
+      printf("fMCHitEdep.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
+      b = false;
+    }
+    if(fMCHitSize!=fMCHitNpe.size()){
+      printf("fMCHitNpe.size() = %zu != %u\n", fMCHitNpe.size(), fMCHitSize);
+      b = false;
+    }
+    if(fMCHitSize!=fMCHitTime.size()){
+      printf("fMCHitTime.size() = %zu != %u\n", fMCHitTime.size(), fMCHitSize);
+      b = false;
+    }
+    if(fMCHitSize!=fMCHitLeadTimes.size()){
+      printf("fMCHitLeadTime.size() = %zu != %u\n", fMCHitLeadTimes.size(), fMCHitSize);
+      b = false;
+    }
+    if(fMCHitSize!=fMCHitTrailTimes.size()){
+      printf("fMCHitTrailTime.size() = %zu != %u\n", fMCHitTrailTimes.size(), fMCHitSize);
+      b = false;
+    }
+    return b;
+  }
+  
+  
  private:
   //summing variables for dig...
   double fSumEdep;//Not forced to use it for everything
