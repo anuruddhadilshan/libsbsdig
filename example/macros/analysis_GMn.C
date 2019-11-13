@@ -52,9 +52,9 @@ void analysis_GMn(const char *inputfilename,
   inputfile.close();
   
   //Declaring histos
-  TH1D* h1_grinchMCtime = new TH1D("h1_grinchMCtime", "Grinch;MC_time (ns)", 200, -100, 100);
-  TH1D* h1_hodoMCtime = new TH1D("h1_hodoMCtime", "Hodoscope;MC_time (ns)", 200, -100, 100);
-  TH1D* h1_cdetMCtime = new TH1D("h1_cdetMCtime", "CDet;MC_time (ns)", 200, -100, 100);
+  TH2D* h1_grinchMCtime = new TH2D("h1_grinchMCtime", "Grinch;MC_time (ns);Edge", 200, -100, 100, 2, 0, 2);
+  TH2D* h1_hodoMCtime = new TH2D("h1_hodoMCtime", "Hodoscope;MC_time (ns);Edge", 200, -100, 100, 2, 0, 2);
+  TH2D* h1_cdetMCtime = new TH2D("h1_cdetMCtime", "CDet;MC_time (ns);Edge", 200, -100, 100, 2, 0, 2);
   
   TH1D* h1_bbpsMCtime = new TH1D("h1_bbpsMCtime", "BB Preshower;MC_time (ns)", 200, -100, 100);
   TH1D* h1_bbshMCtime = new TH1D("h1_bbshMCtime", "BB shower;MC_time (ns)", 200, -100, 100);
@@ -88,56 +88,39 @@ void analysis_GMn(const char *inputfilename,
       }
       T1->GetEntry(nevent);
       //Plot MC time for GRINCH as an example
-      if(T1->NSimData_bb_grinch){
-	for(int i = 0; i<T1->NSimData_bb_grinch; i++){
-	  if(T1->SimData_bb_grinch_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
-	      h1_grinchMCtime->Fill( (T1->SimData_bb_grinch_Data->at(i))[j] );
-	    }
-	  }
-	}
-      }
-
-      if(T1->NSimData_bb_hodo){
-	for(int i = 0; i<T1->NSimData_bb_hodo; i++){
-	  if(T1->SimData_bb_hodo_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(i); j++){
-	      h1_hodoMCtime->Fill( (T1->SimData_bb_hodo_Data->at(i))[j] );
-	    }
-	  }
+      if(T1->bb_grinch_Nsimhits){
+	for(int i = 0; i<T1->bb_grinch_Nsimhits; i++){
+	  h1_grinchMCtime->Fill(T1->bb_grinch_simhit_t_lead->at(i), 0);
+	  h1_grinchMCtime->Fill(T1->bb_grinch_simhit_t_trail->at(i), 1);
 	}
       }
       
-      if(T1->NSimData_sbs_cdet){
-	for(int i = 0; i<T1->NSimData_sbs_cdet; i++){
-	  if(T1->SimData_sbs_cdet_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_sbs_cdet_Ndata->at(i); j++){
-	      h1_cdetMCtime->Fill( (T1->SimData_sbs_cdet_Data->at(i))[j] );
-	    }
-	  }
-	}
-      }
-
-      if(T1->NSimData_bb_ps){
-	for(int i = 0; i<T1->NSimData_bb_ps; i++){
-	  if(T1->SimData_bb_ps_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_ps_Ndata->at(i); j++){
-	      h1_bbpsMCtime->Fill( (T1->SimData_bb_ps_Data->at(i))[j] );
-	    }
-	  }
+      if(T1->bb_hodo_Nsimhits){
+	for(int i = 0; i<T1->bb_hodo_Nsimhits; i++){
+	  h1_hodoMCtime->Fill(T1->bb_hodo_simhit_t_lead->at(i), 0);
+	  h1_hodoMCtime->Fill(T1->bb_hodo_simhit_t_trail->at(i), 1);
 	}
       }
       
-      if(T1->NSimData_bb_sh){
-	for(int i = 0; i<T1->NSimData_bb_sh; i++){
-	  if(T1->SimData_bb_sh_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_sh_Ndata->at(i); j++){
-	      h1_bbshMCtime->Fill( (T1->SimData_bb_sh_Data->at(i))[j] );
-	    }
-	  }
+      if(T1->sbs_cdet_Nsimhits){
+	for(int i = 0; i<T1->sbs_cdet_Nsimhits; i++){
+	  h1_cdetMCtime->Fill(T1->sbs_cdet_simhit_t_lead->at(i), 0);
+	  h1_cdetMCtime->Fill(T1->sbs_cdet_simhit_t_trail->at(i), 1);
 	}
       }
       
+      if(T1->bb_ps_Nsimhits){
+	for(int i = 0; i<T1->bb_ps_Nsimhits; i++){
+	  h1_bbpsMCtime->Fill(T1->bb_ps_simhit_time->at(i));
+	}
+      }
+      
+      if(T1->bb_sh_Nsimhits){
+	for(int i = 0; i<T1->bb_sh_Nsimhits; i++){
+	  h1_bbshMCtime->Fill(T1->bb_sh_simhit_time->at(i));
+	}
+      }
+            
     }//end loop on events
 
     
