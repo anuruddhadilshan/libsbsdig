@@ -27,7 +27,7 @@
 //This macro is for the moment oversimplified, and is just to check roughly the addition of background for the digitization in the GRINCH and hosdoscope.
 //It will be expanded in a very near future.
 
-void chan2pos_GRINCH(int chan, double& xpos, double& ypos){
+void chan2pos_GC(int chan, double& xpos, double& ypos){
   int scol = chan%17;
   int srow = (chan-scol)/17;
   int row = srow*2+scol/9;
@@ -126,95 +126,40 @@ void EvtDisplay_GMn(const char *inputfilename,
       T1->GetEntry(nevent);
       if(T1->EvtID!=Evt2display)continue;
       
-      if(T1->NSimData_bb_grinch){
-	for(int i = 0; i<T1->NSimData_bb_grinch; i++){
-	  chan2pos_GRINCH(T1->SimData_bb_grinch_Chan->at(i), xpos, ypos);
-	  if(T1->SimData_bb_grinch_Type->at(i)==1){
-	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
-	      h1_GRINCH->Fill(xpos, ypos, (T1->SimData_bb_grinch_Data->at(i))[j]);
-	    }
-	  }
-	  if(T1->SimData_bb_grinch_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
-	      h1_GRINCH_time->Fill(T1->SimData_bb_grinch_Chan->at(i), (T1->SimData_bb_grinch_Data->at(i))[j]);
-	    }
-	  }
+      if(T1->bb_grinch_Nsimhits){
+	for(int i = 0; i<T1->bb_grinch_Nsimhits; i++){
+	  chan2pos_GC(T1->bb_grinch_simhit_chan->at(i), xpos, ypos);
+	  h1_GRINCH->Fill(xpos, ypos, T1->bb_grinch_simhit_npe->at(i));
+	  h1_GRINCH_time->Fill(T1->bb_grinch_simhit_chan->at(i), T1->bb_grinch_simhit_t_lead->at(i));
+	  h1_GRINCH_time->Fill(T1->bb_grinch_simhit_chan->at(i), T1->bb_grinch_simhit_t_trail->at(i));
 	}
       }
       
-      if(T1->NSimData_bb_hodo){
-	for(int i = 0; i<T1->NSimData_bb_hodo; i++){
-	  chan2pos_TH(T1->SimData_bb_hodo_Chan->at(i), xpos, ypos);
-	  if(T1->SimData_bb_grinch_Type->at(i)==1){
-	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(i); j++){
-	      h1_TH->Fill(xpos, ypos, (T1->SimData_bb_hodo_data->at(i))[j]);
-	    }
-	  }
-	  if(T1->SimData_bb_hodo_Type->at(i)==2){
-	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(i); j++){
-	      h1_TH_time->Fill(T1->SimData_bb_hodo_Chan->at(i), (T1->SimData_bb_hodo_Data->at(i))[j]);
-	    }
-	  }
+      if(T1->bb_hodo_Nsimhits){
+	for(int i = 0; i<T1->bb_hodo_Nsimhits; i++){
+	  chan2pos_TH(T1->bb_hodo_simhit_chan->at(i), xpos, ypos);
+	  h1_TH->Fill(xpos, ypos, T1->bb_hodo_simhit_npe->at(i));
+	  h1_TH_time->Fill(T1->bb_hodo_simhit_chan->at(i), T1->bb_hodo_simhit_t_lead->at(i));
+	  h1_TH_time->Fill(T1->bb_hodo_simhit_chan->at(i), T1->bb_hodo_simhit_t_trail->at(i));
 	}
       }
       
-      if(T1->NSimData_bb_ps){
-	for(int i = 0; i<T1->NSimData_bb_ps; i++){
-	  chan2pos_PS(T1->SimData_bb_ps_Chan->at(i), xpos, ypos);
-	  if(T1->SimData_bb_ps_Type->at(i)==1){
-	    for(int j = 0; j<T1->SimData_bb_ps_Ndata->at(i); j++){
-	      h1_PS->Fill(xpos, ypos, (T1->SimData_bb_ps_Data->at(i))[j]);
-	    }
-	  }
+      if(T1->bb_ps_Nsimhits){
+	for(int i = 0; i<T1->bb_ps_Nsimhits; i++){
+	  chan2pos_PS(T1->bb_ps_simhit_chan->at(i), xpos, ypos);
+	  h1_PS->Fill(xpos, ypos, T1->bb_ps_simhit_npe->at(i));
 	}
       }
       
-      if(T1->NSimData_bb_sh){
-	for(int i = 0; i<T1->NSimData_bb_sh; i++){
-	  chan2pos_SH(T1->SimData_bb_sh_Chan->at(i), xpos, ypos);
-	  if(T1->SimData_bb_sh_Type->at(i)==1){
-	    for(int j = 0; j<T1->SimData_bb_sh_Ndata->at(i); j++){
-	      h1_SH->Fill(xpos, ypos, (T1->SimData_bb_sh_Data->at(i))[j]);
-	    }
-	  }
+      if(T1->bb_sh_Nsimhits){
+	for(int i = 0; i<T1->bb_sh_Nsimhits; i++){
+	  chan2pos_SH(T1->bb_sh_simhit_chan->at(i), xpos, ypos);
+	  h1_SH->Fill(xpos, ypos, T1->bb_sh_simhit_npe->at(i));
 	}
       }
       
       
       
-      // //Plot MC time for GRINCH as an example
-      // if(T1->NSimData_bb_grinch){
-	     
-      // 	for(int i = 0; i<T1->NSimData_bb_grinch; i++){
-      // 	  if(T1->SimData_bb_grinch_Type->at(i)==2){
-      // 	    for(int j = 0; j<T1->SimData_bb_grinch_Ndata->at(j); j++){
-      // 	      h1_grinchMCtime->Fill( (T1->SimData_bb_grinch_Data->at(i))[j] );
-      // 	    }
-      // 	  }
-      // 	}
-      // }
-
-      // if(T1->NSimData_bb_hodo){
-	
-      // 	for(int i = 0; i<T1->NSimData_bb_hodo; i++){
-      // 	  if(T1->SimData_bb_hodo_Type->at(i)==2){
-      // 	    for(int j = 0; j<T1->SimData_bb_hodo_Ndata->at(j); j++){
-      // 	      h1_hodoMCtime->Fill( (T1->SimData_bb_hodo_Data->at(i))[j] );
-      // 	    }
-      // 	  }
-      // 	}
-      // }
-      
-      // if(T1->NSimData_sbs_cdet){
-	
-      // 	for(int i = 0; i<T1->NSimData_sbs_cdet; i++){
-      // 	  if(T1->SimData_sbs_cdet_Type->at(i)==2){
-      // 	    for(int j = 0; j<T1->SimData_sbs_cdet_Ndata->at(j); j++){
-      // 	      h1_cdetMCtime->Fill( (T1->SimData_sbs_cdet_Data->at(i))[j] );
-      // 	    }
-      // 	  }
-      // 	}
-      // }
     }//end loop on events
 
   }//end loop on files
@@ -222,16 +167,17 @@ void EvtDisplay_GMn(const char *inputfilename,
   TCanvas* C1 = new TCanvas("C1", "C1", 1000, 800);
   C1->Divide(4,1);
   C1->cd(1);
-  h1_GRINCH->Draw("colz");
+  h1_GRINCH->Draw("colz, text");
   C1->cd(2);
-  h1_PS->Draw("colz");
+  h1_PS->Draw("colz, text");
   C1->cd(3);
-  h1_TH->Draw("colz");
+  h1_TH->Draw("colz, text");
   C1->cd(4);
-  h1_SH->Draw("colz");
+  h1_SH->Draw("colz, text");
   
   // h1_GRINCH->SetMinimum(-100);
   // h1_GRINCH->SetMaximum(100);
+  h1_GRINCH->SetMarkerSize(2.5);
   h1_GRINCH->GetXaxis()->SetTitleSize(0.07);
   h1_GRINCH->GetXaxis()->SetTitleOffset(0.5);
   h1_GRINCH->GetXaxis()->CenterTitle();
@@ -243,6 +189,7 @@ void EvtDisplay_GMn(const char *inputfilename,
   
   // h1_PS->SetMinimum(0);
   // h1_PS->SetMaximum(2000);
+  h1_PS->SetMarkerSize(2.5);
   h1_PS->GetXaxis()->SetTitleSize(0.07);
   h1_PS->GetXaxis()->SetTitleOffset(0.5);
   h1_PS->GetXaxis()->CenterTitle();
@@ -254,6 +201,7 @@ void EvtDisplay_GMn(const char *inputfilename,
   
   // h1_TH->SetMinimum(-100);
   // h1_TH->SetMaximum(100);
+  h1_TH->SetMarkerSize(2.5);
   h1_TH->GetXaxis()->SetTitleSize(0.07);
   h1_TH->GetXaxis()->SetTitleOffset(0.5);
   h1_TH->GetXaxis()->CenterTitle();
@@ -265,6 +213,7 @@ void EvtDisplay_GMn(const char *inputfilename,
   
   // h1_SH->SetMinimum(0);
   // h1_SH->SetMaximum(2000);
+  h1_SH->SetMarkerSize(2.5);
   h1_SH->GetXaxis()->SetTitleSize(0.07);
   h1_SH->GetXaxis()->SetTitleOffset(0.5);
   h1_SH->GetXaxis()->CenterTitle();

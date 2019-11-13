@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Fri Sep 20 15:41:09 2019 by ROOT version 6.08/00
+// Wed Nov 13 14:40:36 2019 by ROOT version 6.08/00
 // from TTree digtree/
-// found on file: ../digitized/simdig_test.root
+// found on file: ../digitized/simdig_NoBkgd_2kevts.root
 //////////////////////////////////////////////////////////
 
 #ifndef digtree_h
@@ -13,6 +13,8 @@
 #include <TFile.h>
 
 // Header file for the classes stored in the TTree if any.
+#include "vector"
+#include "vector"
 #include "vector"
 #include "vector"
 
@@ -28,120 +30,122 @@ public :
    Int_t           EvtID;
    Double_t        Weight;
    Int_t           NSignal;
-   Int_t           NSimData_sbs_hcal;
-   vector<short>   *SimData_sbs_hcal_Chan;
-   vector<short>   *SimData_sbs_hcal_Type;
-   vector<short>   *SimData_sbs_hcal_Ndata;
-   vector<vector<double> > *SimData_sbs_hcal_Data;
-   Int_t           NData_sbs_hcal;
-   vector<short>   *Data_sbs_hcal_Chan;
-   vector<short>   *Data_sbs_hcal_Ndata;
-   vector<vector<unsigned int> > *Data_sbs_hcal_Data;
-   Int_t           NSimData_sbs_cdet;
-   vector<short>   *SimData_sbs_cdet_Chan;
-   vector<short>   *SimData_sbs_cdet_Type;
-   vector<short>   *SimData_sbs_cdet_Ndata;
-   vector<vector<double> > *SimData_sbs_cdet_Data;
-   Int_t           NData_sbs_cdet;
-   vector<short>   *Data_sbs_cdet_Chan;
-   vector<short>   *Data_sbs_cdet_Ndata;
-   vector<vector<unsigned int> > *Data_sbs_cdet_Data;
-   Int_t           NSimData_bb_sh;
-   vector<short>   *SimData_bb_sh_Chan;
-   vector<short>   *SimData_bb_sh_Type;
-   vector<short>   *SimData_bb_sh_Ndata;
-   vector<vector<double> > *SimData_bb_sh_Data;
-   Int_t           NData_bb_sh;
-   vector<short>   *Data_bb_sh_Chan;
-   vector<short>   *Data_bb_sh_Ndata;
-   vector<vector<unsigned int> > *Data_bb_sh_Data;
-   Int_t           NSimData_bb_ps;
-   vector<short>   *SimData_bb_ps_Chan;
-   vector<short>   *SimData_bb_ps_Type;
-   vector<short>   *SimData_bb_ps_Ndata;
-   vector<vector<double> > *SimData_bb_ps_Data;
-   Int_t           NData_bb_ps;
-   vector<short>   *Data_bb_ps_Chan;
-   vector<short>   *Data_bb_ps_Ndata;
-   vector<vector<unsigned int> > *Data_bb_ps_Data;
-   Int_t           NSimData_bb_hodo;
-   vector<short>   *SimData_bb_hodo_Chan;
-   vector<short>   *SimData_bb_hodo_Type;
-   vector<short>   *SimData_bb_hodo_Ndata;
-   vector<vector<double> > *SimData_bb_hodo_Data;
-   Int_t           NData_bb_hodo;
-   vector<short>   *Data_bb_hodo_Chan;
-   vector<short>   *Data_bb_hodo_Ndata;
-   vector<vector<unsigned int> > *Data_bb_hodo_Data;
-   Int_t           NSimData_bb_grinch;
-   vector<short>   *SimData_bb_grinch_Chan;
-   vector<short>   *SimData_bb_grinch_Type;
-   vector<short>   *SimData_bb_grinch_Ndata;
-   vector<vector<double> > *SimData_bb_grinch_Data;
-   Int_t           NData_bb_grinch;
-   vector<short>   *Data_bb_grinch_Chan;
-   vector<short>   *Data_bb_grinch_Ndata;
-   vector<vector<unsigned int> > *Data_bb_grinch_Data;
+   Int_t           sbs_hcal_Nsimhits;
+   vector<short>   *sbs_hcal_simhit_chan;
+   vector<double>  *sbs_hcal_simhit_Edep;
+   vector<int>     *sbs_hcal_simhit_npe;
+   vector<double>  *sbs_hcal_simhit_time;
+   vector<double>  *sbs_hcal_simhit_t_lead;
+   vector<double>  *sbs_hcal_simhit_t_trail;
+   Int_t           sbs_hcal_Nhits;
+   vector<short>   *sbs_hcal_hit_chan;
+   vector<unsigned int> *sbs_hcal_hit_dataword;
+   Int_t           sbs_cdet_Nsimhits;
+   vector<short>   *sbs_cdet_simhit_chan;
+   vector<double>  *sbs_cdet_simhit_Edep;
+   vector<int>     *sbs_cdet_simhit_npe;
+   vector<double>  *sbs_cdet_simhit_time;
+   vector<double>  *sbs_cdet_simhit_t_lead;
+   vector<double>  *sbs_cdet_simhit_t_trail;
+   Int_t           sbs_cdet_Nhits;
+   vector<short>   *sbs_cdet_hit_chan;
+   vector<unsigned int> *sbs_cdet_hit_dataword;
+   Int_t           bb_sh_Nsimhits;
+   vector<short>   *bb_sh_simhit_chan;
+   vector<double>  *bb_sh_simhit_Edep;
+   vector<int>     *bb_sh_simhit_npe;
+   vector<double>  *bb_sh_simhit_time;
+   Int_t           bb_sh_Nhits;
+   vector<short>   *bb_sh_hit_chan;
+   vector<unsigned int> *bb_sh_hit_dataword;
+   Int_t           bb_ps_Nsimhits;
+   vector<short>   *bb_ps_simhit_chan;
+   vector<double>  *bb_ps_simhit_Edep;
+   vector<int>     *bb_ps_simhit_npe;
+   vector<double>  *bb_ps_simhit_time;
+   Int_t           bb_ps_Nhits;
+   vector<short>   *bb_ps_hit_chan;
+   vector<unsigned int> *bb_ps_hit_dataword;
+   Int_t           bb_hodo_Nsimhits;
+   vector<short>   *bb_hodo_simhit_chan;
+   vector<double>  *bb_hodo_simhit_Edep;
+   vector<int>     *bb_hodo_simhit_npe;
+   vector<double>  *bb_hodo_simhit_time;
+   vector<double>  *bb_hodo_simhit_t_lead;
+   vector<double>  *bb_hodo_simhit_t_trail;
+   Int_t           bb_hodo_Nhits;
+   vector<short>   *bb_hodo_hit_chan;
+   vector<unsigned int> *bb_hodo_hit_dataword;
+   Int_t           bb_grinch_Nsimhits;
+   vector<short>   *bb_grinch_simhit_chan;
+   vector<int>     *bb_grinch_simhit_npe;
+   vector<double>  *bb_grinch_simhit_time;
+   vector<double>  *bb_grinch_simhit_t_lead;
+   vector<double>  *bb_grinch_simhit_t_trail;
+   Int_t           bb_grinch_Nhits;
+   vector<short>   *bb_grinch_hit_chan;
+   vector<unsigned int> *bb_grinch_hit_dataword;
 
    // List of branches
    TBranch        *b_RunID;   //!
    TBranch        *b_EvtID;   //!
    TBranch        *b_Weight;   //!
    TBranch        *b_NSignal;   //!
-   TBranch        *b_NSimData_sbs_hcal;   //!
-   TBranch        *b_SimData_sbs_hcal_Chan;   //!
-   TBranch        *b_SimData_sbs_hcal_Type;   //!
-   TBranch        *b_SimData_sbs_hcal_Ndata;   //!
-   TBranch        *b_SimData_sbs_hcal_Data;   //!
-   TBranch        *b_NData_sbs_hcal;   //!
-   TBranch        *b_Data_sbs_hcal_Chan;   //!
-   TBranch        *b_Data_sbs_hcal_Ndata;   //!
-   TBranch        *b_Data_sbs_hcal_Data;   //!
-   TBranch        *b_NSimData_sbs_cdet;   //!
-   TBranch        *b_SimData_sbs_cdet_Chan;   //!
-   TBranch        *b_SimData_sbs_cdet_Type;   //!
-   TBranch        *b_SimData_sbs_cdet_Ndata;   //!
-   TBranch        *b_SimData_sbs_cdet_Data;   //!
-   TBranch        *b_NData_sbs_cdet;   //!
-   TBranch        *b_Data_sbs_cdet_Chan;   //!
-   TBranch        *b_Data_sbs_cdet_Ndata;   //!
-   TBranch        *b_Data_sbs_cdet_Data;   //!
-   TBranch        *b_NSimData_bb_sh;   //!
-   TBranch        *b_SimData_bb_sh_Chan;   //!
-   TBranch        *b_SimData_bb_sh_Type;   //!
-   TBranch        *b_SimData_bb_sh_Ndata;   //!
-   TBranch        *b_SimData_bb_sh_Data;   //!
-   TBranch        *b_NData_bb_sh;   //!
-   TBranch        *b_Data_bb_sh_Chan;   //!
-   TBranch        *b_Data_bb_sh_Ndata;   //!
-   TBranch        *b_Data_bb_sh_Data;   //!
-   TBranch        *b_NSimData_bb_ps;   //!
-   TBranch        *b_SimData_bb_ps_Chan;   //!
-   TBranch        *b_SimData_bb_ps_Type;   //!
-   TBranch        *b_SimData_bb_ps_Ndata;   //!
-   TBranch        *b_SimData_bb_ps_Data;   //!
-   TBranch        *b_NData_bb_ps;   //!
-   TBranch        *b_Data_bb_ps_Chan;   //!
-   TBranch        *b_Data_bb_ps_Ndata;   //!
-   TBranch        *b_Data_bb_ps_Data;   //!
-   TBranch        *b_NSimData_bb_hodo;   //!
-   TBranch        *b_SimData_bb_hodo_Chan;   //!
-   TBranch        *b_SimData_bb_hodo_Type;   //!
-   TBranch        *b_SimData_bb_hodo_Ndata;   //!
-   TBranch        *b_SimData_bb_hodo_Data;   //!
-   TBranch        *b_NData_bb_hodo;   //!
-   TBranch        *b_Data_bb_hodo_Chan;   //!
-   TBranch        *b_Data_bb_hodo_Ndata;   //!
-   TBranch        *b_Data_bb_hodo_Data;   //!
-   TBranch        *b_NSimData_bb_grinch;   //!
-   TBranch        *b_SimData_bb_grinch_Chan;   //!
-   TBranch        *b_SimData_bb_grinch_Type;   //!
-   TBranch        *b_SimData_bb_grinch_Ndata;   //!
-   TBranch        *b_SimData_bb_grinch_Data;   //!
-   TBranch        *b_NData_bb_grinch;   //!
-   TBranch        *b_Data_bb_grinch_Chan;   //!
-   TBranch        *b_Data_bb_grinch_Ndata;   //!
-   TBranch        *b_Data_bb_grinch_Data;   //!
+   TBranch        *b_sbs_hcal_Nsimhits;   //!
+   TBranch        *b_sbs_hcal_simhit_chan;   //!
+   TBranch        *b_sbs_hcal_simhit_Edep;   //!
+   TBranch        *b_sbs_hcal_simhit_npe;   //!
+   TBranch        *b_sbs_hcal_simhit_time;   //!
+   TBranch        *b_sbs_hcal_simhit_t_lead;   //!
+   TBranch        *b_sbs_hcal_simhit_t_trail;   //!
+   TBranch        *b_sbs_hcal_Nhits;   //!
+   TBranch        *b_sbs_hcal_hit_chan;   //!
+   TBranch        *b_sbs_hcal_hit_dataword;   //!
+   TBranch        *b_sbs_cdet_Nsimhits;   //!
+   TBranch        *b_sbs_cdet_simhit_chan;   //!
+   TBranch        *b_sbs_cdet_simhit_Edep;   //!
+   TBranch        *b_sbs_cdet_simhit_npe;   //!
+   TBranch        *b_sbs_cdet_simhit_time;   //!
+   TBranch        *b_sbs_cdet_simhit_t_lead;   //!
+   TBranch        *b_sbs_cdet_simhit_t_trail;   //!
+   TBranch        *b_sbs_cdet_Nhits;   //!
+   TBranch        *b_sbs_cdet_hit_chan;   //!
+   TBranch        *b_sbs_cdet_hit_dataword;   //!
+   TBranch        *b_bb_sh_Nsimhits;   //!
+   TBranch        *b_bb_sh_simhit_chan;   //!
+   TBranch        *b_bb_sh_simhit_Edep;   //!
+   TBranch        *b_bb_sh_simhit_npe;   //!
+   TBranch        *b_bb_sh_simhit_time;   //!
+   TBranch        *b_bb_sh_Nhits;   //!
+   TBranch        *b_bb_sh_hit_chan;   //!
+   TBranch        *b_bb_sh_hit_dataword;   //!
+   TBranch        *b_bb_ps_Nsimhits;   //!
+   TBranch        *b_bb_ps_simhit_chan;   //!
+   TBranch        *b_bb_ps_simhit_Edep;   //!
+   TBranch        *b_bb_ps_simhit_npe;   //!
+   TBranch        *b_bb_ps_simhit_time;   //!
+   TBranch        *b_bb_ps_Nhits;   //!
+   TBranch        *b_bb_ps_hit_chan;   //!
+   TBranch        *b_bb_ps_hit_dataword;   //!
+   TBranch        *b_bb_hodo_Nsimhits;   //!
+   TBranch        *b_bb_hodo_simhit_chan;   //!
+   TBranch        *b_bb_hodo_simhit_Edep;   //!
+   TBranch        *b_bb_hodo_simhit_npe;   //!
+   TBranch        *b_bb_hodo_simhit_time;   //!
+   TBranch        *b_bb_hodo_simhit_t_lead;   //!
+   TBranch        *b_bb_hodo_simhit_t_trail;   //!
+   TBranch        *b_bb_hodo_Nhits;   //!
+   TBranch        *b_bb_hodo_hit_chan;   //!
+   TBranch        *b_bb_hodo_hit_dataword;   //!
+   TBranch        *b_bb_grinch_Nsimhits;   //!
+   TBranch        *b_bb_grinch_simhit_chan;   //!
+   TBranch        *b_bb_grinch_simhit_npe;   //!
+   TBranch        *b_bb_grinch_simhit_time;   //!
+   TBranch        *b_bb_grinch_simhit_t_lead;   //!
+   TBranch        *b_bb_grinch_simhit_t_trail;   //!
+   TBranch        *b_bb_grinch_Nhits;   //!
+   TBranch        *b_bb_grinch_hit_chan;   //!
+   TBranch        *b_bb_grinch_hit_dataword;   //!
 
    digtree(TTree *tree=0);
    virtual ~digtree();
@@ -162,9 +166,9 @@ digtree::digtree(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../digitized/simdig_test.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../digitized/simdig_NoBkgd_2kevts.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("../digitized/simdig_test.root");
+         f = new TFile("../digitized/simdig_NoBkgd_2kevts.root");
       }
       f->GetObject("digtree",tree);
 
@@ -208,48 +212,49 @@ void digtree::Init(TTree *tree)
    // (once per file to be processed).
 
    // Set object pointer
-   SimData_sbs_hcal_Chan = 0;
-   SimData_sbs_hcal_Type = 0;
-   SimData_sbs_hcal_Ndata = 0;
-   SimData_sbs_hcal_Data = 0;
-   Data_sbs_hcal_Chan = 0;
-   Data_sbs_hcal_Ndata = 0;
-   Data_sbs_hcal_Data = 0;
-   SimData_sbs_cdet_Chan = 0;
-   SimData_sbs_cdet_Type = 0;
-   SimData_sbs_cdet_Ndata = 0;
-   SimData_sbs_cdet_Data = 0;
-   Data_sbs_cdet_Chan = 0;
-   Data_sbs_cdet_Ndata = 0;
-   Data_sbs_cdet_Data = 0;
-   SimData_bb_sh_Chan = 0;
-   SimData_bb_sh_Type = 0;
-   SimData_bb_sh_Ndata = 0;
-   SimData_bb_sh_Data = 0;
-   Data_bb_sh_Chan = 0;
-   Data_bb_sh_Ndata = 0;
-   Data_bb_sh_Data = 0;
-   SimData_bb_ps_Chan = 0;
-   SimData_bb_ps_Type = 0;
-   SimData_bb_ps_Ndata = 0;
-   SimData_bb_ps_Data = 0;
-   Data_bb_ps_Chan = 0;
-   Data_bb_ps_Ndata = 0;
-   Data_bb_ps_Data = 0;
-   SimData_bb_hodo_Chan = 0;
-   SimData_bb_hodo_Type = 0;
-   SimData_bb_hodo_Ndata = 0;
-   SimData_bb_hodo_Data = 0;
-   Data_bb_hodo_Chan = 0;
-   Data_bb_hodo_Ndata = 0;
-   Data_bb_hodo_Data = 0;
-   SimData_bb_grinch_Chan = 0;
-   SimData_bb_grinch_Type = 0;
-   SimData_bb_grinch_Ndata = 0;
-   SimData_bb_grinch_Data = 0;
-   Data_bb_grinch_Chan = 0;
-   Data_bb_grinch_Ndata = 0;
-   Data_bb_grinch_Data = 0;
+   sbs_hcal_simhit_chan = 0;
+   sbs_hcal_simhit_Edep = 0;
+   sbs_hcal_simhit_npe = 0;
+   sbs_hcal_simhit_time = 0;
+   sbs_hcal_simhit_t_lead = 0;
+   sbs_hcal_simhit_t_trail = 0;
+   sbs_hcal_hit_chan = 0;
+   sbs_hcal_hit_dataword = 0;
+   sbs_cdet_simhit_chan = 0;
+   sbs_cdet_simhit_Edep = 0;
+   sbs_cdet_simhit_npe = 0;
+   sbs_cdet_simhit_time = 0;
+   sbs_cdet_simhit_t_lead = 0;
+   sbs_cdet_simhit_t_trail = 0;
+   sbs_cdet_hit_chan = 0;
+   sbs_cdet_hit_dataword = 0;
+   bb_sh_simhit_chan = 0;
+   bb_sh_simhit_Edep = 0;
+   bb_sh_simhit_npe = 0;
+   bb_sh_simhit_time = 0;
+   bb_sh_hit_chan = 0;
+   bb_sh_hit_dataword = 0;
+   bb_ps_simhit_chan = 0;
+   bb_ps_simhit_Edep = 0;
+   bb_ps_simhit_npe = 0;
+   bb_ps_simhit_time = 0;
+   bb_ps_hit_chan = 0;
+   bb_ps_hit_dataword = 0;
+   bb_hodo_simhit_chan = 0;
+   bb_hodo_simhit_Edep = 0;
+   bb_hodo_simhit_npe = 0;
+   bb_hodo_simhit_time = 0;
+   bb_hodo_simhit_t_lead = 0;
+   bb_hodo_simhit_t_trail = 0;
+   bb_hodo_hit_chan = 0;
+   bb_hodo_hit_dataword = 0;
+   bb_grinch_simhit_chan = 0;
+   bb_grinch_simhit_npe = 0;
+   bb_grinch_simhit_time = 0;
+   bb_grinch_simhit_t_lead = 0;
+   bb_grinch_simhit_t_trail = 0;
+   bb_grinch_hit_chan = 0;
+   bb_grinch_hit_dataword = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -260,60 +265,61 @@ void digtree::Init(TTree *tree)
    fChain->SetBranchAddress("EvtID", &EvtID, &b_EvtID);
    fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
    fChain->SetBranchAddress("NSignal", &NSignal, &b_NSignal);
-   fChain->SetBranchAddress("NSimData_sbs.hcal", &NSimData_sbs_hcal, &b_NSimData_sbs_hcal);
-   fChain->SetBranchAddress("SimData_sbs.hcal_Chan", &SimData_sbs_hcal_Chan, &b_SimData_sbs_hcal_Chan);
-   fChain->SetBranchAddress("SimData_sbs.hcal_Type", &SimData_sbs_hcal_Type, &b_SimData_sbs_hcal_Type);
-   fChain->SetBranchAddress("SimData_sbs.hcal_Ndata", &SimData_sbs_hcal_Ndata, &b_SimData_sbs_hcal_Ndata);
-   fChain->SetBranchAddress("SimData_sbs.hcal_Data", &SimData_sbs_hcal_Data, &b_SimData_sbs_hcal_Data);
-   fChain->SetBranchAddress("NData_sbs.hcal", &NData_sbs_hcal, &b_NData_sbs_hcal);
-   fChain->SetBranchAddress("Data_sbs.hcal_Chan", &Data_sbs_hcal_Chan, &b_Data_sbs_hcal_Chan);
-   fChain->SetBranchAddress("Data_sbs.hcal_Ndata", &Data_sbs_hcal_Ndata, &b_Data_sbs_hcal_Ndata);
-   fChain->SetBranchAddress("Data_sbs.hcal_Data", &Data_sbs_hcal_Data, &b_Data_sbs_hcal_Data);
-   fChain->SetBranchAddress("NSimData_sbs.cdet", &NSimData_sbs_cdet, &b_NSimData_sbs_cdet);
-   fChain->SetBranchAddress("SimData_sbs.cdet_Chan", &SimData_sbs_cdet_Chan, &b_SimData_sbs_cdet_Chan);
-   fChain->SetBranchAddress("SimData_sbs.cdet_Type", &SimData_sbs_cdet_Type, &b_SimData_sbs_cdet_Type);
-   fChain->SetBranchAddress("SimData_sbs.cdet_Ndata", &SimData_sbs_cdet_Ndata, &b_SimData_sbs_cdet_Ndata);
-   fChain->SetBranchAddress("SimData_sbs.cdet_Data", &SimData_sbs_cdet_Data, &b_SimData_sbs_cdet_Data);
-   fChain->SetBranchAddress("NData_sbs.cdet", &NData_sbs_cdet, &b_NData_sbs_cdet);
-   fChain->SetBranchAddress("Data_sbs.cdet_Chan", &Data_sbs_cdet_Chan, &b_Data_sbs_cdet_Chan);
-   fChain->SetBranchAddress("Data_sbs.cdet_Ndata", &Data_sbs_cdet_Ndata, &b_Data_sbs_cdet_Ndata);
-   fChain->SetBranchAddress("Data_sbs.cdet_Data", &Data_sbs_cdet_Data, &b_Data_sbs_cdet_Data);
-   fChain->SetBranchAddress("NSimData_bb.sh", &NSimData_bb_sh, &b_NSimData_bb_sh);
-   fChain->SetBranchAddress("SimData_bb.sh_Chan", &SimData_bb_sh_Chan, &b_SimData_bb_sh_Chan);
-   fChain->SetBranchAddress("SimData_bb.sh_Type", &SimData_bb_sh_Type, &b_SimData_bb_sh_Type);
-   fChain->SetBranchAddress("SimData_bb.sh_Ndata", &SimData_bb_sh_Ndata, &b_SimData_bb_sh_Ndata);
-   fChain->SetBranchAddress("SimData_bb.sh_Data", &SimData_bb_sh_Data, &b_SimData_bb_sh_Data);
-   fChain->SetBranchAddress("NData_bb.sh", &NData_bb_sh, &b_NData_bb_sh);
-   fChain->SetBranchAddress("Data_bb.sh_Chan", &Data_bb_sh_Chan, &b_Data_bb_sh_Chan);
-   fChain->SetBranchAddress("Data_bb.sh_Ndata", &Data_bb_sh_Ndata, &b_Data_bb_sh_Ndata);
-   fChain->SetBranchAddress("Data_bb.sh_Data", &Data_bb_sh_Data, &b_Data_bb_sh_Data);
-   fChain->SetBranchAddress("NSimData_bb.ps", &NSimData_bb_ps, &b_NSimData_bb_ps);
-   fChain->SetBranchAddress("SimData_bb.ps_Chan", &SimData_bb_ps_Chan, &b_SimData_bb_ps_Chan);
-   fChain->SetBranchAddress("SimData_bb.ps_Type", &SimData_bb_ps_Type, &b_SimData_bb_ps_Type);
-   fChain->SetBranchAddress("SimData_bb.ps_Ndata", &SimData_bb_ps_Ndata, &b_SimData_bb_ps_Ndata);
-   fChain->SetBranchAddress("SimData_bb.ps_Data", &SimData_bb_ps_Data, &b_SimData_bb_ps_Data);
-   fChain->SetBranchAddress("NData_bb.ps", &NData_bb_ps, &b_NData_bb_ps);
-   fChain->SetBranchAddress("Data_bb.ps_Chan", &Data_bb_ps_Chan, &b_Data_bb_ps_Chan);
-   fChain->SetBranchAddress("Data_bb.ps_Ndata", &Data_bb_ps_Ndata, &b_Data_bb_ps_Ndata);
-   fChain->SetBranchAddress("Data_bb.ps_Data", &Data_bb_ps_Data, &b_Data_bb_ps_Data);
-   fChain->SetBranchAddress("NSimData_bb.hodo", &NSimData_bb_hodo, &b_NSimData_bb_hodo);
-   fChain->SetBranchAddress("SimData_bb.hodo_Chan", &SimData_bb_hodo_Chan, &b_SimData_bb_hodo_Chan);
-   fChain->SetBranchAddress("SimData_bb.hodo_Type", &SimData_bb_hodo_Type, &b_SimData_bb_hodo_Type);
-   fChain->SetBranchAddress("SimData_bb.hodo_Ndata", &SimData_bb_hodo_Ndata, &b_SimData_bb_hodo_Ndata);
-   fChain->SetBranchAddress("SimData_bb.hodo_Data", &SimData_bb_hodo_Data, &b_SimData_bb_hodo_Data);
-   fChain->SetBranchAddress("NData_bb.hodo", &NData_bb_hodo, &b_NData_bb_hodo);
-   fChain->SetBranchAddress("Data_bb.hodo_Chan", &Data_bb_hodo_Chan, &b_Data_bb_hodo_Chan);
-   fChain->SetBranchAddress("Data_bb.hodo_Ndata", &Data_bb_hodo_Ndata, &b_Data_bb_hodo_Ndata);
-   fChain->SetBranchAddress("Data_bb.hodo_Data", &Data_bb_hodo_Data, &b_Data_bb_hodo_Data);
-   fChain->SetBranchAddress("NSimData_bb.grinch", &NSimData_bb_grinch, &b_NSimData_bb_grinch);
-   fChain->SetBranchAddress("SimData_bb.grinch_Chan", &SimData_bb_grinch_Chan, &b_SimData_bb_grinch_Chan);
-   fChain->SetBranchAddress("SimData_bb.grinch_Type", &SimData_bb_grinch_Type, &b_SimData_bb_grinch_Type);
-   fChain->SetBranchAddress("SimData_bb.grinch_Ndata", &SimData_bb_grinch_Ndata, &b_SimData_bb_grinch_Ndata);
-   fChain->SetBranchAddress("SimData_bb.grinch_Data", &SimData_bb_grinch_Data, &b_SimData_bb_grinch_Data);
-   fChain->SetBranchAddress("NData_bb.grinch", &NData_bb_grinch, &b_NData_bb_grinch);
-   fChain->SetBranchAddress("Data_bb.grinch_Chan", &Data_bb_grinch_Chan, &b_Data_bb_grinch_Chan);
-   fChain->SetBranchAddress("Data_bb.grinch_Ndata", &Data_bb_grinch_Ndata, &b_Data_bb_grinch_Ndata);
-   fChain->SetBranchAddress("Data_bb.grinch_Data", &Data_bb_grinch_Data, &b_Data_bb_grinch_Data);
+   fChain->SetBranchAddress("sbs.hcal_Nsimhits", &sbs_hcal_Nsimhits, &b_sbs_hcal_Nsimhits);
+   fChain->SetBranchAddress("sbs.hcal_simhit_chan", &sbs_hcal_simhit_chan, &b_sbs_hcal_simhit_chan);
+   fChain->SetBranchAddress("sbs.hcal_simhit_Edep", &sbs_hcal_simhit_Edep, &b_sbs_hcal_simhit_Edep);
+   fChain->SetBranchAddress("sbs.hcal_simhit_npe", &sbs_hcal_simhit_npe, &b_sbs_hcal_simhit_npe);
+   fChain->SetBranchAddress("sbs.hcal_simhit_time", &sbs_hcal_simhit_time, &b_sbs_hcal_simhit_time);
+   fChain->SetBranchAddress("sbs.hcal_simhit_t_lead", &sbs_hcal_simhit_t_lead, &b_sbs_hcal_simhit_t_lead);
+   fChain->SetBranchAddress("sbs.hcal_simhit_t_trail", &sbs_hcal_simhit_t_trail, &b_sbs_hcal_simhit_t_trail);
+   fChain->SetBranchAddress("sbs.hcal_Nhits", &sbs_hcal_Nhits, &b_sbs_hcal_Nhits);
+   fChain->SetBranchAddress("sbs.hcal_hit_chan", &sbs_hcal_hit_chan, &b_sbs_hcal_hit_chan);
+   fChain->SetBranchAddress("sbs.hcal_hit_dataword", &sbs_hcal_hit_dataword, &b_sbs_hcal_hit_dataword);
+   fChain->SetBranchAddress("sbs.cdet_Nsimhits", &sbs_cdet_Nsimhits, &b_sbs_cdet_Nsimhits);
+   fChain->SetBranchAddress("sbs.cdet_simhit_chan", &sbs_cdet_simhit_chan, &b_sbs_cdet_simhit_chan);
+   fChain->SetBranchAddress("sbs.cdet_simhit_Edep", &sbs_cdet_simhit_Edep, &b_sbs_cdet_simhit_Edep);
+   fChain->SetBranchAddress("sbs.cdet_simhit_npe", &sbs_cdet_simhit_npe, &b_sbs_cdet_simhit_npe);
+   fChain->SetBranchAddress("sbs.cdet_simhit_time", &sbs_cdet_simhit_time, &b_sbs_cdet_simhit_time);
+   fChain->SetBranchAddress("sbs.cdet_simhit_t_lead", &sbs_cdet_simhit_t_lead, &b_sbs_cdet_simhit_t_lead);
+   fChain->SetBranchAddress("sbs.cdet_simhit_t_trail", &sbs_cdet_simhit_t_trail, &b_sbs_cdet_simhit_t_trail);
+   fChain->SetBranchAddress("sbs.cdet_Nhits", &sbs_cdet_Nhits, &b_sbs_cdet_Nhits);
+   fChain->SetBranchAddress("sbs.cdet_hit_chan", &sbs_cdet_hit_chan, &b_sbs_cdet_hit_chan);
+   fChain->SetBranchAddress("sbs.cdet_hit_dataword", &sbs_cdet_hit_dataword, &b_sbs_cdet_hit_dataword);
+   fChain->SetBranchAddress("bb.sh_Nsimhits", &bb_sh_Nsimhits, &b_bb_sh_Nsimhits);
+   fChain->SetBranchAddress("bb.sh_simhit_chan", &bb_sh_simhit_chan, &b_bb_sh_simhit_chan);
+   fChain->SetBranchAddress("bb.sh_simhit_Edep", &bb_sh_simhit_Edep, &b_bb_sh_simhit_Edep);
+   fChain->SetBranchAddress("bb.sh_simhit_npe", &bb_sh_simhit_npe, &b_bb_sh_simhit_npe);
+   fChain->SetBranchAddress("bb.sh_simhit_time", &bb_sh_simhit_time, &b_bb_sh_simhit_time);
+   fChain->SetBranchAddress("bb.sh_Nhits", &bb_sh_Nhits, &b_bb_sh_Nhits);
+   fChain->SetBranchAddress("bb.sh_hit_chan", &bb_sh_hit_chan, &b_bb_sh_hit_chan);
+   fChain->SetBranchAddress("bb.sh_hit_dataword", &bb_sh_hit_dataword, &b_bb_sh_hit_dataword);
+   fChain->SetBranchAddress("bb.ps_Nsimhits", &bb_ps_Nsimhits, &b_bb_ps_Nsimhits);
+   fChain->SetBranchAddress("bb.ps_simhit_chan", &bb_ps_simhit_chan, &b_bb_ps_simhit_chan);
+   fChain->SetBranchAddress("bb.ps_simhit_Edep", &bb_ps_simhit_Edep, &b_bb_ps_simhit_Edep);
+   fChain->SetBranchAddress("bb.ps_simhit_npe", &bb_ps_simhit_npe, &b_bb_ps_simhit_npe);
+   fChain->SetBranchAddress("bb.ps_simhit_time", &bb_ps_simhit_time, &b_bb_ps_simhit_time);
+   fChain->SetBranchAddress("bb.ps_Nhits", &bb_ps_Nhits, &b_bb_ps_Nhits);
+   fChain->SetBranchAddress("bb.ps_hit_chan", &bb_ps_hit_chan, &b_bb_ps_hit_chan);
+   fChain->SetBranchAddress("bb.ps_hit_dataword", &bb_ps_hit_dataword, &b_bb_ps_hit_dataword);
+   fChain->SetBranchAddress("bb.hodo_Nsimhits", &bb_hodo_Nsimhits, &b_bb_hodo_Nsimhits);
+   fChain->SetBranchAddress("bb.hodo_simhit_chan", &bb_hodo_simhit_chan, &b_bb_hodo_simhit_chan);
+   fChain->SetBranchAddress("bb.hodo_simhit_Edep", &bb_hodo_simhit_Edep, &b_bb_hodo_simhit_Edep);
+   fChain->SetBranchAddress("bb.hodo_simhit_npe", &bb_hodo_simhit_npe, &b_bb_hodo_simhit_npe);
+   fChain->SetBranchAddress("bb.hodo_simhit_time", &bb_hodo_simhit_time, &b_bb_hodo_simhit_time);
+   fChain->SetBranchAddress("bb.hodo_simhit_t_lead", &bb_hodo_simhit_t_lead, &b_bb_hodo_simhit_t_lead);
+   fChain->SetBranchAddress("bb.hodo_simhit_t_trail", &bb_hodo_simhit_t_trail, &b_bb_hodo_simhit_t_trail);
+   fChain->SetBranchAddress("bb.hodo_Nhits", &bb_hodo_Nhits, &b_bb_hodo_Nhits);
+   fChain->SetBranchAddress("bb.hodo_hit_chan", &bb_hodo_hit_chan, &b_bb_hodo_hit_chan);
+   fChain->SetBranchAddress("bb.hodo_hit_dataword", &bb_hodo_hit_dataword, &b_bb_hodo_hit_dataword);
+   fChain->SetBranchAddress("bb.grinch_Nsimhits", &bb_grinch_Nsimhits, &b_bb_grinch_Nsimhits);
+   fChain->SetBranchAddress("bb.grinch_simhit_chan", &bb_grinch_simhit_chan, &b_bb_grinch_simhit_chan);
+   fChain->SetBranchAddress("bb.grinch_simhit_npe", &bb_grinch_simhit_npe, &b_bb_grinch_simhit_npe);
+   fChain->SetBranchAddress("bb.grinch_simhit_time", &bb_grinch_simhit_time, &b_bb_grinch_simhit_time);
+   fChain->SetBranchAddress("bb.grinch_simhit_t_lead", &bb_grinch_simhit_t_lead, &b_bb_grinch_simhit_t_lead);
+   fChain->SetBranchAddress("bb.grinch_simhit_t_trail", &bb_grinch_simhit_t_trail, &b_bb_grinch_simhit_t_trail);
+   fChain->SetBranchAddress("bb.grinch_Nhits", &bb_grinch_Nhits, &b_bb_grinch_Nhits);
+   fChain->SetBranchAddress("bb.grinch_hit_chan", &bb_grinch_hit_chan, &b_bb_grinch_hit_chan);
+   fChain->SetBranchAddress("bb.grinch_hit_dataword", &bb_grinch_hit_dataword, &b_bb_grinch_hit_dataword);
    Notify();
 }
 
