@@ -432,7 +432,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       return kInitError;
     }
     
-    if(gatewidth>fBkgdSpreadTimeWindowHW)fBkgdSpreadTimeWindowHW = gatewidth;
+    if(gatewidth/2.0>fBkgdSpreadTimeWindowHW)fBkgdSpreadTimeWindowHW = gatewidth/2.0;
     
     //detinfo.DigInfo()
     diginfo.SetROImpedance(roimp);

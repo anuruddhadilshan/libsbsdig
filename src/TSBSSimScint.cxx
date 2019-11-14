@@ -104,6 +104,8 @@ void TSBSSimScint::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer
       time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter() + fTimeZero;//add 
       data = ev->GetData(4);
       
+      if(fabs(time)>fDetInfo.DigInfo().GateWidth()/2.0)continue;
+      
       if(fDebug>=3)
 	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
       
