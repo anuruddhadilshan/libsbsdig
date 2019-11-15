@@ -41,6 +41,7 @@ public:
   bool IsDetInfoAvailableById(Int_t id); // Check if a detector is defined by ID
   
   double GetBkgdSpreadTimeWindowHW(){return fBkgdSpreadTimeWindowHW;};
+  double GetTriggerJitter(){return fTriggerJitter;};
   //void SetBkgdSpreadTimeWindowHW(int bstwhw){fBkgdSpreadTimeWindowHW = bstwhw;};
   
  protected:
@@ -116,6 +117,7 @@ public:
   double fErrVal;
   
   Double_t fBkgdSpreadTimeWindowHW;
+  Double_t fTriggerJitter;
   
   TRndmManager *fRN;
   

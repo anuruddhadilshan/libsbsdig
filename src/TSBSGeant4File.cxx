@@ -150,6 +150,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Process GRINCH data
   
   if(fTree->Earm_GRINCH.nhits){
+    if(d_flag>=3)printf("Nhits in GRINCH = %d\n", fTree->Earm_GRINCH.nhits);
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
       g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 5);
       grinchhit->SetData(0, fSource);
@@ -159,10 +160,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       grinchhit->SetData(4, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(grinchhit);
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }
     
   // Process hodoscope data
   if(fTree->Earm_BBHodoScint.nhits){
+    if(d_flag>=3)printf("Nhits in BBhodo = %d\n", fTree->Earm_BBHodoScint.nhits);
     for(int i = 0; i<fTree->Earm_BBHodoScint.nhits; i++){
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	g4sbshitdata *hodoscinthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
@@ -184,10 +187,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	fg4sbsHitData.push_back(hodopmthit);
       }
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }
 
   // Process BB PS data
   if(fTree->Earm_BBPSTF1.nhits){
+    if(d_flag>=3)printf("Nhits in BBPSTF1 = %d\n", fTree->Earm_BBPSTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBPSTF1.nhits; i++){
       g4sbshitdata *bbpstf1hit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
       bbpstf1hit->SetData(0, fSource);
@@ -198,7 +203,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(bbpstf1hit);
       
       Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
-      t = fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
+      t = fTree->Earm_BBPSTF1.tavg->at(i)+fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
       g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
       bbpshit->SetData(0, fSource);
       bbpshit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
@@ -207,6 +212,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       bbpshit->SetData(4, Npe);
       fg4sbsHitData.push_back(bbpshit);
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }
   /*
   if(fTree->Earm_BBPS.nhits){
@@ -224,6 +230,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   // Process BB SH data
   if(fTree->Earm_BBSHTF1.nhits){
+    if(d_flag>=3)printf("Nhits in BBSHTF1 = %d\n", fTree->Earm_BBSHTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBSHTF1.nhits; i++){
       g4sbshitdata *bbshtf1hit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
       bbshtf1hit->SetData(0, fSource);
@@ -234,7 +241,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(bbshtf1hit);
       
       Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
-      t = fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
+      t = fTree->Earm_BBSHTF1.tavg->at(i)+fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
       g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
       bbshhit->SetData(0, fSource);
       bbshhit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
@@ -243,6 +250,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       bbshhit->SetData(4, Npe);
       fg4sbsHitData.push_back(bbshhit);
      }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
   /*
   if(fTree->Earm_BBSH.nhits){
@@ -261,6 +269,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // Hadron Arm
   // Process CDet data
   if(fTree->Harm_CDET_Scint.nhits){
+    if(d_flag>=3)printf("Nhits in CDet = %d\n", fTree->Harm_CDET_Scint.nhits);
     for(int i = 0; i<fTree->Harm_CDET_Scint.nhits; i++){
       g4sbshitdata *cdetscinthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
       cdetscinthit->SetData(0, fSource);
@@ -280,6 +289,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       cdetpmthit->SetData(4, Npe);
       fg4sbsHitData.push_back(cdetpmthit);
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
 
   // Now process the GEM data
@@ -366,6 +376,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   // For now, get the adc signal from the total energy deposited on the
   // scintillators. This can be changed later, I suppose...
   if(fTree->hcalscint.sumedep) {
+    if(d_flag>=3)printf("Nhits in HCalScint = %lu\n", fTree->hcalscint.sumedep->size());
     for(size_t k = 0; k < fTree->hcalscint.sumedep->size(); k++) {
       g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
       hcalscinthit->SetData(0,fSource);
@@ -374,7 +385,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       hcalscinthit->SetData(3,fTree->hcalscint.sumedep->at(k));
       fg4sbsHitData.push_back(hcalscinthit);
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }
+  
+  if(d_flag>=5)for(uint i = 0; i<fg4sbsHitData.size(); i++){
+      printf("Det ID %d : chan %1.0f \n", fg4sbsHitData.at(i)->GetDetUniqueID(), fg4sbsHitData.at(i)->GetData(1));
+    }
   
   if(d_flag>=3){
     printf("Just read event %d\n", fEvNum);

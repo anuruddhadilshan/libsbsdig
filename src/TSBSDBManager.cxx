@@ -10,7 +10,7 @@
 TSBSDBManager * TSBSDBManager::fManager = NULL;
 
 TSBSDBManager::TSBSDBManager() 
-  : fErrID(-999), fErrVal(-999.), fBkgdSpreadTimeWindowHW(0.)
+  : fErrID(-999), fErrVal(-999.), fBkgdSpreadTimeWindowHW(0.), fTriggerJitter(0.)
 {
   fRN = TRndmManager::GetInstance();
 }
@@ -164,10 +164,11 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
     
   }// end spectrometer loop
   //input.close();
-  
+  fTriggerJitter/= fDetInfo.size();
   if(fDebug>=2){
     cout << "Size of Spectro Info: " << fSpectroInfo.size() << "; size of Detector Info: " << fDetInfo.size() << endl;
     cout << "Background spread time window half width = " << fBkgdSpreadTimeWindowHW << " ns." <<endl;
+    cout << "Trigger Jitter = " << fTriggerJitter << " ns." <<endl;
   }
   
   fclose(file);
@@ -433,6 +434,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     }
     
     if(gatewidth/2.0>fBkgdSpreadTimeWindowHW)fBkgdSpreadTimeWindowHW = gatewidth/2.0;
+    fTriggerJitter+=triggerjitter;
     
     //detinfo.DigInfo()
     diginfo.SetROImpedance(roimp);

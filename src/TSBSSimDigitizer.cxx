@@ -121,8 +121,7 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
       if(fDebug>=3){
 	cout << "load event for det " << fDetectors[det]->GetName() << endl;
       }
-      double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
-			       fManager->GetBkgdSpreadTimeWindowHW());
+      double t0 = fDetectors[det]->GetTimeZero()+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
       fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadAccumulateData(f->GetDataVector());
       if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
@@ -142,7 +141,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
   Int_t nevt_b;
   //int ngood = 0;
   bool has_data;  
-
+  double t0 = 0;
 
   TObjArray *SigFileList = fSourceChainMap[0]->GetListOfFiles();
   TIter next_sig(SigFileList);
@@ -188,7 +187,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       // }
       //while( f->ReadNextEvent(fDebug) ){
       if(!f->ReadNextEvent(fDebug))continue;
- 
+      t0 = fRN->Gaus(0.0, fManager->GetTriggerJitter());
       for(size_t det = 0; det < fDetectors.size(); det++) {
 	if(fDebug>=2){
 	  cout << "load event " << f->GetEvNum() << " for file " << f->GetName() 
@@ -196,8 +195,9 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	}
 	//"LoadEventData" for signal - we want everything cleaned up for signal
 	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
-	fDetectors[det]->SetTimeZero(0.);
+	fDetectors[det]->SetTimeZero(t0);
 	fDetectors[det]->LoadEventData(f->GetDataVector());
+	if(fDebug>=3)cout << " event loaded for  " << fDetectors[det]->GetName() << endl;
 	/*
 	//"LoadAccumulateData" for any other stuff we want to superimpose to signal
 	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
@@ -256,7 +256,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 		     << " det " << fDetectors[det]->GetName() << endl;
 	      }
 	      //"LoadAccumulateData" for any other stuff we want to superimpose to signal
-	      double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
+	      double t0 = fDetectors[det]->GetTimeZero()+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
 				       fManager->GetBkgdSpreadTimeWindowHW());
 	      fDetectors[det]->SetTimeZero(t0);
 	      fDetectors[det]->LoadAccumulateData(f->GetDataVector());

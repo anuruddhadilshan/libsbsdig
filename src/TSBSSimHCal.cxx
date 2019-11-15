@@ -120,8 +120,7 @@ void TSBSSimHCal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
         //if(ev->GetData(1)<mint)
         //  mint = ev->GetData(1);
         // Data is time, so use info from the configuration
-        data += fDetInfo.DigInfo().SPE_TransitTime()-
-          fDetInfo.DigInfo().TriggerOffset() + fDetInfo.DigInfo().TriggerJitter() + fTimeZero;
+        data += fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
         //pulsenorm = fDetInfo.DigInfo().Gain(chan)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
         //fSignals[chan].Fill(fSPE, data-75.);
         fSignals[chan].Fill(data);
