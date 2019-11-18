@@ -315,7 +315,7 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 #endif
       // trim "all" bits that are above the number of TDC bits - a couple to speed it up
       // (since TDC have a revolving clock, as far as I understand)
-      tdc_value = TMath::Nint(fLeadTimes.at(i)/diginfo.TDCConversion());
+      tdc_value = TMath::Nint((fLeadTimes.at(i)+diginfo.GateWidth()/2.0)/diginfo.TDCConversion());
       for(int j = 30; j>=diginfo.TDCBits(); j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
@@ -323,8 +323,8 @@ void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
       fTDCData.time.push_back(tdc_value);
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
-      // also mark the traling time with setting bin 31 to 1
-      tdc_value = TMath::Nint(fTrailTimes.at(i)/diginfo.TDCConversion());
+      // also mark the traling time with setting bin 31 to 1 // need to reconvert then
+      tdc_value = TMath::Nint((fTrailTimes.at(i)+diginfo.GateWidth()/2.0)/diginfo.TDCConversion());
       for(int j = 30; j>=diginfo.TDCBits(); j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }

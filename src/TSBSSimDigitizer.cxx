@@ -87,10 +87,12 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
-    // if(DetInfo_i.DigInfo().ADCBits()>0)
-    //   fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
-    // if(DetInfo_i.DigInfo().TDCBits()>0)
-    //   fOutTree->Branch(Form("%s_tdc", fulldetname.c_str()),&fEvent->DetTDC[fulldetname.c_str()]);
+    if(DetInfo_i.DigInfo().ADCBits()>0)
+      fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+    if(DetInfo_i.DigInfo().TDCBits()>0){
+      fOutTree->Branch(Form("%s_tdc_l", fulldetname.c_str()),&fEvent->DetTDC_L[fulldetname.c_str()]);
+      fOutTree->Branch(Form("%s_tdc_t", fulldetname.c_str()),&fEvent->DetTDC_T[fulldetname.c_str()]);
+    }
   }
   
   //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);

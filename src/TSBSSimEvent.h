@@ -106,8 +106,9 @@ public:
   std::map< std::string, Int_t >                 NDetHits;
   std::map< std::string, std::vector<Short_t> >  DetChannel;
   std::map< std::string, std::vector<uint32_t> > DetDataWord;//encoded values
-  /* std::map< std::string, std::vector<Int_t> > DetADC;//decoded values */
-  /* std::map< std::string, std::vector<Int_t> > DetTDC;//decoded values */
+  std::map< std::string, std::vector<Int_t> > DetADC;//decoded values
+  std::map< std::string, std::vector<Int_t> > DetTDC_L;//decoded values
+  std::map< std::string, std::vector<Int_t> > DetTDC_T;//decoded values
   
   /*
     map<string, TSBSDetOutput> DetData;

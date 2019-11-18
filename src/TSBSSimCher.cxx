@@ -139,6 +139,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
   
   SimEncoder::adc_data adc_data;
   std::vector<uint32_t> data;
+  UInt_t tdcval;
   //std::vector<double> simdata;
   int mult = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
@@ -192,6 +193,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitNpe(i_mc));
 	event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTime(i_mc));
 	if(fEncoderTDC){
+	  if(fDebug>=4)cout << fSignals[m].MCHitLeadTime(i_mc) << " " << fSignals[m].MCHitTrailTime(i_mc) << endl;
 	  event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitLeadTime(i_mc));
 	  event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTrailTime(i_mc));
 	}
@@ -208,44 +210,63 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
-      
+	
 	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  // if(i==0){//header
-	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
-	  // }else{
-	  //   event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC());
-	  //   if(fEncoderTDC)event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
-	  // }
+	  if(i==0){//header
+	    event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
+	    if(fEncoderTDC){
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
+	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	    }
+	  }else{
+	    event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC()-fDetInfo.DigInfo().Pedestal(m));
+	    if(fEncoderTDC){
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
+	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	    }
+	  }
 	}
 	data.clear();
       }
       
       // Fill TDC 
       if(fEncoderTDC) {
-        fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
+ 	if(fDebug>=4)cout << fSignals[m].TDC(0) << " " << fSignals[m].TDC(1) << endl;
+	fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
-      
+	
 	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	  // if(i==0){//header
-	  //   event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(-1);
-	  // }else{
-	  //   if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1);
-	  //   event.DetTDC[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1));
-	  // }
+	  if(i==0){//header
+	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
+	    event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
+	    event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	  }else{
+	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
+	    if( fSignals[m].TDC(i-1) & ( 1 << (31) ) ){
+	      tdcval = fSignals[m].TDC(i-1);
+	      if(fDebug>=4)cout << " T: " << tdcval << " => ";
+	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
+	      if(fDebug>=4)cout << tdcval << endl;
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
+	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(tdcval);
+	    }else{
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1));
+	      if(fDebug>=4)cout << " L: " << fSignals[m].TDC(i-1) << endl;
+	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	    }
+	  }
 	}
 	data.clear();
       }
       
-      /*
+            /*
       //event.DetID.push_back(Short_t(UniqueDetID()));
       event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
       event.DetNData[fDetInfo.DetFullName()].push_back(Short_t(data.size()));
