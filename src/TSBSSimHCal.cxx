@@ -283,10 +283,10 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].tdc.getTime(i-1);
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(tdcval);
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
 	    }else{
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(i-1));
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
 	    }
 	  }

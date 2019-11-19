@@ -255,9 +255,9 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
 	      if(fDebug>=4)cout << tdcval << endl;
 	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
-	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(tdcval);
+	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
 	    }else{
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1));
+	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      if(fDebug>=4)cout << " L: " << fSignals[m].TDC(i-1) << endl;
 	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
 	    }
