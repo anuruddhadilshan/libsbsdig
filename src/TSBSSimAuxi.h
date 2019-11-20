@@ -360,7 +360,7 @@ class TPMTSignal : public TObject {
  public:
   TPMTSignal();
   TPMTSignal(double npechargeconv);
-  void Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal);
+  void Fill(TSPEModel *model, int npe, double thr, double evttime, int signal);
   void Digitize(TDigInfo diginfo, int chan);
   void Clear(Option_t* opt = "");
   ~TPMTSignal(){Clear();};
@@ -387,6 +387,7 @@ class TPMTSignal : public TObject {
   
   //MC variables
   UInt_t MCHitSize(){return fMCHitSize;};
+  Short_t MCHitSource(uint i){return fMCHitSource.at(i);};
   double MCHitEdep(uint i){return fMCHitEdep.at(i);};//Not forced to use it for everything
   UInt_t MCHitNpe(uint i){return fMCHitNpe.at(i);};
   double MCHitTime(uint i){return fMCHitTime.at(i);};
@@ -396,6 +397,10 @@ class TPMTSignal : public TObject {
   //check vectors size
   bool check_vec_size(){
     bool b = true;
+    if(fMCHitSize!=fMCHitSource.size()){
+      printf("fMCHitSource.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
+      b = false;
+    }
     if(fMCHitSize!=fMCHitEdep.size()){
       printf("fMCHitEdep.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
       b = false;
@@ -437,6 +442,7 @@ class TPMTSignal : public TObject {
 
   //MC variables
   UInt_t fMCHitSize;
+  std::vector<Short_t> fMCHitSource;
   std::vector<double> fMCHitEdep;//Not forced to use it for everything
   std::vector<UInt_t> fMCHitNpe;
   std::vector<double> fMCHitTime;

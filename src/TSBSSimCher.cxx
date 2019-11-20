@@ -64,7 +64,7 @@ void TSBSSimCher::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
     // Only get detector data for Cherenkov
     // new detector ID convetion proposal: UniqueDetID = 10*DetTypeDetID
     if(ev->GetDetUniqueID() == UniqueDetID()) {
-      signal = (ev->GetData(0)==0);
+      signal = ev->GetData(0);
       chan = ev->GetData(1);
       //type = ev->GetData(2);
       time = ev->GetData(2)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
@@ -160,6 +160,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.NSimDetHits[fDetInfo.DetFullName()]++;
 	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	event.SimDetSource[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitSource(i_mc));
 	event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitNpe(i_mc));
 	event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTime(i_mc));
 	if(fEncoderTDC){
@@ -184,6 +185,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  /*
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
 	    event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
@@ -192,6 +194,9 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
 	    }
 	  }else{
+	  */
+	  if(i>0){
+	    event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	    event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC()-fDetInfo.DigInfo().Pedestal(m));
 	    if(fEncoderTDC){
 	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
@@ -212,12 +217,16 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	for(uint i = 0; i<data.size(); i++){
 	  event.NDetHits[fDetInfo.DetFullName()]++;
 	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  /*
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
 	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
 	    event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
 	    event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
 	  }else{
+	  */
+	  if(i>0){
+	    event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
 	    if( fSignals[m].TDC(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].TDC(i-1);

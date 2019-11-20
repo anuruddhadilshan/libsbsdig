@@ -75,6 +75,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     */
 
     fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->SimDetSource[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
     if(dettype!=kCher)fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->SimDetEdep[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_npe", fulldetname.c_str()),&fEvent->SimDetNpe[fulldetname.c_str()]);
@@ -84,7 +85,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
       fOutTree->Branch(Form("%s_simhit_t_trail", fulldetname.c_str()),&fEvent->SimDetTrailTime[fulldetname.c_str()]);
     }
     
-    fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
+    fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetHits[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
     if(DetInfo_i.DigInfo().ADCBits()>0)
@@ -189,6 +190,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       // }
       //while( f->ReadNextEvent(fDebug) ){
       if(!f->ReadNextEvent(fDebug))continue;
+      if(f->GetDataVector().size()==0)continue;
       t0 = fRN->Gaus(0.0, fManager->GetTriggerJitter());
       for(size_t det = 0; det < fDetectors.size(); det++) {
 	if(fDebug>=2){
@@ -209,7 +211,6 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	fDetectors[det]->LoadAccumulateData(f->GetDataVector());
 	*/
       }
-      
       //now loop on other chains to add background
       
       //std::set<Int_t>::iterator it = fSources.begin();

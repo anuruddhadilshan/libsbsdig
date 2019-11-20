@@ -149,6 +149,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   // Process GRINCH data
   
+  if(d_flag>=3)printf("Source  = %d\n", fSource);
+  
   if(fTree->Earm_GRINCH.nhits){
     if(d_flag>=3)printf("Nhits in GRINCH = %d\n", fTree->Earm_GRINCH.nhits);
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){

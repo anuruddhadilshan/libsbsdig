@@ -153,6 +153,7 @@ TPMTSignal::TPMTSignal(double npechargeconv)
   fTrailTimes.clear();
   fTDCs.clear();
   
+  fMCHitSource.clear();
   fMCHitEdep.clear();
   fMCHitNpe.clear();
   fMCHitTime.clear();
@@ -160,9 +161,9 @@ TPMTSignal::TPMTSignal(double npechargeconv)
   fMCHitTrailTimes.clear();
 }
 
-void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, bool signal)
+void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int signal)
 {
-  if(signal)fEventTime = evttime;
+  if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
@@ -178,6 +179,7 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, boo
   t_trail+=evttime;
   
   fMCHitSize++;
+  fMCHitSource.push_back(signal);
   fMCHitNpe.push_back(npe);
   fMCHitTime.push_back(evttime);
   fMCHitLeadTimes.push_back(t_lead);
@@ -356,6 +358,7 @@ void TPMTSignal::Clear(Option_t*)
   fTDCs.clear();
   
   fMCHitSize = 0;
+  fMCHitSource.clear();
   fMCHitEdep.clear();
   fMCHitNpe.clear();
   fMCHitTime.clear();

@@ -13,7 +13,7 @@
 #include "THaAnalysisObject.h"
 #endif
 
-void digi_all_test(ULong64_t nentries = 100, int nbkgd = 0, int debuglevel = 1)
+void digi_all_test(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "gmn13.5_beam_bkgd.txt", int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
@@ -51,19 +51,21 @@ void digi_all_test(ULong64_t nentries = 100, int nbkgd = 0, int debuglevel = 1)
   // if(debuglevel>=2)cout << "Add to digitizer file " << f->GetName() << endl;
   // digitizer->AddInputFile(f, 1);
   
-  digitizer->AddInputFile("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20190725_15/elastic_0.root", 0, 1);
+  ifstream sig_inputfile(input_sigfile);
+  TString currentline;
+  while( currentline.ReadLine(sig_inputfile) && !currentline.BeginsWith("endlist") ){
+    if( !currentline.BeginsWith("#") ){
+      digitizer->AddInputFile(currentline.Data(), 0, 1);
+    }
+  }
   
-  //int nmiss = 0;
-  for(int i = 0; i<2000; i++){
-    // TSBSGeant4File *f_b = new TSBSGeant4File(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i));
-    // if(debuglevel>=2)cout << "Add to digitizer file " << f_b->GetName() << endl;
-    // if(!f_b->Open()){
-    //   continue;
-    //   nmiss++;
-    // }
-    //f_b->SetSource(1);
-    if(debuglevel>=2)cout << i << Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i) << endl;
-    digitizer->AddInputFile(Form("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_blsh_20190724_01/beam_bkgd_%d.root", i), 1, -nbkgd);
+  if(nbkgd){
+    ifstream beam_inputfile(input_bkgdfile);
+    while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
+      if( !currentline.BeginsWith("#") ){
+	digitizer->AddInputFile(currentline.Data(), 1, -nbkgd);
+      }
+    }
   }
   
   // It is recommended  to declare the detector with its unique ID (second parameter)

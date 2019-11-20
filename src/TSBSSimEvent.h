@@ -82,6 +82,7 @@ public:
   std::vector< std::vector<uint32_t> > DetData;
   */
   
+  /*
   std::map<std::string, Int_t> NSimDetData;
   //std::map<std::string, std::vector<Short_t>> SimDetChannel;
   std::map<std::string, std::vector<Short_t>> SimDetDataType;
@@ -92,10 +93,10 @@ public:
   //std::map<std::string, std::vector<Short_t>> DetChannel;
   std::map<std::string, std::vector<Short_t>> DetNData;
   std::map<std::string, std::vector<std::vector<uint32_t>>> DetData;
-  
-  /* */
+  */
   
   std::map< std::string, Int_t >         NSimDetHits;
+  std::map< std::string, std::vector<Short_t> >  SimDetSource;
   std::map< std::string, std::vector<Short_t> >  SimDetChannel;
   std::map< std::string, std::vector<Double_t> > SimDetEdep;
   std::map< std::string, std::vector<Int_t> >    SimDetNpe;

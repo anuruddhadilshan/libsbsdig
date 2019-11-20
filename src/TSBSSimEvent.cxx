@@ -49,6 +49,7 @@ TSBSSimEvent::TSBSSimEvent()
     
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
+    SimDetSource[fulldetname].clear();
     SimDetEdep[fulldetname].clear();
     SimDetNpe[fulldetname].clear();
     SimDetTime[fulldetname].clear();
@@ -104,6 +105,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
+    SimDetSource[fulldetname].clear();
     SimDetEdep[fulldetname].clear();
     SimDetNpe[fulldetname].clear();
     SimDetTime[fulldetname].clear();
