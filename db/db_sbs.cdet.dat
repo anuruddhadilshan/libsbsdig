@@ -75,7 +75,7 @@ dig.sbs.cdet.tdcbits = 16
 
 dig.sbs.cdet.threshold = 0.005 #V
 dig.sbs.cdet.triggerjitter = 3.0  # ns
-dig.sbs.cdet.triggeroffset = 80.0  # ns 
+dig.sbs.cdet.triggeroffset = 75.3  # ns 
 dig.sbs.cdet.gatewidth = 100. #ns
 
 #PMT paramters

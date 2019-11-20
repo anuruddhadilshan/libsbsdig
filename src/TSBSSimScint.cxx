@@ -44,53 +44,20 @@ void TSBSSimScint::Init()
 
 void TSBSSimScint::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
+  // New event - we want to clear all arrays before storing some new data
   Clear();
   LoadAccumulateData(evbuffer);
-  /*
-  bool signal = false;
-  int chan = 0;
-  int type = 0;
-  double time = 0;
-  double data = 0;
-  
-  // for( const g4sbshitdata *ev: evbuffer) {
-  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
-    g4sbshitdata* ev = (*it);
-    // Only get detector data for Scintillator
-    // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
-    if(ev->GetDetUniqueID() == UniqueDetID()) {
-      signal = (ev->GetData(0)==0);
-      chan = ev->GetData(1);
-      type = ev->GetData(2);
-      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
-      data = ev->GetData(4);
-      
-      if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
-      
-      if(type == 0) {
-	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, signal);//
-	if(fDebug>=3)
-	  cout << "chan " << chan << " data " << data 
-	       << " fSignals[chan].Npe() " << fSignals[chan].Npe() << endl;
-      } else if (type == 1) { // sumedep data
-        fSignals[chan].AddSumEdep(data);
-	if(fDebug>=3)
-	  cout << "chan " << chan << " data " << data 
-	       << " fSignals[chan].SumEdep() " << fSignals[chan].SumEdep() << endl;
-      }
-    }
-  }
-  */
 }
 
 void TSBSSimScint::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 {
+  // Add data on top of what is already in there
   bool signal = false;
   int chan = 0;
-  int type = 0;
+  //int type = 0;
   double time = 0;
-  double data = 0;
+  double npe = 0;
+  double edep = 0;
   
   // for( const g4sbshitdata *ev: evbuffer) {
   for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
@@ -100,17 +67,20 @@ void TSBSSimScint::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer
     if(ev->GetDetUniqueID() == UniqueDetID()) {
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
-      type = ev->GetData(2);
-      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
-      data = ev->GetData(4);
+      //type = ev->GetData(2);
+      time = ev->GetData(2)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
+      npe = ev->GetData(3);
+      edep = ev->GetData(4);
       
-      //if(fabs(time)>fDetInfo.DigInfo().GateWidth()/2.0)continue;
+      if(fabs(time)>fDetInfo.DigInfo().GateWidth()/2.0)continue;
       
       if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
-      
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Evt Time: "<< ev->GetData(2) << " " << time << endl;
+
+      fSignals[chan].Fill(fSPE, npe, fDetInfo.DigInfo().Threshold(chan), time, signal);
+      fSignals[chan].AddSumEdep(edep);
+      /*
       if(type == 0) {
-	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, signal);//
 	if(fDebug>=3)
 	  cout << "chan " << chan << " data " << data 
 	       << " fSignals[chan].Npe() " << fSignals[chan].Npe() << endl;
@@ -120,6 +90,7 @@ void TSBSSimScint::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer
 	  cout << "chan " << chan << " data " << data 
 	       << " fSignals[chan].SumEdep() " << fSignals[chan].SumEdep() << endl;
       }
+      */
     }
   }
 }

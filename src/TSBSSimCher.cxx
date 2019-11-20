@@ -44,69 +44,39 @@ void TSBSSimCher::Init()
 
 void TSBSSimCher::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
+  // New event - we want to clear all arrays before storing some new data
   Clear();
   LoadAccumulateData(evbuffer);
-  /*
-  bool signal = false;
-  int chan = 0;
-  int type = 0;
-  double time = 0;
-  double data = 0;
-  
-  // for( const g4sbshitdata *ev: evbuffer) {
-  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
-    g4sbshitdata* ev = (*it);
-    // Only get detector data for Cherenkov
-    // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
-    if(ev->GetDetUniqueID() == UniqueDetID()) {
-      signal = (ev->GetData(0)==0);
-      chan = ev->GetData(1);
-      type = ev->GetData(2);
-      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset()+fDetInfo.DigInfo().TriggerJitter();//add 
-      data = ev->GetData(4);
-      
-      if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << data << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
-      
-      if(type == 0) {
-        //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
-        // ev->GetData(1) - 60. << std::endl;
-        //if(ev->GetData(1)<mint)
-        //  mint = ev->GetData(1);
-	//fSPE->SetNpe(data);
-        //fSignals[chan].Fill(chan, fNPE, data);//
-	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, signal);//
-      }
-    }
-  }
-  */
 }
 
 void TSBSSimCher::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 {
+  // Add data on top of what is already in there
   bool signal = false;
   int chan = 0;
-  int type = 0;
+  //int type = 0;
   double time = 0;
-  double data = 0;
+  double npe = 0;
   
   // for( const g4sbshitdata *ev: evbuffer) {
   for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
     g4sbshitdata* ev = (*it);
     // Only get detector data for Cherenkov
-    // new detector ID convetion proposal: UniqueDetID = 10*DetType+DetID
+    // new detector ID convetion proposal: UniqueDetID = 10*DetTypeDetID
     if(ev->GetDetUniqueID() == UniqueDetID()) {
       signal = (ev->GetData(0)==0);
       chan = ev->GetData(1);
-      type = ev->GetData(2);
-      time = ev->GetData(3)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
-      data = ev->GetData(4);
+      //type = ev->GetData(2);
+      time = ev->GetData(2)+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
+      npe = ev->GetData(3);
       
-      //if(fabs(time)>fDetInfo.DigInfo().GateWidth()/2.0)continue;
+      if(fabs(time)>fDetInfo.DigInfo().GateWidth()/2.0)continue;
       
       if(fDebug>=3)
-	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << data << " Evt Time: "<< ev->GetData(3) << " " << time << endl;
+	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << npe << " Evt Time: "<< ev->GetData(2) << " " << time << endl;
       
+      fSignals[chan].Fill(fSPE, npe, fDetInfo.DigInfo().Threshold(chan), time, signal);
+      /*
       if(type == 0) {
         //std::cout << "Filling data for chan: " << ev->GetData(0) << ", t=" << 
         // ev->GetData(1) - 60. << std::endl;
@@ -114,8 +84,8 @@ void TSBSSimCher::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
         //  mint = ev->GetData(1);
 	//fSPE->SetNpe(data);
         //fSignals[chan].Fill(chan, fNPE, data);//
-	fSignals[chan].Fill(fSPE, data, fDetInfo.DigInfo().Threshold(chan), time, signal);//
       }
+      */
     }
   }
 }

@@ -152,12 +152,12 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->Earm_GRINCH.nhits){
     if(d_flag>=3)printf("Nhits in GRINCH = %d\n", fTree->Earm_GRINCH.nhits);
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
-      g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 5);
+      g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 4);
       grinchhit->SetData(0, fSource);
       grinchhit->SetData(1, int(fTree->Earm_GRINCH.PMT->at(i)/5));
-      grinchhit->SetData(2, 0);
-      grinchhit->SetData(3, fTree->Earm_GRINCH.Time_avg->at(i));
-      grinchhit->SetData(4, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
+      //grinchhit->SetData(2, 0);
+      grinchhit->SetData(2, fTree->Earm_GRINCH.Time_avg->at(i));
+      grinchhit->SetData(3, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));
       fg4sbsHitData.push_back(grinchhit);
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
@@ -168,23 +168,26 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Nhits in BBhodo = %d\n", fTree->Earm_BBHodoScint.nhits);
     for(int i = 0; i<fTree->Earm_BBHodoScint.nhits; i++){
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	g4sbshitdata *hodoscinthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
-	hodoscinthit->SetData(0, fSource);
-	hodoscinthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
-	hodoscinthit->SetData(2, 1);
-	hodoscinthit->SetData(3, fTree->Earm_BBHodoScint.tavg->at(i));
-	hodoscinthit->SetData(4, fTree->Earm_BBHodoScint.sumedep->at(i));
-	fg4sbsHitData.push_back(hodoscinthit);
-	
 	Npe = fRN->Poisson(1.0e7*fTree->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24);
 	t = fTree->Earm_BBHodoScint.tavg->at(i)+(0.55+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/0.15;
 	g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
 	hodopmthit->SetData(0, fSource);
 	hodopmthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
-	hodopmthit->SetData(2, 0);
-	hodopmthit->SetData(3, t);
-	hodopmthit->SetData(4, Npe);
+	//hodopmthit->SetData(2, 0);
+	hodopmthit->SetData(2, t);
+	hodopmthit->SetData(3, Npe);
+	hodopmthit->SetData(4, fTree->Earm_BBHodoScint.sumedep->at(i));
 	fg4sbsHitData.push_back(hodopmthit);
+	
+	/*
+	g4sbshitdata *hodoscinthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
+	hodoscinthit->SetData(0, fSource);
+	hodoscinthit->SetData(1, fTree->Earm_BBHodoScint.cell->at(i)*2+j);
+	hodoscinthit->SetData(2, 1);
+	hodoscinthit->SetData(3, t);
+	hodoscinthit->SetData(4, fTree->Earm_BBHodoScint.sumedep->at(i));
+	fg4sbsHitData.push_back(hodoscinthit);
+	*/
       }
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
@@ -194,100 +197,83 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->Earm_BBPSTF1.nhits){
     if(d_flag>=3)printf("Nhits in BBPSTF1 = %d\n", fTree->Earm_BBPSTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBPSTF1.nhits; i++){
-      g4sbshitdata *bbpstf1hit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
-      bbpstf1hit->SetData(0, fSource);
-      bbpstf1hit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
-      bbpstf1hit->SetData(2, 1);
-      bbpstf1hit->SetData(3, fTree->Earm_BBPSTF1.tavg->at(i));
-      bbpstf1hit->SetData(4, fTree->Earm_BBPSTF1.sumedep->at(i));
-      fg4sbsHitData.push_back(bbpstf1hit);
-      
       Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
       t = fTree->Earm_BBPSTF1.tavg->at(i)+fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
       g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
       bbpshit->SetData(0, fSource);
       bbpshit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
-      bbpshit->SetData(2, 0);
-      bbpshit->SetData(3, t);
-      bbpshit->SetData(4, Npe);
+      //bbpshit->SetData(2, 0);
+      bbpshit->SetData(2, t);
+      bbpshit->SetData(3, Npe);
+      bbpshit->SetData(4, fTree->Earm_BBPSTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbpshit);
+      
+      /*
+      g4sbshitdata *bbpstf1hit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
+      bbpstf1hit->SetData(0, fSource);
+      bbpstf1hit->SetData(1, fTree->Earm_BBPSTF1.cell->at(i));
+      bbpstf1hit->SetData(2, 1);
+      bbpstf1hit->SetData(3, t);
+      bbpstf1hit->SetData(4, fTree->Earm_BBPSTF1.sumedep->at(i));
+      fg4sbsHitData.push_back(bbpstf1hit);
+      */
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }
-  /*
-  if(fTree->Earm_BBPS.nhits){
-    for(int i = 0; i<fTree->Earm_BBPS.nhits; i++){
-      g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
-      bbpshit->SetData(0, fSource);
-      bbpshit->SetData(1, fTree->Earm_BBPS.PMT->at(i));
-      bbpshit->SetData(2, 0);
-      bbpshit->SetData(3, fTree->Earm_BBPS.Time_avg->at(i));
-      bbpshit->SetData(4, fTree->Earm_BBPS.NumPhotoelectrons->at(i));
-      fg4sbsHitData.push_back(bbpshit);
-    }
-  }
-  */
   
   // Process BB SH data
   if(fTree->Earm_BBSHTF1.nhits){
     if(d_flag>=3)printf("Nhits in BBSHTF1 = %d\n", fTree->Earm_BBSHTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBSHTF1.nhits; i++){
-      g4sbshitdata *bbshtf1hit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
-      bbshtf1hit->SetData(0, fSource);
-      bbshtf1hit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
-      bbshtf1hit->SetData(2, 1);
-      bbshtf1hit->SetData(3, fTree->Earm_BBSHTF1.tavg->at(i));
-      bbshtf1hit->SetData(4, fTree->Earm_BBSHTF1.sumedep->at(i));
-      fg4sbsHitData.push_back(bbshtf1hit);
-      
       Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
       t = fTree->Earm_BBSHTF1.tavg->at(i)+fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
       g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
       bbshhit->SetData(0, fSource);
       bbshhit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
-      bbshhit->SetData(2, 0);
-      bbshhit->SetData(3, t);
-      bbshhit->SetData(4, Npe);
+      //bbshhit->SetData(2, 0);
+      bbshhit->SetData(2, t);
+      bbshhit->SetData(3, Npe);
+      bbshhit->SetData(4, fTree->Earm_BBSHTF1.sumedep->at(i));
       fg4sbsHitData.push_back(bbshhit);
+
+      /*
+      g4sbshitdata *bbshtf1hit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
+      bbshtf1hit->SetData(0, fSource);
+      bbshtf1hit->SetData(1, fTree->Earm_BBSHTF1.cell->at(i));
+      bbshtf1hit->SetData(2, 1);
+      bbshtf1hit->SetData(3, t);
+      bbshtf1hit->SetData(4, fTree->Earm_BBSHTF1.sumedep->at(i));
+      fg4sbsHitData.push_back(bbshtf1hit);
+      */
      }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
-  /*
-  if(fTree->Earm_BBSH.nhits){
-    for(int i = 0; i<fTree->Earm_BBSH.nhits; i++){
-      g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
-      bbshhit->SetData(0, fSource);
-      bbshhit->SetData(1, fTree->Earm_BBSH.PMT->at(i));
-      bbshhit->SetData(2, 0);
-      bbshhit->SetData(3, fTree->Earm_BBSH.Time_avg->at(i));
-      bbshhit->SetData(4, fTree->Earm_BBSH.NumPhotoelectrons->at(i));
-      fg4sbsHitData.push_back(bbshhit);
-    }
-  }
-  */
-   
+  
   // Hadron Arm
   // Process CDet data
   if(fTree->Harm_CDET_Scint.nhits){
     if(d_flag>=3)printf("Nhits in CDet = %d\n", fTree->Harm_CDET_Scint.nhits);
     for(int i = 0; i<fTree->Harm_CDET_Scint.nhits; i++){
-      g4sbshitdata *cdetscinthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
-      cdetscinthit->SetData(0, fSource);
-      cdetscinthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));
-      cdetscinthit->SetData(2, 1);
-      cdetscinthit->SetData(3, fTree->Harm_CDET_Scint.tavg->at(i));
-      cdetscinthit->SetData(4, fTree->Harm_CDET_Scint.sumedep->at(i));
-      fg4sbsHitData.push_back(cdetscinthit);
-      
       Npe = fRN->Poisson( fTree->Harm_CDET_Scint.sumedep->at(i)*5.634e3 );
       t = fTree->Harm_CDET_Scint.tavg->at(i)+5.75+fTree->Harm_CDET_Scint.xhit->at(i)/0.16;
       g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
       cdetpmthit->SetData(0, fSource);
       cdetpmthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));
-      cdetpmthit->SetData(2, 0);
-      cdetpmthit->SetData(3, t);
-      cdetpmthit->SetData(4, Npe);
+      //cdetpmthit->SetData(2, 0);
+      cdetpmthit->SetData(2, t);
+      cdetpmthit->SetData(3, Npe);
+      cdetpmthit->SetData(4, fTree->Harm_CDET_Scint.sumedep->at(i));
       fg4sbsHitData.push_back(cdetpmthit);
+
+      /*
+      g4sbshitdata *cdetscinthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
+      cdetscinthit->SetData(0, fSource);
+      cdetscinthit->SetData(1, fTree->Harm_CDET_Scint.cell->at(i));
+      cdetscinthit->SetData(2, 1);
+      cdetscinthit->SetData(3, t);
+      cdetscinthit->SetData(4, fTree->Harm_CDET_Scint.sumedep->at(i));
+      fg4sbsHitData.push_back(cdetscinthit);
+      */
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }

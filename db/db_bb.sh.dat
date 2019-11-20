@@ -51,7 +51,7 @@ dig.bb.sh.adcbits = 12
 
 dig.bb.sh.threshold = 0.006 #V
 dig.bb.sh.triggerjitter = 3.0  # ns
-dig.bb.sh.triggeroffset = 25.  # ns 
+dig.bb.sh.triggeroffset = 37.5  # ns 
 dig.bb.sh.gatewidth = 100. #ns
 
 dig.bb.sh.spe_tau = 0.65  # ns

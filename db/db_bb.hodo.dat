@@ -33,7 +33,7 @@ dig.bb.hodo.tdcbits = 19
 
 dig.bb.hodo.threshold = 0.006 #V
 dig.bb.hodo.triggerjitter = 3.0  # ns
-dig.bb.hodo.triggeroffset = 42.  # ns 
+dig.bb.hodo.triggeroffset = 37.6  # ns 
 dig.bb.hodo.gatewidth = 100. #ns
 
 dig.bb.hodo.spe_tau = 0.65  # ns
