@@ -143,7 +143,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
     f->SetSource(0);
     //G4SBSRunData *rd;
     
-    while( nevent<max_events ) {
+    while( nevent<max_events && f->ReadNextEvent(fDebug)) {
       if(nevent%100==0)cout << nevent << " / " << max_events << endl;
       if(fDebug>=3)cout << "clear event " << endl;
       if(fDebug>=1)cout << "Process event " << nevent << endl;
@@ -152,7 +152,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       // Accumulate data here...
       
       //while( f->ReadNextEvent(fDebug) ){
-      if(!f->ReadNextEvent(fDebug))continue;
+      //if(!f->ReadNextEvent(fDebug))continue;
       if(f->GetDataVector().size()==0)continue;
       t0 = fRN->Gaus(0.0, fManager->GetTriggerJitter());
       for(size_t det = 0; det < fDetectors.size(); det++) {
