@@ -22,13 +22,9 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   
   cout << "instantiated DB and RN managers" << endl;
   
-  //fSigChain = new TChain("T");
-  //fBkgdChain = new TChain("T");
-  
   fEvent = new TSBSSimEvent();//problem here
   cout << "instantiated SimEvent" << endl;
   fOutFile = new TFile(outputfilename,"RECREATE");
-  //fOutTree = new TTree("TSBSDigi","");
   fOutTree = new TTree("digtree","");
   //fOutTree->Branch("fEvents",&fEvent);
   //fOutTree->Branch("event",&fEvent);
@@ -39,20 +35,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
   
   cout << "declared event info for the output tree" << endl;
   
-  /*
-  fOutTree->Branch("SimDetData_size",&fEvent->NSimDetData);
-  fOutTree->Branch("SimDetData_DetID",&fEvent->SimDetID);
-  fOutTree->Branch("SimDetData_Channel",&fEvent->SimDetChannel);
-  fOutTree->Branch("SimDetData_DataType",&fEvent->SimDetDataType);
-  fOutTree->Branch("SimDetData_Ndata",&fEvent->SimDetNData);
-  fOutTree->Branch("SimDetData_Data",&fEvent->SimDetData);
-  fOutTree->Branch("DetData_size",&fEvent->NDetData);
-  fOutTree->Branch("DetData_DetID",&fEvent->DetID);
-  fOutTree->Branch("DetData_Channel",&fEvent->DetChannel);
-  fOutTree->Branch("DetData_Ndata",&fEvent->DetNData);
-  fOutTree->Branch("DetData_Data",&fEvent->DetData);
-  */
-  
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
     //SimDetData_Channel
@@ -60,20 +42,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     std::string fulldetname = DetInfo_i.DetFullName();
     det_type dettype = DetInfo_i.DetType();
     cout << fulldetname.c_str() << endl;
-
-    /*
-    fOutTree->Branch(Form("NSimData_%s", fulldetname.c_str()),&fEvent->NSimDetData[fulldetname.c_str()]);
-    fOutTree->Branch(Form("SimData_%s_Chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
-    fOutTree->Branch(Form("SimData_%s_Type", fulldetname.c_str()),&fEvent->SimDetDataType[fulldetname.c_str()]);
-    fOutTree->Branch(Form("SimData_%s_Ndata", fulldetname.c_str()),&fEvent->SimDetNData[fulldetname.c_str()]);
-    fOutTree->Branch(Form("SimData_%s_Data", fulldetname.c_str()),&fEvent->SimDetData[fulldetname.c_str()]);
     
-    fOutTree->Branch(Form("NData_%s", fulldetname.c_str()),&fEvent->NDetData[fulldetname.c_str()]);
-    fOutTree->Branch(Form("Data_%s_Chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
-    fOutTree->Branch(Form("Data_%s_Ndata", fulldetname.c_str()),&fEvent->DetNData[fulldetname.c_str()]);
-    fOutTree->Branch(Form("Data_%s_Data", fulldetname.c_str()),&fEvent->DetData[fulldetname.c_str()]);
-    */
-
     fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->SimDetSource[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
@@ -89,10 +58,10 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
     fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
     if(DetInfo_i.DigInfo().ADCBits()>0)
-      fOutTree->Branch(Form("%s_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+      fOutTree->Branch(Form("%s_hit_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
     if(DetInfo_i.DigInfo().TDCBits()>0){
-      fOutTree->Branch(Form("%s_tdc_l", fulldetname.c_str()),&fEvent->DetTDC_L[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_tdc_t", fulldetname.c_str()),&fEvent->DetTDC_T[fulldetname.c_str()]);
+      fOutTree->Branch(Form("%s_hit_tdc_l", fulldetname.c_str()),&fEvent->DetTDC_L[fulldetname.c_str()]);
+      fOutTree->Branch(Form("%s_hit_tdc_t", fulldetname.c_str()),&fEvent->DetTDC_T[fulldetname.c_str()]);
     }
   }
   
@@ -181,13 +150,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       fEvent->Clear();
       has_data = false;
       // Accumulate data here...
-      //f->
       
-      // if(!f->ReadNextEvent(fDebug)){
-      // 	if(nevt_b==0)nfile = -1;
-      // 	//cout << "youhoo" << endl;
-      // 	break;
-      // }
       //while( f->ReadNextEvent(fDebug) ){
       if(!f->ReadNextEvent(fDebug))continue;
       if(f->GetDataVector().size()==0)continue;
@@ -202,14 +165,6 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	fDetectors[det]->SetTimeZero(t0);
 	fDetectors[det]->LoadEventData(f->GetDataVector());
 	if(fDebug>=3)cout << " event loaded for  " << fDetectors[det]->GetName() << endl;
-	/*
-	//"LoadAccumulateData" for any other stuff we want to superimpose to signal
-	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
-	double t0 = fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
-				 fManager->GetBkgdSpreadTimeWindowHW());
-	fDetectors[det]->SetTimeZero(t0);
-	fDetectors[det]->LoadAccumulateData(f->GetDataVector());
-	*/
       }
       //now loop on other chains to add background
       
@@ -223,6 +178,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	//TObjArray *BkgdFileList = fSourceChainMap[source]->GetListOfFiles();
 	//TIter next_bkgd(BkgdFileLists[i]);
 	
+	//if the weight has a negative value, by convention we add a number of files, not a number of events
 	if(fSourceWeightMap[source]<0){
 	  nfile = 0;
 	  //while( (chEl_bkgd=(TChainElement*)next_bkgd()) && 
@@ -239,7 +195,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	    //fSourceChainMap[source]->RecursiveRemove(f_b);
 	    f_b->~TSBSGeant4File();
 	    nfile++;
-	  }
+	  }//end loop on background files
 	}else{
 	  nevt_b = 0;
 	  //while( (chEl_bkgd=(TChainElement*)next_bkgd()) && 
@@ -267,15 +223,9 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	    }
 	    //AddFileToEvent(f_b);
 	    //fSourceChainMap[source]->RecursiveRemove(f_b);
-	  }
+	  }//end loop on background events
 	}
-	/*
-	  TObjArray *BkgdFileList = fSourceChainMap[source]->GetListOfFiles();
-	  TIter next_bkgd(BkgdFileList);
-	  
-	  TChainElement *chEl_bkgd = 0;
-	*/
-      }
+      }//end loop on sources
       
       for(size_t det = 0; det < fDetectors.size(); det++) {
 	if(fDebug>=3)cout << "digitize det " << fDetectors[det]->GetName() << endl;

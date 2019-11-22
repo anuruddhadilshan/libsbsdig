@@ -13,7 +13,7 @@
 #include "THaAnalysisObject.h"
 #endif
 
-void digi_all_test(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "gmn13.5_beam_bkgd.txt", int debuglevel = 1)
+void digi_all_test(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "", int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");

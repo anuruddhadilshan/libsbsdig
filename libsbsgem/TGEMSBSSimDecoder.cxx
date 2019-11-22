@@ -48,6 +48,34 @@ typedef vector<int>::size_type vsiz_t;
 // FIXME: The number 30 is hardcoded in dbconvert
 static const Int_t SIM_MAXSLOT = TMath::Min(Decoder::MAXSLOT,30);
 
+/* // all this stuff is copied but commented
+// Hard coded stuff for the time being...
+// what we will need is to switch all that stuff to SBS-offline anyway
+static const double Mp = 0.938272; //GeV
+static const double Lx_scint_CDET = 0.51; //m
+static const double Ly_scint_CDET = 0.005; //5 mm
+static const double mu_p = 2.793; // nuclear magneton
+static const double PI = TMath::Pi();
+static const double SBS_tracker_pitch=5.0*PI/180.0; //5 degrees
+
+static const double ECAL_phe_per_GeV=300.0;
+static const double ECAL_max_cell_size = 0.042; //meters
+static const double X0_ECAL = 0.0274; //radiation length
+static const double Ec_ECAL = 0.015; //GeV
+static const double yoff_ECAL = 0.0077; //meters, average y deflection in SBS fringe field, to be SUBTRACTED from recconstructed shower coordinate!
+static const double sigx_ECAL = 0.008; //meters, shower x coordinate resolution
+static const double sigy_ECAL = 0.006; //meters, shower y coordinate resolution
+static const double Ltgt = 0.4; //meters
+static const double sigy_CDET = 0.003;
+
+// Bin width for vertex z "filtering": 
+static const double sig_vz = 0.0064;//in m
+static const double vz_bin_width = 3.0*0.0064;
+static const double vz_scan_stepsize = 0.3;
+
+static const double dE_E_MPV = 0.13; //Most probable electron energy loss before reaching ECAL:
+*/
+
 //-----------------------------------------------------------------------------
 TGEMSBSSimDecoder::TGEMSBSSimDecoder()
 {
@@ -65,6 +93,12 @@ TGEMSBSSimDecoder::TGEMSBSSimDecoder()
     fSignalInfo.push_back(SignalInfo(fManager->GetSigPID(i),
                                      fManager->GetSigTID(i)));
   }
+  //I copy it but it will be done elsewhere hence it's commented...
+  // if(fManager->Getg4sbsDetectorType()==3 && fManager->DoCalo()){
+  //   cout << "Det type = " << fManager->Getg4sbsDetectorType() << " and manager = " << fManager->DoCalo() << endl;
+  //   if(load_shower_profiles("ECAL_shower_profiles.txt"))
+  //     cout << "ECal shower profiles successfully loaded" << endl;
+  // }
 }
 
 //-----------------------------------------------------------------------------
@@ -92,12 +126,23 @@ Int_t TGEMSBSSimDecoder::DefineVariables( THaAnalysisObject::EMode mode )
   RVarDef vars[] = {
     // Generated track info
     //{ "tr.n",      "Number of tracks",      "GetNMCTracks()" },  // already defined in Podd::SimDecoder
-    { "tr.vx",     "Track origin x (m)",    "fMCTracks.TGEMSBSSimTrack.VX()" },
-    { "tr.vy",     "Track origin y (m)",    "fMCTracks.TGEMSBSSimTrack.VY()" },
-    { "tr.vz",     "Track origin z (m)",    "fMCTracks.TGEMSBSSimTrack.VZ()" },
-    { "tr.p",      "Track momentum (GeV)",  "fMCTracks.TGEMSBSSimTrack.P() "},
-    { "tr.theta",  "Track theta_p (rad)",   "fMCTracks.TGEMSBSSimTrack.PTheta()" },
-    { "tr.phi",    "Track phi_p (rad)",     "fMCTracks.TGEMSBSSimTrack.PPhi()" },
+    { "tr.vx",     "Track origin x (m)",    "fMCTracks.TGEMSBSSimTrack.targetX()" },
+    { "tr.vy",     "Track origin y (m)",    "fMCTracks.TGEMSBSSimTrack.targetY()" },
+    { "tr.vz",     "Track origin z (m)",    "fMCTracks.TGEMSBSSimTrack.targetZ()" },
+    { "tr.p",      "Track momentum (GeV)",  "fMCTracks.TGEMSBSSimTrack.targetP() "},
+    { "tr.theta",  "Track theta_p (rad)",   "fMCTracks.TGEMSBSSimTrack.targetPTheta()" },
+    { "tr.phi",    "Track phi_p (rad)",     "fMCTracks.TGEMSBSSimTrack.targetPPhi()" },
+    { "tr.ptarx", "Track px(GeV)",         "fMCTracks.TGEMSBSSimTrack.targetPX()" },
+    { "tr.ptary", "Track py(GeV)",         "fMCTracks.TGEMSBSSimTrack.targetPY()" },
+    { "tr.ptarz", "Track pz(GeV)",         "fMCTracks.TGEMSBSSimTrack.targetPZ()" },
+     //variables in GEM detector coordinates
+    { "tr.x",     "Track x in Transport",    "fMCTracks.TGEMSBSSimTrack.VX()" },
+    { "tr.y",     "Track y in Transport",    "fMCTracks.TGEMSBSSimTrack.VY()" },
+    { "tr.p_transport",   "Track momentum in Transport", "fMCTracks.TGEMSBSSimTrack.P()"},
+    { "tr.px",   "Track x_momentum in Transport", "fMCTracks.TGEMSBSSimTrack.PX()"},
+    { "tr.py",   "Track y_momentum in Transport", "fMCTracks.TGEMSBSSimTrack.PY()"},
+    { "tr.pz",   "Track z_momentum in Transport", "fMCTracks.TGEMSBSSimTrack.PZ()"},
+
     { "tr.pid",    "Track PID (PDG)",       "fMCTracks.TGEMSBSSimTrack.fPID" },
     { "tr.num",    "GEANT track number",    "fMCTracks.TGEMSBSSimTrack.fNumber" },
     { "tr.planes", "Bitpattern of planes hit", "fMCTracks.TGEMSBSSimTrack.fHitBits" },
@@ -397,7 +442,7 @@ TGEMSBSMCHitInfo TGEMSBSSimDecoder::GetSBSMCHitInfo( Int_t crate, Int_t slot, In
     assert( strip.fPlane == c.fPlane && strip.fSector == c.fSector );
     Int_t signalID = -1;
     for (unsigned int ii = 0; ii<fSignalInfo.size(); ii++){
-      if (c.fType == fSignalInfo.at(ii).tid && c.fPID == fSignalInfo.at(ii).pid) // cluster_type(primary or secondary) == type_requested(primary) && particle == partical_requested
+      if (c.fType == 1 && c.fPID == fSignalInfo.at(ii).pid) // cluster_type(primary or secondary) == type_requested(primary) && particle == partical_requested
 	signalID = ii;
     }
     // cout << "Plane " << strip.fPlane << ", proj (x: 0, y: 1) " << strip.fProj 
@@ -686,6 +731,7 @@ Int_t TGEMSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     btr->SetUfailBits(ufail);
     btr->SetVfailBits(vfail);
 
+    /*
     // Use the back track to emulate calorimeter hits.
     // Assumptions:
     // - Only tracks crossing all fManager->GetNChamber() GEMs (points in all planes)
@@ -763,6 +809,7 @@ Int_t TGEMSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 	  return HED_ERR;
 	}
     }
+    */
   }
 
   // DEBUG:
