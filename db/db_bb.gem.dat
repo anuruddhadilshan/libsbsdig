@@ -7,22 +7,23 @@ bb.gem.info.do_map_sector = 0
 bb.gem.info.self_define_sector = 0
 bb.gem.info.sector_mapped = 0
 bb.gem.info.nchamber = 5
+
 bb.gem.info.nsector = 1
 bb.gem.info.nplane = 5
 bb.gem.info.nmodule = 3 3 3 3 4
 bb.gem.info.nreadout = 2
-bb.gem.info.gem_drift_id = 6
-bb.gem.info.gem_copper_front_id = 5
-bb.gem.info.gem_copper_back_id = 7
-bb.gem.info.gem_strip_id = 19
-bb.gem.info.faec_id = 3110000
-bb.gem.info.laec_id = 3210000
+#bb.gem.info.gem_drift_id = 6
+#bb.gem.info.gem_copper_front_id = 5
+#bb.gem.info.gem_copper_back_id = 7
+#bb.gem.info.gem_strip_id = 19
+#bb.gem.info.faec_id = 3110000
+#bb.gem.info.laec_id = 3210000
 bb.gem.info.chan_per_slot = 2048
 bb.gem.info.modules_per_readout = 1
 
-bb.gem.info.nsignal = 1
-bb.gem.info.signal1.pid = 11
-bb.gem.info.signal1.tid = 1
+#bb.gem.info.nsignal = 1
+#bb.gem.info.signal1.pid = 11
+#bb.gem.info.signal1.tid = 1
 
 bb.gem.info.g4sbs_detectortype = 1
 bb.gem.info.g4sbs_z_specoffset = 0.8031825 #0.800000
@@ -87,6 +88,15 @@ dig.bb.gem.do_crosstalk = 1
 dig.bb.gem.crosstalk_mean = 0.1
 dig.bb.gem.crosstalk_sigma = 0.03
 dig.bb.gem.crosstalk_strip_apart = 32
+
+#in here the time I understand
+geo.bb.gem.chambers = plane0 plane1 plane2 plane3 plane4
+geo.bb.gem.plane0.modules = module0 module1 module2
+geo.bb.gem.plane1.modules = module0 module1 module2
+geo.bb.gem.plane2.modules = module0 module1 module2
+geo.bb.gem.plane3.modules = module0 module1 module2
+geo.bb.gem.plane4.modules = module0 module1 module2 module3
+
 
 ###############Plane 0#####################
 geo.bb.gem.plane0.module0.dmag = 1.875000

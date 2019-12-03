@@ -216,7 +216,7 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
 void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
 {
   //const string& fileName = "db_"+prefix+".dat";
-  const string prefix = fSpecName+"."+fDetName+".";
+  const string prefix = "geo."+fSpecName+"."+fDetName+".";
     
   //ifstream input;
   FILE *input = OpenFile(fileName.c_str(), GetInitDate());;
@@ -234,7 +234,7 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
   std::string chambers = "";
   DBRequest chambers_request[] = {
     // Chambers are called "Tracker" planes in this simulation, apparently
-    {"chambers", &chambers, kString, }, ///< REQUIRED!
+    {"chambers", &chambers, kString}, ///< REQUIRED!
     { 0 }
   };
   int err = LoadDB(input, GetInitDate(), chambers_request, prefix.c_str());

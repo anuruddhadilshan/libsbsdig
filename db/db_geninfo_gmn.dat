@@ -17,6 +17,6 @@ geninfo.bb.mcangle = 33.0
 geninfo.bb.nsignal = 1
 geninfo.bb.signal.pid = 11
 geninfo.bb.signal.tid = 1
-geninfo.bb.ndets = 4 # 5
-geninfo.bb.detnames = sh ps hodo grinch # gem
+geninfo.bb.ndets = 5
+geninfo.bb.detnames = sh ps hodo grinch gem
 
