@@ -15,10 +15,8 @@ using namespace std;
 //TGEMSBSDBManager * TGEMSBSDBManager::fManager = NULL;
 
 TGEMSBSDBManager::TGEMSBSDBManager(const char *spec, const char* det)
-  : fDoMapSector(0), fMappedSector(0), fDoSelfDefinedSector(0),
+  : //fDoMapSector(0), fMappedSector(0), fDoSelfDefinedSector(0),
     fNChamber(0), fNSector(0), fNGEMPlane(0), fNReadOut(0), fNSigParticle(0),
-    fGEMDriftID(0), fGEMCopperFrontID(0), fGEMCopperBackID(0), fGEMStripID(0),
-    fFAECID(0), fLAECID(0),
     fChanPerSlot(2048), fModulesPerReadOut(1), fModulesPerChamber(1), fChambersPerCrate(1),
     fg4sbsDetectorType(0), fg4sbsZSpecOffset(0),
     fCaloThr(0), fgCaloZ(0), fgCaloRes(0), fgDoCalo(0), fgZ0(0),
@@ -34,6 +32,7 @@ TGEMSBSDBManager::~TGEMSBSDBManager()
 //______________________________________________________________
 void TGEMSBSDBManager::InitializeGEMs()
 {
+  if(fDebug>=2)cout << "TGEMSBSDBManager::InitializeGEMs()" << endl;
   // Make spectrometer
   fSpec = new TGEMSBSSpec(fPrefix.c_str(),
       Form("Temporary GEM spectrometer for %s",fDetName.c_str()));
@@ -43,16 +42,42 @@ void TGEMSBSDBManager::InitializeGEMs()
   for(Int_t plane = 0; plane < GetNGEMPlane(); plane++) {
     for(Int_t mod = 0; mod < GetNModule(plane); mod++) {
       dGEM = new TGEMSBSGEMChamber(Form("%s.%s",
-            /*GetPrefix().c_str(),*/fChambers[plane].c_str(),
-            fModules[plane][mod].c_str()),Form("%s: SimGEMChamber on %s.%s",
-            fDetName.c_str(),fChambers[plane].c_str(),
-            fModules[plane][mod].c_str()));
+					/*GetPrefix().c_str(),*/
+					fChambers[plane].c_str(),
+					fModules[plane][mod].c_str()),
+				   Form("%s: SimGEMChamber on %s.%s",
+					fDetName.c_str(),fChambers[plane].c_str(),
+					fModules[plane][mod].c_str())
+				   );
+      dGEM->SetGeometry(GetD0(plane, mod),
+			GetXOffset(plane, mod),
+			GetDepth(plane, mod),
+			GetDX(plane, mod),
+			GetDY(plane, mod),
+			GetDMag(plane, mod),
+			GetThetaV(plane, mod));
+      
+      //dGEM->Print();
+      string coord[2] = {"x", "y"};
+      for(int k = 0; k<fNReadOut; k++){
+	if(fDebug>=2)cout << fChambers[plane].c_str() << " " << fModules[plane][mod].c_str() << " " << coord[k].c_str() << endl;
+	dGEM->InitPlane(k, 
+			Form("%s.%s.%s",
+			     /*GetPrefix().c_str(),*/
+			     fChambers[plane].c_str(),
+			     fModules[plane][mod].c_str(),
+			     coord[k].c_str()),
+			Form("%s: SimGEMChamber on %s.%s.%s",
+			     fDetName.c_str(),fChambers[plane].c_str(),
+			     fModules[plane][mod].c_str(), 
+			     coord[k].c_str()),
+			GetStripAngle(plane, mod, k), GetPitch(plane, mod, k));
+	
+      }
+      if(fDebug>=2)dGEM->Print();
       dGEM->SetApparatus(fSpec);
       if(dGEM->Init()) { // true == error
-        std::cerr << "ERROR!: TGEMSBSDBManager::InitializeGEMs() error "
-          " error initializing GEM: " << Form("%s.%s.%s",
-              fPrefix.c_str(),fChambers[plane].c_str(),
-              fModules[plane][mod].c_str()) << std::endl;
+        if(fDebug>=1)std::cerr << "ERROR!: TGEMSBSDBManager::InitializeGEMs() error error initializing GEM: " << Form("%s.%s.%s", fPrefix.c_str(), fChambers[plane].c_str(), fModules[plane][mod].c_str()) << std::endl;
       } else {
         // Get total number of strips (channels)
         fNChan += dGEM->GetNStripTotal();
@@ -60,8 +85,7 @@ void TGEMSBSDBManager::InitializeGEMs()
       }
     }
   }
-  std::cout << "Initialized " << fSpecName
-    << "." << fDetName << " with " << fNChan << " GEM strips." << std::endl;
+   if(fDebug>=1)std::cout << "Initialized " << fSpecName << "." << fDetName << " with " << fNChan << " GEM strips." << std::endl;
 }
 
 
@@ -127,20 +151,14 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
 
     //std::vector<Int_t>* NModule = new vector<Int_t>;
     DBRequest request[] = {
-        {"do_map_sector",       &fDoMapSector         , kInt,    0, 1},
-        {"self_define_sector",  &fDoSelfDefinedSector , kInt,    0, 1},
-        {"sector_mapped",       &fMappedSector        , kInt,    0, 1},
+        // {"do_map_sector",       &fDoMapSector         , kInt,    0, 1},
+        // {"self_define_sector",  &fDoSelfDefinedSector , kInt,    0, 1},
+        // {"sector_mapped",       &fMappedSector        , kInt,    0, 1},
 	{"nchamber",            &fNChamber            , kInt,    0, 1},
         {"nsector",             &fNSector             , kInt,    0, 1},
 	//{"nplane",              &fNGEMPlane           , kInt,    0, 1},
 	//{"nmodule",             NModule               , kIntV        },
         {"nreadout",            &fNReadOut            , kInt,    0, 1},
-        {"gem_drift_id",        &fGEMDriftID          , kInt,    0, 1},
-        {"gem_copper_front_id", &fGEMCopperFrontID    , kInt,    0, 1},
-        {"gem_copper_back_id",  &fGEMCopperBackID     , kInt,    0, 1},
-        {"gem_strip_id",        &fGEMStripID          , kInt,    0, 1},
-        {"faec_id",             &fFAECID              , kInt,    0, 1},
-        {"laec_id",             &fLAECID              , kInt,    0, 1},
         {"nsignal",             &fNSigParticle        , kInt,    0, 1},
         {"chan_per_slot",       &fChanPerSlot         , kInt,    0, 1},
         {"modules_per_readout", &fModulesPerReadOut   , kInt,    0, 1},
@@ -254,7 +272,6 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
     {"xoffset",     &thisGeo.xoffset,      kDouble, 0, 1},
     {"dx",          &thisGeo.dx,           kDouble, 0, 1},
     {"dy",          &thisGeo.dy,           kDouble, 0, 1},
-    //{"thetaH",      &thisGeo.thetaH,       kDouble, 0, 1},
     {"thetaV",      &thisGeo.thetaV,       kDouble, 0, 1},
     {"depth",       &thisGeo.depth,        kDouble, 0, 1},
     { 0 }
@@ -280,6 +297,7 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
   fNGEMPlane = fChambers.size();
   fModules.resize(fNGEMPlane);
   int nGEMtot=0;
+  
   fChanMap.clear();
   for (int i=0; i<fNGEMPlane; i++){
     vector<GeoInfo> thisInfoVec;
@@ -303,10 +321,13 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
       
       int err = LoadDB(input, GetInitDate(), request, module_prefix.str().c_str());
       if( err ) exit(2);
-     
+      thisGeo.thetaV*= TMath::DegToRad();
       x_chanmap.clear();
       y_chanmap.clear();
       err = LoadDB(input, GetInitDate(), plane_request, module_prefix.str().c_str());
+      thisGeo.stripangle_u*= TMath::DegToRad();
+      thisGeo.stripangle_v*= TMath::DegToRad();
+      
       if (err) exit(2);
 
       // Now process the channel map
@@ -319,10 +340,23 @@ void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
         fChanMap.push_back(*it);
       }
       
+      if(fDebug>=2)cout << "plane " << i << " module " << j << endl 
+			<< " thisGeo.dmag: " << thisGeo.dmag 
+			<< " thisGeo.d0 " << thisGeo.d0 << endl
+			<< " thisGeo.xoffset " << thisGeo.xoffset
+			<< " thisGeo.dx " << thisGeo.dx
+			<< " thisGeo.dy " << thisGeo.dy << endl
+			<< " thisGeo.thetaV " << thisGeo.thetaV
+			<< " thisGeo.z " << thisGeo.z
+			<< " thisGeo.depth " << thisGeo.depth << endl
+			<< " thisGeo.stripangle_u " << thisGeo.stripangle_u
+			<< " thisGeo.stripangle_v " << thisGeo.stripangle_v
+			<< " thisGeo.pitch_u " << thisGeo.pitch_u
+			<< " thisGeo.pitch_v " << thisGeo.pitch_v << endl;
+      
       fPMGeoInfo[i].push_back(thisGeo);
     }
   }
-
   // And now that we are done, process the channel map
   //input.close();
   fclose(input);
@@ -443,6 +477,12 @@ double TGEMSBSDBManager::GetDMag(int i, int j)
   return fPMGeoInfo[i].at(j).dmag;
 }
 //______________________________________________________________________
+double TGEMSBSDBManager::GetThetaV(int i, int j)
+{
+  if (!CheckIndex(i, j)) return fErrVal;
+  return fPMGeoInfo[i].at(j).thetaV;
+}
+//______________________________________________________________________
 double TGEMSBSDBManager::GetD0(int i, int j)
 {
   if (!CheckIndex(i, j)) return fErrVal;
@@ -453,6 +493,12 @@ double TGEMSBSDBManager::GetXOffset(int i, int j)
 {
   if (!CheckIndex(i, j)) return fErrVal;
   return fPMGeoInfo[i].at(j).xoffset;
+}
+//______________________________________________________________________
+double TGEMSBSDBManager::GetDepth(int i, int j)
+{
+  if (!CheckIndex(i, j)) return fErrVal;
+  return fPMGeoInfo[i].at(j).depth;
 }
 //______________________________________________________________________
 double TGEMSBSDBManager::GetDX(int i, int j)
@@ -466,32 +512,20 @@ double TGEMSBSDBManager::GetDY(int i, int j)
   if (!CheckIndex(i, j)) return fErrVal;
   return fPMGeoInfo[i].at(j).dy;
 }
-//______________________________________________________________________
-// double TGEMSBSDBManager::GetThetaH(int i, int j) const
-// {
-//     if (!CheckIndex(i, j)) return fErrVal;
-//     return fGeoInfo[j].at(i).thetaH;
-// }
-//______________________________________________________________________
-double TGEMSBSDBManager::GetThetaV(int i, int j)
-{
-  if (!CheckIndex(i, j)) return fErrVal;
-  return fPMGeoInfo[i].at(j).thetaV;
-}
 //_________________________________________________________________________
 double TGEMSBSDBManager::GetStripAngle(int i, int j, int k)
 {
   if (!CheckIndex(i, j, k)) return fErrVal;
   if (k == 0) return fPMGeoInfo[i].at(j).stripangle_u;
-  else return fPMGeoInfo[i].at(j).stripangle_u;
+  else return fPMGeoInfo[i].at(j).stripangle_v;
 }
 //_________________________________________________________________________
-//double TGEMSBSDBManager::GetPitch(int i, int j, int k)
-//{
-//    if (!CheckIndex(i, j, k)) return fErrVal;
-//    if (k == 0) return fGeoInfo[j].at(i).pitch_u;
-//    else return fGeoInfo[j].at(i).pitch_u;
-//}
+double TGEMSBSDBManager::GetPitch(int i, int j, int k)
+{
+   if (!CheckIndex(i, j, k)) return fErrVal;
+   if (k == 0) return fPMGeoInfo[i].at(j).pitch_u;
+   else return fPMGeoInfo[i].at(j).pitch_v;
+}
 
 
 

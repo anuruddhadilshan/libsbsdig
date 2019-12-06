@@ -45,9 +45,19 @@ class TGEMSBSGEMPlane : public THaSubDetector {
 	virtual ~TGEMSBSGEMPlane();
 	
 	//Read the geometry for the TGEMSBSBox AND the strips parameters in the data base
-	Int_t ReadDatabase (const TDatime& date);
-	Int_t ReadGeometry (FILE* file, const TDatime& date,
-			    Bool_t required = kFALSE);
+	/* Int_t ReadDatabase (const TDatime& date); */
+	/* Int_t ReadGeometry (FILE* file, const TDatime& date, */
+	/* 		    Bool_t required = kFALSE); */
+	void SetGeometry (const Double_t d0,
+			  const Double_t xoffset,
+			  const Double_t depth,
+			  const Double_t dx,
+			  const Double_t dy,
+			  const Double_t dmag,
+			  const Double_t thetaV);
+	void SetROparameters(const Double_t angle,
+			     const Double_t pitch);
+ 	
 	TClonesArray *GetClusters() { return fClusters; }
 
 	Int_t Decode( const THaEvData &);

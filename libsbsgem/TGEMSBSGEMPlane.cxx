@@ -36,6 +36,7 @@ TGEMSBSGEMPlane::~TGEMSBSGEMPlane()
   delete fBox;
 }
 
+/*
 Int_t 
 TGEMSBSGEMPlane::ReadDatabase (const TDatime& date)
 {
@@ -56,7 +57,7 @@ TGEMSBSGEMPlane::ReadDatabase (const TDatime& date)
 
 Int_t 
 TGEMSBSGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
-			    Bool_t /* required */)
+			       Bool_t required )
 {
   // Get x/y position, size, and angles from database if and only
   // if parent is null otherwise copy from parent
@@ -167,6 +168,52 @@ TGEMSBSGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
   fSBeg = -fNStrips * fSPitch * 0.5;
   
   return kOK;
+}
+*/
+
+void TGEMSBSGEMPlane::SetGeometry (const Double_t d0,
+				   const Double_t xoffset,
+				   const Double_t depth,
+				   const Double_t dx,
+				   const Double_t dy,
+				   const Double_t dmag,
+				   const Double_t thetaV){
+  fBox->SetGeometry(dmag, d0, xoffset, dx, dy, thetaV);
+
+  fOrigin[0] = (fBox->GetOrigin())[0];
+  fOrigin[1] = (fBox->GetOrigin())[1];
+  fOrigin[2] = (fBox->GetOrigin())[2];
+  fSize[0] = fBox->GetDX();
+  fSize[1] = fBox->GetDY();
+  fSize[2] = depth;
+}
+
+void TGEMSBSGEMPlane::SetROparameters(const Double_t angle, const Double_t pitch){
+  fSAngle = angle;
+  fSPitch = pitch;
+  SetRotations();
+    
+  Double_t xs0 = (fBox->GetDX())/2.0;
+  Double_t ys0 = (fBox->GetDY())/2.0;
+  Double_t xs[4] = {xs0, xs0, -xs0, -xs0};
+  Double_t ys[4] = {ys0, -ys0, ys0, -ys0};
+  
+  Int_t smin = 1e9;
+  Int_t smax = -1e9;  //FIXME: this obviously cannot be. -1e9 would make more sense
+  for (UInt_t i = 0; i < 4; ++i)
+    {
+      PlaneToStrip (xs[i], ys[i]);
+      Int_t s = (Int_t) (xs[i] / GetSPitch());
+      //The following 3 lines are to avoid to understimate the number of strips 
+      //(hence the active area) because of stupid rounding issues at the 10^-12 level.
+      if( (double)round(xs[i] / GetSPitch())-xs[i] / GetSPitch() < 1.0e-10 ){
+      	s = round(xs[i] / GetSPitch());
+      }
+      if (s < smin) smin = s;
+      if (s > smax) smax = s;
+    }
+  fNStrips = smax - smin;
+  fSBeg = -fNStrips * fSPitch * 0.5;
 }
 
 Int_t TGEMSBSGEMPlane::Decode( const THaEvData & ){

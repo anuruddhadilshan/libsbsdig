@@ -29,9 +29,9 @@ public:
     void LoadGeoInfo(const std::string& fileName);
     std::vector<int>& GetChanMap() { return fChanMap; }
    
-    int       DoMapSector() const          { return fDoMapSector;         }
-    int       DoSelfDefineSector() const   { return fDoSelfDefinedSector; }
-    int       GetSectorMapped() const      { return fMappedSector;        }
+    /* int       DoMapSector() const          { return fDoMapSector;         } */
+    /* int       DoSelfDefineSector() const   { return fDoSelfDefinedSector; } */
+    /* int       GetSectorMapped() const      { return fMappedSector;        } */
     int       GetNChamber() const          { return fNChamber;            }
     int       GetNSector() const           { return fNSector;             }
     int       GetNGEMPlane() const         { return fNGEMPlane;           }
@@ -43,13 +43,13 @@ public:
     /* int      GetNChamber2() const          { return fNChamber2;            } */
     /* int      GetNSector2() const           { return fNSector2;             } */
     int       GetNReadOut() const          { return fNReadOut;            }
-    int       GetGEMDriftID() const        { return fGEMDriftID;          }
-    int       GetGEMCopperFrontID() const  { return fGEMCopperFrontID;    }
-    int       GetGEMCopperBackID() const   { return fGEMCopperBackID;     }
-    int       GetGEMStripID() const        { return fGEMStripID;          }
-    int       GetNSigParticle() const      { return fNSigParticle;        }
-    int       GetFAECID() const            { return fFAECID;              }
-    int       GetLAECID() const            { return fLAECID;              }
+    /* int       GetGEMDriftID() const        { return fGEMDriftID;          } */
+    /* int       GetGEMCopperFrontID() const  { return fGEMCopperFrontID;    } */
+    /* int       GetGEMCopperBackID() const   { return fGEMCopperBackID;     } */
+    /* int       GetGEMStripID() const        { return fGEMStripID;          } */
+    /* int       GetNSigParticle() const      { return fNSigParticle;        } */
+    /* int       GetFAECID() const            { return fFAECID;              } */
+    /* int       GetLAECID() const            { return fLAECID;              } */
     int       GetChanPerSlot() const       { return fChanPerSlot;         }
     int       GetModulesPerReadOut() const { return fModulesPerReadOut;   }
     int       GetModulesPerChamber() const { return fModulesPerChamber;   }
@@ -74,14 +74,14 @@ public:
     void     SetCaloRes( Double_t res ) { fgCaloRes = res; }
     
     double    GetDMag(int i, int j);
+    double    GetThetaV(int i, int j);
     double    GetD0(int i, int j);
     double    GetXOffset(int i, int j);
+    double    GetDepth(int i, int j);
     double    GetDX(int i, int j);
     double    GetDY(int i, int j);
-    //double    GetThetaH(int i, int j);
-    double    GetThetaV(int i, int j);
     double    GetStripAngle(int i, int j, int k);
-    //double    GetPitch(int i, int j, int k);
+    double    GetPitch(int i, int j, int k);
     
     int GetModuleIDFromPos(int iplane, double x, double y = 0);
     double GetPosFromModuleStrip(int iproj, int iplane, int isector, int istrip);
@@ -105,9 +105,9 @@ protected:
     //static TGEMSBSDBManager* fManager;
 
     //variable for data base information
-    int fDoMapSector;
-    int fMappedSector;
-    int fDoSelfDefinedSector;
+    /* int fDoMapSector; */
+    /* int fMappedSector; */
+    /* int fDoSelfDefinedSector; */
     
     int    fNChamber;
     std::vector<std::string> fChambers;
@@ -121,13 +121,6 @@ protected:
 
     int    fNReadOut;
     int    fNSigParticle;
-    int    fGEMDriftID;
-    int    fGEMCopperFrontID;
-    int    fGEMCopperBackID;
-    int    fGEMStripID;
-    int    fFAECID;
-    int    fLAECID;
-    
     int    fChanPerSlot;
     int    fModulesPerReadOut;
     int    fModulesPerChamber;
@@ -160,7 +153,7 @@ protected:
     std::vector<int>    fSigTID;
     
     /* vector<double> fChamberZ; */
-    std::map< int, std::vector<GeoInfo> > fGeoInfo;
+    //std::map< int, std::vector<GeoInfo> > fGeoInfo;
     std::map< int, std::vector<GeoInfo> > fPMGeoInfo; //plane module format geo info
     std::string fSpecName;
     std::string fDetName;

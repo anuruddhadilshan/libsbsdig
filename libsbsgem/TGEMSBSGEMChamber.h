@@ -26,10 +26,18 @@ class TGEMSBSGEMChamber : public THaDetector {
   virtual ~TGEMSBSGEMChamber();
   
   //Read the geometry for the TGEMSBSBox in the data base
-  Int_t ReadDatabase (const TDatime& date);
-  Int_t ReadGeometry (FILE* file, const TDatime& date, Bool_t required);
-  const char* GetDBFileName() const;
-
+  /* Int_t ReadDatabase (const TDatime& date); */
+  /* Int_t ReadGeometry (FILE* file, const TDatime& date, Bool_t required); */
+  /* const char* GetDBFileName() const; */
+  
+  void SetGeometry (const Double_t d0,
+		    const Double_t xoffset,
+		    const Double_t depth,
+		    const Double_t dx,
+		    const Double_t dy,
+		    const Double_t dmag,
+		    const Double_t thetaV);
+  
   Int_t Decode( const THaEvData & );
 
   // Return positions of chamber edges, in its own reference frame, in meters
@@ -101,7 +109,7 @@ class TGEMSBSGEMChamber : public THaDetector {
    UInt_t GetNStripTotal();
     
   TGEMSBSGEMPlane& GetPlane (UInt_t i) const {return *(fPlanes[i]);};
-  Int_t InitPlane (const UInt_t i, const char* name, const char* desc);
+  Int_t InitPlane (const UInt_t i, const char* name, const char* desc, const double angle, const double pitch);
   virtual void Print ( Option_t* opt="P" ) const;
 
  private:

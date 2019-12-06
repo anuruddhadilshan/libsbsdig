@@ -254,22 +254,32 @@ TGEMSBSSimDigitization::Initialize(const TGEMSBSSpec& spect)
   DeleteObjects();
 
   fNChambers = spect.GetNChambers();
+  if(fDebug>=2)cout << "TGEMSBSSimDigitization::Initialize: Nchambers = " << fNChambers << endl;
   fDP = new TGEMSBSDigitizedPlane**[fNChambers];
   fNPlanes = new UInt_t[fNChambers];
   for (UInt_t ic = 0; ic < fNChambers; ++ic)
     {
       fNPlanes[ic] = spect.GetChamber(ic).GetNPlanes();
       fDP[ic] = new TGEMSBSDigitizedPlane*[fNPlanes[ic]];
+      
+      // cout << "GEM chamber geometry: " 
+      // 	   << " dmag " << spect.GetChamber(ic).GetBox().GetDMag()
+      // 	   << " thetav " << spect.GetChamber(ic).GetBox().GetThetaV()
+      // 	   << " d0 " << spect.GetChamber(ic).GetBox().GetD0()
+      // 	   << " xoffset " << spect.GetChamber(ic).GetBox().GetXOffset()
+      // 	   << " dx " << spect.GetChamber(ic).GetBox().GetDX()
+      // 	   << " dy " << spect.GetChamber(ic).GetBox().GetDY() 
+      // 	   << " nplanes  = " << fNPlanes[ic] << endl;
       for (UInt_t ip = 0; ip < fNPlanes[ic]; ++ip) {
 	fDP[ic][ip] =
 	  new TGEMSBSDigitizedPlane( spect.GetChamber(ic).GetPlane(ip).GetNStrips(),
-				  fEleSamplingPoints, // # ADC samples
-				  0 );                // threshold is zero for now
-  UInt_t nchan = spect.GetChamber(ic).GetPlane(ip).GetNStrips();
-  UInt_t nslot = 1 + nchan/128.;
-  std::cerr << "ich: " << ic << ", ip: " << ip
-    << ", nstrip: " << nchan
-    << ", nslots: " << nslot << std::endl;
+				     fEleSamplingPoints, // # ADC samples
+				     0 );                // threshold is zero for now
+	UInt_t nchan = spect.GetChamber(ic).GetPlane(ip).GetNStrips();
+	UInt_t nslot = 1 + nchan/128.;
+	if(fDebug>=2)std::cerr << "ich: " << ic << ", ip: " << ip
+			       << ", nstrip: " << nchan
+			       << ", nslots: " << nslot << std::endl;
       }
     }
   fdh = NULL;
@@ -694,7 +704,7 @@ TGEMSBSSimDigitization::AvaModel(const Int_t ic,
   if (x1<glx || x0>gux ||
       y1<gly || y0>guy) { // out of the sector's bounding box
     cerr << __FILE__ << " " << __FUNCTION__ << ": out of sector, "
-	 << "chamber " << ic << " sector " << ic%30 << " plane " << ic/30 << endl
+	 << "chamber " << ic << " sector " << ic/30 << " plane " << ic%30 << endl
 	 << "Following relations should hold:" << endl
 	 << "(x1 " << x1 << ">glx " << glx << ") (x0 " << x0 << "<gux " << gux << ")" << endl
 	 << "(y1 " << y1 << ">gly " << gly << ") (y0 " << y0 << "<guy " << guy << ")" << endl;

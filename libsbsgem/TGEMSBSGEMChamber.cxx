@@ -30,7 +30,7 @@ TGEMSBSGEMChamber::~TGEMSBSGEMChamber()
   delete fBox;
 }
 
-
+/*
 const char* TGEMSBSGEMChamber::GetDBFileName() const {
     THaApparatus *app = GetApparatus();
     if( app )
@@ -113,6 +113,24 @@ TGEMSBSGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
 
   return kOK;
 }
+*/
+
+void TGEMSBSGEMChamber::SetGeometry (const Double_t d0,
+				     const Double_t xoffset,
+				     const Double_t depth,
+				     const Double_t dx,
+				     const Double_t dy,
+				     const Double_t dmag,
+				     const Double_t thetaV){
+  fBox->SetGeometry(dmag, d0, xoffset, dx, dy, thetaV);
+  
+  fOrigin[0] = (fBox->GetOrigin())[0];
+  fOrigin[1] = (fBox->GetOrigin())[1];
+  fOrigin[2] = (fBox->GetOrigin())[2];
+  fSize[0] = fBox->GetDX();
+  fSize[1] = fBox->GetDY();
+  fSize[2] = depth;
+}
 
 //
 Int_t
@@ -126,11 +144,20 @@ TGEMSBSGEMChamber::Decode (const THaEvData& ed )
 }
 
 Int_t
-TGEMSBSGEMChamber::InitPlane (const UInt_t i, const char* name, const char* desc)
+TGEMSBSGEMChamber::InitPlane (const UInt_t i, const char* name, const char* desc,
+			      const double angle, const double pitch)
 {
   //Initialize TGEMSBSGEMPlane number i
   fPlanes[i] = new TGEMSBSGEMPlane (name, desc, this);
   fPlanes[i]->SetName (name);
+  fPlanes[i]->SetGeometry(fBox->GetD0(), 
+			  fBox->GetXOffset(), 
+			  fSize[2],
+			  fBox->GetDX(),
+			  fBox->GetDY(),
+			  fBox->GetDMag(),
+			  fBox->GetThetaV());
+  fPlanes[i]->SetROparameters(angle, pitch);
   return fPlanes[i]->Init();
 }
 
@@ -169,7 +196,7 @@ TGEMSBSGEMChamber::Print (Option_t* opt) const
   bool printplanes = (opt && *opt && strchr(opt,'P') != 0);
   if (printplanes){
     cout << "I contain the " << GetNPlanes() << " following planes: " << endl;
-    for (UInt_t i = 0; i < GetNPlanes(); ++i)
+    for(UInt_t i = 0; i < GetNPlanes(); i++)
       {
 	fPlanes[i]->Print("");
       }
