@@ -74,3 +74,41 @@ g4sbsgendata::g4sbsgendata():g4sbshitdata(-1, __GENERATED_SIZE+2){
     SetData(8,1.0);
 }
 
+
+//
+// Output data classes
+//
+
+simdig_outdata::simdig_outdata(){
+  Clear();
+}
+
+simdig_outdata::~simdig_outdata(){
+  Clear();
+}
+
+void simdig_outdata::Clear(){
+  fNHits = 0;
+  fChannel.clear();
+  fADC.clear();
+  fTDC_L.clear();
+  fTDC_T.clear();
+}
+
+
+simgemdig_outdata::simgemdig_outdata(){
+  Clear();
+}
+
+simgemdig_outdata::~simgemdig_outdata(){
+  Clear();
+}
+
+void simgemdig_outdata::Clear(){
+  simdig_outdata::Clear();
+  
+  fPlane.clear();
+  fModule.clear();
+  fProj.clear();
+  fSamp.clear();
+}

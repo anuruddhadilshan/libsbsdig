@@ -74,7 +74,44 @@ class g4sbsgendata : public g4sbshitdata {
   // This is from libsbsgem/TSBSGeant4File.h
   TVector3 GetMomentumAtTarget() const { return IsFilled()? TVector3(fData[9], fData[10], fData[11]) : TVector3(-1e9, -1e9, -1e9 ); }
   TVector3 GetVertexAtTarget() const { return IsFilled()? TVector3(fData[12], fData[13], fData[14]) : TVector3(-1e9, -1e9, -1e9 ); }
-
-
 };
+
+//
+// Output data classes
+//
+// class simhit_outdata{
+// }
+
+class simdig_outdata{
+ public:
+  simdig_outdata();
+  ~simdig_outdata();
+  
+  UInt_t fNHits;
+  std::vector<Short_t>  fChannel;
+  std::vector<uint32_t> fDataWord;
+  std::vector<Int_t>    fADC;
+  std::vector<Int_t>    fTDC_L;
+  std::vector<Int_t>    fTDC_T;
+  
+  void Clear();
+};
+
+class simgemdig_outdata: public simdig_outdata{
+ public:
+  simgemdig_outdata();
+  ~simgemdig_outdata();
+  
+  std::vector<Short_t> fPlane;
+  std::vector<Short_t> fModule;
+  std::vector<Short_t> fProj;
+  std::vector<Short_t> fSamp;
+  
+  void Clear();
+  //void CheckSize();
+};
+
+
+
+
 #endif // TSBSSIMDATA_H

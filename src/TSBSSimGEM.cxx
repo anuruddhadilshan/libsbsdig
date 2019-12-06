@@ -297,11 +297,13 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       mpd_data.nsamples = fGEMDigi->GetNSamples(ich,ip);
       // This is the total number of APV25's we'd need
       nstrip = fGEMDigi->GetNStrips(ich,ip);
+      cout << "ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
       // Break up the data in number of strips that fit in an APV25
       // (128 channels). I found that TGEMSBSSimDigitization somehow gets one
       // extra strip that seems unreasonable, since I doubt we'd get one
       // APV25 chip just for one strip. Hence, I'm going to assume that's
       // not the intent and skip anything with only one strip left.
+      // Good call! EF
       strip = 0;
       while(nstrip > 1) {
         data.fData.clear();
@@ -316,16 +318,27 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
             // Negative values convert poorly to unsigned integers, so just
             // set them to zero if the actual ADC is negative
             mpd_data.samples[idx++] = (adc>0 ? adc : 0);
+	    
+	    //TODO: replace that stuff by a fill function...
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(ich);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(ich);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fProj.push_back(ip);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.push_back(s);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(istrip);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(adc);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
           }
         }
         fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderMPD,mpd_data.adc_id++,data.fData);
-        event.fDetectorData.push_back(data);
+	//event.fDetectorData.push_back(data);
       }
       data.fChannel++;
     }
   }
 }
+
 
 // Clear signals in array
 void TSBSSimGEM::Clear(Option_t*)

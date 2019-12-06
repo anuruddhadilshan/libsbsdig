@@ -62,6 +62,12 @@ TSBSSimEvent::TSBSSimEvent()
     DetADC[fulldetname].clear();
     DetTDC_L[fulldetname].clear();
     DetTDC_T[fulldetname].clear();
+    
+    if(DetInfo_i.DetType()==kGEM){
+      fSimGEMDigOutData[fulldetname].Clear();
+    }else{
+      //fSimDigOutData[fulldetname].Clear();
+    }
   }
   
 }
@@ -118,6 +124,12 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     DetADC[fulldetname].clear();
     DetTDC_L[fulldetname].clear();
     DetTDC_T[fulldetname].clear();
+    
+    if(DetInfo_i.DetType()==kGEM){
+      fSimGEMDigOutData[fulldetname].Clear();
+    }else{
+      //fSimDigOutData[fulldetname].Clear();
+    }
   }
 }
 

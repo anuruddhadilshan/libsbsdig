@@ -15,12 +15,15 @@
 
 #include "SimDecoder.h"
 #include "TVector3.h"
+#include "TSBSSimData.h"
 //#include "TArrayS.h"
 #include <vector>
 #include <stdint.h>
 
 class TClonesArray;
 class TSBSDBManager;
+class simdig_outdata;
+class simgemdig_outdata;
 
 //-----------------------------------------------------------------------------
 // Kludgy hardcoded parameters necessary because I can't get ROOT to allocate
@@ -111,6 +114,8 @@ public:
   std::map< std::string, std::vector<Int_t> > DetTDC_L;//decoded values
   std::map< std::string, std::vector<Int_t> > DetTDC_T;//decoded values
   
+  //std::map< std::string, simdig_outdata > fSimDigOutData;
+  std::map< std::string, simgemdig_outdata > fSimGEMDigOutData;
   /*
     map<string, TSBSDetOutput> DetData;
     map<string,TSBSSimHCaloutput> HCaldata;
