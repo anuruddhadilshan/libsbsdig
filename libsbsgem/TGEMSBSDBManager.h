@@ -96,7 +96,9 @@ public:
     int GetNChan() { return fNChan; }
 
     void InitializeGEMs();
-
+     
+    void GetPMfromGlobalPlaneNum(uint gplanenum, int& plane, int& module);
+    
 protected:
     //int    LoadDB(std::ifstream& inp, DBRequest* request, const std::string& prefix);
     //std::string FindKey( std::ifstream& inp, const std::string& key ) const;

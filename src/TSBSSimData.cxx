@@ -95,6 +95,60 @@ void simdig_outdata::Clear(){
   fTDC_T.clear();
 }
 
+bool simdig_outdata::CheckSize(bool ignore_adc,
+			       bool ignore_tdc,
+			       bool print){
+  bool checkout = true;
+  if(fChannel.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fChannel.size() = %zu != %u\n", fChannel.size(), fNHits);
+  }
+  if(fDataWord.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fDataWord.size() = %zu != %u\n", fDataWord.size(), fNHits);
+  }
+  if(!ignore_adc && fADC.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fADC.size() = %zu != %u\n", fADC.size(), fNHits);
+  }
+  if(!ignore_tdc && fTDC_L.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fADC_L.size() = %zu != %u\n", fTDC_L.size(), fNHits);
+  }
+  if(!ignore_tdc && fTDC_T.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fTDC_T.size() = %zu != %u\n", fTDC_T.size(), fNHits);
+  }
+  
+  return checkout;
+}
+
+simdigsamp_outdata::simdigsamp_outdata(){
+  Clear();
+}
+
+simdigsamp_outdata::~simdigsamp_outdata(){
+  Clear();
+}
+
+void simdigsamp_outdata::Clear(){
+  simdig_outdata::Clear();
+  fSamp.clear();
+}
+
+bool simdigsamp_outdata::CheckSize(bool ignore_adc,
+				    bool ignore_tdc,
+				    bool print){
+  bool checkout = simdig_outdata::CheckSize(ignore_adc, ignore_tdc, print);
+  if(fSamp.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fChannel.size() = %zu != %u\n", fChannel.size(), fNHits);
+  }
+  
+  return checkout;
+}
+
+
 
 simgemdig_outdata::simgemdig_outdata(){
   Clear();

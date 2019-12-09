@@ -570,7 +570,19 @@ double TGEMSBSDBManager::GetPosFromModuleStrip(int iproj, int iplane,
 
 
 
-
+void TGEMSBSDBManager::GetPMfromGlobalPlaneNum(uint gplanenum, 
+					       int& plane, 
+					       int& module)
+{
+  if(gplanenum>fmIgemtoPlane.size()){
+    cout << "TGEMSBSDBManager::GetPMfromGlobalPlaneNum(uint, int&, int&): "
+	 << " global plane num = " << gplanenum
+	 << " should be < total number of planes " << fmIgemtoPlane.size() << endl;
+    return;
+  }
+  plane = fmIgemtoPlane[gplanenum];
+  module = fmIgemtoModule[gplanenum];
+}
 
 
 

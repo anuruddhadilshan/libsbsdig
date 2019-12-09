@@ -272,6 +272,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
     std::cerr << "Wow! No MPD encoder!!" << std::endl;
     return;
   }
+  int plane, module;
   fGEMDigi->SetTreeStrips();
   TSBSSimEvent::DetectorData data;
   data.fDetID = UniqueDetID();
@@ -293,11 +294,13 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
+    fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
+    if(fDebug>=3)cout << "ich " << ich << " plane " << plane << " module " << module << endl;
     for(UInt_t ip = 0; ip < fGEMDigi->GetNPlanes(ich); ip++) {
       mpd_data.nsamples = fGEMDigi->GetNSamples(ich,ip);
       // This is the total number of APV25's we'd need
       nstrip = fGEMDigi->GetNStrips(ich,ip);
-      cout << "ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
+      if(fDebug>=4)cout << "ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
       // Break up the data in number of strips that fit in an APV25
       // (128 channels). I found that TGEMSBSSimDigitization somehow gets one
       // extra strip that seems unreasonable, since I doubt we'd get one
@@ -321,11 +324,11 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	    
 	    //TODO: replace that stuff by a fill function...
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(ich);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(ich);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(plane);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(module);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fProj.push_back(ip);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.push_back(s);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(istrip);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(strip);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(adc);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
           }

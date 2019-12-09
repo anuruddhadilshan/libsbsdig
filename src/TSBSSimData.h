@@ -95,6 +95,22 @@ class simdig_outdata{
   std::vector<Int_t>    fTDC_T;
   
   void Clear();
+  bool CheckSize(bool ignore_adc = false, 
+		 bool ignore_tdc = false, 
+		 bool print = false);
+};
+
+class simdigsamp_outdata: public simdig_outdata{
+ public:
+  simdigsamp_outdata();
+  ~simdigsamp_outdata();
+  
+  std::vector<Short_t> fSamp;
+  
+  void Clear();
+  bool CheckSize(bool ignore_adc = false, 
+		 bool ignore_tdc = false, 
+		 bool print = false);
 };
 
 class simgemdig_outdata: public simdig_outdata{
@@ -108,7 +124,6 @@ class simgemdig_outdata: public simdig_outdata{
   std::vector<Short_t> fSamp;
   
   void Clear();
-  //void CheckSize();
 };
 
 
