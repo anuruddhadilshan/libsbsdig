@@ -183,8 +183,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
 	
 	for(uint i = 0; i<data.size(); i++){
-	  event.NDetHits[fDetInfo.DetFullName()]++;
-	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  /*
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
@@ -196,11 +196,11 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	  }else{
 	  */
 	  if(i>0){
-	    event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	    event.DetADC[fDetInfo.DetFullName()].push_back(fSignals[m].ADC()-fDetInfo.DigInfo().Pedestal(m));
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(fSignals[m].ADC()-fDetInfo.DigInfo().Pedestal(m));
 	    if(fEncoderTDC){
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
-	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	    }
 	  }
 	}
@@ -215,8 +215,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
 	
 	for(uint i = 0; i<data.size(); i++){
-	  event.NDetHits[fDetInfo.DetFullName()]++;
-	  event.DetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  /*
 	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
@@ -226,19 +226,19 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	  }else{
 	  */
 	  if(i>0){
-	    event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
-	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
+	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].TDC(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].TDC(i-1);
 	      if(fDebug>=4)cout << " T: " << tdcval << " => ";
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
 	      if(fDebug>=4)cout << tdcval << endl;
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
-	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
 	    }else{
-	      event.DetTDC_L[fDetInfo.DetFullName()].push_back(fSignals[m].TDC(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(fSignals[m].TDC(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      if(fDebug>=4)cout << " L: " << fSignals[m].TDC(i-1) << endl;
-	      event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	    }
 	  }
 	}

@@ -62,7 +62,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
 	fOutTree->Branch(Form("%s_simhit_t_lead", fulldetname.c_str()),&fEvent->SimDetLeadTime[fulldetname.c_str()]);
 	fOutTree->Branch(Form("%s_simhit_t_trail", fulldetname.c_str()),&fEvent->SimDetTrailTime[fulldetname.c_str()]);
       }
-    
+      /*
       fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetHits[fulldetname.c_str()]);
       fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
       fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
@@ -71,6 +71,17 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
       if(DetInfo_i.DigInfo().TDCBits()>0){
 	fOutTree->Branch(Form("%s_hit_tdc_l", fulldetname.c_str()),&fEvent->DetTDC_L[fulldetname.c_str()]);
 	fOutTree->Branch(Form("%s_hit_tdc_t", fulldetname.c_str()),&fEvent->DetTDC_T[fulldetname.c_str()]);
+      }
+      */
+      
+      fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fNHits);
+      fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fChannel);
+      fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fDataWord);
+      if(DetInfo_i.DigInfo().ADCBits()>0)
+	fOutTree->Branch(Form("%s_hit_adc", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fADC);
+      if(DetInfo_i.DigInfo().TDCBits()>0){
+	fOutTree->Branch(Form("%s_hit_tdc_l", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fTDC_L);
+	fOutTree->Branch(Form("%s_hit_tdc_t", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fTDC_T);
       }
     }
     

@@ -114,7 +114,7 @@ public:
   std::map< std::string, std::vector<Int_t> > DetTDC_L;//decoded values
   std::map< std::string, std::vector<Int_t> > DetTDC_T;//decoded values
   
-  //std::map< std::string, simdig_outdata > fSimDigOutData;
+  std::map< std::string, simdig_outdata > fSimDigOutData;
   std::map< std::string, simgemdig_outdata > fSimGEMDigOutData;
   /*
     map<string, TSBSDetOutput> DetData;
