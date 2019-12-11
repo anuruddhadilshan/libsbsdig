@@ -50,7 +50,6 @@ public:
   
   //TODO: introduce data arrays that depend on which detectors are involved
   
-  
   struct SimDetectorData {
     //Short_t fDetID;  // Source detector number
     Short_t fDetID;  // Source detector number
@@ -69,21 +68,6 @@ public:
   };
   std::vector<DetectorData> fDetectorData;
   std::vector<SimDetectorData> fSimDetectorData;
-  /*
-  Int_t NSimDetData;
-  std::vector<Short_t> SimDetID;
-  std::vector<Short_t> SimDetChannel;
-  std::vector<Short_t> SimDetDataType;
-  std::vector<Short_t> SimDetNData;
-  std::vector< std::vector<double> > SimDetData;
-  
-  Int_t NDetData;
-  std::vector<Short_t> DetID;
-  std::vector<Short_t> DetChannel;
-  //std::vector<Short_t> DetDataType;
-  std::vector<Short_t> DetNData;
-  std::vector< std::vector<uint32_t> > DetData;
-  */
   
   /*
   std::map<std::string, Int_t> NSimDetData;
@@ -107,13 +91,17 @@ public:
   std::map< std::string, std::vector<Double_t> > SimDetLeadTime;
   std::map< std::string, std::vector<Double_t> > SimDetTrailTime;
 
+  /*
   std::map< std::string, Int_t >                 NDetHits;
   std::map< std::string, std::vector<Short_t> >  DetChannel;
   std::map< std::string, std::vector<uint32_t> > DetDataWord;//encoded values
   std::map< std::string, std::vector<Int_t> > DetADC;//decoded values
   std::map< std::string, std::vector<Int_t> > DetTDC_L;//decoded values
   std::map< std::string, std::vector<Int_t> > DetTDC_T;//decoded values
-  
+  */
+
+  std::map< std::string, simhitmc_outdata > fSimHitMCOutData;
+  std::map< std::string, simgemhitmc_outdata > fSimGEMHitMCOutData;
   std::map< std::string, simdig_outdata > fSimDigOutData;
   std::map< std::string, simgemdig_outdata > fSimGEMDigOutData;
   /*

@@ -168,15 +168,19 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	fSignals[m].check_vec_size();
       }
       for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
-	event.NSimDetHits[fDetInfo.DetFullName()]++;
-	event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
-	event.SimDetSource[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitSource(i_mc));
-	event.SimDetEdep[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitEdep(i_mc));
-	event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitNpe(i_mc));
-	event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTime(i_mc));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].MCHitSource(i_mc));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(Short_t(m));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fSignals[m].MCHitEdep(i_mc));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].MCHitNpe(i_mc));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].MCHitTime(i_mc));
+	
 	if(fEncoderTDC){
-	  event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitLeadTime(i_mc));
-	  event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].MCHitTrailTime(i_mc));
+	  if(fDebug>=4)cout << fSignals[m].MCHitLeadTime(i_mc) << " " << fSignals[m].MCHitTrailTime(i_mc) << endl;
+	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].MCHitLeadTime(i_mc));
+	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].MCHitTrailTime(i_mc));
 	}
       }
             
@@ -192,10 +196,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
         CopyEncodedData(fEncoderADC,mult++,data);//.fData);
 	
 	for(uint i = 0; i<data.size(); i++){
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  /*
-	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
 	    event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
 	    if(fEncoderTDC){
@@ -205,6 +206,8 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	  }else{
 	  */
 	  if(i>0){
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(fSignals[m].ADC()-fDetInfo.DigInfo().Pedestal(m));
 	    if(fEncoderTDC){
@@ -222,10 +225,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
 	
 	for(uint i = 0; i<data.size(); i++){
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  /*
-	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
 	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
 	    event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
@@ -233,6 +233,8 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	  }else{
 	  */
 	  if(i>0){
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].TDC(i-1) & ( 1 << (31) ) ){
@@ -263,8 +265,11 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       */
     }
   }
+  if(fDebug>=3){
+    cout << fDetInfo.DetFullName() << " " << any_events << endl;
+    event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(true, false, true);
+  }
   SetHasDataFlag(any_events);
-  
 }
 
 // Clear signals in array

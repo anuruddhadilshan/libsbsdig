@@ -26,50 +26,7 @@ TSBSSimEvent::TSBSSimEvent()
   cout << "Initializing TSBSSimEvent" << endl;
   fManager = TSBSDBManager::GetInstance();
   
-  const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
-  cout << AllDetInfo.size() << endl;
-  for(uint i = 0; i<AllDetInfo.size(); i++){
-    //SimDetData_Channel
-    TDetInfo DetInfo_i = AllDetInfo.at(i);
-    std::string fulldetname = DetInfo_i.DetFullName();
-    cout << i << " " << fulldetname.c_str() << endl;
-    
-    /*
-    NSimDetData[fulldetname] = 0;
-    //SimDetChannel[fulldetname].clear();
-    SimDetDataType[fulldetname].clear();
-    SimDetNData[fulldetname].clear();
-    SimDetData[fulldetname].clear();
-    
-    NDetData[fulldetname] = 0;
-    //DetChannel[fulldetname].clear();
-    DetNData[fulldetname].clear();
-    DetData[fulldetname].clear();
-    */
-    
-    NSimDetHits[fulldetname] = 0;
-    SimDetChannel[fulldetname].clear();
-    SimDetSource[fulldetname].clear();
-    SimDetEdep[fulldetname].clear();
-    SimDetNpe[fulldetname].clear();
-    SimDetTime[fulldetname].clear();
-    SimDetLeadTime[fulldetname].clear();
-    SimDetTrailTime[fulldetname].clear();
-    
-    NDetHits[fulldetname] = 0;
-    DetChannel[fulldetname].clear();
-    DetDataWord[fulldetname].clear();
-    DetADC[fulldetname].clear();
-    DetTDC_L[fulldetname].clear();
-    DetTDC_T[fulldetname].clear();
-    
-    if(DetInfo_i.DetType()==kGEM){
-      fSimGEMDigOutData[fulldetname].Clear();
-    }else{
-      fSimDigOutData[fulldetname].Clear();
-    }
-  }
-  
+  Clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -93,21 +50,6 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   for(uint i = 0; i<AllDetInfo.size(); i++){
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
-    /*
-    NSimDetData[fulldetname] = 0;
-    // SimDetID.clear();
-    // SimDetChannel[fulldetname].clear();
-    SimDetDataType[fulldetname].clear();
-    SimDetNData[fulldetname].clear();
-    SimDetData[fulldetname].clear();
-    
-    NDetData[fulldetname] = 0;
-    // DetID.clear();
-    // DetChannel[fulldetname].clear();
-    // DetDataType;
-    DetNData[fulldetname].clear();
-    DetData[fulldetname].clear();
-    */
     
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
@@ -118,16 +60,20 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     SimDetLeadTime[fulldetname].clear();
     SimDetTrailTime[fulldetname].clear();
     
+    /*
     NDetHits[fulldetname] = 0;
     DetChannel[fulldetname].clear();
     DetDataWord[fulldetname].clear();
     DetADC[fulldetname].clear();
     DetTDC_L[fulldetname].clear();
     DetTDC_T[fulldetname].clear();
+    */
     
     if(DetInfo_i.DetType()==kGEM){
+      fSimGEMHitMCOutData[fulldetname].Clear();
       fSimGEMDigOutData[fulldetname].Clear();
     }else{
+      fSimHitMCOutData[fulldetname].Clear();
       fSimDigOutData[fulldetname].Clear();
     }
   }

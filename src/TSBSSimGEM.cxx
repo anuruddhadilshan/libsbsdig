@@ -340,6 +340,10 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       data.fChannel++;
     }
   }
+  if(fDebug>=3){
+    cout << fDetInfo.DetFullName() << endl;
+    event.fSimGEMDigOutData[fDetInfo.DetFullName()].CheckSize(false, true, true);
+  }
 }
 
 

@@ -46,6 +46,10 @@ public:
     double dx_samples;
     double dx_raw;
     double dx_raw_time;
+    
+    short mc_source;
+    int trid;
+    int pid;
     Signal();
     void FillNPE(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
     void Fill(double t);

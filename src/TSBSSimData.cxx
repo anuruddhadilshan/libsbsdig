@@ -75,10 +75,135 @@ g4sbsgendata::g4sbsgendata():g4sbshitdata(-1, __GENERATED_SIZE+2){
 }
 
 
-//
-// Output data classes
-//
+// -------------------------------------- //
+//          Output data classes           //
+// -------------------------------------- //
 
+////////////////
+// MC hit data
+simhitmc_outdata::simhitmc_outdata(){
+  Clear();
+}
+
+simhitmc_outdata::~simhitmc_outdata(){
+  Clear();
+}
+
+void simhitmc_outdata::Clear(){
+  fNSimHits = 0;
+  fSimSource.clear();
+  fSimTRID.clear();
+  fSimPID.clear();
+  fSimChannel.clear();
+  fSimEdep.clear();
+  fSimNpe.clear();
+  fSimTime.clear();
+  fSimLeadTime.clear();
+  fSimTrailTime.clear();
+}
+
+bool simhitmc_outdata::CheckSize(bool ignore_edep,
+				 bool ignore_npe,
+				 bool ignore_times,
+				 bool print)
+{
+  bool checkout = true;
+  if(fSimSource.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimSource.size() = %zu != %u\n", fSimSource.size(), fNSimHits);
+  }
+  if(fSimTRID.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimTRID.size() = %zu != %u\n", fSimTRID.size(), fNSimHits);
+  }
+  if(fSimPID.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimPID.size() = %zu != %u\n", fSimPID.size(), fNSimHits);
+  }
+  if(fSimChannel.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimChannel.size() = %zu != %u\n", fSimChannel.size(), fNSimHits);
+  }
+  if(fSimEdep.size()!=fNSimHits && !ignore_edep){
+    checkout = false;
+    if(print)printf("fSimEdep.size() = %zu != %u\n", fSimEdep.size(), fNSimHits);
+  }
+  if(fSimNpe.size()!=fNSimHits && !ignore_npe){
+    checkout = false;
+    if(print)printf("fSimNpe.size() = %zu != %u\n", fSimNpe.size(), fNSimHits);
+  }
+  if(fSimTime.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimTime.size() = %zu != %u\n", fSimTime.size(), fNSimHits);
+  }
+  if(fSimLeadTime.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimLeadTime.size() = %zu != %u\n", fSimLeadTime.size(), fNSimHits);
+  }
+  if(fSimTrailTime.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSimTrailTime.size() = %zu != %u\n", fSimTrailTime.size(), fNSimHits);
+  }
+  return checkout;
+}
+
+simgemhitmc_outdata::simgemhitmc_outdata(){
+  Clear();
+}
+
+simgemhitmc_outdata::~simgemhitmc_outdata(){
+  Clear();
+}
+
+void simgemhitmc_outdata::Clear(){
+  simhitmc_outdata::Clear();
+  fPlane.clear();
+  fModule.clear();
+  fSizeX.clear();
+  fSizeY.clear();
+  fStartX.clear();
+  fStartY.clear();
+}
+
+bool simgemhitmc_outdata::CheckSize(bool ignore_edep, 
+				    bool ignore_npe, 
+				    bool ignore_times, 
+				    bool print)
+{
+  bool checkout = simhitmc_outdata::CheckSize(ignore_edep, ignore_npe, ignore_times, print);
+
+  if(fPlane.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fPlane.size() = %zu != %u\n", fPlane.size(), fNSimHits);
+  }
+ if(fModule.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fModule.size() = %zu != %u\n", fModule.size(), fNSimHits);
+  }
+  if(fSizeX.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSizeX.size() = %zu != %u\n", fSizeX.size(), fNSimHits);
+  }
+ if(fSizeY.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fSizeY.size() = %zu != %u\n", fSizeY.size(), fNSimHits);
+  }
+  if(fStartX.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fStartX.size() = %zu != %u\n", fStartX.size(), fNSimHits);
+  }
+ if(fStartY.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fStartY.size() = %zu != %u\n", fStartY.size(), fNSimHits);
+  }
+ return checkout;
+}
+
+
+
+
+///////////////////
+// digitized data
 simdig_outdata::simdig_outdata(){
   Clear();
 }
@@ -90,6 +215,7 @@ simdig_outdata::~simdig_outdata(){
 void simdig_outdata::Clear(){
   fNHits = 0;
   fChannel.clear();
+  fDataWord.clear();
   fADC.clear();
   fTDC_L.clear();
   fTDC_T.clear();
@@ -113,7 +239,7 @@ bool simdig_outdata::CheckSize(bool ignore_adc,
   }
   if(!ignore_tdc && fTDC_L.size()!=fNHits){
     checkout = false;
-    if(print)printf("fADC_L.size() = %zu != %u\n", fTDC_L.size(), fNHits);
+    if(print)printf("fTDC_L.size() = %zu != %u\n", fTDC_L.size(), fNHits);
   }
   if(!ignore_tdc && fTDC_T.size()!=fNHits){
     checkout = false;
@@ -137,12 +263,12 @@ void simdigsamp_outdata::Clear(){
 }
 
 bool simdigsamp_outdata::CheckSize(bool ignore_adc,
-				    bool ignore_tdc,
-				    bool print){
+				   bool ignore_tdc,
+				   bool print){
   bool checkout = simdig_outdata::CheckSize(ignore_adc, ignore_tdc, print);
   if(fSamp.size()!=fNHits){
     checkout = false;
-    if(print)printf("fChannel.size() = %zu != %u\n", fChannel.size(), fNHits);
+    if(print)printf("fSamp.size() = %zu != %u\n", fChannel.size(), fNHits);
   }
   
   return checkout;
@@ -165,4 +291,28 @@ void simgemdig_outdata::Clear(){
   fModule.clear();
   fProj.clear();
   fSamp.clear();
+}
+
+bool simgemdig_outdata::CheckSize(bool ignore_adc,
+				  bool ignore_tdc,
+				  bool print){
+  bool checkout = simdig_outdata::CheckSize();
+  if(fPlane.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fPlane.size() = %zu != %u\n", fPlane.size(), fNHits);
+  }
+  if(fModule.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fModule.size() = %zu != %u\n", fModule.size(), fNHits);
+  }
+  if(fProj.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fProj.size() = %zu != %u\n", fProj.size(), fNHits);
+  }
+  if(fSamp.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fSamp.size() = %zu != %u\n", fChannel.size(), fNHits);
+  }
+  
+  return checkout;
 }

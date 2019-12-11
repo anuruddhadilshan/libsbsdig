@@ -110,7 +110,7 @@ void TSBSSimHCal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
     g4sbshitdata* ev = (*it);
     // Only get detector data for HCAL
     if(ev->GetDetUniqueID() == UniqueDetID()) {
-      //signal = (ev->GetData(0)==0);
+      fSignals[chan].mc_source = ev->GetData(0)==0;
       chan  = ev->GetData(1);
       type = ev->GetData(2);
       data = ev->GetData(3);
@@ -210,14 +210,20 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;
       
-      event.NSimDetHits[fDetInfo.DetFullName()]++;
-      event.SimDetChannel[fDetInfo.DetFullName()].push_back(Short_t(m));
-      event.SimDetEdep[fDetInfo.DetFullName()].push_back(fSignals[m].sumedep);
-      event.SimDetNpe[fDetInfo.DetFullName()].push_back(fSignals[m].npe);
-      //not sure yet it is sensible...
-      event.SimDetTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc_time);
-      event.SimDetLeadTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(0));
-      event.SimDetTrailTime[fDetInfo.DetFullName()].push_back(fSignals[m].tdc.getTime(1));
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].mc_source);
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].mc_source);//dummy values for the moment
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].mc_source);//dummy values for the moment
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(Short_t(m));
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fSignals[m].sumedep);
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].npe);
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].tdc_time);
+      
+      if(fEncoderTDC){
+	if(fDebug>=4)cout << fSignals[m].tdc.getTime(0) << " " << fSignals[m].tdc.getTime(1) << endl;
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(0));
+	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].tdc.getTime(1));
+      }
       
       mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
@@ -227,19 +233,21 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       if(fDebug>=4)cout << GetName() << " ADC size " << data.size() << endl;
       for(uint i = 0; i<data.size(); i++){
 	if(fDebug>=4)cout << i << "/" << data.at(i) << endl;
+	/*
 	event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
 	event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	/*
-	event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
+	event.DetDataWord[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	if(i==0){//header
-	  event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	  if(fEncoderTDC){
-	    event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
-	    event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }
 	}else{
 	*/
 	if(i>0){
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(fSignals[m].fadc.samples.at(i-1)-fDetInfo.DigInfo().Pedestal(m));
 	  if(fEncoderTDC){
@@ -275,17 +283,16 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	
 	for(uint i = 0; i<data.size(); i++){
 	  if(fDebug>=4)cout << i << "/" << data.at(i) << endl;
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  /*
-	  event.DetDataWord[fDetInfo.DetFullName()].push_back(data.at(i));
 	  if(i==0){//header
-	    if(fEncoderADC)event.DetADC[fDetInfo.DetFullName()].push_back(-1000000);
-	    event.DetTDC_L[fDetInfo.DetFullName()].push_back(-1000000);
-	    event.DetTDC_T[fDetInfo.DetFullName()].push_back(-1000000);
+	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }else{
 	  */
 	  if(i>0){
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
+	    event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
@@ -315,6 +322,10 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       data.clear();
       */
     }
+  }
+  if(fDebug>=3){
+    cout << fDetInfo.DetFullName() << " " << any_events << endl;
+    event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(false, false, true);
   }
   SetHasDataFlag(any_events);
 }

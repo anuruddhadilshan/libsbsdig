@@ -79,8 +79,49 @@ class g4sbsgendata : public g4sbshitdata {
 //
 // Output data classes
 //
-// class simhit_outdata{
-// }
+class simhitmc_outdata{
+ public: 
+  simhitmc_outdata();
+  ~simhitmc_outdata();
+
+  UInt_t fNSimHits;
+  std::vector<Short_t>   fSimSource;
+  std::vector<Short_t>   fSimTRID;
+  std::vector<Int_t>     fSimPID;
+  std::vector<Short_t>   fSimChannel;
+  std::vector<Double_t>  fSimEdep;
+  std::vector<Int_t>     fSimNpe;
+  std::vector<Double_t>  fSimTime;
+  std::vector<Double_t>  fSimLeadTime;
+  std::vector<Double_t>  fSimTrailTime;
+  
+  void Clear();
+  bool CheckSize(bool ignore_edep = false, 
+		 bool ignore_npe = false, 
+		 bool ignore_times = false, 
+		 bool print = false);
+};
+
+class simgemhitmc_outdata: public simhitmc_outdata{
+ public:
+  simgemhitmc_outdata();
+  ~simgemhitmc_outdata();
+  
+  std::vector<Short_t> fPlane;
+  std::vector<Short_t> fModule;
+  std::vector<Short_t> fSizeX;
+  std::vector<Short_t> fSizeY;
+  std::vector<Short_t> fStartX;
+  std::vector<Short_t> fStartY;
+  
+  void Clear();
+  bool CheckSize(bool ignore_edep = false, 
+		 bool ignore_npe = false, 
+		 bool ignore_times = false, 
+		 bool print = false);
+};
+
+
 
 class simdig_outdata{
  public:
@@ -124,6 +165,9 @@ class simgemdig_outdata: public simdig_outdata{
   std::vector<Short_t> fSamp;
   
   void Clear();
+  bool CheckSize(bool ignore_adc = false, 
+		 bool ignore_tdc = false, 
+		 bool print = false);
 };
 
 

@@ -44,6 +44,22 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
     cout << fulldetname.c_str() << endl;
 
     if(DetInfo_i.DetType()==kGEM){
+      //MC info
+      fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fNSimHits);
+      fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimSource);
+      fOutTree->Branch(Form("%s_simhit_trid", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTRID);
+      fOutTree->Branch(Form("%s_simhit_pid", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimPID);
+      fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimChannel);
+      fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimEdep);
+      fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTime);
+      fOutTree->Branch(Form("%s_simhit_plane", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fPlane);
+      fOutTree->Branch(Form("%s_simhit_module", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fModule);
+      fOutTree->Branch(Form("%s_simhit_sizex", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSizeX);
+      fOutTree->Branch(Form("%s_simhit_sizey", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSizeY);
+      fOutTree->Branch(Form("%s_simhit_startx", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fStartX);
+      fOutTree->Branch(Form("%s_simhit_starty", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fStartY);
+      
+      //digitized info
       fOutTree->Branch(Form("%s_NHits", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s_Plane", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fPlane);
       fOutTree->Branch(Form("%s_Module", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fModule);
@@ -52,28 +68,21 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
       fOutTree->Branch(Form("%s_Samp", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fSamp);
       fOutTree->Branch(Form("%s_ADC", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC);
     }else{
-      fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->NSimDetHits[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->SimDetSource[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->SimDetChannel[fulldetname.c_str()]);
-      if(dettype!=kCher)fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->SimDetEdep[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_simhit_npe", fulldetname.c_str()),&fEvent->SimDetNpe[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->SimDetTime[fulldetname.c_str()]);
-      if(DetInfo_i.DigInfo().TDCBits()>0){//if(dettype!=kECal){
-	fOutTree->Branch(Form("%s_simhit_t_lead", fulldetname.c_str()),&fEvent->SimDetLeadTime[fulldetname.c_str()]);
-	fOutTree->Branch(Form("%s_simhit_t_trail", fulldetname.c_str()),&fEvent->SimDetTrailTime[fulldetname.c_str()]);
-      }
-      /*
-      fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->NDetHits[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->DetChannel[fulldetname.c_str()]);
-      fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->DetDataWord[fulldetname.c_str()]);
-      if(DetInfo_i.DigInfo().ADCBits()>0)
-	fOutTree->Branch(Form("%s_hit_adc", fulldetname.c_str()),&fEvent->DetADC[fulldetname.c_str()]);
+      //MC info
+      fOutTree->Branch(Form("%s_Nsimhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
+      fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);
+      fOutTree->Branch(Form("%s_simhit_trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
+      fOutTree->Branch(Form("%s_simhit_pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
+      fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimChannel);
+      if(dettype!=kCher)fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimEdep);
+      fOutTree->Branch(Form("%s_simhit_npe", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimNpe);
+      fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTime);
       if(DetInfo_i.DigInfo().TDCBits()>0){
-	fOutTree->Branch(Form("%s_hit_tdc_l", fulldetname.c_str()),&fEvent->DetTDC_L[fulldetname.c_str()]);
-	fOutTree->Branch(Form("%s_hit_tdc_t", fulldetname.c_str()),&fEvent->DetTDC_T[fulldetname.c_str()]);
+	fOutTree->Branch(Form("%s_simhit_t_lead", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimLeadTime);
+	fOutTree->Branch(Form("%s_simhit_t_trail", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTrailTime);
       }
-      */
       
+      //digitized info
       fOutTree->Branch(Form("%s_Nhits", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s_hit_chan", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fChannel);
       fOutTree->Branch(Form("%s_hit_dataword", fulldetname.c_str()),&fEvent->fSimDigOutData[fulldetname.c_str()].fDataWord);
