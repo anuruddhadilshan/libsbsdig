@@ -75,10 +75,10 @@ GEMSRC = libsbsgem/TGEMSBSBox.cxx \
          libsbsgem/TGEMSBSGEMPlane.cxx \
          libsbsgem/TGEMSBSGEMSimHitData.cxx \
          libsbsgem/TGEMSBSSimAuxi.cxx \
-         libsbsgem/TGEMSBSSimEvent.cxx \
          libsbsgem/TGEMSBSSimFile.cxx \
          libsbsgem/TGEMSBSSimDigitization.cxx \
          libsbsgem/TGEMSBSSpec.cxx
+         #libsbsgem/TGEMSBSSimEvent.cxx \
          #libsbsgem/TGEMSBSGeant4File.cxx
          #libsbsgem/TGEMSBSSimDecoder.cxx
 

@@ -37,7 +37,7 @@
 #pragma link C++ defined_in "libsbsgem/TGEMSBSSimAuxi.h";
 //#pragma link C++ defined_in "libsbsgem/TGEMSBSSimDecoder.h";
 #pragma link C++ defined_in "libsbsgem/TGEMSBSSimDigitization.h";
-#pragma link C++ defined_in "libsbsgem/TGEMSBSSimEvent.h";
+//#pragma link C++ defined_in "libsbsgem/TGEMSBSSimEvent.h";
 #pragma link C++ defined_in "libsbsgem/TGEMSBSSimFile.h";
 #pragma link C++ defined_in "libsbsgem/TGEMSBSSpec.h";
 

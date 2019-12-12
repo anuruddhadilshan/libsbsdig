@@ -12,12 +12,6 @@ bb.gem.info.nsector = 1
 bb.gem.info.nplane = 5
 bb.gem.info.nmodule = 3 3 3 3 4
 bb.gem.info.nreadout = 2
-#bb.gem.info.gem_drift_id = 6
-#bb.gem.info.gem_copper_front_id = 5
-#bb.gem.info.gem_copper_back_id = 7
-#bb.gem.info.gem_strip_id = 19
-#bb.gem.info.faec_id = 3110000
-#bb.gem.info.laec_id = 3210000
 bb.gem.info.chan_per_slot = 2048
 bb.gem.info.modules_per_readout = 1
 

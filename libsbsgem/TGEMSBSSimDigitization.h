@@ -19,7 +19,7 @@ class TTree;
 class TGEMSBSGEMSimHitData;
 class TGEMSBSGEMHit;
 class TGEMSBSSpec;
-class TGEMSBSSimEvent;
+//class TGEMSBSSimEvent;
 class TGEMSBSDBManager;
 
 // First an auxiliary class
@@ -133,9 +133,9 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
 		      const TGEMSBSGEMSimHitData& tsgd,
 		      Double_t t0 ); // called from Digitization
   void SetTreeStrips(); // called from Digitization
-  void FillTree ();
-  void WriteTree () const;
-  void CloseTree () const;
+  //void FillTree ();
+  //void WriteTree () const;
+  //void CloseTree () const;
 
   // Access to results
   Short_t GetType (UInt_t ich, UInt_t ip, Int_t n) const {return fDP[ich][ip]->GetType (n);}
@@ -161,7 +161,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   const std::vector<Int_t>& GetStripClusterADC(UInt_t ich, UInt_t ip, UInt_t n, UInt_t k) const
   { return fDP[ich][ip]->GetStripClusterADC(k, n); }
 
-  TGEMSBSSimEvent* GetEvent() const { return fEvent; }
+  //TGEMSBSSimEvent* GetEvent() const { return fEvent; }
   
   Bool_t IsMapSector() const { return fDoMapSector; }
   void SetMapSector( Bool_t b = true ) { fDoMapSector = b; }
@@ -266,9 +266,9 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
 
   // Tree
 
-  TFile* fOFile;          // Output ROOT file
-  TTree* fOTree;          // Output tree
-  TGEMSBSSimEvent* fEvent;   // Output event structure, written to tree
+  //TFile* fOFile;          // Output ROOT file
+  //TTree* fOTree;          // Output tree
+  //TGEMSBSSimEvent* fEvent;   // Output event structure, written to tree
 
   Bool_t fFilledStrips;   // True if no data changed since last SetTreeStrips
 

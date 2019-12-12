@@ -14,7 +14,7 @@
 #include "TGEMSBSGEMChamber.h"
 #include "TGEMSBSGEMPlane.h"
 #include "TGEMSBSSimAuxi.h"
-#include "TGEMSBSSimEvent.h"
+//#include "TGEMSBSSimEvent.h"
 #include "TGEMSBSDBManager.h"
 
 #include <cmath>
@@ -203,19 +203,20 @@ TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
 						const char* name, TGEMSBSDBManager *manager)
   : THaAnalysisObject(name, "GEM simulation digitizer"),
     fDoMapSector(false), fSignalSector(0), fDP(0), fdh(0), fNChambers(0), fNPlanes(0),
-    fRNIon(0), fOFile(0), fOTree(0), fEvent(0), fManager(manager)
+    fRNIon(0), //fOFile(0), fOTree(0), fEvent(0), 
+    fManager(manager)
 {
   Init();
   Initialize (spect);
   fRIon.resize(fMaxNIon);
   fTriggerOffset.resize(fManager->GetNChamber());
 
-  fEvent = new TGEMSBSSimEvent(5);
+  //fEvent = new TGEMSBSSimEvent(5);
 }
 
 TGEMSBSSimDigitization::~TGEMSBSSimDigitization()
 {
-  fEvent->Clear("all");
+  //fEvent->Clear("all");
   DeleteObjects();
 }
 
@@ -238,10 +239,10 @@ void TGEMSBSSimDigitization::DeleteObjects()
   delete[] fdh;       fdh = 0;
   delete[] fNPlanes;  fNPlanes = 0;
 
-  delete fOFile;      fOFile = 0;
-  delete fOTree;      fOTree = 0;
+  // delete fOFile;      fOFile = 0;
+  // delete fOTree;      fOTree = 0;
   // fEvent->Clear("all");
-  delete fEvent;      fEvent = 0;
+  //delete fEvent;      fEvent = 0;
 }
 
 void
@@ -382,7 +383,7 @@ void TGEMSBSSimDigitization::EventStart()
 {
   // Digitize event after clearing all previous digitization results.
 
-  fEvent->Clear();
+  //fEvent->Clear();
   fSignalSector = 0;  // safe default, will normally be overridden in AdditiveDigitize
 
   for (UInt_t ic = 0; ic < fNChambers; ++ic) {
@@ -500,7 +501,7 @@ void
 TGEMSBSSimDigitization::NoDigitize (const TGEMSBSGEMSimHitData& gdata, const TGEMSBSSpec& spect) // do not digitize event, just fill the tree
 {
   //  if (!fEvCleared)  //?
-    fEvent->Clear();
+  //fEvent->Clear();
   UInt_t nh = gdata.GetNHit();
 
   for (UInt_t ih = 0; ih < nh; ++ih)
@@ -1088,6 +1089,7 @@ TGEMSBSSimDigitization::PrintSamples() const
 void
 TGEMSBSSimDigitization::InitTree (const TGEMSBSSpec& spect, const TString& ofile)
 {
+  /*
   fOFile = new TFile( ofile, "RECREATE");
 
   if (fOFile == 0 || fOFile->IsZombie() )
@@ -1104,8 +1106,8 @@ TGEMSBSSimDigitization::InitTree (const TGEMSBSSpec& spect, const TString& ofile
 
   // create the tree variables
 
-  fOTree->Branch( eventBranchName, "TGEMSBSSimEvent", &fEvent );
-
+  //fOTree->Branch( eventBranchName, "TGEMSBSSimEvent", &fEvent );
+  */
 }
 
 /*
@@ -1239,7 +1241,7 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
     clust.fXProj[j] = hitpos.X();
   }
 
-  clust.fID     = fEvent->fGEMClust.size()+1;
+  //clust.fID     = fEvent->fGEMClust.size()+1;
   clust.fVertex = tsgd.GetVertex (ih) * 1e-3;//[m]
   
 
@@ -1262,12 +1264,12 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
        << ", Xproj (1, 2): " << clust.fXProj[0] << " " << clust.fXProj[1] << endl << endl;
   */
     
-  fEvent->fGEMClust.push_back( clust );
+  //fEvent->fGEMClust.push_back( clust );
   
   //cout << "cluster plane " << clust.fPlane << ", cluster type " << clust.fType << ", cluster source " << clust.fSource << endl;
   
-  if( clust.fType == 1 && clust.fSource == 0 )
-    fEvent->fNSignal++;
+  // if( clust.fType == 1 && clust.fSource == 0 )
+  //   fEvent->fNSignal++;
   
   //cout << "Event cluster size " <<  fEvent->fGEMClust.size() << ", Event signal size " << fEvent->fNSignal << endl;
   
@@ -1280,7 +1282,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
   // Sets the variables in fEvent->fGEMStrips describing strip signals
   // This is later used to fill the tree.
   
-  fEvent->fGEMStrips.clear();
+  //fEvent->fGEMStrips.clear();
 
   TGEMSBSSimEvent::DigiGEMStrip strip;
   Double_t saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-1300;
@@ -1347,7 +1349,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	    const vector<Double_t>& swc = GetStripWeightInCluster(ich, ip, idx);
 	    strip.fStripWeightInCluster.Set( swc.size(), &swc[0] );
 
-	    fEvent->fGEMStrips.push_back( strip );
+	    //fEvent->fGEMStrips.push_back( strip );
 	  }
 	}
       else{
@@ -1378,7 +1380,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	  const vector<Short_t>& sc = GetStripClusters(ich, ip, idx);
 	  strip.fClusters.Set( sc.size(), &sc[0] );
 	  
-	  fEvent->fGEMStrips.push_back( strip );
+	  //fEvent->fGEMStrips.push_back( strip );
 	}
       }
     }
@@ -1386,6 +1388,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
   fFilledStrips = true;
 }
 
+/*
 void
 TGEMSBSSimDigitization::FillTree ()
 {
@@ -1426,6 +1429,4 @@ TGEMSBSSimDigitization::CloseTree () const
 {
   if (fOFile) fOFile->Close();
 }
-
-
-
+*/

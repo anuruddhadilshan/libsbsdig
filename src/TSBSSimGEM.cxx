@@ -130,7 +130,7 @@ void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 
       module = fManager->GetModuleIDFromPos(plane,tx);
       if(module==-1)continue;
-
+      
       double pz = sqrt( pow(p, 2)/
 			( pow(txp, 2) + 
 			  pow(typ, 2) + 1.0) );
@@ -260,7 +260,9 @@ void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
   }//end loop on g4sbshitdata
   gd.SetNHit(ngdata);
 
-
+  //Add the hits in here ??? why not ?
+  
+  
   // Once this is done, now call fGEMDigi to actually process these hits
   fGEMDigi->AdditiveDigitize (gd, fManager->GetSpec());
   gd.ClearEvent();
@@ -291,6 +293,9 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   mpd_data.pos = 0;
   mpd_data.invert = 0;
   UInt_t idx = 0;
+  
+  //event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimSource();
+  
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
