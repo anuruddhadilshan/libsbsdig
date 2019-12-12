@@ -6,12 +6,15 @@
 
 #include "TRandom3.h"
 #include "TVector3.h"
+#include "TArrayS.h"
 #include "TArrayI.h"
+#include "TArrayD.h"
 
 
 #include "THaAnalysisObject.h"
 
 #include <vector>
+#define MAXSAMP 6
 
 class TFile;
 class TTree;
@@ -183,7 +186,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
     Double_t ggnorm;  // = Charge/R2/pi : charge per unit area
   };
   
-  private:
+ private:
 
   void IonModel (const TVector3& xi,
 		 const TVector3& xo,
@@ -275,6 +278,53 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   void MakePrefix();
   void DeleteObjects();
   TGEMSBSDBManager *fManager;
+
+ public:
+  struct GEMCluster {
+    Short_t   fID;        // Cluster number, cross-ref to GEMStrip
+    // MC hit data
+    Short_t   fSector;    // Sector number
+    Short_t   fPlane;     // Plane number
+    Short_t   fModule;    // Module number
+    Short_t   fRealSector;// Real sector number (may be !=fSector if mapped)
+    Short_t   fSource;    // MC data set source (0 = signal, >0 background)
+    Int_t     fType;      // GEANT particle type (1 = primary)
+    Int_t     fTRID;      // GEANT particle counter
+    Int_t     fPID;       // PDG ID of particle generating the cluster
+    TVector3  fP;         // Momentum of particle generating the cluster in the lab [GeV]
+    TVector3  fPspec;     // Momentum of particle generating the cluster in the spec [GeV]
+    TVector3  fXEntry;    // Track at chamber entrance in lab coords [m]
+    TVector3  fMCpos;     // Approx. truth position of hit in lab [m]
+    TVector3  fHitpos;    // fMCpos in Tracker frame [m]
+    // Digitization results for this hit
+    Float_t   fCharge;    // Charge of avalanche
+    Float_t   fTime;      // Arrival time at electronics
+    Int_t     fSize[2];   // Number of strips in cluster per axis
+    Int_t     fStart[2];  // Number of first strip in cluster per axis
+    Float_t   fXProj[2];  // fMCpos along projection axis [m]
+    TVector3  fVertex;    // Vertex
+  };
+
+  std::vector<GEMCluster> fGEMClust;
+  
+  struct DigiGEMStrip {
+    Short_t   fSector;    // Sector number
+    Short_t   fPlane;     // Plane number
+    Short_t   fModule;    // Module number
+    Short_t   fProj;      // Readout coordinate ("x" = 0, "y" = 1)
+    Short_t   fChan;      // Channel number
+    Short_t   fSigType;   // Accumulated signal types (BIT(0) = signal)
+    Float_t   fCharge;    // Total charge in strip
+    Float_t   fTime1;     // Time of first sample
+                          //   relative to event start in target (TBC)
+    UShort_t  fNsamp;     // Number of ADC samples
+    Int_t     fADC[MAXSAMP]; // [fNsamp] ADC samples
+    //Int_t     fCommonMode[MC_MAMSAMP];// Real Common mode added to strip----going to work on next, needs to digitize all strips// seems no need to add strip to strip offset since it is just adding a constant in digitization and subtracting same known constant in analysis. "Strip specific pedestal rms and common mode are important"
+    TArrayS   fClusters;  // Clusters ID contributing to signal on this strip
+    TArrayI   fClusterRatio[MAXSAMP];
+    TArrayD   fStripWeightInCluster;
+  };
+
 
   ClassDef (TGEMSBSSimDigitization, 0)
 };

@@ -210,7 +210,7 @@ TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
   Initialize (spect);
   fRIon.resize(fMaxNIon);
   fTriggerOffset.resize(fManager->GetNChamber());
-
+  fGEMClust.clear();
   //fEvent = new TGEMSBSSimEvent(5);
 }
 
@@ -239,6 +239,7 @@ void TGEMSBSSimDigitization::DeleteObjects()
   delete[] fdh;       fdh = 0;
   delete[] fNPlanes;  fNPlanes = 0;
 
+  fGEMClust.clear();
   // delete fOFile;      fOFile = 0;
   // delete fOTree;      fOTree = 0;
   // fEvent->Clear("all");
@@ -382,7 +383,7 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 void TGEMSBSSimDigitization::EventStart()
 {
   // Digitize event after clearing all previous digitization results.
-
+  fGEMClust.clear();
   //fEvent->Clear();
   fSignalSector = 0;  // safe default, will normally be overridden in AdditiveDigitize
 
@@ -1169,7 +1170,8 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
   // Sets the variables in fEvent->fGEMClust describing a hit
   // This is later used to fill the tree.
   
-  TGEMSBSSimEvent::GEMCluster clust;
+  //TGEMSBSSimEvent::
+  GEMCluster clust;
   
   UInt_t igem = tsgd.GetHitChamber(ih);
   clust.fPlane = fManager->GetPlaneID(igem);
@@ -1241,7 +1243,7 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
     clust.fXProj[j] = hitpos.X();
   }
 
-  //clust.fID     = fEvent->fGEMClust.size()+1;
+  clust.fID     = fGEMClust.size()+1;
   clust.fVertex = tsgd.GetVertex (ih) * 1e-3;//[m]
   
 
@@ -1264,7 +1266,8 @@ TGEMSBSSimDigitization::SetTreeHit (const UInt_t ih,
        << ", Xproj (1, 2): " << clust.fXProj[0] << " " << clust.fXProj[1] << endl << endl;
   */
     
-  //fEvent->fGEMClust.push_back( clust );
+  //fEvent->
+  fGEMClust.push_back( clust );
   
   //cout << "cluster plane " << clust.fPlane << ", cluster type " << clust.fType << ", cluster source " << clust.fSource << endl;
   
@@ -1284,7 +1287,8 @@ TGEMSBSSimDigitization::SetTreeStrips()
   
   //fEvent->fGEMStrips.clear();
 
-  TGEMSBSSimEvent::DigiGEMStrip strip;
+  //TGEMSBSSimEvent::
+  DigiGEMStrip strip;
   Double_t saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-1300;
   for (UInt_t ich = 0; ich < GetNChambers(); ++ich) {
     

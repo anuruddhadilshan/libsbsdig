@@ -163,6 +163,11 @@ void simgemhitmc_outdata::Clear(){
   fSizeY.clear();
   fStartX.clear();
   fStartY.clear();
+  fXpos.clear();
+  fYpos.clear();
+  fPX.clear();
+  fPY.clear();
+  fPZ.clear();
 }
 
 bool simgemhitmc_outdata::CheckSize(bool ignore_edep, 
@@ -176,7 +181,7 @@ bool simgemhitmc_outdata::CheckSize(bool ignore_edep,
     checkout = false;
     if(print)printf("fPlane.size() = %zu != %u\n", fPlane.size(), fNSimHits);
   }
- if(fModule.size()!=fNSimHits){
+  if(fModule.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fModule.size() = %zu != %u\n", fModule.size(), fNSimHits);
   }
@@ -184,7 +189,7 @@ bool simgemhitmc_outdata::CheckSize(bool ignore_edep,
     checkout = false;
     if(print)printf("fSizeX.size() = %zu != %u\n", fSizeX.size(), fNSimHits);
   }
- if(fSizeY.size()!=fNSimHits){
+  if(fSizeY.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fSizeY.size() = %zu != %u\n", fSizeY.size(), fNSimHits);
   }
@@ -192,11 +197,33 @@ bool simgemhitmc_outdata::CheckSize(bool ignore_edep,
     checkout = false;
     if(print)printf("fStartX.size() = %zu != %u\n", fStartX.size(), fNSimHits);
   }
- if(fStartY.size()!=fNSimHits){
+  if(fStartY.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fStartY.size() = %zu != %u\n", fStartY.size(), fNSimHits);
   }
- return checkout;
+  if(fXpos.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fXpos.size() = %zu != %u\n", fXpos.size(), fNSimHits);
+  }
+  if(fYpos.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fYpos.size() = %zu != %u\n", fYpos.size(), fNSimHits);
+  }
+  if(fPX.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fPX.size() = %zu != %u\n", fPX.size(), fNSimHits);
+  }
+  if(fPY.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fPY.size() = %zu != %u\n", fPY.size(), fNSimHits);
+  }
+  if(fPZ.size()!=fNSimHits){
+    checkout = false;
+    if(print)printf("fPZ.size() = %zu != %u\n", fPZ.size(), fNSimHits);
+  }
+  
+  
+  return checkout;
 }
 
 

@@ -56,7 +56,7 @@ void TSBSSimGEM::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   // Pack data into TGEMSBSGEMSimHitData
-
+  fGEMDigi->EventStart();
   //    printf("NEXT EVENT ---------------------------\n");
 
   TGEMSBSGEMSimHitData gd;
@@ -294,8 +294,27 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   mpd_data.invert = 0;
   UInt_t idx = 0;
   
-  //event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimSource();
-  
+  if(fDebug>=3)cout << fGEMDigi->fGEMClust.size() << endl;
+  for(uint i_mc = 0; i_mc<fGEMDigi->fGEMClust.size();i_mc++){
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fGEMDigi->fGEMClust[i_mc].fSource);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fGEMDigi->fGEMClust[i_mc].fTRID);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fGEMDigi->fGEMClust[i_mc].fPID);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fPlane.push_back(fGEMDigi->fGEMClust[i_mc].fPlane);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fModule.push_back(fGEMDigi->fGEMClust[i_mc].fModule);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fGEMDigi->fGEMClust[i_mc].fCharge);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fGEMDigi->fGEMClust[i_mc].fTime);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fXpos.push_back(fGEMDigi->fGEMClust[i_mc].fHitpos.X());
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fYpos.push_back(fGEMDigi->fGEMClust[i_mc].fHitpos.Y());
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fPX.push_back(fGEMDigi->fGEMClust[i_mc].fPspec.X());
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fPY.push_back(fGEMDigi->fGEMClust[i_mc].fPspec.Y());
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fPZ.push_back(fGEMDigi->fGEMClust[i_mc].fPspec.Z());
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSizeX.push_back(fGEMDigi->fGEMClust[i_mc].fSize[0]);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSizeY.push_back(fGEMDigi->fGEMClust[i_mc].fSize[1]);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fStartX.push_back(fGEMDigi->fGEMClust[i_mc].fStart[0]);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fStartY.push_back(fGEMDigi->fGEMClust[i_mc].fStart[1]);
+  }
+
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {

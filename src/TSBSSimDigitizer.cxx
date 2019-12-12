@@ -49,11 +49,15 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
       fOutTree->Branch(Form("%s_simhit_src", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimSource);
       fOutTree->Branch(Form("%s_simhit_trid", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTRID);
       fOutTree->Branch(Form("%s_simhit_pid", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimPID);
-      fOutTree->Branch(Form("%s_simhit_chan", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimChannel);
-      fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimEdep);
-      fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTime);
       fOutTree->Branch(Form("%s_simhit_plane", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fPlane);
       fOutTree->Branch(Form("%s_simhit_module", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fModule);
+      fOutTree->Branch(Form("%s_simhit_Edep", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimEdep);
+      fOutTree->Branch(Form("%s_simhit_time", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTime);
+      fOutTree->Branch(Form("%s_simhit_xpos", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fXpos);
+      fOutTree->Branch(Form("%s_simhit_ypos", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fYpos);
+      fOutTree->Branch(Form("%s_simhit_px", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fPX);
+      fOutTree->Branch(Form("%s_simhit_py", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fPY);
+      fOutTree->Branch(Form("%s_simhit_pz", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fPZ);
       fOutTree->Branch(Form("%s_simhit_sizex", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSizeX);
       fOutTree->Branch(Form("%s_simhit_sizey", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSizeY);
       fOutTree->Branch(Form("%s_simhit_startx", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fStartX);

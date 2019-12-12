@@ -107,12 +107,17 @@ class simgemhitmc_outdata: public simhitmc_outdata{
   simgemhitmc_outdata();
   ~simgemhitmc_outdata();
   
-  std::vector<Short_t> fPlane;
-  std::vector<Short_t> fModule;
-  std::vector<Short_t> fSizeX;
-  std::vector<Short_t> fSizeY;
-  std::vector<Short_t> fStartX;
-  std::vector<Short_t> fStartY;
+  std::vector<Short_t>   fPlane;
+  std::vector<Short_t>   fModule;
+  std::vector<Short_t>   fSizeX;
+  std::vector<Short_t>   fSizeY;
+  std::vector<Short_t>   fStartX;
+  std::vector<Short_t>   fStartY;
+  std::vector<Double_t>  fXpos;
+  std::vector<Double_t>  fYpos;
+  std::vector<Double_t>  fPX;
+  std::vector<Double_t>  fPY;
+  std::vector<Double_t>  fPZ;
   
   void Clear();
   bool CheckSize(bool ignore_edep = false, 
