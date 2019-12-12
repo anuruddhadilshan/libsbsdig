@@ -56,7 +56,7 @@ dig.bb.gem.elesamplingperiod = 25.  # ns
 dig.bb.gem.adcoffset = 0.
 dig.bb.gem.adcgain = 1
 dig.bb.gem.adcbits = 12
-dig.bb.gem.gatewidth = 250.  # ns 
+dig.bb.gem.gatewidth = 200.  # ns 
 
 # GEM pedestal noise
 dig.bb.gem.pulsenoisesigma = 20.    #ADC values

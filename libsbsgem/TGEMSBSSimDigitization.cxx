@@ -444,7 +444,8 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
       // For background data, uniformly randomize event time between
       // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
       // Not using HitTime from simulation file but randomize HitTime to cycle use background files
-      event_time = fTrnd.Uniform(-fGateWidth, 6*fEleSamplingPeriod);
+      //event_time = fTrnd.Uniform(-fGateWidth, 6*fEleSamplingPeriod);
+      event_time = fTrnd.Uniform(-fGateWidth, fGateWidth);
       //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
     } else {
       // Signal events occur at t = 0, 
@@ -1307,7 +1308,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
     // have to match anything in the Monte Carlo.
     for (UInt_t ip = 0; ip < GetNPlanes (ich); ++ip) {
       strip.fProj = (Short_t) ip;
-      strip.fNsamp = TMath::Min((UShort_t)MC_MAXSAMP,
+      strip.fNsamp = TMath::Min((UShort_t)MAXSAMP,//MC_MAXSAMP,
 				(UShort_t)GetNSamples(ich, ip));
       
       if(1)
