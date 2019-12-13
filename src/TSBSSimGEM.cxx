@@ -264,6 +264,7 @@ void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
   
   
   // Once this is done, now call fGEMDigi to actually process these hits
+  fGEMDigi->SetTimeZero(fTimeZero);//override GEM time
   fGEMDigi->AdditiveDigitize (gd, fManager->GetSpec());
   gd.ClearEvent();
 }

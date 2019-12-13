@@ -112,7 +112,7 @@ TSBSSimDigitizer::~TSBSSimDigitizer()
   fSourceWeightMap.clear();
 }
 
-int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
+int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f, double tjitter)
 {
   if(fDebug>=3)cout << "Add in full file " << f->GetName() << endl; 
   
@@ -128,7 +128,7 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f)
       if(fDebug>=3){
 	cout << "load event for det " << fDetectors[det]->GetName() << endl;
       }
-      double t0 = fDetectors[det]->GetTimeZero()+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
+      double t0 = tjitter+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
       fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadAccumulateData(f->GetDataVector());
       if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
@@ -149,6 +149,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
   //int ngood = 0;
   bool has_data;  
   double t0 = 0;
+  double tjitter = 0;
 
   TObjArray *SigFileList = fSourceChainMap[0]->GetListOfFiles();
   TIter next_sig(SigFileList);
@@ -189,7 +190,10 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
       //while( f->ReadNextEvent(fDebug) ){
       //if(!f->ReadNextEvent(fDebug))continue;
       if(f->GetDataVector().size()==0)continue;
-      t0 = fRN->Gaus(0.0, fManager->GetTriggerJitter());
+      
+      //tjitter is the trigger jitter, which I assume to be global for all detectors, and one per event, that needs to be propagated for all background that is superimposed to this event
+      
+      tjitter = fRN->Gaus(0.0, fManager->GetTriggerJitter());
       for(size_t det = 0; det < fDetectors.size(); det++) {
 	if(fDebug>=2){
 	  cout << "load event " << f->GetEvNum() << " for file " << f->GetName() 
@@ -197,7 +201,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	}
 	//"LoadEventData" for signal - we want everything cleaned up for signal
 	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
-	fDetectors[det]->SetTimeZero(t0);
+	fDetectors[det]->SetTimeZero(tjitter);
 	fDetectors[det]->LoadEventData(f->GetDataVector());
 	if(fDebug>=3)cout << " event loaded for  " << fDetectors[det]->GetName() << endl;
       }
@@ -225,7 +229,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	    f_b->SetSource(source);
 	    f_b->Open();
 
-	    AddFileToEvent(f_b);
+	    AddFileToEvent(f_b, tjitter);
 	    //chEl_bkgd
 	    //fSourceChainMap[source]->RecursiveRemove(f_b);
 	    f_b->~TSBSGeant4File();
@@ -250,8 +254,8 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 		     << " det " << fDetectors[det]->GetName() << endl;
 	      }
 	      //"LoadAccumulateData" for any other stuff we want to superimpose to signal
-	      double t0 = fDetectors[det]->GetTimeZero()+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), 
-				       fManager->GetBkgdSpreadTimeWindowHW());
+	      //double 
+	      t0 = tjitter+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
 	      fDetectors[det]->SetTimeZero(t0);
 	      fDetectors[det]->LoadAccumulateData(f->GetDataVector());
 	      if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;

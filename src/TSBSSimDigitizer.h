@@ -23,7 +23,7 @@ public:
   virtual ~TSBSSimDigitizer();
 
   // Parsses the passed file event by event and digitizes
-  int AddFileToEvent(TSBSGeant4File *file);
+  int AddFileToEvent(TSBSGeant4File *file, double tjitter);
   // File superposition: Procession of a stack of files ?
   int Process(ULong_t max_events = -1);// Process the signal chain
   

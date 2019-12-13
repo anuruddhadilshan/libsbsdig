@@ -412,8 +412,9 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
   // Randomize the event time for background events
   Float_t event_time=0,time_zero=0;
   // Trigger time jitter, This should be a fixed value for different hits in a certain event.
-  Double_t trigger_jitter = fTrnd.Gaus(0,fTriggerJitter)//;
-    +fTrnd.Uniform(-fAPVTimeJitter/2, fAPVTimeJitter/2);
+  Double_t trigger_jitter = fTrnd.Uniform(-fAPVTimeJitter/2, fAPVTimeJitter/2);
+    //fTrnd.Gaus(0,fTriggerJitter)
+    
 
   for (UInt_t ih = 0; ih < nh; ++ih) {  
     UInt_t igem = gdata.GetHitChamber (ih);
@@ -445,11 +446,11 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
       // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
       // Not using HitTime from simulation file but randomize HitTime to cycle use background files
       //event_time = fTrnd.Uniform(-fGateWidth, 6*fEleSamplingPeriod);
-      event_time = fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
+      event_time = fTimeZero;//fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
       //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
     } else {
       // Signal events occur at t = 0, 
-      event_time = gdata.GetHitTime(ih);
+      event_time = fTimeZero+gdata.GetHitTime(ih);
     }
     //  cout<<event_time<<"  "<<ih<<endl;
     // Adding drift time and trigger_jitter

@@ -169,7 +169,9 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   Bool_t IsMapSector() const { return fDoMapSector; }
   void SetMapSector( Bool_t b = true ) { fDoMapSector = b; }
   void GetGEMData(TGEMSBSGEMSimHitData* gd);
-
+  
+  void SetTimeZero(double t0){fTimeZero = t0;}
+  
   // APV cross talk parameters
   static Int_t    fDoCrossTalk;  //whether we want to do cross talk simulation
   static Int_t    fNCStripApart; // # of strips the induced signal is away from the mean signal
@@ -263,7 +265,8 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   Double_t fRSMax;
   Double_t fRTotalCharge;
   Double_t fRTime0;
-
+  Double_t fTimeZero;
+  
   //std::vector<Double_t> fSumA;
   std::vector<Short_t>  fDADC;
 
