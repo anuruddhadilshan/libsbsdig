@@ -445,7 +445,7 @@ TGEMSBSSimDigitization::AdditiveDigitize (const TGEMSBSGEMSimHitData& gdata, con
       // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
       // Not using HitTime from simulation file but randomize HitTime to cycle use background files
       //event_time = fTrnd.Uniform(-fGateWidth, 6*fEleSamplingPeriod);
-      event_time = fTrnd.Uniform(-fGateWidth, fGateWidth);
+      event_time = fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
       //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
     } else {
       // Signal events occur at t = 0, 

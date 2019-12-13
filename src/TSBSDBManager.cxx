@@ -289,6 +289,25 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
           gem_invert);
     }
     fDetInfo.push_back(detinfo);
+
+    const string digprefix_gem = "dig."+prefix;
+    //need to read at least GateWindow before returning
+    double gatewidth_gem;
+    DBRequest request_gate[] = {
+      {"gatewidth",     &gatewidth_gem,      kDouble,  0, 0},
+      { 0 }
+    };
+    
+    //err = LoadDB (input, request_dig, digprefix);
+    err = LoadDB (file, GetInitDate(), request_gate, digprefix_gem.c_str());
+    if (err){
+      //input.close();
+      fclose(file);
+      return kInitError;
+    }
+    
+    if(gatewidth_gem/2.0>fBkgdSpreadTimeWindowHW)fBkgdSpreadTimeWindowHW = gatewidth_gem/2.0;
+    //done, now we return;
     return err;
   }
 

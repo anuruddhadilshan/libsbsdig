@@ -50,13 +50,13 @@ void TSBSSimGEM::Init()
 void TSBSSimGEM::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
+  fGEMDigi->EventStart();//Put it here !!!
   LoadAccumulateData(evbuffer);
 }
 
 void TSBSSimGEM::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   // Pack data into TGEMSBSGEMSimHitData
-  fGEMDigi->EventStart();
   //    printf("NEXT EVENT ---------------------------\n");
 
   TGEMSBSGEMSimHitData gd;
