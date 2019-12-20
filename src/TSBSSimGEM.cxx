@@ -294,7 +294,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   mpd_data.pos = 0;
   mpd_data.invert = 0;
   UInt_t idx = 0;
-  
+  SetHasDataFlag(false);
   if(fDebug>=3)cout << fGEMDigi->fGEMClust.size() << endl;
   for(uint i_mc = 0; i_mc<fGEMDigi->fGEMClust.size();i_mc++){
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
@@ -343,6 +343,8 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
         for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
             adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
+            if(adc>0)
+              SetHasDataFlag(true);
             // Negative values convert poorly to unsigned integers, so just
             // set them to zero if the actual ADC is negative
             mpd_data.samples[idx++] = (adc>0 ? adc : 0);
