@@ -9,7 +9,8 @@
 #include <TFile.h>
 #include <TChainElement.h>
 
-TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename)
+TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
+  fMarkInterval(0), fVerbose(1)
 {
   cout << "Initialize TSBSSimDigitzer " << endl;
   //clear everything - in case.
@@ -168,6 +169,11 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
     BkgdIters.push_back(TIter(BkgdFileLists.back()));
   }
   TChainElement *chEl_bkgd = 0;
+
+  // Set a reasonable print interval of every 10% if fMarkInterval is 0
+  if(fMarkInterval==0) {
+    fMarkInterval = max_events*0.1;
+  }
   
   while( (chEl_sig=(TChainElement*)next_sig()) && 
 	 nevent<max_events ){
@@ -180,7 +186,8 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
     //G4SBSRunData *rd;
     
     while( nevent<max_events && f->ReadNextEvent(fDebug)) {
-      if(nevent%100==0)cout << nevent << " / " << max_events << endl;
+      if(fVerbose && fMarkInterval > 0 && nevent%fMarkInterval==0)
+        std::cout << "Event: " << nevent << " / " << max_events << std::endl;
       if(fDebug>=3)cout << "clear event " << endl;
       if(fDebug>=1)cout << "Process event " << nevent << endl;
       fEvent->Clear();

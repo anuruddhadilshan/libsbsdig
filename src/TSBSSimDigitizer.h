@@ -32,6 +32,13 @@ public:
 
   // Add a file to the chain referenced by the source number 
   void AddInputFile(const char* filename, Int_t source, Int_t weight = 1);
+
+
+  // Set mark interval (print event progress)
+  void SetMarkInterval(Int_t i) { fMarkInterval = i; }
+
+  // Set verbosity
+  void SetVerbosity(Int_t level) { fVerbose  = level; }
   
 private:
   std::vector<TSBSSimDetector*> fDetectors;
@@ -48,6 +55,8 @@ private:
   
   TRndmManager *fRN;
   
+  Int_t fMarkInterval;
+  UInt_t fVerbose; // Separate from fDebug
   ClassDef(TSBSSimDigitizer,1)
 };
 
