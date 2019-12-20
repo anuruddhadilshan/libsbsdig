@@ -358,6 +358,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
       TSBSSimDataEncoder::DecodeHeader(detdata.fData[j++],data_type,chan_mult,
           nwords);
       // The channel mapping works different for GEMs vs all other detectors
+      lchan = 0;
       if(detinfo.DetType() != kGEM) {
         lchan = mod + chan_mult*detinfo.NChan();
         // Get information about this logical channel from TDetInfo
@@ -401,6 +402,7 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
         std::cerr << "Yikes!! No data for " << detinfo.DetName()
           << " (mod=" << mod << ") in c: "
           << crate << " s: " << slot << " c: " << chan
+          << ", lchan: " << lchan << ", mult: " << chan_mult
           << " size: " << detdata.fData.size() << ", j: " << j <<", nwords: "
           << nwords << std::endl;
       }
