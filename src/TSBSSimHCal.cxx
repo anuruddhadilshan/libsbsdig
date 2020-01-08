@@ -202,13 +202,16 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   for(size_t m = 0; m < fSignals.size(); m++) {
     //data.fData.clear();
     data.clear();
+    if(fDebug>=4 && fSignals[m].npe)cout << fSignals[m].npe << endl;
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
         *qe/spe_unit;
+      if(fDebug>=4)cout << pulsenorm << endl;
       fSignals[m].Digitize(fSPE,pulsenorm,0.0,max_val);
       any_events = true;
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;
+      if(fDebug>=4)cout << "signal " << m << " digitization done" << endl;
       
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].mc_source);
@@ -219,12 +222,18 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].npe);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].tdc_time);
       
-      if(fEncoderTDC){
-	if(fDebug>=4)cout << fSignals[m].tdc.getTime(0) << " " << fSignals[m].tdc.getTime(1) << endl;
-	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(0));
-	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].tdc.getTime(1));
+      if(fDebug>=4)cout << " encode TDC ? " << fEncoderTDC << endl; 
+      if(fEncoderTDC && fSignals[m].tdc.time.size()){
+	for(uint i = 0; i<fSignals[m].tdc.time.size(); i++){
+	  if(fSignals[m].tdc.getEdge(i)==0){
+	    event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(i));
+	  }else{
+	    event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].tdc.getTime(i));
+	  }
+	}
       }
       
+      if(fDebug>=4)cout << " encode ADC " << endl; 
       mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
