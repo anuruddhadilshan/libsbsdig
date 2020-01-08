@@ -10,7 +10,6 @@ geninfo.sbs.signal.pid = 2112 2212
 geninfo.sbs.signal.tid = 2 2
 geninfo.sbs.ndets = 2
 geninfo.sbs.detnames = hcal cdet
-#geninfo.sbs.detnames = hcal
 
 #bb spectrometer MC signal info
 geninfo.bb.mcangle = 33.0

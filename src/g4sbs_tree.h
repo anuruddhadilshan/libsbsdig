@@ -86,6 +86,7 @@ public :
    Double_t        ev_z;
    Double_t        ev_phperp;
    Double_t        ev_phih;
+   Double_t        ev_phiS;
    Double_t        ev_MX2;
    Double_t        ev_Sx;
    Double_t        ev_Sy;

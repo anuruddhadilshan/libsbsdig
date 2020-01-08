@@ -103,9 +103,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   }
   fEvNum++;
 
-  //cout << "Read Next Event: Evt " << fEvNum << endl;
-  
   res = fTree->GetEntry(fEvNum);
+
   //Test that the next entry exist
   if( !res ){
     // Don't need to print this out.  Not really an error
@@ -281,11 +280,14 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   }
 
   // Now process the GEM data
+  if(d_flag>=3)printf("about to digitize GEMs: %lu tree(s)\n", fTree->GEMs.size());
   for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
        it != fTree->GEMs.end(); it++) {
-
+    if(d_flag>=3)printf("GEM tree %ld\n", std::distance(fTree->GEMs.begin(), it));
+    
     TSBSGeant4::GEMData_t &t = it->tree;
     if(t.plane) {
+      if(d_flag>=3)printf("%d hits \n", t.nhits);
       for(int k = 0; k < t.nhits; k++) {
         // Don't bother with events that deposited no energy
         if(t.edep->at(k)>0) {
@@ -331,6 +333,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
         }
       }
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
   /*
   // For the time being, use the g4sbs npe estimation for CDET, divided by 5.
@@ -347,9 +350,10 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
   }
   */
-  
+  if(d_flag>=3)printf("about to digitize HCal\n");
   // Now process HCAL data
   if(fTree->hcalpart.E) {
+    if(d_flag>=3)printf("Nhits in HCal = %lu\n", fTree->hcalpart.E->size());
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {
       if(fTree->hcalpart.detected->at(k)) {
         g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
@@ -360,6 +364,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
         fg4sbsHitData.push_back(hcalpmthit);
       }
     }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
   // For now, get the adc signal from the total energy deposited on the
   // scintillators. This can be changed later, I suppose...

@@ -228,8 +228,7 @@ void g4sbs_tree::Init(TTree *tree)
      SetupDetBranch(it->tree,it->name);
      SetupDetBranch(it->Track_tree,it->Track_name);
    }
-
-
+   
    Notify();
 }
 
