@@ -69,13 +69,21 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     DetTDC_T[fulldetname].clear();
     */
     
-    if(DetInfo_i.DetType()==kGEM){
+    switch(DetInfo_i.DetType()){
+    case(kGEM):
       fSimGEMHitMCOutData[fulldetname].Clear();
       fSimGEMDigOutData[fulldetname].Clear();
-    }else{
+      break;
+    case(kHCal):
+      fSimHitMCOutData[fulldetname].Clear();
+      fSimDigSampOutData[fulldetname].Clear();
+      break;
+    default:
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigOutData[fulldetname].Clear();
+      break;
     }
+    
   }
 }
 

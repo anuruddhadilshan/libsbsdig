@@ -240,8 +240,20 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       CopyEncodedData(fEncoderADC,mult++,data);//.fData);
 
       if(fDebug>=4)cout << GetName() << " ADC size " << data.size() << endl;
+
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
+      data.erase(data.begin());//erase the first element which is a header.
+      //this is a bit of abuse: I use the dataword in this case to store the size of the vector samples
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.size());
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
+      //event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(fSignals[m].fadc.samples);
+      Int_t ADCsum = 0;
+      std::vector<Int_t> temp_vec;
       for(uint i = 0; i<data.size(); i++){
 	if(fDebug>=4)cout << i << "/" << data.at(i) << endl;
+	ADCsum+= fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m);
+	temp_vec.push_back(fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m));
 	/*
 	event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
 	event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
@@ -253,18 +265,22 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }
 	}else{
-	*/
+
 	if(i>0){
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
 	  event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(fSignals[m].fadc.samples.at(i-1)-fDetInfo.DigInfo().Pedestal(m));
-	  if(fEncoderTDC){
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
-	  }
 	}
+	*/
       }
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(ADCsum);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(temp_vec);
+      if(fEncoderTDC){
+	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+      }
+      
       data.clear();
       
       //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
@@ -300,18 +316,18 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	  }else{
 	  */
 	  if(i>0){
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
-	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
+	    if(fEncoderADC)event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].tdc.getTime(i-1);
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
-	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
-	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	    }else{
-	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(fSignals[m].tdc.getTime(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
-	      event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(fSignals[m].tdc.getTime(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	    }
 	  }
 	}
@@ -334,7 +350,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   }
   if(fDebug>=3){
     cout << fDetInfo.DetFullName() << " " << any_events << endl;
-    event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(false, false, true);
+    event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(false, true);
   }
   SetHasDataFlag(any_events);
 }

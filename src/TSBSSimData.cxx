@@ -231,6 +231,8 @@ bool simgemhitmc_outdata::CheckSize(bool ignore_edep,
 
 ///////////////////
 // digitized data
+
+// Base class: simdig_outdata
 simdig_outdata::simdig_outdata(){
   Clear();
 }
@@ -276,6 +278,7 @@ bool simdig_outdata::CheckSize(bool ignore_adc,
   return checkout;
 }
 
+// class: simdigsamp_outdata -> for DAQ with sampled ADC
 simdigsamp_outdata::simdigsamp_outdata(){
   Clear();
 }
@@ -286,16 +289,20 @@ simdigsamp_outdata::~simdigsamp_outdata(){
 
 void simdigsamp_outdata::Clear(){
   simdig_outdata::Clear();
-  fSamp.clear();
+  fDataWord_samps.clear();
+  fADC_samps.clear();
 }
 
-bool simdigsamp_outdata::CheckSize(bool ignore_adc,
-				   bool ignore_tdc,
+bool simdigsamp_outdata::CheckSize(bool ignore_tdc,
 				   bool print){
-  bool checkout = simdig_outdata::CheckSize(ignore_adc, ignore_tdc, print);
-  if(fSamp.size()!=fNHits){
+  bool checkout = simdig_outdata::CheckSize(false, ignore_tdc, print);//total ADC will not be filled
+  if(fDataWord_samps.size()!=fNHits){
     checkout = false;
-    if(print)printf("fSamp.size() = %zu != %u\n", fChannel.size(), fNHits);
+    if(print)printf("fDataWord_samps.size() = %zu != %u\n", fDataWord_samps.size(), fNHits);
+  }
+  if(fADC_samps.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fADC_samps.size() = %zu != %u\n", fADC_samps.size(), fNHits);
   }
   
   return checkout;

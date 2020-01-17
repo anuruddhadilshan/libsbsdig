@@ -151,11 +151,13 @@ class simdigsamp_outdata: public simdig_outdata{
   simdigsamp_outdata();
   ~simdigsamp_outdata();
   
-  std::vector<Short_t> fSamp;
-  
+  //it's more complicated that I'd like, but that's the price to pay to have a reasonably efficient data storage for sample data / esp for GEMs -- EF
+  // we have to assume elt n = samp n
+  std::vector< std::vector<uint32_t> > fDataWord_samps;
+  std::vector< std::vector<Int_t> > fADC_samps; 
+ 
   void Clear();
-  bool CheckSize(bool ignore_adc = false, 
-		 bool ignore_tdc = false, 
+  bool CheckSize(bool ignore_tdc = false, 
 		 bool print = false);
 };
 
@@ -168,6 +170,7 @@ class simgemdig_outdata: public simdig_outdata{
   std::vector<Short_t> fModule;
   std::vector<Short_t> fProj;
   std::vector<Short_t> fSamp;
+  //std::vector<simdig_outdata>
   
   void Clear();
   bool CheckSize(bool ignore_adc = false, 
