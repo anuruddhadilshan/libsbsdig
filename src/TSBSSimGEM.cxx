@@ -318,6 +318,11 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
+  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.resize(fGEMDigi->GetNChambers());
+  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.resize(fGEMDigi->GetNChambers());
+  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.resize(fGEMDigi->GetNChambers());
+  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.resize(fGEMDigi->GetNChambers());
+  
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
     fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
     if(fDebug>=3)cout << "ich " << ich << " plane " << plane << " module " << module << endl;
@@ -331,8 +336,16 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       // extra strip that seems unreasonable, since I doubt we'd get one
       // APV25 chip just for one strip. Hence, I'm going to assume that's
       // not the intent and skip anything with only one strip left.
-      // Good call! EF
+      // => Good call! EF
       strip = 0;
+      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
+      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(plane);
+      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(module);
+      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fProj.push_back(ip);
+      //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(ich);
+      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(fGEMDigi->GetNStrips(ich,ip)*fGEMDigi->GetNSamples(ich,ip));
+      //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
+      
       while(nstrip > 1) {
         data.fData.clear();
         mpd_data.samples.clear();
@@ -350,14 +363,10 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
             mpd_data.samples[idx++] = (adc>0 ? adc : 0);
 	    
 	    //TODO: replace that stuff by a fill function...
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(plane);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(module);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fProj.push_back(ip);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.push_back(s);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(strip);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(adc);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.at(ich).push_back(strip);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.at(ich).push_back(s);
+	    //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.at(ich).push_back(adc);
+	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.at(ich).push_back(adc);
           }
         }
         fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);

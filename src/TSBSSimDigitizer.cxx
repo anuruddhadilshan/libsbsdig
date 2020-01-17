@@ -70,9 +70,13 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s_Plane", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fPlane);
       fOutTree->Branch(Form("%s_Module", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fModule);
       fOutTree->Branch(Form("%s_Proj", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fProj);
-      fOutTree->Branch(Form("%s_Channel", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fChannel);
+      //fOutTree->Branch(Form("%s_Channel", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fChannel);
+      fOutTree->Branch(Form("%s_nwords", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fDataWord);
+      //fOutTree->Branch(Form("%s_ADC", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC);
+      fOutTree->Branch(Form("%s_Strip", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fStrip);
       fOutTree->Branch(Form("%s_Samp", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fSamp);
-      fOutTree->Branch(Form("%s_ADC", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC);
+      fOutTree->Branch(Form("%s_hit_samps_adc", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC_samps);
+      //fOutTree->Branch(Form("%s_hit_samps_datawords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord_samps);
       break;
     case(kHCal):
       //MC info

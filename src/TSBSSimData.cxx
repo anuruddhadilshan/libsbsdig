@@ -324,6 +324,7 @@ void simgemdig_outdata::Clear(){
   fPlane.clear();
   fModule.clear();
   fProj.clear();
+  fStrip.clear();
   fSamp.clear();
 }
 
@@ -343,9 +344,13 @@ bool simgemdig_outdata::CheckSize(bool ignore_adc,
     checkout = false;
     if(print)printf("fProj.size() = %zu != %u\n", fProj.size(), fNHits);
   }
+  if(fStrip.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fStrip.size() = %zu != %u\n", fStrip.size(), fNHits);
+  }
   if(fSamp.size()!=fNHits){
     checkout = false;
-    if(print)printf("fSamp.size() = %zu != %u\n", fChannel.size(), fNHits);
+    if(print)printf("fSamp.size() = %zu != %u\n", fSamp.size(), fNHits);
   }
   
   return checkout;
