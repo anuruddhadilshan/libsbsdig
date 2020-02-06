@@ -204,6 +204,7 @@ TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
   : THaAnalysisObject(name, "GEM simulation digitizer"),
     fDoMapSector(false), fSignalSector(0), fDP(0), fdh(0), fNChambers(0), fNPlanes(0),
     fRNIon(0), //fOFile(0), fOTree(0), fEvent(0), 
+    fZeroSup(1.e38), fApplyCommonMode(false), fCommonModeArray(0),
     fManager(manager)
 {
   Init();
@@ -304,6 +305,7 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
   if (!file) return kFileError;
   
   vector<Double_t>* offset = 0;
+  vector<Double_t>* commonmode = 0;
   const char *prefix = Form("dig.%s",fPrefix);
 
   try{
@@ -347,6 +349,9 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 	{ "crosstalk_mean",            &fCrossFactor,               kDouble },
 	{ "crosstalk_sigma",           &fCrossSigma,                kDouble },
 	{ "crosstalk_strip_apart",     &fNCStripApart,              kInt    },
+	{ "zerosup",                   &fZeroSup,                   kDouble , 0, 1},
+	{ "applycommonmode",           &fApplyCommonMode,           kInt    , 0, 1},
+	{ "commonmode_array",          &commonmode,                 kDoubleV, 0, 1},
 	{ 0 }
       };
     
@@ -360,6 +365,11 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
     for (UInt_t i=0; i<offset->size(); i++){
       fTriggerOffset.push_back(offset->at(i));
     }
+    
+    for (UInt_t i=0; i<commonmode->size(); i++){
+      fCommonModeArray.push_back(commonmode->at(i));
+    }
+    
     
     delete offset;
   }  catch(...) {

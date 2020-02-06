@@ -60,18 +60,18 @@ public:
     
     int       Getg4sbsDetectorType() const { return fg4sbsDetectorType;   }
     double    Getg4sbsZSpecOffset() const  { return fg4sbsZSpecOffset;    }
-    
-    double    GetCaloThreshold() const     { return fCaloThr;             }
     double    GetZ0() const                { return fgZ0;                 }
-    double    GetCaloZ() const             { return fgCaloZ;              }
-    double    GetCaloRes() const           { return fgCaloRes;            }
-    int       DoCalo() const               { return fgDoCalo;             }
+    
+    //double    GetCaloThreshold() const     { return fCaloThr;             }
+    //double    GetCaloZ() const             { return fgCaloZ;              }
+    //double    GetCaloRes() const           { return fgCaloRes;            }
+    //int       DoCalo() const               { return fgDoCalo;             }
 
     void     SetZ0( Double_t z0 ) { fgZ0 = z0; }
     // Support for calorimeter emulation. Static functions to allow script access
-    void     EmulateCalorimeter( Bool_t f = true ) { fgDoCalo = f; }
-    void     SetCaloZ( Double_t z )     { fgCaloZ   = z; }
-    void     SetCaloRes( Double_t res ) { fgCaloRes = res; }
+    //void     EmulateCalorimeter( Bool_t f = true ) { fgDoCalo = f; }
+    //void     SetCaloZ( Double_t z )     { fgCaloZ   = z; }
+    //void     SetCaloRes( Double_t res ) { fgCaloRes = res; }
     
     double    GetDMag(int i, int j);
     double    GetThetaV(int i, int j);
@@ -135,18 +135,17 @@ protected:
     //Choices are: 3 - GEP SBS GEMs: FT
     //Choices are: 3 - GEP SBS GEMs: FPP
     double fg4sbsZSpecOffset;
+    double fgZ0;        // z position of first chamber plane
     //Offset between the local z value recorded in g4sbs and the actual distance 
     //of the GEM from the midplane pivot
 
     // Parameters for simple calorimeter analysis
-    double fCaloThr;
-    
     // Parameters for TGEMSBSSimDecoder
     // Calorimeter emulation
-    double fgCaloZ;     // z position of emulated calorimeter
-    double fgCaloRes;   // Resolution (sigma) of emulated calorimeter (m)
-    int    fgDoCalo;    // Enable calorimeter emulation
-    double fgZ0;        // z position of first chamber plane
+    // double fCaloThr;    
+    // double fgCaloZ;     // z position of emulated calorimeter
+    // double fgCaloRes;   // Resolution (sigma) of emulated calorimeter (m)
+    // int    fgDoCalo;    // Enable calorimeter emulation
     
     int    fErrID;
     double fErrVal;

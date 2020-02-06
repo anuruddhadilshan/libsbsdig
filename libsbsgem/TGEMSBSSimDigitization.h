@@ -177,7 +177,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   static Int_t    fNCStripApart; // # of strips the induced signal is away from the mean signal
   static Double_t fCrossFactor;  //reduction factor for the induced signal
   static Double_t fCrossSigma;   //uncertainty of the reduction factor
-
+  
   //moved in "public" to allow it to compile with Root6/CentOS7
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
@@ -270,6 +270,11 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   //std::vector<Double_t> fSumA;
   std::vector<Short_t>  fDADC;
 
+  //zero suppression and common mode
+  Double_t fZeroSup;
+  Bool_t fApplyCommonMode;
+  std::vector<Double_t> fCommonModeArray;
+  
   // Tree
 
   //TFile* fOFile;          // Output ROOT file

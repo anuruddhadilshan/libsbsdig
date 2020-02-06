@@ -18,8 +18,8 @@ TGEMSBSDBManager::TGEMSBSDBManager(const char *spec, const char* det)
   : //fDoMapSector(0), fMappedSector(0), fDoSelfDefinedSector(0),
     fNChamber(0), fNSector(0), fNGEMPlane(0), fNReadOut(0), fNSigParticle(0),
     fChanPerSlot(2048), fModulesPerReadOut(1), fModulesPerChamber(1), fChambersPerCrate(1),
-    fg4sbsDetectorType(0), fg4sbsZSpecOffset(0),
-    fCaloThr(0), fgCaloZ(0), fgCaloRes(0), fgDoCalo(0), fgZ0(0),
+    fg4sbsDetectorType(0), fg4sbsZSpecOffset(0), fgZ0(0),
+    //fCaloThr(0), fgCaloZ(0), fgCaloRes(0), fgDoCalo(0), 
     fErrID(-999), fErrVal(-999.), fSpecName(spec), fDetName(det)
 {
   fPrefix = fSpecName+"."+fDetName;
@@ -164,11 +164,11 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
         {"modules_per_readout", &fModulesPerReadOut   , kInt,    0, 1},
 	{"g4sbs_detectortype",  &fg4sbsDetectorType   , kInt,    0, 1},
 	{"g4sbs_z_specoffset",  &fg4sbsZSpecOffset    , kDouble, 0, 1},
-	{"calo_thr",            &fCaloThr             , kDouble, 0, 1},
 	{"z0",                  &fgZ0                 , kDouble, 0, 1},
-	{"calo_z",              &fgCaloZ              , kDouble, 0, 1},
-	{"calo_res",            &fgCaloRes            , kDouble, 0, 1},
-	{"docalo",              &fgDoCalo             , kInt,    0, 1},
+	// {"calo_thr",            &fCaloThr             , kDouble, 0, 1},
+	// {"calo_z",              &fgCaloZ              , kDouble, 0, 1},
+	// {"calo_res",            &fgCaloRes            , kDouble, 0, 1},
+	// {"docalo",              &fgDoCalo             , kInt,    0, 1},
         { 0 }
     };
     int pid, tid;

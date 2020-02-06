@@ -21,12 +21,12 @@ bb.gem.info.modules_per_readout = 1
 
 bb.gem.info.g4sbs_detectortype = 1
 bb.gem.info.g4sbs_z_specoffset = 0.8031825 #0.800000
-
-bb.gem.info.calo_thr = 2.4 # GeV
-bb.gem.info.calo_z = 2.704 #Z of BB ECal at max shower energy deposit, in m
-bb.gem.info.calo_res = 0.010000
-bb.gem.info.docalo = 0
 bb.gem.info.z0 = 0.850000
+
+#bb.gem.info.calo_thr = 2.4 # GeV
+#bb.gem.info.calo_z = 2.704 #Z of BB ECal at max shower energy deposit, in m
+#bb.gem.info.calo_res = 0.010000
+#bb.gem.info.docalo = 0
 
 ## Slot and crate info
 bb.gem.first_crate = 100
@@ -74,8 +74,8 @@ dig.bb.gem.use_tracker_frame = 0
 dig.bb.gem.entrance_ref = -1.5 # mm # -4.6825
 
 #numerical integration parameter
-dig.bb.gem.y_integral_step_per_pitch = 4#8
-dig.bb.gem.x_integral_step_per_pitch = 4#8
+dig.bb.gem.y_integral_step_per_pitch = 4
+dig.bb.gem.x_integral_step_per_pitch = 4
 
 #APV25 cross talk parameter
 dig.bb.gem.do_crosstalk = 1
@@ -83,8 +83,10 @@ dig.bb.gem.crosstalk_mean = 0.1
 dig.bb.gem.crosstalk_sigma = 0.03
 dig.bb.gem.crosstalk_strip_apart = 32
 
-#zero suppression
+#zero suppression and common mode
 dig.bb.gem.zerosup = 0
+dig.bb.gem.applycommonmode = 0
+
 
 #in here the time I understand
 geo.bb.gem.chambers = plane0 plane1 plane2 plane3 plane4
