@@ -310,6 +310,7 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 
   try{
     offset = new vector<Double_t>;
+    commonmode = new vector<Double_t>;
     const DBRequest request[] =
       {
 	{ "gasionwidth",               &fGasWion,                   kDouble },

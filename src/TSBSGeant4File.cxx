@@ -119,6 +119,15 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   int Npe;
   double t;
   
+  TSpectroInfo sbsinfo = fManager->GetSpectroInfo("sbs");
+  double theta = sbsinfo.MCAngle();
+  TDetInfo hcalinfo = fManager->GetDetInfo("hcal");
+  double dHCal = hcalinfo.GeoInfo(0).ZPos();
+  
+  double x_ref = dHCal*sin(theta);
+  double z_ref = dHCal*cos(theta);
+  
+  double z_hit, Npe_Edep_ratio, sigma_tgen;
   /*
   // and here a bunch of variables that had a similar use, but lost it.
   // int n_hits = 0;//total number of hits at the end of the event
@@ -352,6 +361,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   */
   if(d_flag>=3)printf("about to digitize HCal\n");
   // Now process HCAL data
+  /*
   if(fTree->hcalpart.E) {
     if(d_flag>=3)printf("Nhits in HCal = %lu\n", fTree->hcalpart.E->size());
     for(size_t k = 0; k < fTree->hcalpart.E->size(); k++) {
@@ -366,6 +376,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
+  */
   // For now, get the adc signal from the total energy deposited on the
   // scintillators. This can be changed later, I suppose...
   if(fTree->hcalscint.sumedep) {
@@ -377,6 +388,23 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       hcalscinthit->SetData(2,1); // data type 1 == sumedep
       hcalscinthit->SetData(3,fTree->hcalscint.sumedep->at(k));
       fg4sbsHitData.push_back(hcalscinthit);
+
+      z_hit = -(fTree->hcalscint.xhitg->at(k)-x_ref)*sin(theta)+(fTree->hcalscint.zhitg->at(k)-z_ref)*cos(theta);
+      
+      Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
+      Npe = fRN->Poisson(Npe_Edep_ratio*fTree->hcalscint.sumedep->at(k)*1.0e3);
+      t = fRN->Gaus(fTree->hcalscint.tavg->at(k)+10.11, 1.912);
+      
+      sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
+      for(int l = 0; l<Npe; l++){
+	//Generate here,...
+	g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
+	hcalpmthit->SetData(0,fSource);
+	hcalpmthit->SetData(1,fTree->hcalscint.cell->at(k));
+	hcalpmthit->SetData(2,0); // data type 0 == optical photon
+	hcalpmthit->SetData(3,fRN->Landau(t, sigma_tgen));
+	fg4sbsHitData.push_back(hcalpmthit);
+      }
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
   }

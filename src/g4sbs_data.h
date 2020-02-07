@@ -32,6 +32,9 @@ namespace TSBSGeant4 {
     std::vector<double> *xhit;
     std::vector<double> *yhit;
     std::vector<double> *zhit;
+    std::vector<double> *xhitg;
+    std::vector<double> *yhitg;
+    std::vector<double> *zhitg;
     std::vector<double> *sumedep;
     std::vector<double> *tavg;
     std::vector<double> *trms;
@@ -39,7 +42,8 @@ namespace TSBSGeant4 {
     std::vector<double> *tmax;
     CalData_t() :
       nhits(0), row(0), col(0), cell(0), plane(0), xcell(0), ycell(0), zcell(0),
-      xcellg(0), ycellg(0), zcellg(0), xhit(0), yhit(0), zhit(0), sumedep(0),
+      xcellg(0), ycellg(0), zcellg(0), xhit(0), yhit(0), zhit(0), 
+      xhitg(0), yhitg(0), zhitg(0), sumedep(0),
       tavg(0), trms(0), tmin(0), tmax(0) {}
     virtual ~CalData_t(){};
     virtual bool SetupBranches(TTree *t, const char* prefix);

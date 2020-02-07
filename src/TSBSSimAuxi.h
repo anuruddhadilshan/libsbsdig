@@ -281,7 +281,14 @@ class TDetInfo : public TObject{
   Int_t   DetUniqueId(){ return fDetUniqueId; }
   
   int GeoInfoSize(){return fGeoInfo.size();};
-  TGeoInfo GeoInfo(int i){return fGeoInfo.at(i);};
+  TGeoInfo GeoInfo(int i = 0){
+    if(i<GeoInfoSize()){
+      return fGeoInfo.at(i);
+    }else{
+      std::cout << "Requested GeoInfo # for " << fDetName.c_str() << " does not exist; exiting" << std::endl;
+      exit(-1);
+    }
+  };
   TDigInfo DigInfo(){return fDigInfo;};
   
   void SetDetName(std::string detname, std::string specname = "");//{fDetName = detname;};

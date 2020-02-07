@@ -39,6 +39,9 @@ namespace TSBSGeant4 {
     ret += SetupBranch(tree,prefix,"xhit", xhit);
     ret += SetupBranch(tree,prefix,"yhit", yhit);
     ret += SetupBranch(tree,prefix,"zhit", zhit);
+    ret += SetupBranch(tree,prefix,"xhitg", xhitg);
+    ret += SetupBranch(tree,prefix,"yhitg", yhitg);
+    ret += SetupBranch(tree,prefix,"zhitg", zhitg);
     ret += SetupBranch(tree,prefix,"sumedep", sumedep);
     ret += SetupBranch(tree,prefix,"tavg", tavg);
     ret += SetupBranch(tree,prefix,"trms", trms);

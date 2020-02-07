@@ -30,6 +30,7 @@ public:
   
   const std::vector<TDetInfo>& GetAllDetInfo() { return fDetInfo; }
   const std::vector<TSpectroInfo>& GetAllSpectroInfo() { return fSpectroInfo; }
+  const TSpectroInfo & GetSpectroInfo(const char* specname);
   const TDetInfo & GetDetInfo(const char* detname);
   const TDetInfo& GetDetInfoById(Int_t id);
   bool IsDetInfoAvailable(const char* detname); // Check if a detector is defined
