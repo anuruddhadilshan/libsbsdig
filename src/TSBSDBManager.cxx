@@ -85,7 +85,7 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   //Then, loop on the spectrometers to gather the detector number and names, and the MC signal of interest
   for(size_t i_spec = 0; i_spec<fNSpecs; i_spec++){
     TSpectroInfo specinfo;
-    //specinfo.SetName(fSpecNames.at(i_spec));
+    specinfo.SetName(fSpecNames.at(i_spec));
     double mcangle;
     int ndets;
     string dets_str;
@@ -805,6 +805,27 @@ const TDetInfo & TSBSDBManager::GetDetInfo(const char* detname)
   
   // if no valid detectors have been found exit with error message
   cout << "No detector corresponding to " << detname << " found in database. Check program or database" << endl;
+  exit(2);
+}
+
+//function to retrieve the coorect detector information from the detector name
+const TSpectroInfo & TSBSDBManager::GetSpectroInfo(const char* specname)
+{
+  //check if the detectors databases is loaded in the first place
+  if(fSpectroInfo.size()==0){
+    cout << "No Spectro info available: Check database!"<< endl <<" Exiting..." << endl;
+    exit(2);
+  }
+  
+  // if so, loop on list of detectors.
+  for(size_t i = 0; i<fSpectroInfo.size(); i++){
+    if(fSpectroInfo.at(i).SpecName().compare(specname)==0){
+      return fSpectroInfo.at(i);
+    }
+  }
+  
+  // if no valid detectors have been found exit with error message
+  cout << "No spectrometer corresponding to " << specname << " found in database. Check program or database" << endl;
   exit(2);
 }
 

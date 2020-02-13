@@ -60,25 +60,28 @@ class TSignalInfo : public TObject {
 class TSpectroInfo : public TObject{
  public:
   TSpectroInfo() {};
-  TSpectroInfo(int ndets):fNDets(ndets) {};
+ TSpectroInfo(std::string specname, int ndets):fSpecName(specname), fNDets(ndets) {};
   ~TSpectroInfo() {
     fMCsignalInfo.clear();
     fDetNames.clear();
   };
   
-  double MCAngle(){return fMCangle;};
+  std::string SpecName(){return fSpecName;};
   UInt_t NDets(){return fNDets;};
+  double MCAngle(){return fMCangle;};
   UInt_t SignalInfoSize(){return fMCsignalInfo.size();};
   
   TSignalInfo MCSignalInfo(int i){return fMCsignalInfo.at(i);};
   std::string DetName(int i){return fDetNames.at(i);};
   
-  void SetMCAngle(double ang){fMCangle = ang;};
+  void SetName(std::string specname){fSpecName = specname;};
   void SetNDets(UInt_t ndets){fNDets = ndets;};
+  void SetMCAngle(double ang){fMCangle = ang;};
   void AddMCSignalInfo(TSignalInfo siginfo){fMCsignalInfo.push_back(siginfo);};
   void AddDetName(std::string detname){fDetNames.push_back(detname);};
   
  private:
+  std::string fSpecName;
   double fMCangle;
   UInt_t fNDets;
   std::vector<TSignalInfo> fMCsignalInfo;
