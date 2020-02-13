@@ -105,9 +105,7 @@ void g4sbs_tree::Init(TTree *tree)
    if(fExpt==kNeutronExp || fExpt==kGEnRP || fExpt==kSIDIS || fExpt==kA1n){
      gem_branch gem(BBGEM_UNIQUE_DETID,"Earm.BBGEM.hit","Earm.BBGEM.Track");
      GEMs.push_back(gem);
-     //GEM_Track_name.push_back("Earm.BBGEM.Track");
-     //SetupDetBranch(Earm_BBGEM,"Earm.BBGEM.hit");
-     //SetupDetBranch(Earm_BBGEM_Track,"Earm.BBGEM.Track");
+     
      SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
 
      if(fEcalBox){
@@ -148,20 +146,32 @@ void g4sbs_tree::Init(TTree *tree)
      SetupDetBranch(Earm_ECalTF1, "Earm.ECalTF1.hit");
 
      // Focal plane polarimeters
-     SetupDetBranch(Harm_FPP1, "Harm.FPP1.hit");
-     SetupDetBranch(Harm_FPP1_Track, "Harm.FPP1.Track");
-     SetupDetBranch(Harm_FPP2, "Harm.FPP2.hit");
-     SetupDetBranch(Harm_FPP2_Track, "Harm.FPP2.Track");
-     SetupDetBranch(Harm_FT, "Harm.FT.hit");
-     SetupDetBranch(Harm_FT_Track, "Harm.FT.Track");
+     gem_branch gem_ft(FT_UNIQUE_DETID,"Harm.FT.hit","Harm.FT.Track");
+     GEMs.push_back(gem_ft);
+     gem_branch gem_fpp1(FPP1_UNIQUE_DETID,"Harm.FPP1.hit","Harm.FPP1.Track");
+     GEMs.push_back(gem_fpp1);
+     gem_branch gem_fpp2(FPP2_UNIQUE_DETID,"Harm.FPP2.hit","Harm.FPP2.Track");
+     GEMs.push_back(gem_fpp2);
    }
    
    if(fExpt==kGEnRP){
-     SetupDetBranch(Harm_CDET,"Harm.CDET.hit");
-     SetupDetBranch(Harm_CDET_Scint,"Harm.CDET_Scint.hit");
+     //SetupDetBranch(Harm_CDET,"Harm.CDET.hit");
+     //SetupDetBranch(Harm_CDET_Scint,"Harm.CDET_Scint.hit");
      
+     SetupDetBranch(Harm_ActAnScint,    "Harm.ActAnScint.hit");
+     SetupDetBranch(Harm_PRPolScintBeamSide, "Harm.PRPolScintBeamSide.hit");
+     SetupDetBranch(Harm_PRPolScintFarSide, "Harm.PRPolScintFarSide.hit");
+
      //TODO: Add polarimeter GEMs
+     gem_branch gem_cefront(CEPOL_GEMFRONT_UNIQUE_DETID,"Harm.CEPolFront.hit","Harm.CEPolFront.Track");
+     GEMs.push_back(gem_cefront);
+     gem_branch gem_cerear(CEPOL_GEMREAR_UNIQUE_DETID,"Harm.CEPolRear.hit","Harm.CEPolRear.Track");
+     GEMs.push_back(gem_cerear);
      
+     gem_branch gem_prbs(PRPOLBS_GEM_UNIQUE_DETID,"Harm.PRPolGEMBeamSide.hit","Harm.PRPolGEMBeamSide.Track");
+     GEMs.push_back(gem_prbs);
+     gem_branch gem_prfs(PRPOLFS_GEM_UNIQUE_DETID,"Harm.PRPolGEMFarSide.hit","Harm.PRPolGEMFarSide.Track");
+     GEMs.push_back(gem_prfs);
    }
      
    if(fExpt!=kTDIS && fExpt!=kDVCS){
@@ -178,11 +188,7 @@ void g4sbs_tree::Init(TTree *tree)
    if(fExpt==kSIDIS || fExpt==kA1n || fExpt==kTDIS || fExpt==kDVCS){
      gem_branch gem(SBSGEM_UNIQUE_DETID,"Harm.SBSGEM.hit","Harm.SBSGEM.Track");
      GEMs.push_back(gem);
-     //GEM_name.push_back("Harm_SBSGEM.hit");
-     //GEM_Track_name.push_back("Harm_SBSGEM.Track");
-     //SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
-     //SetupDetBranch(Harm_SBSGEM_Track, "Harm.SBSGEM.Track");
-
+     
      SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
    }
    

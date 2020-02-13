@@ -154,6 +154,13 @@ public :
    TSBSGeant4::ECalData_t     hcal;
    TSBSGeant4::ECalPartData_t hcalpart;
 
+   // GEn-RP Active analyzer hits
+   TSBSGeant4::CalData_t      Harm_ActAnScint;
+   
+   // GEn-RP PR polarimeter Scintillators hits;
+   TSBSGeant4::CalData_t      Harm_PRPolScintBeamSide;
+   TSBSGeant4::CalData_t      Harm_PRPolScintFarSide;
+   
    //SBS GEMs variables
    TSBSGeant4::GEMData_t     Harm_SBSGEM;
    TSBSGeant4::TrackerData_t Harm_SBSGEM_Track;
