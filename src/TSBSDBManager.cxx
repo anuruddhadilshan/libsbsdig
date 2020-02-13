@@ -71,9 +71,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
   if( err ) exit(2); 
   
   //assing the right exp_type value to the exp_type flag according to the expt name
-  if(exp_str.compare("gmn")==0)fSBSExpType = kGMn;
+  if(exp_str.compare("gmn")==0 || exp_str.compare("gen")==0)fSBSExpType = kNeutronExp;
   if(exp_str.compare("gep")==0)fSBSExpType = kGEp;
-  if(exp_str.compare("gen")==0)fSBSExpType = kGEn;
+  if(exp_str.compare("genrp")==0)fSBSExpType = kGEnRP;
   if(exp_str.compare("sidis")==0)fSBSExpType = kSIDIS;
   if(exp_str.compare("a1n")==0)fSBSExpType = kA1n;
   if(exp_str.compare("tdis")==0)fSBSExpType = kTDIS;

@@ -241,7 +241,7 @@ public :
    TBranch        *b_Primaries_phi;   //!
 
 
-   g4sbs_tree(TTree *tree=0, exp_type expt = kGMn, bool pythia = false, bool ecalbox = false, bool hcalbox = false);
+   g4sbs_tree(TTree *tree=0, exp_type expt = kNeutronExp, bool pythia = false, bool ecalbox = false, bool hcalbox = false);
    virtual ~g4sbs_tree();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntries();

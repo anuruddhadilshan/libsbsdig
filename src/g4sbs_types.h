@@ -41,7 +41,7 @@
 #define FPP2_UNIQUE_DETID 44
 
 enum exp_type{
-  kGMn, kGEp, kGEn, 
+  kNeutronExp, kGEp, kGEnRP, 
   kSIDIS, kA1n, kTDIS, kDVCS
 };
 

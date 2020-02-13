@@ -102,7 +102,7 @@ void g4sbs_tree::Init(TTree *tree)
    //fChain->SetBranchAddress("gen", &gen_thbb, &b_gen);
    
    //BigBite detector package: all expts except GEp
-   if(fExpt==kGMn || fExpt==kGEn || fExpt==kSIDIS || fExpt==kA1n){
+   if(fExpt==kNeutronExp || fExpt==kGEnRP || fExpt==kSIDIS || fExpt==kA1n){
      gem_branch gem(BBGEM_UNIQUE_DETID,"Earm.BBGEM.hit","Earm.BBGEM.Track");
      GEMs.push_back(gem);
      //GEM_Track_name.push_back("Earm.BBGEM.Track");
@@ -156,9 +156,12 @@ void g4sbs_tree::Init(TTree *tree)
      SetupDetBranch(Harm_FT_Track, "Harm.FT.Track");
    }
    
-   if(fExpt==kGMn){
+   if(fExpt==kGEnRP){
      SetupDetBranch(Harm_CDET,"Harm.CDET.hit");
      SetupDetBranch(Harm_CDET_Scint,"Harm.CDET_Scint.hit");
+     
+     //TODO: Add polarimeter GEMs
+     
    }
      
    if(fExpt!=kTDIS && fExpt!=kDVCS){
