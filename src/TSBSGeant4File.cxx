@@ -178,6 +178,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Nhits in BBhodo = %d\n", fTree->Earm_BBHodoScint.nhits);
     for(int i = 0; i<fTree->Earm_BBHodoScint.nhits; i++){
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	// TODO: put that stuff in DB...
 	Npe = fRN->Poisson(1.0e7*fTree->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24);
 	t = fTree->Earm_BBHodoScint.tavg->at(i)+(0.55+pow(-1, j)*fTree->Earm_BBHodoScint.xhit->at(i))/0.15;
 	g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
@@ -207,6 +210,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->Earm_BBPSTF1.nhits){
     if(d_flag>=3)printf("Nhits in BBPSTF1 = %d\n", fTree->Earm_BBPSTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBPSTF1.nhits; i++){
+      // Evaluation of number of photoelectrons and time from energy deposit documented at:
+      // 
+      // TODO: put that stuff in DB...
       Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
       t = fTree->Earm_BBPSTF1.tavg->at(i)+fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
       g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
@@ -235,6 +241,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->Earm_BBSHTF1.nhits){
     if(d_flag>=3)printf("Nhits in BBSHTF1 = %d\n", fTree->Earm_BBSHTF1.nhits);
     for(int i = 0; i<fTree->Earm_BBSHTF1.nhits; i++){
+      // Evaluation of number of photoelectrons and time from energy deposit documented at:
+      // 
+      // TODO: put that stuff in DB...
       Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
       t = fTree->Earm_BBSHTF1.tavg->at(i)+fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
       g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
@@ -264,6 +273,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(fTree->Harm_CDET_Scint.nhits){
     if(d_flag>=3)printf("Nhits in CDet = %d\n", fTree->Harm_CDET_Scint.nhits);
     for(int i = 0; i<fTree->Harm_CDET_Scint.nhits; i++){
+      // Evaluation of number of photoelectrons and time from energy deposit documented at:
+      // 
+      // TODO: put that stuff in DB...
       Npe = fRN->Poisson( fTree->Harm_CDET_Scint.sumedep->at(i)*5.634e3 );
       t = fTree->Harm_CDET_Scint.tavg->at(i)+5.75+fTree->Harm_CDET_Scint.xhit->at(i)/0.16;
       g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
@@ -411,6 +423,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 
       z_hit = -(fTree->hcalscint.xhitg->at(k)-x_ref)*sin(theta)+(fTree->hcalscint.zhitg->at(k)-z_ref)*cos(theta);
       
+      // Evaluation of number of photoelectrons from energy deposit documented at:
+      // https://sbs.jlab.org/DocDB/0000/000043/002/HCal_Digi_EdepOnly_2.pdf
+      // TODO: put that stuff in DB...
       Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
       Npe = fRN->Poisson(Npe_Edep_ratio*fTree->hcalscint.sumedep->at(k)*1.0e3);
       t = fRN->Gaus(fTree->hcalscint.tavg->at(k)+10.11, 1.912);
