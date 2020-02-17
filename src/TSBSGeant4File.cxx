@@ -287,7 +287,27 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
-
+  
+  // GEN RP detectors: Active analyzer 
+  if(fTree->Harm_ActAnScint.nhits){
+    if(d_flag>=3)printf("Nhits in GEn RP active analyzer = %d\n", fTree->Harm_ActAnScint.nhits);
+    for(int i = 0; i<fTree->Harm_ActAnScint.nhits; i++){
+      //TODO: update with accurate paramters
+      Npe = fRN->Poisson( fTree->Harm_ActAnScint.sumedep->at(i)*5.634e3 ); //
+      t = fTree->Harm_ActAnScint.tavg->at(i)+5.75+fTree->Harm_ActAnScint.xhit->at(i)/0.16; //
+      g4sbshitdata *actanapmthit = new g4sbshitdata(ACTIVEANA_UNIQUE_DETID, 5);
+      actanapmthit->SetData(0, fSource);
+      actanapmthit->SetData(1, fTree->Harm_ActAnScint.cell->at(i));
+      actanapmthit->SetData(2, t);
+      actanapmthit->SetData(3, Npe);
+      actanapmthit->SetData(4, fTree->Harm_ActAnScint.sumedep->at(i));
+      fg4sbsHitData.push_back(actanapmthit);
+    }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
+  }
+  
+  
+  
   // Now process the GEM data
   if(d_flag>=3)printf("about to digitize GEMs: %lu tree(s)\n", fTree->GEMs.size());
   for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
