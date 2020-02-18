@@ -16,7 +16,9 @@
 #include "TSBSSimGEM.h"
 #endif
 
-void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
+//a bit more complex macro, where you have to provide the paths to the g4sbs files via  input_sigfile and input_bkgdfile (if you want background)
+
+void digi_gmn(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "", int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
@@ -30,38 +32,48 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   
   TSBSDBManager* manager = TSBSDBManager::GetInstance();
   manager->SetDebug(debuglevel);
-  //manager->LoadGeneralInfo(Form("%s/db_generalinfo_grinch.dat",gSystem->Getenv("DB_DIR")));
-  //manager->LoadGeoInfo("g4sbs_grinch");
+  
+  if(debuglevel>=1)cout << "About to read database " << endl;
+
   manager->LoadGenInfo("db_geninfo_gmn.dat");
   
+  if(debuglevel>=1)cout << "Setup digitizer " << endl;
+  
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer(
-      Form("digitized/simdig_%d.root",runnum));
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
   digitizer->SetDebug(debuglevel);
   
-  // First load the input root file
-  TSBSGeant4File *f = new TSBSGeant4File(Form("data/sbsin_%d.root",runnum));
-  f->SetSource(0);
-  //TSBSGeant4File *f_b = new TSBSGeant4File("/volatile/halla/sbs/efuchey/gmn13.5_beam_bkgd_20180718_14/beam_bkgd_0.root");
-  //f_b->SetSource(1);
+  if(debuglevel>=1)cout << "Setup input file " << endl;
   
+  ifstream sig_inputfile(input_sigfile);
+  TString currentline;
+  while( currentline.ReadLine(sig_inputfile) && !currentline.BeginsWith("endlist") ){
+    if( !currentline.BeginsWith("#") ){
+      digitizer->AddInputFile(currentline.Data(), 0, 1);
+    }
+  }
   
-  digitizer->AddInputFile(f, 1);
-  //digitizer->AddInputFile(f_b, 10);
+  if(nbkgd){
+    ifstream beam_inputfile(input_bkgdfile);
+    while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
+      if( !currentline.BeginsWith("#") ){
+	digitizer->AddInputFile(currentline.Data(), 1, -nbkgd);
+      }
+    }
+  }
   
   // It is recommended  to declare the detector with its unique ID (second parameter)
   // See list of unique det IDs defined in src/g4sbs_types.h
   
+  if(debuglevel>=1)cout << "Declare detectors and add them to digitizer " << endl;
+  
   TSBSSimHCal *hcal = new TSBSSimHCal("hcal", 0);
+  hcal->SetDebug(debuglevel);
   digitizer->AddDetector(hcal);
   
-  //TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
-  //hodo->SetDebug(debuglevel);
-  //digitizer->AddDetector(hodo);
-  
-  //TSBSSimScint *cdet = new TSBSSimScint("cdet", 31);
-  //cdet->SetDebug(debuglevel);
-  //digitizer->AddDetector(cdet);
+  TSBSSimScint *hodo = new TSBSSimScint("hodo", 30);
+  hodo->SetDebug(debuglevel);
+  digitizer->AddDetector(hodo);
   
   TSBSSimCher *grinch = new TSBSSimCher("grinch", 20);
   grinch->SetDebug(debuglevel);
@@ -74,16 +86,8 @@ void digi_gmn_test(int runnum = 931, int nentries = 100, int debuglevel = 0)
   TSBSSimECal *sh = new TSBSSimECal("sh", 11);
   sh->SetDebug(debuglevel);
   digitizer->AddDetector(sh);
-
-  TSBSSimGEM *bb_gem = new TSBSSimGEM("gem", 40);
-  bb_gem->SetDebug(debuglevel);
-  digitizer->AddDetector(bb_gem);
   
-  digitizer->Process(f, nentries);
-  //digitizer->Process(nentries);
+  if(debuglevel>=1)cout << "About to process digitization for " << nentries << "events " << endl;
   
-  //cout << "delete detectors" << endl;
-  //delete hodo;
-  //delete cdet;
-  //delete grinch;
+  digitizer->Process(nentries);
 }
