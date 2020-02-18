@@ -3,7 +3,7 @@
 bb.ps.dettype = ECal
 bb.ps.unique_id = 10
 
-bb.ps.nchan = 54
+bb.ps.nchan = 52
 bb.ps.first_crate = 0
 bb.ps.first_slot = 0
 bb.ps.chan_per_slot = 64
@@ -17,7 +17,7 @@ bb.ps.slot_per_crate = 20
 #bb.ps.position = 0 0 2.5319
 
 ## Test settings for one sub-assembly
-#bb.ps.size = 0.74  2.295  0.085
+#bb.ps.size = 0.74  2.34  0.09
 
 #bb.ps.ncols = 2
 #bb.ps.nrows = 27
@@ -31,9 +31,9 @@ bb.ps.slot_per_crate = 20
 #bb.ps.emin  = 0.0
 
 #PS geometry info
-geo.bb.ps.nrows = 27
+geo.bb.ps.nrows = 26
 geo.bb.ps.ncols = 2
-geo.bb.ps.xsize = 2.295 #m
+geo.bb.ps.xsize = 2.34 #m
 geo.bb.ps.ysize = 0.74 #m
 geo.bb.ps.zpos =  2.5319 #m # center of the blocks
 geo.bb.ps.xoffset = 0.0 #m
@@ -95,7 +95,7 @@ dig.bb.ps.pedestal = # pedestal per ch - ADC channels
 660.508   657.561   
 567.108   576.771   
 538.836   594.839   
-504.326   535.352   
+#504.326   535.352   
 
 dig.bb.ps.pednoise = # pedestal per ch - ADC channels 
 2.69316   2.6368   
@@ -124,7 +124,7 @@ dig.bb.ps.pednoise = # pedestal per ch - ADC channels
 2.8583   2.70793   
 2.03668   2.08258   
 2.14884   2.15269   
-2.00597   2.43246   
+#2.00597   2.43246   
 
 dig.bb.ps.gain = # gain per ch
  5.0e5  5.0e5 
@@ -153,7 +153,7 @@ dig.bb.ps.gain = # gain per ch
  5.0e5  5.0e5 
  5.0e5  5.0e5 
  5.0e5  5.0e5 
- 5.0e5  5.0e5 
+# 5.0e5  5.0e5 
 
 #bb.ps.chanmap =  1  2  3  4  5  6  7  8
 #	         9 10 11 12 13 14 15 16

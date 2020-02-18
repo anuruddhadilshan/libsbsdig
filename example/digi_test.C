@@ -8,6 +8,7 @@
 #include "TSBSSimECal.h"
 #include "TSBSSimScint.h"
 #include "TSBSSimCher.h"
+#include "TSBSSimGEM.h"
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 #include "THaAnalysisObject.h"
@@ -36,12 +37,12 @@ void digi_test(ULong64_t nentries = 100, int nbkgd = 0, int debuglevel = 1)
   if(debuglevel>=1)cout << "Setup digitizer " << endl;
   
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("simdig_test.root");
   digitizer->SetDebug(debuglevel);
   
   if(debuglevel>=1)cout << "Setup input file " << endl;
   
-  digitizer->AddInputFile("/volatile/halla/sbs/efuchey/gmn13.5_elastic_sig_20200107_13/elastic_0.root", 0, 1);
+  digitizer->AddInputFile("/volatile/halla/sbs/efuchey/gmn13.5_elastic_20200214_10/elastic_0.root", 0, 1);
   
   ifstream inputfile("BeamBkgd_GMn13.5.txt");
   if(nbkgd && inputfile.good()){

@@ -299,6 +299,28 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
   }
+
+  // GEp Electron Arm
+  // Process CDet data
+  if(fTree->Earm_CDET_Scint.nhits){
+    if(d_flag>=3)printf("Nhits in CDet = %d\n", fTree->Earm_CDET_Scint.nhits);
+    for(int i = 0; i<fTree->Earm_CDET_Scint.nhits; i++){
+      // Evaluation of number of photoelectrons and time from energy deposit documented at:
+      // 
+      // TODO: put that stuff in DB...
+      Npe = fRN->Poisson( fTree->Earm_CDET_Scint.sumedep->at(i)*5.634e3 );
+      t = fTree->Harm_CDET_Scint.tavg->at(i)+5.75+fTree->Earm_CDET_Scint.xhit->at(i)/0.16;
+      g4sbshitdata *cdetpmthit = new g4sbshitdata(CDET_UNIQUE_DETID, 5);
+      cdetpmthit->SetData(0, fSource);
+      cdetpmthit->SetData(1, fTree->Earm_CDET_Scint.cell->at(i));
+      //cdetpmthit->SetData(2, 0);
+      cdetpmthit->SetData(2, t);
+      cdetpmthit->SetData(3, Npe);
+      cdetpmthit->SetData(4, fTree->Earm_CDET_Scint.sumedep->at(i));
+      fg4sbsHitData.push_back(cdetpmthit);
+    }
+    if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
+  }
   
   // GEN RP detectors: Active analyzer 
   if(fTree->Harm_ActAnScint.nhits){

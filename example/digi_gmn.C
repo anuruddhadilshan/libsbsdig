@@ -10,6 +10,7 @@
 #include "TSBSSimHCal.h"
 #include "TSBSSimScint.h"
 #include "TSBSSimCher.h"
+#include "TSBSSimGEM.h"
 #include "TSBSDBManager.h"
 #include "TSBSSimDigitizer.h"
 #include "THaAnalysisObject.h"
@@ -86,6 +87,10 @@ void digi_gmn(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, cons
   TSBSSimECal *sh = new TSBSSimECal("sh", 11);
   sh->SetDebug(debuglevel);
   digitizer->AddDetector(sh);
+  
+  TSBSSimGEM *bbgem = new TSBSSimGEM("gem", 40);
+  bbgem->SetDebug(debuglevel);
+  digitizer->AddDetector(bbgem);
   
   if(debuglevel>=1)cout << "About to process digitization for " << nentries << "events " << endl;
   
