@@ -77,6 +77,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.hit.samp", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fSamp);
       fOutTree->Branch(Form("%s.hit.samps_adc", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC_samps);
       //fOutTree->Branch(Form("%s.hit.samps_datawords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord_samps);
+      //FIXME: find a way here to output GEM data with SimDigSampOutData
       break;
     case(kHCal):
       //MC info

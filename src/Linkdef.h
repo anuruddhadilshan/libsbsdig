@@ -4,8 +4,10 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
-#pragma link C++ defined_in "src/g4sbs_tree.h";
+#pragma link C++ defined_in "src/digsim_data.h";
+#pragma link C++ defined_in "src/digsim_tree.h";
 #pragma link C++ defined_in "src/g4sbs_data.h";
+#pragma link C++ defined_in "src/g4sbs_tree.h";
 #pragma link C++ defined_in "src/TSBSDBManager.h";
 #pragma link C++ defined_in "src/TSBSGeant4File.h";
 #pragma link C++ defined_in "src/TSBSSimAuxi.h";

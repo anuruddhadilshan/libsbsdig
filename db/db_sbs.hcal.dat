@@ -32,7 +32,7 @@ dig.sbs.hcal.tdcbits = 16 #
 dig.sbs.hcal.threshold = 0.003 #V
 dig.sbs.hcal.triggerjitter = 3.0  # ns
 dig.sbs.hcal.triggeroffset = 100.0  # ns 
-dig.sbs.hcal.gatewidth = 100 #ns #used to be 50ns, but might have been meant to be a half width
+dig.sbs.hcal.gatewidth = 50 #ns #used to be 50ns, but might have been meant to be a half width
 
 #dig.sbs.hcal.spe_tau = 0.65  # ns
 #dig.sbs.hcal.spe_sigma = 1.05  # ns

@@ -44,6 +44,10 @@ void TSBSSimHCal::Init()
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
   
   fSignals.resize(fDetInfo.NChan());
+  for(uint i = 0; i<fDetInfo.NChan(); i++){
+    fSignals[i].mint = tmin;
+    fSignals[i].maxt = tmax;
+  }
   /*
     fSPE = new SPEModel();
     //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
@@ -123,6 +127,7 @@ void TSBSSimHCal::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
         data += fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset() + fTimeZero;//+fDetInfo.DigInfo().TriggerJitter()
         //pulsenorm = fDetInfo.DigInfo().Gain(chan)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
         //fSignals[chan].Fill(fSPE, data-75.);
+	//cout << "spe time "<< data << endl;
         fSignals[chan].Fill(data);
         //fSignals[chan].Fill(fSPE, pulsenorm,data);
       } else if (type == 1) { // sumedep data
@@ -323,8 +328,8 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].tdc.getTime(i-1);
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
-	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
-	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(tdcval-1.e3/fDetInfo.DigInfo().TDCConversion());
 	    }else{
 	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(fSignals[m].tdc.getTime(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
@@ -355,7 +360,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   SetHasDataFlag(any_events);
 }
 
-TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(1.0)
+TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(4.0)
   //mint(0.0), maxt(50.), nbins(50),
 {
   // hard coded, 'cause' why not? :D

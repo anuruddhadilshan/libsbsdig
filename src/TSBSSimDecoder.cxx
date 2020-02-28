@@ -55,6 +55,9 @@ TSBSSimDecoder::TSBSSimDecoder() : fCheckedForEnabledDetectors(false)
   // Constructor
   DefineVariables();
 
+  fDetectors.clear();
+  fTree = 0;
+  
   gSystem->Load("libEG.so");  // for TDatabasePDG
   // Get MPD encoder for GEMs
   fEncoderMPD = dynamic_cast<TSBSSimMPDEncoder*>(
@@ -119,64 +122,6 @@ int TSBSSimDecoder::LoadEvent(const Int_t* evbuffer )
   return ret;
 }
 
-/*
-//-----------------------------------------------------------------------------
-static inline
-void PMTtoROC( Int_t h_chan,
-	       Int_t& crate, Int_t& slot, Int_t& chan )
-{
-  // Convert location parameters (row, col, chan) of the given PMT
-  // to hardware channel (crate,slot,chan)
-  // The (crate,slot,chan) assignment must match the detmap definition in
-  // the database!  See TreeSearch/dbconvert.cxx
-  // In the case of GRINCH/RICH: 
-  // crate = GTP; slot = VETROC; chan = PMT. (NINOs are "transparent", in a similar way to the MPDs)
-  
-  //div_t d = div( h_chan, fManager->GetChanPerSlot() );
-  div_t d = div( h_chan, 1 );
-  slot = d.quot;
-  chan = d.rem;
-
-  d = div( slot, 1 );
-  crate = d.quot;
-  slot  = d.rem;
-}
-
-//-----------------------------------------------------------------------------
-static inline
-Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan )
-{
-  return chan;// +
-  //fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
-}
-
-//-----------------------------------------------------------------------------
-Int_t TSBSSimDecoder::PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const
-{
-  // Return index of digitized strip correspomding to hardware channel
-  // (crate,slot,chan)
-
-  if( fPMTMap.empty() )
-    return -1;
-
-  PMTMap_t::const_iterator found = fPMTMap.find( MakeROCKey(crate,slot,chan) );
-  if( found == fPMTMap.end() )
-    return -1;
-
-  return found->second;
-}
-*/
-
-//-----------------------------------------------------------------------------
-static inline Int_t NumberOfSetBits( UInt_t v )
-{
-  // Count number of bits set in 32-bit integer. From
-  // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
-
-  v = v - ((v >> 1) & 0x55555555);
-  v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-  return (((v + (v >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
-}
 
 //-----------------------------------------------------------------------------
 #if ANALYZER_VERSION_CODE >= ANALYZER_VERSION(1,6,0)
@@ -197,10 +142,15 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   // Local copy of evbuffer pointer, used in GetMCHitInfo
   buffer = evbuffer;
 
+  if(!fTreeIsSet){
+    std::cerr << "SBSSimDecoder Tree not initialized correctly - exiting" << std::endl;
+    return HED_FATAL;
+  }
   // Cast the evbuffer pointer back to exactly the event type that is present
   // in the input file (in TSBSSimFile). The pointer-to-unsigned integer is
   // needed compatibility with the standard decoder.
-  const TSBSSimEvent* simEvent = reinterpret_cast<const TSBSSimEvent*>(buffer);
+  //const TSBSSimEvent* simEvent = reinterpret_cast<const TSBSSimEvent*>(buffer);
+  fTree->GetEntry(GetEvNum());
   
   Int_t ret = HED_OK;
   if (first_decode || fNeedInit) {
@@ -227,11 +177,11 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   event_length = 0;
   
   event_type = 1;
-  event_num = simEvent->fEvtID;
+  //event_num = simEvent->fEvtID;
   recent_event = event_num;
 
   // Event weight
-  fWeight = simEvent->fWeight;
+  //fWeight = simEvent->fWeight;
 
   //
   if( fDoBench ) fBench->Begin("physics_decode");
@@ -241,6 +191,7 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   
   // We must check at least once which detectors are enabled
   // before we try to load up data for that detector
+  /*
   if(!fCheckedForEnabledDetectors)
     CheckForEnabledDetectors();
 
@@ -261,7 +212,6 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     // what would this function need ? name (or CPS/SPC) +detID of det, and map ???? 
     // go for it ?
     // OK, faisons l'exercise bete de copier en adaptant pour e.g. CDet brouillon
-    /*
     if((*it).fDetID == CDET_UNIQUE_DETID && (*it).fData.size() > 0) { // 
       int mod =  (*it).fChannel;
       //This should be *general* and work for *every* subsystem
@@ -282,7 +232,6 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 		  << ", C: " << chan << ", I: " << (*it).fData[2] << std::endl;
       }
     }
-    */
     
   }
 
@@ -307,10 +256,12 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       //    it->second.data(),&(it->second.back()) );
     }
   }
+  */
 
   return HED_OK;
 }
 
+//Utilities
 /*
 Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname, 
 					  int& chanperslot, int& slotpercrate, 
@@ -329,8 +280,9 @@ Int_t TSBSSimDecoder::RetrieveDetMapParam(const char* detname,
 */
 
 Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
-    std::vector<UInt_t> > &map, TDetInfo &detinfo,
-    TSBSSimEvent::DetectorData detdata)
+				    std::vector<UInt_t> > &map, 
+				    const std::string detname, digsim_tree* tree)
+//TDetInfo &detinfo,  TSBSSimEvent::DetectorData detdata)
       //const char *detname, TSBSSimEvent::DetectorData detdata, const int detid)
 {
   //TDetInfo detinfo = fManager->GetDetInfo(detname);
@@ -341,13 +293,123 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
 //				    const int chanperslot, const int slotpercrate, 
 //				    const int firstcrate, const int firstslot)
 //{
-  int detid = detinfo.DetUniqueId();
-  Int_t crate, slot;
-  unsigned int nwords = 0;
-  unsigned short data_type = 0, chan = 0, chan_mult = 0;
+  //int detid = detinfo.DetUniqueId();
+  Int_t crate, slot, chan;
+  //unsigned int nwords = 0;
+  //unsigned short data_type = 0, chan = 0, chan_mult = 0;
   int lchan;
   SimEncoder::mpd_data tmp_mpd;
-
+  
+  //This should be *general* and work for *every* subsystem
+  // Loop over all raw data in this event
+  UInt_t j = 0;
+  //FIXME: we don't want that, I just set it up this way for the sake of going forward
+  if(strcmp(detname.c_str(), "sbs.hcal")==0){
+    while(j<fTree->SampHitDataDet[detname]->nhits){
+      lchan = (int)fTree->SampHitDataDet[detname]->chan->at(j);
+      ChanToROC(detname, lchan, crate, slot, chan);
+      
+      Decoder::THaSlotData *sldat = 0;
+      if( crate >= 0 || slot >=  0 ) {
+	sldat = crateslot[idx(crate,slot)];
+      }
+      
+      if(sldat) {
+        std::vector<UInt_t> *myev = &(map[sldat]);
+	if(fTree->SampHitDataDet[detname]->adc->at(j)>-1.e5){//these are a bunch of ADC samples
+	  for(uint i = 0; i<fTree->SampHitDataDet[detname]->dataword->at(j); i++){
+	    myev->push_back((fTree->SampHitDataDet[detname]->samps_datawords->at(j)).at(i));
+	  }
+	}else{//this is a TDC word
+	  myev->push_back(fTree->HitDataDet[detname]->dataword->at(j));
+	}
+        // First, re-encode the proper channel info into the header
+	//if()
+        //myev->push_back(fTree->SampHitDataDet[detname]->dataword->at(j));
+	//TSBSSimDataEncoder::EncodeHeader(data_type,chan,nwords));
+        //for(unsigned int k = 0; k < nwords; k++) {
+	//myev->push_back(detdata.fData[j++]);
+        //}
+      } else {
+        std::cerr << "Yikes!! No data for " << detname.c_str()
+	  //<< " (mod=" << mod << ") in c: "
+		  << crate << " s: " << slot << " c: " << chan
+		  << ", lchan: " << lchan << endl;
+	//<< ", mult: " << chan_mult
+          //<< " size: " << detdata.() << ", j: " << j <<", nwords: "
+          //<< nwords << std::endl;
+      }
+    }
+  }else if(detname.find("gem")!=std::string::npos){
+    /*
+    while(j<fTree->GEMDataDet[detname]->nhits){
+      while(i<fTree->GEMDataDet[detname]->nwords->at(j)){
+	//lchan = (int)fTree->SampHitDataDet[detname]->chan->at(j);
+	// quid of plane/module/proj ???
+	lchan = ((int)fTree->GEMDataDet[detname]->strip->at(j)).at(i);
+	ChanToROC(detname, lchan, crate, slot, chan);
+	
+	Decoder::THaSlotData *sldat = 0;
+	if( crate >= 0 || slot >=  0 ) {
+	  sldat = crateslot[idx(crate,slot)];
+	}
+	
+	if(sldat) {
+	  std::vector<UInt_t> *myev = &(map[sldat]);
+	  for(int i = 0; i<fTree->GEMDataDet[detname]->dataword->at(j); i++){
+	    myev->push_back((fTree->GEMDataDet[detname]->samps_adcs->at(j)).at(i));
+	  }
+	  // First, re-encode the proper channel info into the header
+	  //if()
+	  //myev->push_back(fTree->SampHitDataDet[detname]->dataword->at(j));
+	  //TSBSSimDataEncoder::EncodeHeader(data_type,chan,nwords));
+	  //for(unsigned int k = 0; k < nwords; k++) {
+	  //myev->push_back(detdata.fData[j++]);
+	  //}
+	} else {
+	  std::cerr << "Yikes!! No data for " << detname.c_str()
+	    //<< " (mod=" << mod << ") in c: "
+		    << crate << " s: " << slot << " c: " << chan
+		    << ", lchan: " << lchan << endl;
+	  //<< ", mult: " << chan_mult
+          //<< " size: " << detdata.() << ", j: " << j <<", nwords: "
+          //<< nwords << std::endl;
+	}
+      }//end loop on 
+    }//end loop on "hits"
+    */
+  }else{
+    while(j<fTree->HitDataDet[detname]->nhits){
+      lchan = (int)fTree->HitDataDet[detname]->chan->at(j);
+      ChanToROC(detname, lchan, crate, slot, chan);
+      
+      Decoder::THaSlotData *sldat = 0;
+      if( crate >= 0 || slot >=  0 ) {
+	sldat = crateslot[idx(crate,slot)];
+      }
+      
+      if(sldat) {
+        std::vector<UInt_t> *myev = &(map[sldat]);
+        // First, re-encode the proper channel info into the header
+	//if(fTree->HitDataDet[detname]->adc.size()==0)
+        myev->push_back(fTree->HitDataDet[detname]->dataword->at(j));
+	//TSBSSimDataEncoder::EncodeHeader(data_type,chan,nwords));
+        //for(unsigned int k = 0; k < nwords; k++) {
+	//myev->push_back(detdata.fData[j++]);
+        //}
+      } else {
+        std::cerr << "Yikes!! No data for " << detname.c_str()
+	  //<< " (mod=" << mod << ") in c: "
+		  << crate << " s: " << slot << " c: " << chan
+		  << ", lchan: " << lchan << endl;
+	//<< ", mult: " << chan_mult
+          //<< " size: " << detdata.() << ", j: " << j <<", nwords: "
+          //<< nwords << std::endl;
+      }
+    }
+  }
+  
+  /*
   if(detdata.fDetID == detid && detdata.fData.size() > 1) { // Data to process
     int mod =  detdata.fChannel;
     //This should be *general* and work for *every* subsystem
@@ -408,19 +470,124 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
       }
     }
   }
+  */
 
   return HED_OK;
+}
+
+void TSBSSimDecoder::SetDetMapParam(const std::string detname, int cps, int spc, int fs, int fc)
+{
+  fChansPerSlotDetMap[detname] = cps;
+  fSlotsPerCrateDetMap[detname] = spc;
+  fFirstSlotDetMap[detname] = fs;
+  fFirstCrateDetMap[detname] = fc;
 }
 
 
 void TSBSSimDecoder::CheckForEnabledDetectors()
 {
-  fDetectors = fManager->GetAllDetInfo();
+  //fDetectors = fManager->GetAllDetInfo();
   if(fDebug>0) {
     for(size_t i = 0; i < fDetectors.size(); i++) {
-      std::cout << "Found detector: " << fDetectors[i].DetFullName() << ", ID: "
-        << fDetectors[i].DetUniqueId() << std::endl;
+      std::cout << "Found detector: " << fDetectors[i].c_str() << endl;
+      //std::cout << "Found detector: " << fDetectors[i].DetFullName() << ", ID: "
+      //<< fDetectors[i].DetUniqueId() << std::endl;
     }
   }
   fCheckedForEnabledDetectors = true;
+}
+
+void TSBSSimDecoder::SetTree(TTree *t)
+{
+  if(t==0)return;
+  fTree = new digsim_tree(t);
+  if(fTree==0)return;
+  fTreeIsSet = true;
+}
+
+void TSBSSimDecoder::AddDetector(std::string detname)
+{
+  fDetectors.push_back(detname);
+}
+
+void TSBSSimDecoder::ChanToROC(const std::string detname, Int_t h_chan,
+			       Int_t& crate, Int_t& slot, Int_t& chan )const 
+{
+  // Convert location parameters (row, col, chan) of the given Channel
+  // to hardware channel (crate,slot,chan)
+  // The (crate,slot,chan) assignment must match the detmap definition in
+  // the database!  See TreeSearch/dbconvert.cxx
+  // In the case of GRINCH/RICH: 
+  // crate = GTP; slot = VETROC; chan = PMT. (NINOs are "transparent", in a similar way to the MPDs)
+  int CPS = fChansPerSlotDetMap.at(detname);
+  int SPC = fSlotsPerCrateDetMap.at(detname);
+  int FS = fFirstSlotDetMap.at(detname);
+  int FC = fFirstCrateDetMap.at(detname);
+  
+  //div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  div_t d = div( h_chan, CPS );
+  slot = d.quot;
+  chan = d.rem;
+
+  d = div( slot, SPC );
+  crate = d.quot+FC;
+  slot  = d.rem+FS;
+}
+/*
+//-----------------------------------------------------------------------------
+static inline
+void PMTtoROC( Int_t h_chan,
+	       Int_t& crate, Int_t& slot, Int_t& chan )
+{
+  // Convert location parameters (row, col, chan) of the given PMT
+  // to hardware channel (crate,slot,chan)
+  // The (crate,slot,chan) assignment must match the detmap definition in
+  // the database!  See TreeSearch/dbconvert.cxx
+  // In the case of GRINCH/RICH: 
+  // crate = GTP; slot = VETROC; chan = PMT. (NINOs are "transparent", in a similar way to the MPDs)
+  
+  //div_t d = div( h_chan, fManager->GetChanPerSlot() );
+  div_t d = div( h_chan, 1 );
+  slot = d.quot;
+  chan = d.rem;
+
+  d = div( slot, 1 );
+  crate = d.quot;
+  slot  = d.rem;
+}
+
+//-----------------------------------------------------------------------------
+static inline
+Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan )
+{
+  return chan;// +
+  //fManager->GetChanPerSlot()*( slot + fManager->GetSlotPerCrate()*crate );
+}
+
+//-----------------------------------------------------------------------------
+Int_t TSBSSimDecoder::PMTfromROC( Int_t crate, Int_t slot, Int_t chan ) const
+{
+  // Return index of digitized strip correspomding to hardware channel
+  // (crate,slot,chan)
+
+  if( fPMTMap.empty() )
+    return -1;
+
+  PMTMap_t::const_iterator found = fPMTMap.find( MakeROCKey(crate,slot,chan) );
+  if( found == fPMTMap.end() )
+    return -1;
+
+  return found->second;
+}
+*/
+
+//-----------------------------------------------------------------------------
+static inline Int_t NumberOfSetBits( UInt_t v )
+{
+  // Count number of bits set in 32-bit integer. From
+  // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+
+  v = v - ((v >> 1) & 0x55555555);
+  v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+  return (((v + (v >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
 }
