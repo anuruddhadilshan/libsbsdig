@@ -58,4 +58,6 @@ enum det_type{
   kGEM
 };
 
+const std::string kProj_str[2] = {"x", "y"};
+
 #endif//__GEMC_TYPES_H

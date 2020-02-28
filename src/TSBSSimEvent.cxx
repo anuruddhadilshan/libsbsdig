@@ -14,6 +14,7 @@
 #include "TMath.h"
 #include "TSBSSimAuxi.h"
 #include "TSBSDBManager.h"
+#include "TGEMSBSDBManager.h"
 
 #include <iostream>
 
@@ -45,6 +46,9 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   fNSignal = 0;
   fDetectorData.clear();
   fSimDetectorData.clear();
+
+  TGEMSBSDBManager* GEMDBManager;// = DetInfo_i.GetGEMDB();
+  std::string fullgemname;
   
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
@@ -72,7 +76,18 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     switch(DetInfo_i.DetType()){
     case(kGEM):
       fSimGEMHitMCOutData[fulldetname].Clear();
-      fSimGEMDigOutData[fulldetname].Clear();
+      //fSimGEMDigOutData[fulldetname].Clear();
+      GEMDBManager = DetInfo_i.GetGEMDB();
+      for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
+      	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
+      	  for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
+      	    fullgemname = Form("%s.p%d.m%d.%s", 
+      			       fulldetname.c_str(), 
+      			       ipl+1, imod+1, kProj_str[ipr].c_str());
+	    fSimDigSampOutData[fullgemname].Clear();
+      	  }
+      	}
+      }
       break;
     case(kHCal):
       fSimHitMCOutData[fulldetname].Clear();

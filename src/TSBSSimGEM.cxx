@@ -276,11 +276,15 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
     return;
   }
   int plane, module;
+  std::string planename;
   fGEMDigi->SetTreeStrips();
-  TSBSSimEvent::DetectorData data;
-  data.fDetID = UniqueDetID();
+  std::vector<uint32_t> data;
+  std::vector<Int_t> data_dec;
+  Int_t ADCsum = 0;
+  //TSBSSimEvent::DetectorData data;
+  //data.fDetID = UniqueDetID();
   // Here data.fChannel corresponds to plane
-  data.fChannel = 0;
+  //data.fChannel = 0;
   SimEncoder::mpd_data mpd_data;
   mpd_data.channel = 0;
   Int_t adc = 0;
@@ -318,10 +322,12 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
+  /*
   event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.resize(fGEMDigi->GetNChambers());
   event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.resize(fGEMDigi->GetNChambers());
   event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.resize(fGEMDigi->GetNChambers());
   event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.resize(fGEMDigi->GetNChambers());
+  */
   
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
     fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
@@ -330,7 +336,17 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       mpd_data.nsamples = fGEMDigi->GetNSamples(ich,ip);
       // This is the total number of APV25's we'd need
       nstrip = fGEMDigi->GetNStrips(ich,ip);
-      if(fDebug>=4)cout << "ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
+      // two options on how to name the plane here: 
+      // plane and module info specifically, and then actual strip number
+      planename = Form("%s.p%d.m%d.%s", 
+		       fDetInfo.DetFullName().c_str(), 
+		       plane+1, module+1, kProj_str[ip].c_str());
+      // ... or just use plane, and then strip = strip + nstrips*nmodules
+      //planename = Form("%s.%d.%s", 
+      //fDetInfo.DetFullName().c_str(), 
+      //plane+1, kProj_str[ip].c_str());
+      if(fDebug>=4)cout << planename.c_str() << " ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
+      
       // Break up the data in number of strips that fit in an APV25
       // (128 channels). I found that TGEMSBSSimDigitization somehow gets one
       // extra strip that seems unreasonable, since I doubt we'd get one
@@ -338,6 +354,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       // not the intent and skip anything with only one strip left.
       // => Good call! EF
       strip = 0;
+      /*
       event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
       event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(plane);
       event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(module);
@@ -345,15 +362,21 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(ich);
       event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(fGEMDigi->GetNStrips(ich,ip)*fGEMDigi->GetNSamples(ich,ip));
       //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
-      
+      */
       while(nstrip > 1) {
-        data.fData.clear();
         mpd_data.samples.clear();
         mpd_data.nstrips = nstrip >= SBS_APV25_NCH ? SBS_APV25_NCH : nstrip;
         nstrip -= mpd_data.nstrips;
         mpd_data.samples.resize(mpd_data.nsamples*mpd_data.nstrips);
         idx = 0;
         for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
+	  ADCsum = 0;
+	  data.clear();
+	  data_dec.clear();
+	  
+	  event.fSimDigSampOutData[planename].fNHits++;
+	  event.fSimDigSampOutData[planename].fChannel.push_back(strip);
+	  event.fSimDigSampOutData[planename].fDataWord.push_back(mpd_data.nsamples);
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
             adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
             if(adc>0)
@@ -361,24 +384,38 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
             // Negative values convert poorly to unsigned integers, so just
             // set them to zero if the actual ADC is negative
             mpd_data.samples[idx++] = (adc>0 ? adc : 0);
-	    
+	    ADCsum+=adc;
+	    data.push_back(adc);
+	    data_dec.push_back(adc);
 	    //TODO: replace that stuff by a fill function...
+	    /*
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.at(ich).push_back(strip);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.at(ich).push_back(s);
 	    //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.at(ich).push_back(adc);
 	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.at(ich).push_back(adc);
+	    */
+	    
           }
-        }
+	  event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
+	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
+	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	}
         fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
-        CopyEncodedData(fEncoderMPD,mpd_data.adc_id++,data.fData);
+        CopyEncodedData(fEncoderMPD,mpd_data.adc_id++,data);
 	//event.fDetectorData.push_back(data);
       }
-      data.fChannel++;
+      //data.fChannel++;
     }
   }
   if(fDebug>=3){
     cout << fDetInfo.DetFullName() << endl;
-    event.fSimGEMDigOutData[fDetInfo.DetFullName()].CheckSize(false, true, true);
+    for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
+      for(UInt_t ip = 0; ip < fGEMDigi->GetNPlanes(ich); ip++) {
+	fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
+	
+      }
+    }
+    //event.fSimGEMDigOutData[fDetInfo.DetFullName()].CheckSize(false, true, true);
   }
 }
 

@@ -8,6 +8,7 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TChainElement.h>
+#include "TGEMSBSDBManager.h"
 
 TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
   fMarkInterval(0), fVerbose(1)
@@ -35,6 +36,9 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
   fOutTree->Branch("NSignal",&fEvent->fNSignal);
   
   cout << "declared event info for the output tree" << endl;
+  
+  TGEMSBSDBManager* GEMDBManager;
+  std::string fullgemname;
   
   const std::vector<TDetInfo> AllDetInfo = fManager->GetAllDetInfo();
   for(uint i = 0; i<AllDetInfo.size(); i++){
@@ -66,6 +70,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.simhit.starty", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fStartY);
       
       //digitized info
+      /*
       fOutTree->Branch(Form("%s.hit.nhits", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s.hit.plane", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fPlane);
       fOutTree->Branch(Form("%s.hit.module", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fModule);
@@ -77,7 +82,26 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.hit.samp", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fSamp);
       fOutTree->Branch(Form("%s.hit.samps_adc", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC_samps);
       //fOutTree->Branch(Form("%s.hit.samps_datawords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord_samps);
-      //FIXME: find a way here to output GEM data with SimDigSampOutData
+      */
+      GEMDBManager = DetInfo_i.GetGEMDB();
+      for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
+	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
+	  for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
+	    fullgemname = Form("%s.p%d.m%d.%s", 
+			       fulldetname.c_str(), 
+			       ipl+1, imod+1, kProj_str[ipr].c_str());
+	    if(fDebug>=3)cout << fullgemname.c_str() << endl;
+	    fOutTree->Branch(Form("%s.hit.nhits", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNHits);
+	    fOutTree->Branch(Form("%s.hit.chan", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fChannel);
+	    fOutTree->Branch(Form("%s.hit.nwords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
+	    fOutTree->Branch(Form("%s.hit.adcsum", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC);
+	    fOutTree->Branch(Form("%s.hit.samps_adc", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC_samps);
+	    fOutTree->Branch(Form("%s.hit.samps_datawords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord_samps);
+
+	  }
+	}
+      }
+      //}
       break;
     case(kHCal):
       //MC info

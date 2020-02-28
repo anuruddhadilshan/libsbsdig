@@ -104,7 +104,7 @@ public:
   std::map< std::string, simgemhitmc_outdata > fSimGEMHitMCOutData;
   std::map< std::string, simdig_outdata > fSimDigOutData;
   std::map< std::string, simdigsamp_outdata > fSimDigSampOutData;
-  std::map< std::string, simgemdig_outdata > fSimGEMDigOutData;
+  //std::map< std::string, simgemdig_outdata > fSimGEMDigOutData;
   /*
     map<string, TSBSDetOutput> DetData;
     map<string,TSBSSimHCaloutput> HCaldata;
