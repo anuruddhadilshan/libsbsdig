@@ -191,13 +191,19 @@ Int_t TSBSSimDecoder::DoLoadEvent(const Int_t* evbuffer )
   
   // We must check at least once which detectors are enabled
   // before we try to load up data for that detector
-  /*
   if(!fCheckedForEnabledDetectors)
     CheckForEnabledDetectors();
 
   std::vector<std::map<Decoder::THaSlotData*, std::vector<UInt_t> > > detmaps;
   detmaps.resize(fDetectors.size());
 
+  //for(std::vector<std::string>::const_iterator it = fDetectors.begin(); 
+  //it != fDetectors.end(); ++it){
+  //for(size_t d = 0; d < fDetectors.size(); d++) {
+  //LoadDetector(detmaps[d], fDetectors[], );
+  //}
+
+  /*
   // Loop through the TSBSSimEvent vector and load the data onto
   // all declared detectors.
   for(std::vector<TSBSSimEvent::DetectorData>::const_iterator it =
@@ -341,43 +347,37 @@ Int_t TSBSSimDecoder::LoadDetector( std::map<Decoder::THaSlotData*,
       }
     }
   }else if(detname.find("gem")!=std::string::npos){
-    /*
-    while(j<fTree->GEMDataDet[detname]->nhits){
-      while(i<fTree->GEMDataDet[detname]->nwords->at(j)){
-	//lchan = (int)fTree->SampHitDataDet[detname]->chan->at(j);
-	// quid of plane/module/proj ???
-	lchan = ((int)fTree->GEMDataDet[detname]->strip->at(j)).at(i);
-	ChanToROC(detname, lchan, crate, slot, chan);
-	
-	Decoder::THaSlotData *sldat = 0;
-	if( crate >= 0 || slot >=  0 ) {
-	  sldat = crateslot[idx(crate,slot)];
+    while(j<fTree->SampHitDataDet[detname]->nhits){
+      lchan = (int)fTree->SampHitDataDet[detname]->chan->at(j);
+      ChanToROC(detname, lchan, crate, slot, chan);
+      
+      Decoder::THaSlotData *sldat = 0;
+      if( crate >= 0 || slot >=  0 ) {
+	sldat = crateslot[idx(crate,slot)];
+      }
+      
+      if(sldat) {
+        std::vector<UInt_t> *myev = &(map[sldat]);
+	for(uint i = 0; i<fTree->SampHitDataDet[detname]->dataword->at(j); i++){
+	  myev->push_back((fTree->SampHitDataDet[detname]->samps_datawords->at(j)).at(i));
 	}
-	
-	if(sldat) {
-	  std::vector<UInt_t> *myev = &(map[sldat]);
-	  for(int i = 0; i<fTree->GEMDataDet[detname]->dataword->at(j); i++){
-	    myev->push_back((fTree->GEMDataDet[detname]->samps_adcs->at(j)).at(i));
-	  }
-	  // First, re-encode the proper channel info into the header
-	  //if()
-	  //myev->push_back(fTree->SampHitDataDet[detname]->dataword->at(j));
-	  //TSBSSimDataEncoder::EncodeHeader(data_type,chan,nwords));
-	  //for(unsigned int k = 0; k < nwords; k++) {
-	  //myev->push_back(detdata.fData[j++]);
-	  //}
-	} else {
-	  std::cerr << "Yikes!! No data for " << detname.c_str()
-	    //<< " (mod=" << mod << ") in c: "
-		    << crate << " s: " << slot << " c: " << chan
-		    << ", lchan: " << lchan << endl;
-	  //<< ", mult: " << chan_mult
+        // First, re-encode the proper channel info into the header
+	//if()
+        //myev->push_back(fTree->SampHitDataDet[detname]->dataword->at(j));
+	//TSBSSimDataEncoder::EncodeHeader(data_type,chan,nwords));
+        //for(unsigned int k = 0; k < nwords; k++) {
+	//myev->push_back(detdata.fData[j++]);
+        //}
+      } else {
+        std::cerr << "Yikes!! No data for " << detname.c_str()
+	  //<< " (mod=" << mod << ") in c: "
+		  << crate << " s: " << slot << " c: " << chan
+		  << ", lchan: " << lchan << endl;
+	//<< ", mult: " << chan_mult
           //<< " size: " << detdata.() << ", j: " << j <<", nwords: "
           //<< nwords << std::endl;
-	}
-      }//end loop on 
-    }//end loop on "hits"
-    */
+      }
+    }
   }else{
     while(j<fTree->HitDataDet[detname]->nhits){
       lchan = (int)fTree->HitDataDet[detname]->chan->at(j);
