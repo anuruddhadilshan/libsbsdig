@@ -118,8 +118,6 @@ void digsim_tree::Init(TTree *tree)
   // GEMs
   // bb_gem_simhits = new GEMSimHit_t();
   // SetupDetBranch(bb_hodo_simhits, "bb.gem.simhit");
-  // bb_gem_hits = new GEMData_t();
-  // SetupDetBranch(bb_hodo_hits, "bb.gem.hit");
   GEMSimHitDet["bb.gem"] = new GEMSimHit_t();
   SetupDetBranch(GEMSimHitDet["bb.gem"], "bb.gem.simhit");
   std::string fullgemname;

@@ -70,19 +70,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.simhit.starty", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fStartY);
       
       //digitized info
-      /*
-      fOutTree->Branch(Form("%s.hit.nhits", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fNHits);
-      fOutTree->Branch(Form("%s.hit.plane", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fPlane);
-      fOutTree->Branch(Form("%s.hit.module", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fModule);
-      fOutTree->Branch(Form("%s.hit.proj", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fProj);
-      //fOutTree->Branch(Form("%s.Channel", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fChannel);
-      fOutTree->Branch(Form("%s.hit.nwords", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fDataWord);
-      //fOutTree->Branch(Form("%s.ADC", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC);
-      fOutTree->Branch(Form("%s.hit.strip", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fStrip);
-      fOutTree->Branch(Form("%s.hit.samp", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fSamp);
-      fOutTree->Branch(Form("%s.hit.samps_adc", fulldetname.c_str()),&fEvent->fSimGEMDigOutData[fulldetname.c_str()].fADC_samps);
-      //fOutTree->Branch(Form("%s.hit.samps_datawords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord_samps);
-      */
       GEMDBManager = DetInfo_i.GetGEMDB();
       for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
 	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
@@ -157,9 +144,6 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
     }
     
   }
-  
-  //fOutTree->Branch("SimDetectorData",&fEvent->fSimDetectorData);
-  //fOutTree->Branch("DetectorData",&fEvent->fSimDetectorData);
 }
 
 TSBSSimDigitizer::~TSBSSimDigitizer()

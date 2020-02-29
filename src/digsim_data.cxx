@@ -92,20 +92,4 @@ namespace SBSDigSim{
     return (ret ==0);
   }
   
-  bool GEMData_t::SetupBranches(TTree *tree, const char* prefix)
-  {
-    int ret = 0;
-    ret += SetupBranch(tree,prefix,"nhits", nhits);
-    ret += SetupBranch(tree,prefix,"plane", plane);
-    ret += SetupBranch(tree,prefix,"module", module);
-    ret += SetupBranch(tree,prefix,"proj", proj);
-    ret += SetupBranch(tree,prefix,"nwords", nwords);
-    ret += SetupBranch(tree,prefix,"strip", strip);
-    ret += SetupBranch(tree,prefix,"samp", samp);
-    ret += SetupBranch(tree,prefix,"samps_adc", samps_adc);
-    return (ret ==0);
-  }
-  
-  
-  
 }

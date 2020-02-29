@@ -161,26 +161,6 @@ class simdigsamp_outdata: public simdig_outdata{
 		 bool print = false);
 };
 
-class simgemdig_outdata: public simdigsamp_outdata{
- public:
-  simgemdig_outdata();
-  ~simgemdig_outdata();
-  
-  std::vector<Short_t> fPlane;
-  std::vector<Short_t> fModule;
-  std::vector<Short_t> fProj;
-  //varaibles below are for disambiguation, since to save some space while keeping it simple, we store all ADC values/datawords in a 1D array;
-  // it's not optimal, but one has to make compromises between ease to read in a browser and saving space
-  std::vector< std::vector<Short_t> > fStrip;
-  std::vector< std::vector<Short_t> > fSamp;
-  
-  void Clear();
-  bool CheckSize(bool ignore_adc = false, 
-		 bool ignore_tdc = false, 
-		 bool print = false);
-};
-
-
 
 
 #endif // TSBSSIMDATA_H

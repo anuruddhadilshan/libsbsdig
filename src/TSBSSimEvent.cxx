@@ -55,6 +55,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
     
+    //clean the container for the MC info
     NSimDetHits[fulldetname] = 0;
     SimDetChannel[fulldetname].clear();
     SimDetSource[fulldetname].clear();
@@ -63,20 +64,11 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     SimDetTime[fulldetname].clear();
     SimDetLeadTime[fulldetname].clear();
     SimDetTrailTime[fulldetname].clear();
-    
-    /*
-    NDetHits[fulldetname] = 0;
-    DetChannel[fulldetname].clear();
-    DetDataWord[fulldetname].clear();
-    DetADC[fulldetname].clear();
-    DetTDC_L[fulldetname].clear();
-    DetTDC_T[fulldetname].clear();
-    */
-    
+
+    //Clean the containers for the output data
     switch(DetInfo_i.DetType()){
     case(kGEM):
       fSimGEMHitMCOutData[fulldetname].Clear();
-      //fSimGEMDigOutData[fulldetname].Clear();
       GEMDBManager = DetInfo_i.GetGEMDB();
       for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
       	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
