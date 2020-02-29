@@ -48,8 +48,11 @@ public :
    Int_t           fCurrent; //!current Tree number in a TChain
    exp_type        fExpt;    // Choose experiment type: defined in "g4sbs_types.h"
    bool            fPythia;// needed to turn on/off the reading of the pythia variables
-   bool            fEcalBox;// needed to turn on/off the reading of the ECAL_box data
-   bool            fHcalBox;// needed to turn on/off the reading of the HCAL_box data
+   // EPAF: those were inherited from an attempt of "standard tree" 
+   // for the "raw" analysis of g4sbs files
+   // these have nothing to do with digitization
+   // bool            fEcalBox;// needed to turn on/off the reading of the ECAL_box data
+   // bool            fHcalBox;// needed to turn on/off the reading of the HCAL_box data
 
    // Declaration of leaf types
    
@@ -96,17 +99,8 @@ public :
    Int_t           ev_hadr;
    Int_t           ev_earmaccept;
    Int_t           ev_harmaccept;
-   /*
-   Double_t        gen_thbb;
-   Double_t        gen_thsbs;
-   Double_t        gen_dbb;
-   Double_t        gen_dsbs;
-   Double_t        gen_dhcal;
-   Double_t        gen_drich;
-   Double_t        gen_dsbstrkr;
-   Double_t        gen_Ebeam;
-   */
-
+   
+   // TODO: do some cleaning in here: I don't think we want ecal box data structures.
    // GEM variables
    std::vector<gem_branch> GEMs;
 
@@ -133,7 +127,7 @@ public :
    TSBSGeant4::CalData_t  Harm_CDET_Scint;
 
    // GEp Electromagnetic calorimeter hits
-   TSBSGeant4::CalData_t  Earm_ECAL_box;
+   // TSBSGeant4::CalData_t  Earm_ECAL_box;
    TSBSGeant4::ECalData_t Earm_ECAL;
    TSBSGeant4::CalData_t  Earm_ECalTF1;
 
@@ -149,7 +143,7 @@ public :
    // An example for how to simplify tree objects
    // TODO: Don't hard code detectors here, but rather read them in
    // through a database if possible
-   TSBSGeant4::CalData_t      hcalbox;
+   // TSBSGeant4::CalData_t      hcalbox;
    TSBSGeant4::CalData_t      hcalscint;
    TSBSGeant4::ECalData_t     hcal;
    TSBSGeant4::ECalPartData_t hcalpart;
@@ -248,7 +242,9 @@ public :
    TBranch        *b_Primaries_phi;   //!
 
 
-   g4sbs_tree(TTree *tree=0, exp_type expt = kNeutronExp, bool pythia = false, bool ecalbox = false, bool hcalbox = false);
+   g4sbs_tree(TTree *tree=0, exp_type expt = kNeutronExp, bool pythia = false);
+   //, bool ecalbox = false, bool hcalbox = false);
+   // EPAF: We need to clean this. 
    virtual ~g4sbs_tree();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntries();

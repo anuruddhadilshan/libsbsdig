@@ -44,8 +44,8 @@ void TSBSSimEvent::Clear( const Option_t* opt )
   TString sopt(opt);
 
   fNSignal = 0;
-  fDetectorData.clear();
-  fSimDetectorData.clear();
+  //fDetectorData.clear();
+  //fSimDetectorData.clear();
 
   TGEMSBSDBManager* GEMDBManager;// = DetInfo_i.GetGEMDB();
   std::string fullgemname;

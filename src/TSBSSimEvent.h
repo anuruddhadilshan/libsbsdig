@@ -48,8 +48,7 @@ public:
   Double_t  fWeight;              // Event weight
   Int_t     fNSignal;             // Number of clusters from trigger track (signal)
   
-  //TODO: introduce data arrays that depend on which detectors are involved
-  
+  /*
   struct SimDetectorData {
     //Short_t fDetID;  // Source detector number
     Short_t fDetID;  // Source detector number
@@ -68,7 +67,7 @@ public:
   };
   std::vector<DetectorData> fDetectorData;
   std::vector<SimDetectorData> fSimDetectorData;
-  
+  */
   std::map< std::string, Int_t >         NSimDetHits;
   std::map< std::string, std::vector<Short_t> >  SimDetSource;
   std::map< std::string, std::vector<Short_t> >  SimDetChannel;

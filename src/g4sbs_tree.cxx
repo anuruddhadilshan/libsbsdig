@@ -7,7 +7,9 @@
 
 // g4sbs_tree constructor: the tree will be the 
 // the boolean is a flag to consider(true) or ignore(false) the ECal_box and HCal_box data
-g4sbs_tree::g4sbs_tree(TTree *tree, exp_type expt, bool pythia, bool ecalbox, bool have_hcalbox) : fChain(0) 
+g4sbs_tree::g4sbs_tree(TTree *tree, exp_type expt, bool pythia)
+//, bool ecalbox, bool have_hcalbox) 
+  : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -20,8 +22,8 @@ g4sbs_tree::g4sbs_tree(TTree *tree, exp_type expt, bool pythia, bool ecalbox, bo
    }
    fExpt = expt;
    fPythia = pythia;
-   fEcalBox = ecalbox;
-   fHcalBox = have_hcalbox;
+   // fEcalBox = ecalbox;
+   // fHcalBox = have_hcalbox;
    Init(tree);
 }
 
@@ -96,10 +98,9 @@ void g4sbs_tree::Init(TTree *tree)
    // I disabled this so that we can force the tree to check each
    // SetBranchStatus for matches.
    //fChain->SetMakeClass(1);
-
+   
+   //Setup "Event branch": can be useful
    fChain->SetBranchAddress("ev", &ev_count, &b_ev);
-   // This branch no longer exits in G4SBS
-   //fChain->SetBranchAddress("gen", &gen_thbb, &b_gen);
    
    //BigBite detector package: all expts except GEp
    if(fExpt==kNeutronExp || fExpt==kGEnRP || fExpt==kSIDIS || fExpt==kA1n){
@@ -108,41 +109,26 @@ void g4sbs_tree::Init(TTree *tree)
      
      SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
 
-     if(fEcalBox){
-       SetupDetBranch(Earm_ECAL_box, "Earm.BBCal.hit.nhits");
-
-       /*
-	 fChain->SetBranchAddress("Earm.BBCal.part.npart", &Earm_ECAL_box_part_npart, &b_Earm_ECAL_box_part_npart);
-	 fChain->SetBranchAddress("Earm.BBCal.part.PID", &Earm_ECAL_box_part_PID, &b_Earm_ECAL_box_part_PID);
-	 fChain->SetBranchAddress("Earm.BBCal.part.MID", &Earm_ECAL_box_part_MID, &b_Earm_ECAL_box_part_MID);
-	 fChain->SetBranchAddress("Earm.BBCal.part.TID", &Earm_ECAL_box_part_TID, &b_Earm_ECAL_box_part_TID);
-	 fChain->SetBranchAddress("Earm.BBCal.part.nbounce", &Earm_ECAL_box_part_nbounce, &b_Earm_ECAL_box_part_nbounce);
-	 fChain->SetBranchAddress("Earm.BBCal.part.hitindex", &Earm_ECAL_box_part_hitindex, &b_Earm_ECAL_box_part_hitindex);
-	 fChain->SetBranchAddress("Earm.BBCal.part.vx", &Earm_ECAL_box_part_vx, &b_Earm_ECAL_box_part_vx);
-	 fChain->SetBranchAddress("Earm.BBCal.part.vy", &Earm_ECAL_box_part_vy, &b_Earm_ECAL_box_part_vy);
-	 fChain->SetBranchAddress("Earm.BBCal.part.vz", &Earm_ECAL_box_part_vz, &b_Earm_ECAL_box_part_vz);
-	 fChain->SetBranchAddress("Earm.BBCal.part.px", &Earm_ECAL_box_part_px, &b_Earm_ECAL_box_part_px);
-	 fChain->SetBranchAddress("Earm.BBCal.part.py", &Earm_ECAL_box_part_py, &b_Earm_ECAL_box_part_py);
-	 fChain->SetBranchAddress("Earm.BBCal.part.pz", &Earm_ECAL_box_part_pz, &b_Earm_ECAL_box_part_pz);
-       */
-     }else{
-       SetupDetBranch(Earm_BBPS,    "Earm.BBPS.hit");
-       SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
-       SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
-       SetupDetBranch(Earm_BBSH,    "Earm.BBSH.hit");
-       SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
-     }
+     // if(fEcalBox){
+     //   SetupDetBranch(Earm_ECAL_box, "Earm.BBCal.hit.nhits");
+     // }else{
+     // SetupDetBranch(Earm_BBPS,    "Earm.BBPS.hit");
+     // SetupDetBranch(Earm_BBSH,    "Earm.BBSH.hit");
+     //}
+     SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
+     SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
+     SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
    }
    
    if(fExpt==kGEp){
      SetupDetBranch(Earm_CDET,"Earm.CDET.hit");
      SetupDetBranch(Earm_CDET_Scint,"Earm.CDET_Scint.hit");
-
-     if(fEcalBox){
-       SetupDetBranch(Earm_ECAL_box, "Earm.ECAL_box.hit.nhits");
-     }else{
-       SetupDetBranch(Earm_ECAL, "Earm.ECAL.hit");
-     }
+     
+     // if(fEcalBox){
+     //   SetupDetBranch(Earm_ECAL_box, "Earm.ECAL_box.hit.nhits");
+     // }else{
+     //   SetupDetBranch(Earm_ECAL, "Earm.ECAL.hit");
+     // }
      SetupDetBranch(Earm_ECalTF1, "Earm.ECalTF1.hit");
 
      // Focal plane polarimeters
@@ -176,13 +162,15 @@ void g4sbs_tree::Init(TTree *tree)
      
    if(fExpt!=kTDIS && fExpt!=kDVCS){
      // Example of simplified HCAL branch setup
-     if(fHcalBox){
-       SetupDetBranch(hcalbox,"Harm.HCAL_box.hit");
-     }else{
-       SetupDetBranch(hcal,"Harm.HCal.hit");
-       SetupDetBranch(hcalscint,"Harm.HCalScint.hit");
-       SetupDetBranch(hcalpart,"Harm.HCal");
-     }
+     // if(fHcalBox){
+     //   SetupDetBranch(hcalbox,"Harm.HCAL_box.hit");
+     // }else{
+     //   SetupDetBranch(hcal,"Harm.HCal.hit");
+     // }
+     SetupDetBranch(hcalscint,"Harm.HCalScint.hit");
+     // EPAF: for the time being, remove.
+     // we might reestablish it to turn on some test mode.
+     // SetupDetBranch(hcalpart,"Harm.HCal");
    }
    
    if(fExpt==kSIDIS || fExpt==kA1n || fExpt==kTDIS || fExpt==kDVCS){
