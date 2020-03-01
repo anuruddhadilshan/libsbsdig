@@ -122,8 +122,8 @@ void digsim_tree::Init(TTree *tree)
   SetupDetBranch(GEMSimHitDet["bb.gem"], "bb.gem.simhit");
   std::string fullgemname;
   for(int ipl = 0; ipl<5; ipl++){
-    int nmod = 3;
-    if(ipl==4)nmod = 4;
+    // int nmod = 3;
+    // if(ipl==4)nmod = 4;
     //for(int imod = 0; imod<nmod; imod++){
     for(int ipr = 0; ipr<2; ipr++){
       // fullgemname = Form("bb.gem.p%d.m%d.%s", 
