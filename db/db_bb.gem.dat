@@ -84,7 +84,8 @@ dig.bb.gem.crosstalk_strip_apart = 32
 
 #zero suppression and common mode
 dig.bb.gem.zerosup = 0
-dig.bb.gem.applycommonmode = 0
+dig.bb.gem.applycommonmode = 1
+dig.bb.gem.commonmode_array = 500.0 # probably more like 1200...
 
 
 #in here the time I understand

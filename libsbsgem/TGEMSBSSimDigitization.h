@@ -171,6 +171,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   void GetGEMData(TGEMSBSGEMSimHitData* gd);
   
   void SetTimeZero(double t0){fTimeZero = t0;}
+  Double_t CommonMode(UInt_t i_mpd);
   
   // APV cross talk parameters
   static Int_t    fDoCrossTalk;  //whether we want to do cross talk simulation

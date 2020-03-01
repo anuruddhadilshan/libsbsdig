@@ -288,6 +288,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   SimEncoder::mpd_data mpd_data;
   mpd_data.channel = 0;
   Int_t adc = 0;
+  UInt_t rawADC = 0;
   UInt_t nstrip = 0;
   UInt_t strip;
   mpd_data.adc_id = 0; // For now, increment with each APV25
@@ -385,7 +386,8 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
             // set them to zero if the actual ADC is negative
             mpd_data.samples[idx++] = (adc>0 ? adc : 0);
 	    ADCsum+=adc;
-	    data.push_back(adc);
+	    rawADC = (UInt_t)adc+fGEMDigi->CommonMode(mpd_data.mpd_id);
+	    data.push_back(rawADC);
 	    data_dec.push_back(adc);
 	    //TODO: replace that stuff by a fill function...
 	    /*

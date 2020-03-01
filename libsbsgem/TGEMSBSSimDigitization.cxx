@@ -204,7 +204,7 @@ TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
   : THaAnalysisObject(name, "GEM simulation digitizer"),
     fDoMapSector(false), fSignalSector(0), fDP(0), fdh(0), fNChambers(0), fNPlanes(0),
     fRNIon(0), //fOFile(0), fOTree(0), fEvent(0), 
-    fZeroSup(1.e38), fApplyCommonMode(false), fCommonModeArray(0),
+    fZeroSup(1.e38), fApplyCommonMode(false), 
     fManager(manager)
 {
   Init();
@@ -304,10 +304,11 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
   FILE* file = OpenFile (fManager->GetDBFileName().c_str(),date);
   if (!file) return kFileError;
   
+  fCommonModeArray.clear();
+  
   vector<Double_t>* offset = 0;
   vector<Double_t>* commonmode = 0;
   const char *prefix = Form("dig.%s",fPrefix);
-
   try{
     offset = new vector<Double_t>;
     commonmode = new vector<Double_t>;
@@ -352,7 +353,7 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 	{ "crosstalk_strip_apart",     &fNCStripApart,              kInt    },
 	{ "zerosup",                   &fZeroSup,                   kDouble , 0, 1},
 	{ "applycommonmode",           &fApplyCommonMode,           kInt    , 0, 1},
-	{ "commonmode_array",          &commonmode,                 kDoubleV, 0, 1},
+	{ "commonmode_array",          commonmode,                  kDoubleV, 0, 1},
 	{ 0 }
       };
     
@@ -361,15 +362,17 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
     if (err)
       return kInitError;
     
-    cout << fManager->GetNChamber() << "  " << offset->size() << endl;
+    cout << "Number of GEM chambers " << fManager->GetNChamber() << " number of time offsets " << offset->size() << endl;
     assert((Int_t)offset->size() == fManager->GetNChamber());
     for (UInt_t i=0; i<offset->size(); i++){
       fTriggerOffset.push_back(offset->at(i));
     }
     
+    //TODO: perform a check for the number of MPDs expected - and apply first element to all MPDs (i.e. only save first element) if not the case
     for (UInt_t i=0; i<commonmode->size(); i++){
       fCommonModeArray.push_back(commonmode->at(i));
     }
+    cout << " Common mode array size:  " << fCommonModeArray.size() << endl;
     
     
     delete offset;
@@ -1097,6 +1100,17 @@ TGEMSBSSimDigitization::PrintSamples() const
 	      cout << endl;
 	    }
     }
+}
+
+Double_t
+TGEMSBSSimDigitization::CommonMode(UInt_t i_mpd)
+{
+  if(fCommonModeArray.size() && fApplyCommonMode){
+    i_mpd = (i_mpd<fCommonModeArray.size() ? i_mpd: 0);
+    return fCommonModeArray[i_mpd];
+  }else{
+    return 0;
+  }
 }
 
 // Tree methods
