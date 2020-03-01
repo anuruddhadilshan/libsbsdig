@@ -124,15 +124,16 @@ void digsim_tree::Init(TTree *tree)
   for(int ipl = 0; ipl<5; ipl++){
     int nmod = 3;
     if(ipl==4)nmod = 4;
-    for(int imod = 0; imod<nmod; imod++){
-      for(int ipr = 0; ipr<2; ipr++){
-	fullgemname = Form("bb.gem.p%d.m%d.%s", 
-			   ipl+1, imod+1, kProj_str[ipr].c_str());
-	SampHitDataDet[fullgemname] = new SampHitData_t();
-	SetupDetBranch(SampHitDataDet[fullgemname], 
-		       Form("%s.hit", fullgemname.c_str()));
-      }
+    //for(int imod = 0; imod<nmod; imod++){
+    for(int ipr = 0; ipr<2; ipr++){
+      // fullgemname = Form("bb.gem.p%d.m%d.%s", 
+      // 			 ipl+1, imod+1, kProj_str[ipr].c_str());
+      fullgemname = Form("bb.gem.%d.%s", ipl+1, kProj_str[ipr].c_str());
+      SampHitDataDet[fullgemname] = new SampHitData_t();
+      SetupDetBranch(SampHitDataDet[fullgemname], 
+		     Form("%s.hit", fullgemname.c_str()));
     }
+    //}
   }
 }
 
