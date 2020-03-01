@@ -585,4 +585,18 @@ void TGEMSBSDBManager::GetPMfromGlobalPlaneNum(uint gplanenum,
 }
 
 
+UInt_t TGEMSBSDBManager::GetGlobalStripPlane(uint lstrip, int plane, int module, int proj)
+{
+  if (!CheckIndex(plane, module)) return fErrVal;
+  uint nstrips = 0;
+  for(int i = 0; i<module; i++){
+    if(proj==0){
+      nstrips+= round(fPMGeoInfo[plane].at(module).dx/fPMGeoInfo[plane].at(module).pitch_u);
+    }
+    if(proj==1){
+      nstrips+= round(fPMGeoInfo[plane].at(module).dy/fPMGeoInfo[plane].at(module).pitch_v);
+    }
+  }
+  return nstrips+lstrip;
+}
 

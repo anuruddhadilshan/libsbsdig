@@ -72,21 +72,24 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       //digitized info
       GEMDBManager = DetInfo_i.GetGEMDB();
       for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
-	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
-	  for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
-	    fullgemname = Form("%s.p%d.m%d.%s", 
-			       fulldetname.c_str(), 
-			       ipl+1, imod+1, kProj_str[ipr].c_str());
-	    if(fDebug>=3)cout << fullgemname.c_str() << endl;
-	    fOutTree->Branch(Form("%s.hit.nhits", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNHits);
-	    fOutTree->Branch(Form("%s.hit.chan", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fChannel);
-	    fOutTree->Branch(Form("%s.hit.nwords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
-	    fOutTree->Branch(Form("%s.hit.adcsum", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC);
-	    fOutTree->Branch(Form("%s.hit.samps_adc", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC_samps);
-	    fOutTree->Branch(Form("%s.hit.samps_datawords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord_samps);
-
-	  }
+	//for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
+	for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
+	  // fullgemname = Form("%s.p%d.m%d.%s", 
+	  // 		     fulldetname.c_str(), 
+	  // 		     ipl+1, imod+1, kProj_str[ipr].c_str());
+	  fullgemname = Form("%s.%d.%s", 
+			     fulldetname.c_str(), 
+			     ipl+1, kProj_str[ipr].c_str());
+	  if(fDebug>=3)cout << fullgemname.c_str() << endl;
+	  fOutTree->Branch(Form("%s.hit.nhits", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNHits);
+	  fOutTree->Branch(Form("%s.hit.chan", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fChannel);
+	  fOutTree->Branch(Form("%s.hit.nwords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
+	  fOutTree->Branch(Form("%s.hit.adcsum", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC);
+	  fOutTree->Branch(Form("%s.hit.samps_adc", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC_samps);
+	  fOutTree->Branch(Form("%s.hit.samps_datawords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord_samps);
+	  
 	}
+	//}
       }
       //}
       break;

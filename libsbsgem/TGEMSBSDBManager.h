@@ -85,6 +85,7 @@ public:
     
     int GetModuleIDFromPos(int iplane, double x, double y = 0);
     double GetPosFromModuleStrip(int iproj, int iplane, int isector, int istrip);
+    UInt_t GetGlobalStripPlane(uint lstrip, int plane, int module, int proj);
     void SetDBFileName(const std::string &filename) { fDBFileName = filename; }
     const std::string& GetDBFileName() { return fDBFileName; }
 

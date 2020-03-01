@@ -71,14 +71,17 @@ void TSBSSimEvent::Clear( const Option_t* opt )
       fSimGEMHitMCOutData[fulldetname].Clear();
       GEMDBManager = DetInfo_i.GetGEMDB();
       for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
-      	for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
-      	  for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
-      	    fullgemname = Form("%s.p%d.m%d.%s", 
-      			       fulldetname.c_str(), 
-      			       ipl+1, imod+1, kProj_str[ipr].c_str());
-	    fSimDigSampOutData[fullgemname].Clear();
-      	  }
-      	}
+      	//for(int imod = 0; imod<GEMDBManager->GetNModule(ipl); imod++){
+	for(int ipr = 0; ipr<GEMDBManager->GetNReadOut(); ipr++){
+	  // fullgemname = Form("%s.p%d.m%d.%s", 
+	  // 		     fulldetname.c_str(), 
+	  // 		     ipl+1, imod+1, kProj_str[ipr].c_str());
+	  fullgemname = Form("%s.%d.%s", 
+			     fulldetname.c_str(), 
+			     ipl+1, kProj_str[ipr].c_str());
+	  fSimDigSampOutData[fullgemname].Clear();
+	}
+      	//}
       }
       break;
     case(kHCal):

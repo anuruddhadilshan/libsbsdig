@@ -290,7 +290,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   Int_t adc = 0;
   UInt_t rawADC = 0;
   UInt_t nstrip = 0;
-  UInt_t strip;
+  UInt_t strip, pl_strip;
   mpd_data.adc_id = 0; // For now, increment with each APV25
   // The other info will be encoded properly when the Decoder pass happens
   mpd_data.mpd_id = 0;
@@ -339,13 +339,13 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       nstrip = fGEMDigi->GetNStrips(ich,ip);
       // two options on how to name the plane here: 
       // plane and module info specifically, and then actual strip number
-      planename = Form("%s.p%d.m%d.%s", 
-		       fDetInfo.DetFullName().c_str(), 
-		       plane+1, module+1, kProj_str[ip].c_str());
+      // planename = Form("%s.p%d.m%d.%s", 
+      // 		       fDetInfo.DetFullName().c_str(), 
+      // 		       plane+1, module+1, kProj_str[ip].c_str());
       // ... or just use plane, and then strip = strip + nstrips*nmodules
-      //planename = Form("%s.%d.%s", 
-      //fDetInfo.DetFullName().c_str(), 
-      //plane+1, kProj_str[ip].c_str());
+      planename = Form("%s.%d.%s", 
+		       fDetInfo.DetFullName().c_str(), 
+		       plane+1, kProj_str[ip].c_str());
       if(fDebug>=4)cout << planename.c_str() << " ich " << ich << " ip " << ip << " nstrip " << nstrip << endl;
       
       // Break up the data in number of strips that fit in an APV25
@@ -374,9 +374,10 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	  ADCsum = 0;
 	  data.clear();
 	  data_dec.clear();
-	  
+	  pl_strip = fManager->GetGlobalStripPlane(strip, plane, module, ip);
 	  event.fSimDigSampOutData[planename].fNHits++;
-	  event.fSimDigSampOutData[planename].fChannel.push_back(strip);
+	  //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
+	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
 	  event.fSimDigSampOutData[planename].fDataWord.push_back(mpd_data.nsamples);
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
             adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
