@@ -19,14 +19,13 @@
 
 //a bit more complex macro, where you have to provide the paths to the g4sbs files via  input_sigfile and input_bkgdfile (if you want background)
 
-void digi_gmn(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "", int debuglevel = 1)
+void digi_gmn(const char* output_file, ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "", int debuglevel = 1)
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
 
   TDatime run_time = 991231;
 
-  gSystem->AddDynamicPath("${SBS_ANALYSIS}");
   gSystem->Load("../libsbsdig.so");
 
   ////////////////////////////////////////////////////////////////
@@ -41,7 +40,7 @@ void digi_gmn(ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, cons
   if(debuglevel>=1)cout << "Setup digitizer " << endl;
   
   // Create the SBS Digitizer (will control the digitization process)
-  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer("digitized/simdig_test.root");
+  TSBSSimDigitizer *digitizer = new TSBSSimDigitizer(Form("digitized/%s", output_file));
   digitizer->SetDebug(debuglevel);
   
   if(debuglevel>=1)cout << "Setup input file " << endl;

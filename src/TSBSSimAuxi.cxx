@@ -177,6 +177,13 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   t_lead+=evttime;
   t_trail+=evttime;
+#if DEBUG>1
+  cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail 
+       << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
+ 
+  cout << "Now check containers for MC truth info: " 
+       << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
+#endif
   
   fMCHitSize++;
   fMCHitSource.push_back(signal);
@@ -184,6 +191,10 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   fMCHitTime.push_back(evttime);
   fMCHitLeadTimes.push_back(t_lead);
   fMCHitTrailTimes.push_back(t_trail);
+#if DEBUG>1
+  cout << "Check containers for MC truth info after adding value: " 
+       << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
+#endif
   
   if(t_lead<1e30 && t_trail<1e30){
     //Filter here the lead and trail times

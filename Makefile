@@ -82,14 +82,11 @@ GEMSRC = libsbsgem/TGEMSBSBox.cxx \
          #libsbsgem/TGEMSBSGeant4File.cxx
          #libsbsgem/TGEMSBSSimDecoder.cxx
 
-SRC   = src/digsim_data.cxx \
-	src/digsim_tree.cxx \
-        src/g4sbs_data.cxx \
+SRC   = src/g4sbs_data.cxx \
 	src/g4sbs_tree.cxx \
         src/TSBSDBManager.cxx \
         src/TSBSGeant4File.cxx \
         src/TSBSSimAuxi.cxx \
-        src/TSBSSimDecoder.cxx \
         src/TSBSSimEvent.cxx \
         src/TSBSSimFile.cxx \
         src/TSBSSimDigitizer.cxx \
@@ -105,6 +102,9 @@ SRC   = src/digsim_data.cxx \
         src/TSBSSpec.cxx \
         src/TSBSSimDataEncoder.cxx \
         src/TSBSSimGEM.cxx 
+#       src/digsim_data.cxx \
+#	src/digsim_tree.cxx \
+#       src/TSBSSimDecoder.cxx \ #
 SRC += $(GEMSRC)
 
 
