@@ -467,9 +467,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     diginfo.SetSPE_Tau(spe_tau);
     diginfo.SetSPE_Sigma(spe_sig);
     diginfo.SetSPE_TransitTime(spe_transit);
-    TSBSSimDataEncoder *enc = 0;
+    SBSSimDataEncoder *enc = 0;
     if(!adc_encoder_str.empty()) {
-      enc = TSBSSimDataEncoder::GetEncoderByName(
+      enc = SBSSimDataEncoder::GetEncoderByName(
             adc_encoder_str.c_str());
       if(enc && enc->IsADC()) {
         diginfo.SetEncoderADC(enc);
@@ -480,7 +480,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       }
     }
     if(!tdc_encoder_str.empty()) {
-      enc = TSBSSimDataEncoder::GetEncoderByName(
+      enc = SBSSimDataEncoder::GetEncoderByName(
             tdc_encoder_str.c_str());
       if(enc && enc->IsTDC()) {
         diginfo.SetEncoderTDC(enc);

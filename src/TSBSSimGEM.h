@@ -29,7 +29,7 @@ public:
 private:
     TGEMSBSSimDigitization *fGEMDigi;
     TGEMSBSDBManager *fManager;
-    TSBSSimDataEncoder *fEncoderMPD;
+    SBSSimDataEncoder *fEncoderMPD;
 };
 
 #endif //_TSBSSIMGEM_H

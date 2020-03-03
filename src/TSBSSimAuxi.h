@@ -11,7 +11,7 @@
 #include "TH1D.h"
 #include "TRandom3.h"
 // An data_word encoder for the various modules (i.e. F250 ADC, Caen TDC, etc..)
-#include "TSBSSimDataEncoder.h"
+#include "SBSSimDataEncoder.h"
 
 class TGEMSBSDBManager;
 
@@ -154,8 +154,8 @@ class TDigInfo : public TObject{
   double NpeChargeConv(int chan){return Gain(chan)*qe;};//charge in Coulomb
   
 
-  TSBSSimDataEncoder* GetEncoderADC() { return fEncoderADC; }
-  TSBSSimDataEncoder* GetEncoderTDC() { return fEncoderTDC; }
+  SBSSimDataEncoder* GetEncoderADC() { return fEncoderADC; }
+  SBSSimDataEncoder* GetEncoderTDC() { return fEncoderTDC; }
 
   void SetROImpedance(double roimp){fROimpedance = roimp;};
   void SetADCConversion(double adcconv){fADCconversion = adcconv;};
@@ -172,8 +172,8 @@ class TDigInfo : public TObject{
   void SetSPE_Tau(double spe_tau){fSPE_tau = spe_tau;};
   void SetSPE_Sigma(double spe_sig){fSPE_sigma = spe_sig;};
   void SetSPE_TransitTime(double spe_transit){fSPE_transittime = spe_transit;};
-  void SetEncoderADC(TSBSSimDataEncoder *enc) { fEncoderADC = enc; }
-  void SetEncoderTDC(TSBSSimDataEncoder *enc) { fEncoderTDC = enc; }
+  void SetEncoderADC(SBSSimDataEncoder *enc) { fEncoderADC = enc; }
+  void SetEncoderTDC(SBSSimDataEncoder *enc) { fEncoderTDC = enc; }
 
  private:
   double  fROimpedance;     // readout impedance
@@ -191,8 +191,8 @@ class TDigInfo : public TObject{
   double  fSPE_tau;            // tau param for SPE
   double  fSPE_sigma;         // sigma param for SPE
   double  fSPE_transittime;  // pmt transit time param for SPE
-  TSBSSimDataEncoder *fEncoderADC;
-  TSBSSimDataEncoder *fEncoderTDC;
+  SBSSimDataEncoder *fEncoderADC;
+  SBSSimDataEncoder *fEncoderTDC;
   
   ClassDef(TDigInfo, 1);
 };

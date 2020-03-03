@@ -3,7 +3,7 @@
 #include <TSBSSimData.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
-#include <TSBSSimDataEncoder.h>
+#include <SBSSimDataEncoder.h>
 
 TSBSSimScint::TSBSSimScint(const char* name, short id)
 {

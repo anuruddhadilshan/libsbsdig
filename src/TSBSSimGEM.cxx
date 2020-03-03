@@ -3,7 +3,7 @@
 #include <TSBSSimData.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
-#include "TSBSSimDataEncoder.h"
+#include "SBSSimDataEncoder.h"
 #include "TGEMSBSSimDigitization.h"
 #include "TGEMSBSSpec.h"
 #include "TGEMSBSGEMSimHitData.h"
@@ -37,7 +37,7 @@ void TSBSSimGEM::Init()
   fManager->SetDebug(fDebug);
 
   // Hard code the MPD encoder for GEMs
-  fEncoderMPD = TSBSSimDataEncoder::GetEncoderByName("mpd");
+  fEncoderMPD = SBSSimDataEncoder::GetEncoderByName("mpd");
 
   // At this point, we should build all the GEM chambers that exist for
   // this 

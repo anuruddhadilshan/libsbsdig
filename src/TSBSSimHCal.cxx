@@ -8,7 +8,7 @@
 //#include <TFile.h>
 #include <TSBSSimEvent.h>
 #include "TSBSDBManager.h"
-#include "TSBSSimDataEncoder.h"
+#include "SBSSimDataEncoder.h"
 
 #define HCAL_TDC_THRESH 0.1
 

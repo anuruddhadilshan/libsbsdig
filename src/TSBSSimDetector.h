@@ -7,7 +7,7 @@
 #include "THaAnalysisObject.h"
 #include "g4sbs_types.h"
 #include "TF1.h"
-#include "TSBSSimDataEncoder.h"
+#include "SBSSimDataEncoder.h"
 //#include "TF1Convolution.h"
 
 class g4sbshitdata;
@@ -43,8 +43,8 @@ protected:
   
   TSBSDBManager* fDBmanager;
   TDetInfo fDetInfo;
-  TSBSSimDataEncoder *fEncoderADC;
-  TSBSSimDataEncoder *fEncoderTDC;
+  SBSSimDataEncoder *fEncoderADC;
+  SBSSimDataEncoder *fEncoderTDC;
   unsigned int fEncBuffer[SBS_MAX_ENCODER_WORDS];
   unsigned short fNEncBufferWords;
   
@@ -52,7 +52,7 @@ protected:
   using THaAnalysisObject::Init;
   virtual void Init();
 
-  void CopyEncodedData(TSBSSimDataEncoder *enc, unsigned short mult,
+  void CopyEncodedData(SBSSimDataEncoder *enc, unsigned short mult,
       std::vector<unsigned int> &dat);
   //int fDebug;
 private:

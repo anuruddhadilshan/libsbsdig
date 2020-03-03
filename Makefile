@@ -13,12 +13,12 @@ SOLINCLUDE := -I$(shell pwd)/src -I$(shell pwd)/libsbsgem
 # Analyzer default location,
 ANALYZER ?= $(HOME)/ANALYZER
 # Possible Analyzer header locations, will be used in the order found
-ANAINCDIRS  := $(wildcard  $(addprefix $(ANALYZER)/, include src hana_decode hana_scaler evio))
+ANAINCDIRS  := $(wildcard  $(addprefix $(ANALYZER)/, include))
 ifeq ($(strip $(ANAINCDIRS)),)
   $(error No Analyzer header files found. Check $$ANALYZER)
 endif
 SBS ?= $(HOME)/SBS
-SBSINCDIRS = ${SBS}/include
+SBSINCDIRS := $(wildcard  $(addprefix $(SBS)/, include))
 ifeq ($(strip $(SBSINCDIRS)),)
   $(error No SBS-Offline header files found. Check $$SBS_)
 endif
@@ -61,7 +61,7 @@ endif
 # Some of the analyzer include dirs conflict with headers in
 # EVIO
 SOLINCLUDE += $(addprefix -I, $(ANAINCDIRS) )
-#SOLINCLUDE += $(addprefix -I, $(SBSINCDIRS) )
+SOLINCLUDE += $(addprefix -I, $(SBSINCDIRS) )
 
 #------------------------------------------------------------------------------
 
@@ -96,15 +96,15 @@ SRC   = src/g4sbs_data.cxx \
 	src/TSBSSimCher.cxx \
         src/TSBSSimECal.cxx \
         src/TSBSSimHCal.cxx \
-        src/TSBSSimADC.cxx \
-        src/TSBSSimTDC.cxx \
-        src/TSBSSimMPD.cxx \
 	src/TSBSSimScint.cxx \
         src/TSBSSpec.cxx \
-        src/TSBSSimDataEncoder.cxx \
         src/TSBSSimGEM.cxx 
-#       src/digsim_data.cxx \
-#	src/digsim_tree.cxx \
+#       src/TSBSSimADC.cxx \ #
+#       src/TSBSSimTDC.cxx \ #
+#       src/TSBSSimMPD.cxx \ #
+#       src/TSBSSimDataEncoder.cxx \ #
+#       src/digsim_data.cxx \ #
+#	src/digsim_tree.cxx \ #
 #       src/TSBSSimDecoder.cxx \ #
 SRC += $(GEMSRC)
 
