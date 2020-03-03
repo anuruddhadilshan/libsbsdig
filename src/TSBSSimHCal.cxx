@@ -364,7 +364,7 @@ TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnr
   //mint(0.0), maxt(50.), nbins(50),
 {
   // hard coded, 'cause' why not? :D
-  dx_raw_time = 0.120;
+  dx_raw_time = 0.120;// TDC bin (in ns)
   nbins_times = (maxt-mint)/dx_raw_time;
   times_histo.resize(nbins_times);
   nbins = (maxt-mint)/dx_samples;

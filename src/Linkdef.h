@@ -21,12 +21,12 @@
 #pragma link C++ defined_in "src/TSBSSimECal.h";
 #pragma link C++ defined_in "src/TSBSSimHCal.h";
 #pragma link C++ defined_in "src/TSBSSimGEM.h";
-#pragma link C++ defined_in "src/TSBSSimADC.h";
-#pragma link C++ defined_in "src/TSBSSimTDC.h";
-#pragma link C++ defined_in "src/TSBSSimMPD.h";
+//#pragma link C++ defined_in "src/TSBSSimADC.h";
+//#pragma link C++ defined_in "src/TSBSSimTDC.h";
+//#pragma link C++ defined_in "src/TSBSSimMPD.h";
 #pragma link C++ defined_in "src/TSBSSimScint.h";
 #pragma link C++ defined_in "src/TSBSSpec.h";
-#pragma link C++ defined_in "src/TSBSSimDataEncoder.h";
+//#pragma link C++ defined_in "src/TSBSSimDataEncoder.h";
 
 // Then include all the TGEM stuff
 #pragma link C++ defined_in "libsbsgem/TGEMSBSBox.h";

@@ -17,10 +17,11 @@ ANAINCDIRS  := $(wildcard  $(addprefix $(ANALYZER)/, include src hana_decode han
 ifeq ($(strip $(ANAINCDIRS)),)
   $(error No Analyzer header files found. Check $$ANALYZER)
 endif
-#SBSINCDIRS = $(SBS_ANALYSIS)
-#ifeq ($(strip $(SBSINCDIRS)),)
-#  $(error No Analyzer header files found. Check $$SBS_ANALYSIS)
-#endif
+SBS ?= $(HOME)/SBS
+SBSINCDIRS = ${SBS}/include
+ifeq ($(strip $(SBSINCDIRS)),)
+  $(error No SBS-Offline header files found. Check $$SBS_)
+endif
 
 
 #------------------------------------------------------------------------------

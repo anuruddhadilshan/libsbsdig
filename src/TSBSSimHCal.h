@@ -27,29 +27,29 @@ public:
   void Init();
 
   struct Signal {
-    SimEncoder::fadc_data fadc;
-    SimEncoder::tdc_data tdc;
+    SimEncoder::fadc_data fadc;// encoded FADC samples
+    SimEncoder::tdc_data tdc;// encoded TDC values
     //std::vector<double> samples;
-    std::vector<double> samples_raw;
-    std::vector<double> times_histo;
-    int nbins_times;
-    double sumedep;
-    double mint;
-    double maxt;
-    int nbins;
-    int nbins_raw;
-    int npe;
-    double tdc_time;
-    bool met_tdc_thresh;
-    int sum;
-    int dnraw;
-    double dx_samples;
-    double dx_raw;
-    double dx_raw_time;
+    std::vector<double> samples_raw;// "unencoded" FADC samples 
+    std::vector<double> times_histo;// "unencoded" TDC values 
+    int nbins_times;// number of TDC bins!
+    double sumedep;// Energy deposit
+    double mint;// DAQ window min 
+    double maxt;// DAQ window max 
+    int nbins;// number of ADC bins
+    int nbins_raw;// number of ADC subdivisions
+    int npe;// Number of photoelectrons
+    double tdc_time;//tdc time to feed SimEncoder::tdc_data tdc
+    bool met_tdc_thresh;// true if signal is large enough to trigger TDC
+    int sum;// ADC sum 
+    int dnraw;// number of samples read off the FADC
+    double dx_samples;// size of FADC sample 
+    double dx_raw;// subdivision of FADC samples
+    double dx_raw_time;// TDC bin size
     
-    short mc_source;
-    int trid;
-    int pid;
+    short mc_source;// MC source: sig ? /bkgd ?
+    int trid;// original particle track ID 
+    int pid;// original particle PID
     Signal();
     void FillNPE(TSPEModel *model, double pulsenorm, double t, double toffset = 0.0);
     void Fill(double t);
