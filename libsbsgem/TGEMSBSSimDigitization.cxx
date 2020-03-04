@@ -1316,7 +1316,8 @@ TGEMSBSSimDigitization::SetTreeStrips()
 
   //TGEMSBSSimEvent::
   DigiGEMStrip strip;
-  Double_t saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-1300;
+  UInt_t mpd_id = -1;// by convention: 1.x, 1.y, 2.x,... 
+  Double_t saturation = static_cast<Double_t>( (1<<fADCbits)-1 );//-CommonMode(mpd_id);
   for (UInt_t ich = 0; ich < GetNChambers(); ++ich) {
     
     strip.fSector=0;
@@ -1341,6 +1342,10 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	{
 	  UInt_t nstrips = GetNStrips(ich,ip);
 	  for (UInt_t istrip = 0; istrip < nstrips; istrip++) {
+	    if(istrip%128==0 && fApplyCommonMode){
+	      mpd_id++;
+	      //saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-CommonMode(mpd_id);
+	    }
 	    Short_t idx = istrip;
 	    strip.fChan = idx;
 
@@ -1349,8 +1354,9 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	      strip.fADC[ss] = GetADC(ich, ip, idx, ss);
 	      // cout << strip.fADC[ss] << " ";
 	       strip.fADC[ss] += fTrnd.Gaus(0, fPulseNoiseSigma);//allowing negative value, before implementing common mode;
+	       if(fApplyCommonMode)strip.fADC[ss] -= CommonMode(mpd_id);
 	      // cout << strip.fADC[ss] << " ";
-	      saturation = 4000;
+	       //saturation = 4000;
 	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
         // TODO: Shouldn't common mode be added at some point? Specially
         // before encoding it into unsigned integers which don't

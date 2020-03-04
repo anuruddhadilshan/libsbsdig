@@ -229,6 +229,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       
       if(fDebug>=4)cout << " encode TDC ? " << fEncoderTDC << endl; 
       if(fEncoderTDC && fSignals[m].tdc.time.size()){
+	if(fDebug>=4)cout << "tdc size " << fSignals[m].tdc.time.size() << endl;
 	for(uint i = 0; i<fSignals[m].tdc.time.size(); i++){
 	  if(fSignals[m].tdc.getEdge(i)==0){
 	    event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(i));
@@ -360,7 +361,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   SetHasDataFlag(any_events);
 }
 
-TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnraw(10), dx_samples(4.0)
+TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(-40.0), maxt(40.0), npe(0), dnraw(10), dx_samples(4.0)
   //mint(0.0), maxt(50.), nbins(50),
 {
   // hard coded, 'cause' why not? :D
@@ -372,6 +373,7 @@ TSBSSimHCal::Signal::Signal() : sumedep(0.0), mint(0.0), maxt(50.0), npe(0), dnr
   nbins_raw= (maxt-mint)/dx_raw;
   fadc.samples.resize(nbins);
   samples_raw.resize(nbins_raw);
+  //cout << maxt - mint << " " << nbins_times << " " << nbins << " " << dx_raw << " " << nbins_raw << endl;
   Clear();
 }
 

@@ -380,24 +380,17 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
 	  event.fSimDigSampOutData[planename].fDataWord.push_back(mpd_data.nsamples);
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
-            adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
-            if(adc>0)
-              SetHasDataFlag(true);
+            rawADC = fGEMDigi->GetSimADC(ich,ip,strip,s);
             // Negative values convert poorly to unsigned integers, so just
             // set them to zero if the actual ADC is negative
-            mpd_data.samples[idx++] = (adc>0 ? adc : 0);
+            mpd_data.samples[idx++] = (rawADC>0 ? rawADC : 0);
+	    adc = (UInt_t)rawADC-fGEMDigi->CommonMode(mpd_data.mpd_id);
 	    ADCsum+=adc;
-	    rawADC = (UInt_t)adc+fGEMDigi->CommonMode(mpd_data.mpd_id);
 	    data.push_back(rawADC);
 	    data_dec.push_back(adc);
-	    //TODO: replace that stuff by a fill function...
-	    /*
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.at(ich).push_back(strip);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.at(ich).push_back(s);
-	    //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.at(ich).push_back(adc);
-	    event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.at(ich).push_back(adc);
-	    */
-	    
+
+            if(adc>0)
+              SetHasDataFlag(true);
           }
 	  event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
 	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
