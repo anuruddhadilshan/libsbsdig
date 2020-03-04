@@ -83,7 +83,8 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
 	  if(fDebug>=3)cout << fullgemname.c_str() << endl;
 	  fOutTree->Branch(Form("%s.hit.nhits", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNHits);
 	  fOutTree->Branch(Form("%s.hit.chan", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fChannel);
-	  fOutTree->Branch(Form("%s.hit.nwords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
+	  //  !!! "dataword" is the number of words here !!!
+	  fOutTree->Branch(Form("%s.hit.dataword", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
 	  fOutTree->Branch(Form("%s.hit.adcsum", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC);
 	  fOutTree->Branch(Form("%s.hit.nsamps", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNsamps);
 	  fOutTree->Branch(Form("%s.hit.samps_adc", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC_samps);
@@ -110,6 +111,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       //digitized info
       fOutTree->Branch(Form("%s.hit.nhits", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s.hit.chan", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fChannel);
+      // "dataword" could be the number of words or the TDC word
       fOutTree->Branch(Form("%s.hit.dataword", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord);
       fOutTree->Branch(Form("%s.hit.adcsum", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fADC);
       fOutTree->Branch(Form("%s.hit.nsamps", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fNsamps);

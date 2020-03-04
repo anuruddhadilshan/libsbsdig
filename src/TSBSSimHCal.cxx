@@ -262,6 +262,8 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(data_dec);
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
     
+      data.clear();
+      data_dec.clear();
       for(uint i = 1; i<data_mod.size(); i++){
 	if(fDebug>=4)cout << i << "/" << data_mod.at(i) << endl;
 	data.push_back(data_mod[i]);
@@ -285,8 +287,8 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
 	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
       }
-      data.clear();
-      data_dec.clear();
+      data.clear();//data.push_back(0);
+      data_dec.clear();//data_dec.push_back(0);
       data_mod.clear();
       
       // Now add the TDC if the threshold was met
