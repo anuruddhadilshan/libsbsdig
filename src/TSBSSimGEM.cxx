@@ -278,6 +278,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   int plane, module;
   std::string planename;
   fGEMDigi->SetTreeStrips();
+  std::vector<uint32_t> data_mpd;
   std::vector<uint32_t> data;
   std::vector<Int_t> data_dec;
   Int_t ADCsum = 0;
@@ -288,9 +289,8 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
   SimEncoder::mpd_data mpd_data;
   mpd_data.channel = 0;
   Int_t adc = 0;
-  UInt_t rawADC = 0;
   UInt_t nstrip = 0;
-  UInt_t strip, pl_strip;
+  UInt_t strip, strip0_mpd, pl_strip;
   mpd_data.adc_id = 0; // For now, increment with each APV25
   // The other info will be encoded properly when the Decoder pass happens
   mpd_data.mpd_id = 0;
@@ -323,12 +323,6 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 
   // Here, Chamber is equivalent to a "Tracking-Plane" which is really
   // what the TGEMSBSSimDigitization uses
-  /*
-  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fStrip.resize(fGEMDigi->GetNChambers());
-  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fSamp.resize(fGEMDigi->GetNChambers());
-  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord_samps.resize(fGEMDigi->GetNChambers());
-  event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC_samps.resize(fGEMDigi->GetNChambers());
-  */
   
   for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
     fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
@@ -355,63 +349,85 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       // not the intent and skip anything with only one strip left.
       // => Good call! EF
       strip = 0;
-      /*
-      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fNHits++;
-      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fPlane.push_back(plane);
-      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fModule.push_back(module);
-      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fProj.push_back(ip);
-      //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fChannel.push_back(ich);
-      event.fSimGEMDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(fGEMDigi->GetNStrips(ich,ip)*fGEMDigi->GetNSamples(ich,ip));
-      //event.fSimGEMDigOutData[fDetInfo.DetFullName()].fADC.push_back(adc);
-      */
       while(nstrip > 1) {
         mpd_data.samples.clear();
         mpd_data.nstrips = nstrip >= SBS_APV25_NCH ? SBS_APV25_NCH : nstrip;
         nstrip -= mpd_data.nstrips;
         mpd_data.samples.resize(mpd_data.nsamples*mpd_data.nstrips);
         idx = 0;
+	strip0_mpd = strip;
+	//if I have to reloop anyway...
+        for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
+	  for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
+            adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
+            // Negative values convert poorly to unsigned integers, so just
+	    // set them to zero if the actual ADC is negative
+	    // which should not be the case if common mode is switched on
+	    mpd_data.samples[idx++] = (adc>0 ? adc : 0);
+	  }
+	}
+	data_mpd.clear();
+        fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
+        CopyEncodedData(fEncoderMPD,mpd_data.adc_id,data_mpd);
+	
+	if(fDebug>=5){
+	  cout << data_mpd.size() << endl;
+	  for(uint i = 0; i< data_mpd.size(); i++)cout << data_mpd[i] << " ";
+	  cout << endl;
+	}
+	
+	//Then I fill the tree :)
+	// collection of headers first
+	// perhaps it is worth doing one hit per header...
+	data_dec.clear();//data_dec.push_back(0);
+	data.clear();//data.push_back(0);
+	int i_;
+	for(i_ = 0; i_<3; i_++){
+	  event.fSimDigSampOutData[planename].fNHits++;
+	  event.fSimDigSampOutData[planename].fChannel.push_back(-1000);
+	  event.fSimDigSampOutData[planename].fDataWord.push_back(data_mpd[i_]);
+	  event.fSimDigSampOutData[planename].fADC.push_back(-1000000);
+	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
+	}
+	
+	strip = strip0_mpd;
+	
         for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
 	  ADCsum = 0;
 	  data.clear();
 	  data_dec.clear();
 	  pl_strip = fManager->GetGlobalStripPlane(strip, plane, module, ip);
-	  event.fSimDigSampOutData[planename].fNHits++;
-	  //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
-	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
-	  event.fSimDigSampOutData[planename].fDataWord.push_back(mpd_data.nsamples);
+	  
           for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
-            rawADC = fGEMDigi->GetSimADC(ich,ip,strip,s);
-            // Negative values convert poorly to unsigned integers, so just
-            // set them to zero if the actual ADC is negative
-            mpd_data.samples[idx++] = (rawADC>0 ? rawADC : 0);
-	    adc = (UInt_t)rawADC-fGEMDigi->CommonMode(mpd_data.mpd_id);
+            adc = fGEMDigi->GetSimADC(ich,ip,strip,s)
+	      -fGEMDigi->CommonMode(mpd_data.mpd_id);
 	    ADCsum+=adc;
-	    data.push_back(rawADC);
+	    if(s%2==0)data.push_back(data_mpd[i_++]);
 	    data_dec.push_back(adc);
-
             if(adc>0)
               SetHasDataFlag(true);
           }
+	  
+	  event.fSimDigSampOutData[planename].fNHits++;
+	  //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
+	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
+	  event.fSimDigSampOutData[planename].fDataWord.push_back(ceil(mpd_data.nsamples/2));//This way if nsamples is odd, we still save the singleton sample
+	  assert(data.size()==ceil(mpd_data.nsamples/2));
 	  event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
 	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
 	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
 	}
-        fEncoderMPD->EncodeMPD(mpd_data,fEncBuffer,fNEncBufferWords);
-        CopyEncodedData(fEncoderMPD,mpd_data.adc_id++,data);
 	//event.fDetectorData.push_back(data);
+	mpd_data.adc_id++;
       }
       //data.fChannel++;
-    }
-  }
-  if(fDebug>=3){
-    cout << fDetInfo.DetFullName() << endl;
-    for(UInt_t ich = 0; ich < fGEMDigi->GetNChambers(); ich++) {
-      for(UInt_t ip = 0; ip < fGEMDigi->GetNPlanes(ich); ip++) {
-	fManager->GetPMfromGlobalPlaneNum(ich, plane, module);
-	
+      if(fDebug>=3){
+	cout << planename << endl;
+	event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(true, true);
       }
+      
     }
-    //event.fSimGEMDigOutData[fDetInfo.DetFullName()].CheckSize(false, true, true);
   }
 }
 

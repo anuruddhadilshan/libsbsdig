@@ -1354,7 +1354,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	      strip.fADC[ss] = GetADC(ich, ip, idx, ss);
 	      // cout << strip.fADC[ss] << " ";
 	       strip.fADC[ss] += fTrnd.Gaus(0, fPulseNoiseSigma);//allowing negative value, before implementing common mode;
-	       if(fApplyCommonMode)strip.fADC[ss] -= CommonMode(mpd_id);
+	       if(fApplyCommonMode)strip.fADC[ss] += CommonMode(mpd_id);
 	      // cout << strip.fADC[ss] << " ";
 	       //saturation = 4000;
 	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
