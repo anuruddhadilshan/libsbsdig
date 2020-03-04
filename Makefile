@@ -89,7 +89,6 @@ SRC   = src/g4sbs_data.cxx \
         src/TSBSGeant4File.cxx \
         src/TSBSSimAuxi.cxx \
         src/TSBSSimEvent.cxx \
-        src/TSBSSimFile.cxx \
         src/TSBSSimDigitizer.cxx \
         src/TSBSSimDetector.cxx \
         src/TSBSSimData.cxx \
@@ -99,6 +98,7 @@ SRC   = src/g4sbs_data.cxx \
 	src/TSBSSimScint.cxx \
         src/TSBSSpec.cxx \
         src/TSBSSimGEM.cxx 
+#       src/TSBSSimFile.cxx \ #
 #       src/TSBSSimADC.cxx \ #
 #       src/TSBSSimTDC.cxx \ #
 #       src/TSBSSimMPD.cxx \ #
