@@ -387,8 +387,9 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	  event.fSimDigSampOutData[planename].fChannel.push_back(-1000);
 	  event.fSimDigSampOutData[planename].fDataWord.push_back(data_mpd[i_]);
 	  event.fSimDigSampOutData[planename].fADC.push_back(-1000000);
-	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	  event.fSimDigSampOutData[planename].fNsamps.push_back(0);
 	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
+	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
 	}
 	
 	strip = strip0_mpd;
@@ -412,9 +413,11 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	  event.fSimDigSampOutData[planename].fNHits++;
 	  //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
 	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
+	  //this is a bit of abuse: I use the dataword in this case to store the size of the vector samples
 	  event.fSimDigSampOutData[planename].fDataWord.push_back(ceil(mpd_data.nsamples/2));//This way if nsamples is odd, we still save the singleton sample
 	  assert(data.size()==ceil(mpd_data.nsamples/2));
 	  event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
+	  event.fSimDigSampOutData[planename].fNsamps.push_back(mpd_data.nsamples);
 	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
 	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
 	}

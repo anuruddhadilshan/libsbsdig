@@ -289,6 +289,7 @@ simdigsamp_outdata::~simdigsamp_outdata(){
 
 void simdigsamp_outdata::Clear(){
   simdig_outdata::Clear();
+  fNsamps.clear();
   fDataWord_samps.clear();
   fADC_samps.clear();
 }
@@ -296,6 +297,10 @@ void simdigsamp_outdata::Clear(){
 bool simdigsamp_outdata::CheckSize(bool ignore_tdc,
 				   bool print){
   bool checkout = simdig_outdata::CheckSize(false, ignore_tdc, print);//total ADC will not be filled
+  if(fNsamps.size()!=fNHits){
+    checkout = false;
+    if(print)printf("fNsamps.size() = %zu != %u\n", fNsamps.size(), fNHits);
+  }
   if(fDataWord_samps.size()!=fNHits){
     checkout = false;
     if(print)printf("fDataWord_samps.size() = %zu != %u\n", fDataWord_samps.size(), fNHits);

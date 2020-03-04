@@ -85,6 +85,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
 	  fOutTree->Branch(Form("%s.hit.chan", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fChannel);
 	  fOutTree->Branch(Form("%s.hit.nwords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord);
 	  fOutTree->Branch(Form("%s.hit.adcsum", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC);
+	  fOutTree->Branch(Form("%s.hit.nsamps", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fNsamps);
 	  fOutTree->Branch(Form("%s.hit.samps_adc", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fADC_samps);
 	  fOutTree->Branch(Form("%s.hit.samps_datawords", fullgemname.c_str()),&fEvent->fSimDigSampOutData[fullgemname.c_str()].fDataWord_samps);
 	  
@@ -109,8 +110,9 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       //digitized info
       fOutTree->Branch(Form("%s.hit.nhits", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s.hit.chan", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fChannel);
-      fOutTree->Branch(Form("%s.hit.nwords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord);
+      fOutTree->Branch(Form("%s.hit.dataword", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord);
       fOutTree->Branch(Form("%s.hit.adcsum", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fADC);
+      fOutTree->Branch(Form("%s.hit.nsamps", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fNsamps);
       fOutTree->Branch(Form("%s.hit.samps_adc", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fADC_samps);
       fOutTree->Branch(Form("%s.hit.samps_datawords", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fDataWord_samps);
       if(DetInfo_i.DigInfo().TDCBits()>0){

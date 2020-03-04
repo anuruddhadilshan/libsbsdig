@@ -153,6 +153,7 @@ class simdigsamp_outdata: public simdig_outdata{
   
   //it's more complicated that I'd like, but that's the price to pay to have a reasonably efficient data storage for sample data / esp for GEMs -- EF
   // we have to assume elt n = samp n
+  std::vector<uint32_t> fNsamps;
   std::vector< std::vector<uint32_t> > fDataWord_samps;
   std::vector< std::vector<Int_t> > fADC_samps; 
  

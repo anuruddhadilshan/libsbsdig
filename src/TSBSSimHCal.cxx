@@ -201,9 +201,12 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   double pulsenorm = 0;
   double max_val = pow(2,fDetInfo.DigInfo().ADCBits());
   //TSBSSimEvent::DetectorData data;
+  std::vector<uint32_t> data_mod;
   std::vector<uint32_t> data;
+  std::vector<int> data_dec;
   UInt_t tdcval;
   int mult = 0;
+  Int_t ADCsum = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
     //data.fData.clear();
     data.clear();
@@ -243,89 +246,69 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       mult = 0;
       fEncoderADC->EncodeFADC(fSignals[m].fadc,fEncBuffer,
           fNEncBufferWords);
-      CopyEncodedData(fEncoderADC,mult++,data);//.fData);
+      CopyEncodedData(fEncoderADC,mult++,data_mod);//.fData);
 
-      if(fDebug>=4)cout << GetName() << " ADC size " << data.size() << endl;
+      if(fDebug>=4)cout << GetName() << " ADC size " << data_mod.size() << endl;
+
+      ADCsum = 0;
+      data_dec.clear();//data_dec.push_back(0);
+      data.clear();//data.push_back(0);
+      //First, the header!
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(-1000);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data_mod[0]);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fNsamps.push_back(0);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(data_dec);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
+    
+      for(uint i = 1; i<data_mod.size(); i++){
+	if(fDebug>=4)cout << i << "/" << data_mod.at(i) << endl;
+	data.push_back(data_mod[i]);
+      }
+      for(uint i = 0; i<fSignals[m].fadc.samples.size(); i++){
+	if(fDebug>=4)cout << i << "/" << fSignals[m].fadc.samples.at(i) << endl;
+	ADCsum+= fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m);
+	data_dec.push_back(fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m));
+      }
+      
 
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-      data.erase(data.begin());//erase the first element which is a header.
-      //this is a bit of abuse: I use the dataword in this case to store the size of the vector samples
+      //this is a bit of abuse: I use the dataword in this case to store the number of words
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.size());
-      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
-      //event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(fSignals[m].fadc.samples);
-      Int_t ADCsum = 0;
-      std::vector<Int_t> temp_vec;
-      for(uint i = 0; i<data.size(); i++){
-	if(fDebug>=4)cout << i << "/" << data.at(i) << endl;
-	ADCsum+= fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m);
-	temp_vec.push_back(fSignals[m].fadc.samples.at(i)-fDetInfo.DigInfo().Pedestal(m));
-	/*
-	event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	event.DetDataWord[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
-	if(i==0){//header
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
-	  if(fEncoderTDC){
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
-	  }
-	}else{
-
-	if(i>0){
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
-	  event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(fSignals[m].fadc.samples.at(i-1)-fDetInfo.DigInfo().Pedestal(m));
-	}
-	*/
-      }
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(ADCsum);
-      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(temp_vec);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fNsamps.push_back(fSignals[m].fadc.samples.size());
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(data_dec);
+      event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
       if(fEncoderTDC){
 	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
 	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
       }
-      
       data.clear();
+      data_dec.clear();
+      data_mod.clear();
       
-      //data.fData.push_back(fSignals[m].fadc.samples.size()); // Number of values
-      //std::cout << "Module : " << m << " npe=" << fSignals[m].npe;
-      //for(size_t j = 0; j < fSignals[m].samples.size(); j++) {
-        //std::cout << " " << fSignals[m].samples[j];
-        //data.fData.push_back(fSignals[m].samples[j]);
-      //}
-      //event.fDetectorData.push_back(data); // Store event data
-      // Now add the sum (or edep)
-      //data.fData.clear();
-      //data.fData.push_back(m);
-      // Since it's still uncertain if we can populate the sumedet
-      // parts, I'll leave this out for now...
-      //data.fData.push_back(1);
-      //data.fData.push_back(1);
-      //data.fData.push_back(fSignals[m].sumedep);
-      //event.fDetectorData.push_back(data);
-
       // Now add the TDC if the threshold was met
       if(fSignals[m].met_tdc_thresh && 
 	 fEncoderTDC->EncodeTDC(fSignals[m].tdc,fEncBuffer,fNEncBufferWords)){
-        CopyEncodedData(fEncoderTDC,mult++,data);//.fData);
+        CopyEncodedData(fEncoderTDC,mult++,data_mod);
 	if(fDebug>=4)cout << GetName() << " TDC size " << data.size() << endl;
 	
-	for(uint i = 0; i<data.size(); i++){
-	  if(fDebug>=4)cout << i << "/" << data.at(i) << endl;
-	  /*
+	for(uint i = 0; i<data_mod.size(); i++){
+	  if(fDebug>=4)cout << i << "/" << data_mod.at(i) << endl;
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data_mod[i]);
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fNsamps.push_back(0);
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(data_dec);
+	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
 	  if(i==0){//header
-	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(-1000);
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }else{
-	  */
-	  if(i>0){
-	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
 	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
-	    if(fEncoderADC)event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].tdc.getTime(i-1);
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
