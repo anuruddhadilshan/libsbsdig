@@ -377,21 +377,23 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	}
 	
 	//Then I fill the tree :)
-	// collection of headers first
-	// perhaps it is worth doing one hit per header...
+	// collection of headers first:
+	// first header: data word; MPDheader: dataword_samps
+	// perhaps it is worth doing one hit per header... //Nope
 	data_dec.clear();//data_dec.push_back(0);
 	data.clear();//data.push_back(0);
 	int i_;
-	for(i_ = 0; i_<3; i_++){
-	  event.fSimDigSampOutData[planename].fNHits++;
-	  event.fSimDigSampOutData[planename].fChannel.push_back(-1000);
-	  event.fSimDigSampOutData[planename].fDataWord.push_back(data_mpd[i_]);
-	  event.fSimDigSampOutData[planename].fADC.push_back(-1000000);
-	  event.fSimDigSampOutData[planename].fNsamps.push_back(0);
-	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
-	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	for(i_ = 1; i_<3; i_++){
+	  data.push_back(data_mpd[i_]);
 	}
-	
+	event.fSimDigSampOutData[planename].fNHits++;
+	event.fSimDigSampOutData[planename].fChannel.push_back(-1000);
+	event.fSimDigSampOutData[planename].fDataWord.push_back(data_mpd[0]);
+	event.fSimDigSampOutData[planename].fADC.push_back(-1000000);
+	event.fSimDigSampOutData[planename].fNsamps.push_back(0);
+	event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
+	event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+		
 	strip = strip0_mpd;
 	
         for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
