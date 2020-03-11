@@ -195,7 +195,7 @@ void TSBSSimHCal::Signal::Digitize(TSPEModel *model, double pulsenorm,
 
 void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 {
-  if(fDebug>=3)cout << "TSBSSimHCal::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
+  if(fDebug>=2)cout << "TSBSSimHCal::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
   
   bool any_events = false;
   double pulsenorm = 0;
@@ -210,7 +210,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   for(size_t m = 0; m < fSignals.size(); m++) {
     //data.fData.clear();
     data.clear();
-    if(fDebug>=4 && fSignals[m].npe)cout << fSignals[m].npe << endl;
+    if(fDebug>=3 && fSignals[m].npe)cout << fSignals[m].npe << endl;
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
         *qe/spe_unit;
@@ -339,7 +339,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       */
     }
   }
-  if(fDebug>=3){
+  if(fDebug>=2){
     cout << fDetInfo.DetFullName() << " " << any_events << endl;
     event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(false, true);
   }

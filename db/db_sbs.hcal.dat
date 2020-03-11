@@ -9,6 +9,12 @@ sbs.hcal.slot_per_crate = 18
 sbs.hcal.first_crate = 2
 sbs.hcal.first_slot = 4
 
+## Detector map
+
+## Optional channel map
+
+
+
 #hcal geometry
 geo.sbs.hcal.nrows = 24
 geo.sbs.hcal.ncols = 12

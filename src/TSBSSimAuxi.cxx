@@ -177,12 +177,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   t_lead+=evttime;
   t_trail+=evttime;
-#if DEBUG>1
+#if DEBUG>0
   cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail 
        << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
- 
-  cout << "Now check containers for MC truth info: " 
-       << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
 #endif
   
   fMCHitSize++;
@@ -191,10 +188,6 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   fMCHitTime.push_back(evttime);
   fMCHitLeadTimes.push_back(t_lead);
   fMCHitTrailTimes.push_back(t_trail);
-#if DEBUG>1
-  cout << "Check containers for MC truth info after adding value: " 
-       << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
-#endif
   
   if(t_lead<1e30 && t_trail<1e30){
     //Filter here the lead and trail times
@@ -204,43 +197,66 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
       // *if we do things correctly, that should be the case*
       // we shall keep lead-trail times pair in timing order
       // we neglect pulse overlaps ftm.
+      if(fLeadTimes.size()!=fTrailTimes.size()){
+	cout << " B - Warning: size of lead times container: " << fLeadTimes.size() 
+	     << " != size of trail times container: " << fTrailTimes.size() << endl;
+      }
+      
       for(size_t i = 0; i<fLeadTimes.size(); i++){
 	// possibility of the current pair straddling with others.... :/
 	// treat those separately to simplify...
 	// tL < tT_i-1 < tL_i < tT
 	if(i>0)
 	  if(t_lead < fTrailTimes.at(i-1) && fLeadTimes.at(i) < t_trail){
-	    //fLeadTimes.at(i-1) < t_lead && 
-	    fLeadTimes.erase(fLeadTimes.begin()+i);
-	    fTrailTimes.erase(fTrailTimes.begin()+i-i);
-	    // tL < tL_i-1
+	    //do necessary substitutions first, then erase
+	    // tL < tL_i-1 => tL *replaces* tL_i-1
 	    if(t_lead < fLeadTimes.at(i-1)){
+#if DEBUG>1
+	      cout << "a1 - erase el i-1 = " << i+1 << " off " << fLeadTimes.size() << endl;
+#endif
 	      fLeadTimes.erase(fLeadTimes.begin()+i-1);
 	      fLeadTimes.insert(fLeadTimes.begin()+i-1, t_lead);
 	    }
-	    // tT_i < tT
-	    if(t_lead < fLeadTimes.at(i-1)){
+	    // tT_i < tT => tT *replaces* tT_i
+	    if(fTrailTimes.at(i) < t_trail){
+#if DEBUG>1
+	      cout << "a2 - erase el i = " << i << " off " << fLeadTimes.size() << endl;
+#endif
 	      fTrailTimes.erase(fTrailTimes.begin()+i);
 	      fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
 	    }
+#if DEBUG>1
+	    cout << "a - erase el i = " << i << " and i-1 off " << fLeadTimes.size() << " " << endl;
+#endif
+	    fLeadTimes.erase(fLeadTimes.begin()+i);
+	    fTrailTimes.erase(fTrailTimes.begin()+i-1);
 	    break;
 	  }
 	// tL < tT_i < tL_i+1 < tT
 	if(i<fLeadTimes.size()-1)
 	  if(t_lead < fTrailTimes.at(i) && fLeadTimes.at(i+1) < t_trail){
-	    //fLeadTimes.at(i-1) < t_lead && 
-	    fLeadTimes.erase(fLeadTimes.begin()+i+1);
-	    fTrailTimes.erase(fTrailTimes.begin()+i);
-	    // tL < tL_i
-	    if(t_lead < fLeadTimes.at(i-1)){
+	    //do necessary substitutions first, then erase
+	    // tL < tL_i => tL *replaces* tL_i
+	    if(t_lead < fLeadTimes.at(i)){
+#if DEBUG>1
+	      cout << "b1 - erase el i = " << i << " off " << fLeadTimes.size() << endl;
+#endif
 	      fLeadTimes.erase(fLeadTimes.begin()+i);
 	      fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
 	    }
-	    // tT_i+1 < tT
-	    if(t_lead < fLeadTimes.at(i-1)){
+	    // tT_i+1 < tT => tT *replaces* tT_i+1
+	    if(fTrailTimes.at(i+1) < t_trail){
+#if DEBUG>1
+	      cout << "b2 - erase el i+1 = " << i+1 << " off " << fLeadTimes.size() << endl;
+#endif
 	      fTrailTimes.erase(fTrailTimes.begin()+i+1);
 	      fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
 	    }
+#if DEBUG>1
+	    cout << "b - erase el i = " << i << " and i+1 off " << fLeadTimes.size() << " " << endl;
+#endif
+	    fLeadTimes.erase(fLeadTimes.begin()+i+1);
+	    fTrailTimes.erase(fTrailTimes.begin()+i);
 	    break;
 	  }
 	
@@ -253,12 +269,18 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	}
 	// tL < tL_i < tT < tT_i => tL *replaces* tL_i
 	if(t_lead < fLeadTimes.at(i) && fLeadTimes.at(i) < t_trail && t_trail < fTrailTimes.at(i)){
+#if DEBUG>1
+	  cout << "c - erase el i = " << i << " off " << fLeadTimes.size() << endl;
+#endif
 	  fLeadTimes.erase(fLeadTimes.begin()+i);
 	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
 	  break;
 	}
 	// tL_i < tL < tT < tT_i => tL *replaces* tL_i AND tT *replaces* tT_i
 	if(t_lead < fLeadTimes.at(i) && fTrailTimes.at(i) < t_trail){
+#if DEBUG>1
+	  cout << "d - erase el i = " << i << " off " << fLeadTimes.size() << endl;
+#endif
 	  fLeadTimes.erase(fLeadTimes.begin()+i);
 	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
 	  fTrailTimes.erase(fTrailTimes.begin()+i);
@@ -271,6 +293,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	}
 	// tL_i < tL   < tT_i < tT   => tT *replaces* tT_i
 	if(fLeadTimes.at(i) < t_lead && t_lead < fTrailTimes.at(i) && fTrailTimes.at(i) < t_trail){
+#if DEBUG>1
+	  cout << "e - erase el i = " << i << " off " << fLeadTimes.size() << endl;
+#endif
 	  fTrailTimes.erase(fTrailTimes.begin()+i);
 	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
 	}
@@ -287,12 +312,10 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
       fLeadTimes.push_back(t_lead);
       fTrailTimes.push_back(t_trail);
     }
-#if DEBUG>0
     if(fLeadTimes.size()!=fTrailTimes.size()){
-      cout << "Warning: size of lead times container: " << fLeadTimes.size() 
+      cout << " A - Warning: size of lead times container: " << fLeadTimes.size() 
 	   << " != size of trail times container: " << fTrailTimes.size() << endl;
     }
-#endif
   }//end if(t_lead && t_trail<30)
 }
 

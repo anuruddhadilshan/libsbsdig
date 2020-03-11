@@ -9,26 +9,41 @@ bb.ps.first_slot = 0
 bb.ps.chan_per_slot = 64
 bb.ps.slot_per_crate = 20
 
+## Detector map
+#bb.ps.detmap = 
+#  2    15    0     63 # One Lecroy 1881M ADC
+#  4     7     0     53 # (Optional) One Lecroy 1877 TDC
+
+## Optional channel map
+bb.ps.chanmap =  1  2  3  4  5  6  7  8
+	         9 10 11 12 13 14 15 16
+                17 18 19 20 21 22 23 24
+                25 26  # 999 999 999 999 999 999
+                27 28 29 30 31 32 33 34 
+ 		35 36 37 38 39 40 41 42 
+                43 44 45 46 47 48 49 50 
+                51 52  # 999 999 999 999 999 999
+
 ##############################################################
 # inconvenient: some of the stuff will need to be redeclared - 
 # but let's not change everythingbefore we're sure it's needed
 
-## Positions in [m] where +z is roated by bb.theta ????
-#bb.ps.position = 0 0 2.5319
+## Positions in [m] where +z is rotated by bb.theta ????
+bb.ps.position = 0 0 2.5319
 
 ## Test settings for one sub-assembly
-#bb.ps.size = 0.74  2.34  0.09
+bb.ps.size = 0.74  2.34  0.09
 
-#bb.ps.ncols = 2
-#bb.ps.nrows = 27
+bb.ps.ncols = 2
+bb.ps.nrows = 26
  
 ## Position of first module
-#bb.ps.xy    =  -1.105  0.185
+bb.ps.xy    =  -1.125  0.185
 ## Space between modules
-#bb.ps.dxdy  =  0.0  0.0
+bb.ps.dxdy  =  0.0  0.0
 
 ## Mininum energy  for a cluster center (not really used right now)
-#bb.ps.emin  = 0.0
+bb.ps.emin  = 0.0
 
 #PS geometry info
 geo.bb.ps.nrows = 26

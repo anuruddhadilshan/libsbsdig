@@ -84,7 +84,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 {
   bool any_events = false;
 
-  if(fDebug>=3)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
+  if(fDebug>=2)cout << "TSBSSimCher::Digitize() : Unique Det ID " << UniqueDetID() << " signal size = " << fSignals.size() << endl;
   
   //UInt_t VETROCword;
   
@@ -104,6 +104,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
     //simdata.fData.clear();
     data.clear();
     //simdata.clear();
+    if(fDebug>=3)cout << "digitize channel " << m << endl;
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
     if(fSignals[m].Npe() > 0) {
       any_events = true;
@@ -127,7 +128,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].MCHitTime(i_mc));
 	
 	if(fEncoderTDC){
-	  if(fDebug>=4)cout << fSignals[m].MCHitLeadTime(i_mc) << " " << fSignals[m].MCHitTrailTime(i_mc) << endl;
+	  if(fDebug>=4)cout << "MC times " << fSignals[m].MCHitLeadTime(i_mc) << " " << fSignals[m].MCHitTrailTime(i_mc) << endl;
 	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].MCHitLeadTime(i_mc));
 	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].MCHitTrailTime(i_mc));
 	}
@@ -141,6 +142,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 
       // Fill ADC
       if(fEncoderADC) {
+        if(fDebug>=4)cout << " dig ADC " << fSignals[m].ADC() << endl;
         adc_data.integral=fSignals[m].ADC();
         fEncoderADC->EncodeADC(adc_data,fEncBuffer,fNEncBufferWords);
         CopyEncodedData(fEncoderADC,mult++,data);
@@ -169,8 +171,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       }
       
       // Fill TDC 
-      if(fEncoderTDC) {
- 	if(fDebug>=4)cout << fSignals[m].TDC(0) << " " << fSignals[m].TDC(1) << endl;
+      if(fEncoderTDC && fSignals[m].TDCSize()) {
+ 	if(fDebug>=4)cout << " dig TDC " << fSignals[m].TDC(0) << " " << fSignals[m].TDC(1) << endl;
 	fEncoderTDC->EncodeTDC(fSignals[m].TDCData(),fEncBuffer,
             fNEncBufferWords);
         CopyEncodedData(fEncoderTDC,mult++,data);
@@ -207,7 +209,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       }
     }//end if fSignals.Npe
   }//end loop on signals
-  if(fDebug>=3){
+  if(fDebug>=2){
     cout << fDetInfo.DetFullName() << " " << any_events << endl;
     event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(true, false, true);
   }
