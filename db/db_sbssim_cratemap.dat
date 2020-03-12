@@ -11,14 +11,14 @@
 # ndata = number_of_samples * nchan => OK
 #
 
-==== Crate  0 type fastbus
+==== Crate  2 type fastbus
 # ADC (+TDCs) for BBPS, BBSH
 # slot model clear header mask       nchan ndata
-   0    1881  1 0x00000000 0x00000000 64     64
-   1    1881  1 0x00000000 0x00000000 64     64
-   2    1881  1 0x00000000 0x00000000 64     64
-   3    1881  1 0x00000000 0x00000000 64     64
-   4    1881  1 0x00000000 0x00000000 64     64
+   15    1881  1 0x00000000 0x00000000 64     64
+   16    1881  1 0x00000000 0x00000000 64     64
+   17    1881  1 0x00000000 0x00000000 64     64
+   18    1881  1 0x00000000 0x00000000 64     64
+   19    1881  1 0x00000000 0x00000000 64     64
 #   5    1881  1 0x00000000 0x00000000 64     64
 #   6    1877  1 0x00000000 0x00000000 96    960
 
@@ -74,7 +74,7 @@
    4    1877  1 0x00000000 0x00000000 96   960
 # one extra for BB PS/SH
 
-==== Crate 2 type vme
+==== Crate 16 type vme
 ## slot model bank
 ## This is only an example. Presently the first 12 crates
 ## match the test setup Marco has for developing the HCAL trigger

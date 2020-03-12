@@ -205,13 +205,17 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   int chanmap_start = 0;
 
   // variables from common db (in SBS-offline)
+  // EPAF: Since SBS-offline does *not* depend on libsbsdig, we do not need these.
+  // If for some reason we do we can switch this back on
+  /*
   DBRequest requestCommon[] = {
     {"detmap", &detmap, kIntV, 0, true}, ///< Optional
     {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional
     {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional
     { 0 }
   };
-  Int_t err = LoadDB (fileCommon, GetInitDate(), requestCommon, prefix.c_str());
+  */
+  Int_t err;// = LoadDB (fileCommon, GetInitDate(), requestCommon, prefix.c_str());
   // Could close the common file already
   fclose(fileCommon);
   
@@ -233,9 +237,11 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     {"dettype",        &dettype_str,    kString,  0, 0},
     ///< REQUIRED! See g4sbs_types.h for list of unique IDs
     {"unique_id",      &det_id,    kInt,  0, 0},
-    {"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
-    {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
-    {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
+// EPAF: Since SBS-offline does *not* depend on libsbsdig, we do not need these.
+// If we do we can switch this back on
+    //{"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
+    //{"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
+    //{"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
     { 0 }
   };
 

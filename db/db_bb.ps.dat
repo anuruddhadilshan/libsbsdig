@@ -4,25 +4,21 @@ bb.ps.dettype = ECal
 bb.ps.unique_id = 10
 
 bb.ps.nchan = 52
-bb.ps.first_crate = 0
-bb.ps.first_slot = 0
+bb.ps.first_crate = 2
+bb.ps.first_slot = 15
 bb.ps.chan_per_slot = 64
 bb.ps.slot_per_crate = 20
 
 ## Detector map
-#bb.ps.detmap = 
-#  2    15    0     63 # One Lecroy 1881M ADC
-#  4     7     0     53 # (Optional) One Lecroy 1877 TDC
+bb.ps.detmap = 
+  2    15    0     63 # One Lecroy 1881M ADC
+#  2     7     0     53 # (Optional) One Lecroy 1877 TDC
 
 ## Optional channel map
-bb.ps.chanmap =  1  2  3  4  5  6  7  8
-	         9 10 11 12 13 14 15 16
-                17 18 19 20 21 22 23 24
-                25 26  # 999 999 999 999 999 999
-                27 28 29 30 31 32 33 34 
- 		35 36 37 38 39 40 41 42 
-                43 44 45 46 47 48 49 50 
-                51 52  # 999 999 999 999 999 999
+bb.ps.chanmap =  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
+                17 18 19 20 21 22 23 24 25 26 999 999 999 999 999 999
+                27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 
+                43 44 45 46 47 48 49 50 51 52 999 999 999 999 999 999
 
 ##############################################################
 # inconvenient: some of the stuff will need to be redeclared - 
