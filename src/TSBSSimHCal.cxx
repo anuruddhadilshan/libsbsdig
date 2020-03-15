@@ -208,8 +208,9 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
   int mult = 0;
   Int_t ADCsum = 0;
   for(size_t m = 0; m < fSignals.size(); m++) {
-    //data.fData.clear();
     data.clear();
+    data_dec.clear();
+    data_mod.clear();
     if(fDebug>=3 && fSignals[m].npe)cout << fSignals[m].npe << endl;
     if(fSignals[m].npe > 0) {
       pulsenorm = fDetInfo.DigInfo().Gain(m)*fDetInfo.DigInfo().ROImpedance()
@@ -261,7 +262,12 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fNsamps.push_back(0);
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fADC_samps.push_back(data_dec);
       event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
-    
+      if(fEncoderTDC){
+	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+      }
+      if(fDebug>=4)cout <<"ADC header: "<< data_mod[0] << endl;
+      
       data.clear();
       data_dec.clear();
       for(uint i = 1; i<data_mod.size(); i++){
@@ -296,7 +302,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	 fEncoderTDC->EncodeTDC(fSignals[m].tdc,fEncBuffer,fNEncBufferWords)){
         CopyEncodedData(fEncoderTDC,mult++,data_mod);
 	if(fDebug>=4)cout << GetName() << " TDC size " << data.size() << endl;
-	
+ 
 	for(uint i = 0; i<data_mod.size(); i++){
 	  if(fDebug>=4)cout << i << "/" << data_mod.at(i) << endl;
 	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fNHits++;
@@ -307,10 +313,10 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	  event.fSimDigSampOutData[fDetInfo.DetFullName()].fDataWord_samps.push_back(data);
 	  if(i==0){//header
 	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(-1000);
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }else{
-	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
+	    event.fSimDigSampOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m)+fDetInfo.NChan());//Shall we store here the "logical" chan ????
 	    if( fSignals[m].tdc.getTime(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].tdc.getTime(i-1);
 	      tdcval ^= ( -0 ^ tdcval) & ( 1 << (31) );
@@ -319,7 +325,7 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
 	    }else{
 	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_L.push_back(fSignals[m].tdc.getTime(i-1)-1.e3/fDetInfo.DigInfo().TDCConversion());
 	      event.fSimDigSampOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
-	    }
+	    } 
 	  }
 	}
 	data.clear();
