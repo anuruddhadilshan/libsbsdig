@@ -204,26 +204,24 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   std::vector<int> detmap,chanmap;
   int chanmap_start = 0;
 
-  // variables from common db (in SBS-offline)
-  // EPAF: Since SBS-offline does *not* depend on libsbsdig, we do not need these.
-  // If for some reason we do we can switch this back on
-  /*
   DBRequest requestCommon[] = {
     {"detmap", &detmap, kIntV, 0, true}, ///< Optional
     {"chanmap", &chanmap, kIntV, 0, true}, ///< Optional
     {"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional
     { 0 }
   };
-  */
-  Int_t err;// = LoadDB (fileCommon, GetInitDate(), requestCommon, prefix.c_str());
+  
+  Int_t err = LoadDB (fileCommon, GetInitDate(), requestCommon, prefix.c_str());
   // Could close the common file already
   fclose(fileCommon);
+  
+  
   
   FILE* file = OpenFile( fileName.c_str(), GetInitDate() );
 
   string dettype_str;
   int det_id = -1;
-  int nchan, nlog_chan = 0;
+  uint nchan, nlog_chan = 0;
   int first_crate = -1, first_slot = 0;
   bool ignore_slotcrate = true;
   int slot_per_crate = 22, chan_per_slot = 16; //< Just an arbitrary values
@@ -237,8 +235,6 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     {"dettype",        &dettype_str,    kString,  0, 0},
     ///< REQUIRED! See g4sbs_types.h for list of unique IDs
     {"unique_id",      &det_id,    kInt,  0, 0},
-// EPAF: Since SBS-offline does *not* depend on libsbsdig, we do not need these.
-// If we do we can switch this back on
     //{"detmap", &detmap, kIntV, 0, true}, ///< Optional (override detmap)
     //{"chanmap", &chanmap, kIntV, 0, true}, ///< Optional (override)
     //{"chanmap_start", &chanmap_start, kInt, 0, true}, ///< Optional (override)
@@ -347,8 +343,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     detinfo.SetSlotPerCrate(slot_per_crate);
     detinfo.SetFirstCrate(first_crate);
   } else {
-    int crate,slot,ch_lo,ch_hi,chan_count, ch_count;
-    chan_count = 0;
+    int crate,slot,ch_lo,ch_hi, ch_count;
+    uint chan_count = 0;
     for(size_t k = 0; k < detmap.size(); k+=4) {
       ch_count = 0;
       crate  = detmap[k];
@@ -365,6 +361,22 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
       detinfo.AddSlot(crate,slot,ch_lo,ch_hi);
       chan_count += ch_count;
     }
+    
+    if(!chanmap.empty()){
+      // EPAF: if chan map is not empty, we need to check its size 
+      // corresponds to the number of channels in the detmap!!!
+      if(chan_count==chanmap.size()){
+	// then we can reevaluate the actual number of channels
+	chan_count = 0;
+	for(size_t ch = 0; ch < chanmap.size(); ch++){
+	  if(fDebug>=2)cout << ch << " " << chanmap[ch] << endl;
+	  if(chanmap[ch]>=0)chan_count++;
+	}
+      }
+      // ... we can't load chanmap now, 
+      // cause it needs the detmap to be loaded already
+    }
+    
     if(chan_count != nlog_chan) {
       Error(Here(here), "Number of logical channels read in detmap (%d) does "
           "not match expected (%d)",chan_count,nlog_chan);
@@ -377,13 +389,17 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 
   // If the user specified a channel map, build that now
   if(!chanmap.empty()) {
-    if (int(chanmap.size()) != nlog_chan) {
+    // EPAF: except that now, if the chanmap exists, it has been checked!
+    // so no need to do that again
+    /*
+      if (int(chanmap.size()) != nlog_chan) {
       Error(Here(here), "Number of logical channels read in chanmap (%d) does "
-          "not match expected (%d)",int(chanmap.size()),nlog_chan);
+      "not match expected (%d)",int(chanmap.size()),nlog_chan);
       err = kInitError;
-    } else {
-      detinfo.LoadChannelMap(chanmap,chanmap_start);
-    }
+      } else {
+    */
+    detinfo.LoadChannelMap(chanmap,chanmap_start);
+    //}
   }
 
   const string digprefix = "dig."+prefix;
@@ -541,7 +557,7 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     }
     
     if(threshold->size()!=detinfo.NChan()){
-      cout << "warning: number of thresholds in input (" << gain->size() 
+      cout << "warning: number of thresholds in input (" << threshold->size() 
 	   << ") does not match number of channels (" << detinfo.NChan()
 	   << ")" << endl;
       cout << "First threshold entry used for all channels. " << endl
