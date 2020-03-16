@@ -196,10 +196,7 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_L.push_back(-1000000);
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fTDC_T.push_back(-1000000);
 	  }else{
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fNHits++;
 	    event.fSimDigOutData[fDetInfo.DetFullName()].fChannel.push_back(Short_t(m));
-	    event.fSimDigOutData[fDetInfo.DetFullName()].fDataWord.push_back(data.at(i));
-	    if(fEncoderADC)event.fSimDigOutData[fDetInfo.DetFullName()].fADC.push_back(-1000000);
 	    if( fSignals[m].TDC(i-1) & ( 1 << (31) ) ){
 	      tdcval = fSignals[m].TDC(i-1);
 	      if(fDebug>=4)cout << " T: " << tdcval << " => ";
