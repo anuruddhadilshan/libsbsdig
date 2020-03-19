@@ -80,6 +80,7 @@ void TSBSSimScint::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer
       fSignals[chan].Fill(fSPE, npe, fDetInfo.DigInfo().Threshold(chan), time, signal);
       if(fDebug>=3)cout << " fSignals[" << chan << "] filled, adding edep " << edep << endl;
       fSignals[chan].AddSumEdep(edep);
+      if(!fSignals[chan].check_vec_size())cout << "Warning: Size of MC info containers for " << fDetInfo.DetFullName() << " don't check out!!!" << endl;
     }
   }//end loop on evbuffer
 }
@@ -215,9 +216,8 @@ void TSBSSimScint::Digitize(TSBSSimEvent &event)
       }
     }//end if fSignals.Npe
   }//end loop on signals
-  if(fDebug>=2){
-    cout << fDetInfo.DetFullName() << " " << any_events << endl;
-    event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(true, false, true);
+  if(!event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderADC), bool(fEncoderTDC), fDebug>=0)){
+    cout << "Warning: output vectors for" << fDetInfo.DetFullName() << " don't have the same size! (any events ?" << any_events << ")" << endl;
   }
   SetHasDataFlag(any_events);
 }

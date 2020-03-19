@@ -427,9 +427,9 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	mpd_data.adc_id++;
       }
       //data.fChannel++;
-      if(fDebug>=3){
-	cout << planename << endl;
-	event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(true, true);
+      //if(fDebug>=3)
+      if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(true, true)){
+	cout << "Warning: output vectors for" << planename << " don't have the same size!" << endl;
       }
       
     }

@@ -345,9 +345,8 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       */
     }
   }
-  if(fDebug>=2){
-    cout << fDetInfo.DetFullName() << " " << any_events << endl;
-    event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(false, true);
+  if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderTDC), fDebug>=2)){
+    cout << "Warning: output vectors for" << fDetInfo.DetFullName() << " don't have the same size! (any events ?" << any_events << ")" << endl;
   }
   SetHasDataFlag(any_events);
 }

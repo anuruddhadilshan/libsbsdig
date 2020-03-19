@@ -96,7 +96,7 @@ bool TSPEModel::PulseOverThr(double charge, double thr)
   }
 };
  
-void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail)
+bool TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail)
 {
 #if DEBUG>0
   cout << "Find Lead and Trail time for pulse charge " << charge << " over threshold " << thr << endl;
@@ -105,6 +105,7 @@ void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, dou
   if(!PulseOverThr(charge, thr)){
     t_lead = 1.0e38;
     t_trail = 1.0e38;
+    return false;
   }else{
     /*
     double xmax = fPulseModel->GetMaximumX();
@@ -112,8 +113,21 @@ void TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, dou
     t_trail = fPulseModel->GetX(thr/charge, xmax, fPulseModel->GetXmax());
     */
     double xmax = fPulseHisto->GetBinCenter(fPulseHisto->GetMaximumBin());
-    t_lead = GetHistoX(thr/charge, fPulseHisto->GetBinLowEdge(1), xmax);
-    t_trail = GetHistoX(thr/charge, xmax, fPulseHisto->GetBinLowEdge(fPulseHisto->GetNbinsX()+1));
+    if(fPulseHisto->GetBinContent(1)<thr/charge){
+      t_lead = GetHistoX(thr/charge, fPulseHisto->GetBinLowEdge(1), xmax);
+    }else{
+      t_lead = 1.0e38;
+      return false;
+    }
+    if(fPulseHisto->GetBinContent(fPulseHisto->GetNbinsX())<thr/charge){
+      t_trail = GetHistoX(thr/charge, xmax, fPulseHisto->GetBinLowEdge(fPulseHisto->GetNbinsX()+1));
+    }else{
+      t_trail = 1.0e38;
+      return false;
+    }
+    //why does this function seem to oblitarate fMCHit containers when t_trail is calculated to be 1.e38... GetHistoX?
+    if(t_trail>1.e30) cout << "thr/charge" << thr/charge << " >? " <<  fPulseHisto->GetBinContent(fPulseHisto->GetNbinsX()) << " or " << fPulseHisto->GetBinContent(fPulseHisto->GetNbinsX()+1) << endl;
+    return true;
   }
 }
 
@@ -144,6 +158,13 @@ TPMTSignal::TPMTSignal()
   fTDCs.clear();
   
   fRN = TRndmManager::GetInstance();
+  
+  fMCHitSource.clear();
+  fMCHitEdep.clear();
+  fMCHitNpe.clear();
+  fMCHitTime.clear();
+  fMCHitLeadTimes.clear();
+  fMCHitTrailTimes.clear();
 }
 
 TPMTSignal::TPMTSignal(double npechargeconv)
@@ -174,22 +195,37 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   //determine lead and trail times
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
-  model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
-  t_lead+=evttime;
-  t_trail+=evttime;
+  bool goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  //t_lead+=evttime;
+  //t_trail+=evttime;
 #if DEBUG>0
   cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail 
        << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
 #endif
-  
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000){
+    cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
+    cout << fMCHitSize << " " << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
+  }
+
   fMCHitSize++;
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << fMCHitSize << endl;
   fMCHitSource.push_back(signal);
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " src " << &fMCHitSource << endl;
   fMCHitNpe.push_back(npe);
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " Npe " << &fMCHitNpe << endl;
   fMCHitTime.push_back(evttime);
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " time " << &fMCHitTime << endl;
   fMCHitLeadTimes.push_back(t_lead);
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " leadtime " << &fMCHitLeadTimes << endl;
   fMCHitTrailTimes.push_back(t_trail);
+  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " trailtime " << &fMCHitTrailTimes << endl;
+  /**/
   
-  if(t_lead<1e30 && t_trail<1e30){
+  if(goodtime){//t_lead<1e30 && t_trail<1e30){
+    //cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;   
+    t_lead+=evttime;
+    t_trail+=evttime;
+    
     //Filter here the lead and trail times
     if(fLeadTimes.size()>0){
       // Check if the lead and trail times are inside an existing lead time- trail time pair
@@ -205,8 +241,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
       for(size_t i = 0; i<fLeadTimes.size(); i++){
 	// possibility of the current pair straddling with others.... :/
 	// treat those separately to simplify...
+	//cout << " i = " << i << " / " << fLeadTimes.size() << endl;
 	// tL < tT_i-1 < tL_i < tT
-	if(i>0)
+	if(i>0){
 	  if(t_lead < fTrailTimes.at(i-1) && fLeadTimes.at(i) < t_trail){
 	    //do necessary substitutions first, then erase
 	    // tL < tL_i-1 => tL *replaces* tL_i-1
@@ -215,7 +252,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	      cout << "a1 - erase el i-1 = " << i+1 << " off " << fLeadTimes.size() << endl;
 #endif
 	      fLeadTimes.erase(fLeadTimes.begin()+i-1);
+	      //cout << "a1 - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	      fLeadTimes.insert(fLeadTimes.begin()+i-1, t_lead);
+	      //cout << "a1 - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	    }
 	    // tT_i < tT => tT *replaces* tT_i
 	    if(fTrailTimes.at(i) < t_trail){
@@ -223,17 +262,21 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	      cout << "a2 - erase el i = " << i << " off " << fLeadTimes.size() << endl;
 #endif
 	      fTrailTimes.erase(fTrailTimes.begin()+i);
+	      //cout << "a1 - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	      fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	      //cout << "a1 - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	    }
 #if DEBUG>1
 	    cout << "a - erase el i = " << i << " and i-1 off " << fLeadTimes.size() << " " << endl;
 #endif
 	    fLeadTimes.erase(fLeadTimes.begin()+i);
 	    fTrailTimes.erase(fTrailTimes.begin()+i-1);
+	    //cout << "a - new size: " << fLeadTimes.size() << " " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	    break;
 	  }
+	}//end if(i>0)
 	// tL < tT_i < tL_i+1 < tT
-	if(i<fLeadTimes.size()-1)
+	if(i<fLeadTimes.size()-1){
 	  if(t_lead < fTrailTimes.at(i) && fLeadTimes.at(i+1) < t_trail){
 	    //do necessary substitutions first, then erase
 	    // tL < tL_i => tL *replaces* tL_i
@@ -242,7 +285,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	      cout << "b1 - erase el i = " << i << " off " << fLeadTimes.size() << endl;
 #endif
 	      fLeadTimes.erase(fLeadTimes.begin()+i);
+	      //cout << "b1 - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	      fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	      //cout << "b1 - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	    }
 	    // tT_i+1 < tT => tT *replaces* tT_i+1
 	    if(fTrailTimes.at(i+1) < t_trail){
@@ -250,21 +295,27 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	      cout << "b2 - erase el i+1 = " << i+1 << " off " << fLeadTimes.size() << endl;
 #endif
 	      fTrailTimes.erase(fTrailTimes.begin()+i+1);
+	      //cout << "b2 - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	      fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	      //cout << "b2 - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	    }
 #if DEBUG>1
 	    cout << "b - erase el i = " << i << " and i+1 off " << fLeadTimes.size() << " " << endl;
 #endif
 	    fLeadTimes.erase(fLeadTimes.begin()+i+1);
 	    fTrailTimes.erase(fTrailTimes.begin()+i);
+	    //cout << "b - new size: " << fLeadTimes.size() << " " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	    break;
 	  }
+	}//end if(i<fLeadTimes.size()-1)
 	
 	// if not, 6 cases to consider:
 	// tL < tT < tL_i < tT_i => both inserted *before* existing pair 
 	if(t_trail < fLeadTimes.at(i)){
+	  //cout << "c1 insert el " << i << " / " << fLeadTimes.size() << endl;
 	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
-	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail); 
+	  //cout << "c1 - new size: " << fLeadTimes.size() << " " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	  break;
 	}
 	// tL < tL_i < tT < tT_i => tL *replaces* tL_i
@@ -273,7 +324,9 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	  cout << "c - erase el i = " << i << " off " << fLeadTimes.size() << endl;
 #endif
 	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  //cout << "c - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  //cout << "c - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	  break;
 	}
 	// tL_i < tL < tT < tT_i => tL *replaces* tL_i AND tT *replaces* tT_i
@@ -282,13 +335,18 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	  cout << "d - erase el i = " << i << " off " << fLeadTimes.size() << endl;
 #endif
 	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  //cout << "d - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  //cout << "d - new size: " << fLeadTimes.size() << " ( i = " << i << ")" << endl;
 	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  //cout << "d - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  //cout << "d - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	  break;
 	}
 	// tL < tL_i < tT_i < tT => nothing happens
 	if(fLeadTimes.at(i) < t_lead && t_trail < fTrailTimes.at(i)){
+	  //cout << "e1 - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	  break;
 	}
 	// tL_i < tL   < tT_i < tT   => tT *replaces* tT_i
@@ -297,26 +355,40 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 	  cout << "e - erase el i = " << i << " off " << fLeadTimes.size() << endl;
 #endif
 	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  //cout << "e - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  //cout << "e - new size: " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	}
 	// tL_i < tL   < tT   < tT_i => both inserted *after* existing pair 
 	if(fTrailTimes.at(i) < t_lead){
+	  //cout << "f1 insert el " << i+1 << " / " << fLeadTimes.size() << endl;
 	  fLeadTimes.insert(fLeadTimes.begin()+i+1, t_lead);
 	  fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	  //cout << "f - new size: " << fLeadTimes.size() << " " << fTrailTimes.size() << " ( i = " << i << ")" << endl;
 	  break;
 	}
+	if(fLeadTimes.size()!=fTrailTimes.size()){
+	  cout << " A - Warning: size of lead times container: " << fLeadTimes.size() 
+	       << " != size of trail times container: " << fTrailTimes.size() << endl;
+	}
+	if(i>=fLeadTimes.size())cout << "Warning: i = " << i << " >= size of containers = " << fLeadTimes.size() << endl;
       }
     }else{
       //of course, if initial size was 0, just psuh it back
       //hopefully it will be the case most of the time
+      //cout << "g - insert (push back): " << fLeadTimes.size() << " " << fTrailTimes.size() << endl;
       fLeadTimes.push_back(t_lead);
       fTrailTimes.push_back(t_trail);
+      //cout << "g - new size: " << fLeadTimes.size() << " " << fTrailTimes.size() << endl;
     }
     if(fLeadTimes.size()!=fTrailTimes.size()){
       cout << " A - Warning: size of lead times container: " << fLeadTimes.size() 
 	   << " != size of trail times container: " << fTrailTimes.size() << endl;
     }
   }//end if(t_lead && t_trail<30)
+  //cout << "end TPMTSignal" << endl;
+  //if(!check_vec_size())cout << "Warning: Size of MC info containers don't check out!!!" << endl;
+
 }
 
 void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
@@ -399,6 +471,37 @@ void TPMTSignal::Clear(Option_t*)
   fMCHitLeadTimes.clear();
   fMCHitTrailTimes.clear();
 }
+
+bool TPMTSignal::check_vec_size(bool ignore_edep)
+{
+  bool b = true;
+  if(fMCHitSize!=fMCHitSource.size()){
+    printf("fMCHitSource.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
+    b = false;
+  }
+  if(ignore_edep && fMCHitSize!=fMCHitEdep.size()){
+    printf("fMCHitEdep.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
+    b = false;
+  }
+  if(fMCHitSize!=fMCHitNpe.size()){
+    printf("fMCHitNpe.size() = %zu != %u\n", fMCHitNpe.size(), fMCHitSize);
+    b = false;
+  }
+  if(fMCHitSize!=fMCHitTime.size()){
+    printf("fMCHitTime.size() = %zu != %u\n", fMCHitTime.size(), fMCHitSize);
+    b = false;
+  }
+  if(fMCHitSize!=fMCHitLeadTimes.size()){
+    printf("fMCHitLeadTime.size() = %zu != %u\n", fMCHitLeadTimes.size(), fMCHitSize);
+    b = false;
+  }
+  if(fMCHitSize!=fMCHitTrailTimes.size()){
+    printf("fMCHitTrailTime.size() = %zu != %u\n", fMCHitTrailTimes.size(), fMCHitSize);
+    b = false;
+  }
+  return b;
+}
+
 
 //
 // Class TDigSlot

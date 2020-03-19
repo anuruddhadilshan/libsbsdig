@@ -354,10 +354,10 @@ class TSPEModel : public TObject {
   //double Eval(double t){return fPulseModel->Eval(t);};
   double Eval(double t){return fPulseHisto->Interpolate(t);};
   bool   PulseOverThr(double charge, double thr);
-  void   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
+  bool   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
   
  private:
-  TF1 *fPulseModel;// We'll have to ditch that stuff... *sigh*
+  //TF1 *fPulseModel;// We'll have to ditch that stuff... *sigh*
   TH1D *fPulseHisto;//At least we'll have to setup and use one per detector
   double GetHistoX(double y, double x1, double x2);
   //void  BuildHisto(double tau, double sigma);
@@ -405,35 +405,7 @@ class TPMTSignal : public TObject {
   double MCHitTrailTime(uint i){return fMCHitTrailTimes.at(i);};
   
   //check vectors size
-  bool check_vec_size(){
-    bool b = true;
-    if(fMCHitSize!=fMCHitSource.size()){
-      printf("fMCHitSource.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
-      b = false;
-    }
-    if(fMCHitSize!=fMCHitEdep.size()){
-      printf("fMCHitEdep.size() = %zu != %u\n", fMCHitEdep.size(), fMCHitSize);
-      b = false;
-    }
-    if(fMCHitSize!=fMCHitNpe.size()){
-      printf("fMCHitNpe.size() = %zu != %u\n", fMCHitNpe.size(), fMCHitSize);
-      b = false;
-    }
-    if(fMCHitSize!=fMCHitTime.size()){
-      printf("fMCHitTime.size() = %zu != %u\n", fMCHitTime.size(), fMCHitSize);
-      b = false;
-    }
-    if(fMCHitSize!=fMCHitLeadTimes.size()){
-      printf("fMCHitLeadTime.size() = %zu != %u\n", fMCHitLeadTimes.size(), fMCHitSize);
-      b = false;
-    }
-    if(fMCHitSize!=fMCHitTrailTimes.size()){
-      printf("fMCHitTrailTime.size() = %zu != %u\n", fMCHitTrailTimes.size(), fMCHitSize);
-      b = false;
-    }
-    return b;
-  }
-  
+  bool check_vec_size(bool ignore_edep = false);
   
  private:
   //summing variables for dig...
@@ -461,72 +433,6 @@ class TPMTSignal : public TObject {
   
   ClassDef(TPMTSignal,1);
 };
-
-/*
-class TRndmManager : public TObject {
- public:
-  static TRndmManager* GetInstance() {
-    if (fManager == NULL) fManager = new TRndmManager();
-    return fManager;
-  }
-  TRandom3* Rndm()
-    
- private:
-  TRandom3* fRN;
-  static TRndmManager* fManager;
-}
-*/
-
-
-/*
-//
-// That class was too complicated... about to scrap...
-//
-class TNPEModel : public TObject {
- public:
-  TNPEModel(DigInfo diginfo, const char* detname, int npe = 1);
-  //TNPEModel(const char* detname, double);
-  double GetNpe(){return fNpe;};
-  double GetCharge(int chan);
-  void   SetNpe(double npe){fNpe = npe;};
-  double GetStartTime(){return fStartTime;};
-  void   SetStartTime(double t){fStartTime = t;};
-  // double GetADCconversion(){return fDigInfo.fADCconversion;};
-  // double GetTDCconversion(){return fDigInfo.fTDCconversion;};
-
-  double Eval(int chan, double t);
-  void   FindLeadTrailTime(int chan, double &t_lead, double &t_trail);
-  bool   PulseOverThr(int chan = 0);
-    
-  ~TNPEModel(){};
-  
- private:
-  DigInfo fDigInfo;// too much info/memory - better off not having it - 
-  // specially since it will be used in detector classes which have the info.
-  TF1 *fModel;
-  double fScale;// Npe charge scale.
-  double fNpe;
-  double fStartTime;
-  
-  / *
-  double gain_pmt;
-  double resistance; //ohm
-  double qe; //
-  double unit;
-  double scale;
-  TF1 *fFunc1;
-  TF1 *fFunc2;
-  TF1Convolution *fConvolution;
-  double mint;
-  double start_t;
-  double maxt;
-  double tau;
-  double sig;
-  double t0;
-  * /
-  ClassDef(TNPEModel,1);
-};
-*/
 
 
 #endif // TSBSSIMAUXI_H
