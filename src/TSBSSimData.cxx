@@ -102,9 +102,9 @@ void simhitmc_outdata::Clear(){
   fSimTrailTime.clear();
 }
 
-bool simhitmc_outdata::CheckSize(bool ignore_edep,
-				 bool ignore_npe,
-				 bool ignore_times,
+bool simhitmc_outdata::CheckSize(bool check_edep,
+				 bool check_npe,
+				 bool check_times,
 				 bool print)
 {
   bool checkout = true;
@@ -124,11 +124,11 @@ bool simhitmc_outdata::CheckSize(bool ignore_edep,
     checkout = false;
     if(print)printf("fSimChannel.size() = %zu != %u\n", fSimChannel.size(), fNSimHits);
   }
-  if(fSimEdep.size()!=fNSimHits && !ignore_edep){
+  if(fSimEdep.size()!=fNSimHits && check_edep){
     checkout = false;
     if(print)printf("fSimEdep.size() = %zu != %u\n", fSimEdep.size(), fNSimHits);
   }
-  if(fSimNpe.size()!=fNSimHits && !ignore_npe){
+  if(fSimNpe.size()!=fNSimHits && check_npe){
     checkout = false;
     if(print)printf("fSimNpe.size() = %zu != %u\n", fSimNpe.size(), fNSimHits);
   }
@@ -136,11 +136,11 @@ bool simhitmc_outdata::CheckSize(bool ignore_edep,
     checkout = false;
     if(print)printf("fSimTime.size() = %zu != %u\n", fSimTime.size(), fNSimHits);
   }
-  if(fSimLeadTime.size()!=fNSimHits){
+  if(fSimLeadTime.size()!=fNSimHits && check_times){
     checkout = false;
     if(print)printf("fSimLeadTime.size() = %zu != %u\n", fSimLeadTime.size(), fNSimHits);
   }
-  if(fSimTrailTime.size()!=fNSimHits){
+  if(fSimTrailTime.size()!=fNSimHits && check_times){
     checkout = false;
     if(print)printf("fSimTrailTime.size() = %zu != %u\n", fSimTrailTime.size(), fNSimHits);
   }
@@ -170,12 +170,9 @@ void simgemhitmc_outdata::Clear(){
   fPZ.clear();
 }
 
-bool simgemhitmc_outdata::CheckSize(bool ignore_edep, 
-				    bool ignore_npe, 
-				    bool ignore_times, 
-				    bool print)
+bool simgemhitmc_outdata::CheckSize(bool print)
 {
-  bool checkout = simhitmc_outdata::CheckSize(ignore_edep, ignore_npe, ignore_times, print);
+  bool checkout = simhitmc_outdata::CheckSize(true, false, false, print);
 
   if(fPlane.size()!=fNSimHits){
     checkout = false;

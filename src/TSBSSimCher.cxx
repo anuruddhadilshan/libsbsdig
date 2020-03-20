@@ -37,6 +37,7 @@ void TSBSSimCher::Init()
   //Configure the PMT signals array
   fSignals.resize(fDetInfo.NChan());
   for(size_t i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
+    fSignals[i_ch].Clear();
     fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));
   }
 }
@@ -75,8 +76,9 @@ void TSBSSimCher::LoadAccumulateData(const std::vector<g4sbshitdata*> &evbuffer)
       if(fDebug>=3)
 	cout << "Detector " << UniqueDetID() << " chan = " << chan << " Npe " << npe << " Evt Time: "<< ev->GetData(2) << " " << time << endl;
       
+      if(!fSignals[chan].check_vec_size(false))cout << "Warning: *before filling* MC vector container sizes for det " << fDetInfo.DetFullName() << " chan " << chan << " dont check out!" << endl;
       fSignals[chan].Fill(fSPE, npe, fDetInfo.DigInfo().Threshold(chan), time, signal);
-      if(!fSignals[chan].check_vec_size(false))cout << "Warning: Sizes of MC info containers for " << fDetInfo.DetFullName() << " don't check out!!!" << endl;
+      if(!fSignals[chan].check_vec_size(false))cout << "Warning: Sizes of MC info containers for " << fDetInfo.DetFullName() << " chan " << chan << " don't check out!!!" << endl;
     }
   }//end loop on evbuffer
 }
@@ -207,8 +209,11 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       }
     }//end if fSignals.Npe
   }//end loop on signals
-  if(!event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderADC), bool(fEncoderTDC), fDebug>=0)){
+  if(!event.fSimDigOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderADC), bool(fEncoderTDC), fDebug>=2)){
     cout << "Warning: output vectors for" << fDetInfo.DetFullName() << " don't have the same size! (any events ?" << any_events << ")" << endl;
+  }
+  if(!event.fSimHitMCOutData[fDetInfo.DetFullName()].CheckSize(false, true, bool(fEncoderTDC), fDebug>=0)){
+    cout << "Warning:  output MC vectors for " << fDetInfo.DetFullName() << " don't have the same size! " << endl;
   }
   SetHasDataFlag(any_events);
 }
@@ -216,7 +221,7 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
 // Clear signals in array
 void TSBSSimCher::Clear(Option_t *)
 {
-  for(size_t i = 0; i < fSignals.size(); i++ ) {
+  for(size_t i = 0; i < fDetInfo.NChan(); i++ ) {
     fSignals[i].Clear();
   }
 }

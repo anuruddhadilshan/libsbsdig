@@ -164,7 +164,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     for(int i = 0; i<fTree->Earm_GRINCH.nhits; i++){
       g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 4);
       grinchhit->SetData(0, fSource);
-      grinchhit->SetData(1, int(fTree->Earm_GRINCH.PMT->at(i)/5));
+      grinchhit->SetData(1, int(fTree->Earm_GRINCH.PMT->at(i)/5)-1);
+      // -1 is to range from 0 to 509 instead of 1 to 510 :/
       //grinchhit->SetData(2, 0);
       grinchhit->SetData(2, fTree->Earm_GRINCH.Time_avg->at(i));
       grinchhit->SetData(3, fTree->Earm_GRINCH.NumPhotoelectrons->at(i));

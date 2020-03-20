@@ -96,9 +96,9 @@ class simhitmc_outdata{
   std::vector<Double_t>  fSimTrailTime;
   
   void Clear();
-  bool CheckSize(bool ignore_edep = false, 
-		 bool ignore_npe = false, 
-		 bool ignore_times = false, 
+  bool CheckSize(bool check_edep = true, 
+		 bool check_npe = true, 
+		 bool check_times = true, 
 		 bool print = false);
 };
 
@@ -120,10 +120,7 @@ class simgemhitmc_outdata: public simhitmc_outdata{
   std::vector<Double_t>  fPZ;
   
   void Clear();
-  bool CheckSize(bool ignore_edep = false, 
-		 bool ignore_npe = false, 
-		 bool ignore_times = false, 
-		 bool print = false);
+  bool CheckSize(bool print = false);
 };
 
 

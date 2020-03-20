@@ -107,11 +107,6 @@ bool TSPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, dou
     t_trail = 1.0e38;
     return false;
   }else{
-    /*
-    double xmax = fPulseModel->GetMaximumX();
-    t_lead = fPulseModel->GetX(thr/charge, fPulseModel->GetXmin(), xmax);
-    t_trail = fPulseModel->GetX(thr/charge, xmax, fPulseModel->GetXmax());
-    */
     double xmax = fPulseHisto->GetBinCenter(fPulseHisto->GetMaximumBin());
     if(fPulseHisto->GetBinContent(1)<thr/charge){
       t_lead = GetHistoX(thr/charge, fPulseHisto->GetBinLowEdge(1), xmax);
@@ -196,36 +191,25 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
   bool goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
-  //t_lead+=evttime;
-  //t_trail+=evttime;
+  
+  t_lead+=evttime;
+  t_trail+=evttime;
+  
 #if DEBUG>0
   cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail 
        << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
+    cout << "after " << fMCHitSize << " " << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
 #endif
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000){
-    cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;
-    cout << fMCHitSize << " " << &fMCHitSource << " " << &fMCHitNpe << " " << &fMCHitTime << " " << &fMCHitLeadTimes << " " << &fMCHitTrailTimes << endl;
-  }
 
   fMCHitSize++;
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << fMCHitSize << endl;
   fMCHitSource.push_back(signal);
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " src " << &fMCHitSource << endl;
   fMCHitNpe.push_back(npe);
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " Npe " << &fMCHitNpe << endl;
   fMCHitTime.push_back(evttime);
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " time " << &fMCHitTime << endl;
   fMCHitLeadTimes.push_back(t_lead);
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " leadtime " << &fMCHitLeadTimes << endl;
   fMCHitTrailTimes.push_back(t_trail);
-  if( (t_lead>1e30 && t_trail<1e30)|| (t_lead<1e30 && t_trail>1e30) || fMCHitSize>10000)cout << " trailtime " << &fMCHitTrailTimes << endl;
-  /**/
   
   if(goodtime){//t_lead<1e30 && t_trail<1e30){
     //cout << "past find lead/trail time: t_lead = " << t_lead << ", t_trail = " << t_trail << " (sig = " << npe*fNpeChargeConv << ", thr = " << thr << " mV)." << endl;   
-    t_lead+=evttime;
-    t_trail+=evttime;
-    
     //Filter here the lead and trail times
     if(fLeadTimes.size()>0){
       // Check if the lead and trail times are inside an existing lead time- trail time pair
