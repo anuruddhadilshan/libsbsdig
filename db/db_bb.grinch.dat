@@ -47,10 +47,12 @@ dig.bb.grinch.spe_transit = 33.0  # ns
 #grinch detector map
 # crate slot ch_min ch_max
 bb.grinch.detmap =
-   2     0       0     127
-   2     1       0     127
-   2     2       0     127
-   2     3       0     125
+   6     0       0     127
+   6     1       0     127
+   6     2       0     127
+   6     3       0     125
+
+
 
 #dig.bb.grinch.gain = 7.0e6
 #dig.bb.grinch.pedestal = 0.0
@@ -62,13 +64,17 @@ bb.grinch.xyz = -0.9145 -0.124 0.0 #m # we don't really need z
 # inconvenient: some of the stuff will need to be redeclared - 
 # but let's not change everything before we're sure it's needed
 
-#bb.grinch.nrows = 60
-#bb.grinch.ncols = 9
-#bb.grinch.xsize = 1.86
-#bb.grinch.ysize = 0.279
-#bb.grinch.zpos = 1.3824 #m
-#bb.grinch.xoffset = 0.0 #m
-#bb.grinch.yoffset = 0.0 #m
+bb.grinch.nrows = 60
+bb.grinch.ncols = 9
+bb.grinch.xsize = 1.86
+bb.grinch.ysize = 0.279
+bb.grinch.pmtdistx = 0.031
+bb.grinch.pmtdisty = 0.031
+bb.x_tcpmt = -0.9145
+bb.y_tcpmt = -0.124
+bb.grinch.zpos = 1.3824 #m
+bb.grinch.xoffset = 0.0 #m
+bb.grinch.yoffset = 0.0 #m
 
 dig.bb.grinch.pedestal = 
  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
