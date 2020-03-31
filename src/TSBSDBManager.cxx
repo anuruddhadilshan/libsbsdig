@@ -320,8 +320,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   DBRequest request[] = {
     {"nchan",          &nchan,          kInt,     0, 0}, ///<REQUIRED
     {"nlog_chan",      &nlog_chan,      kInt,     0, true},
-    {"chan_per_slot",  &chan_per_slot,  kInt,     0, true},
-    {"slot_per_crate", &slot_per_crate, kInt,     0, true},
+    {"chan_per_slot",  &chan_per_slot,  kInt,     0, ignore_slotcrate},
+    {"slot_per_crate", &slot_per_crate, kInt,     0, ignore_slotcrate},
     {"first_crate", &first_crate, kInt,     0, ignore_slotcrate},
     {"first_slot", &first_slot, kInt,     0, ignore_slotcrate},
     { 0 }
@@ -402,7 +402,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     //}
   }
 
-  const string digprefix = "dig."+prefix;
+  //const string digprefix = "dig."+prefix;
+  const string digprefix = prefix;// EPAF: that will be much more convenient for a common db between libsbsdig and analysis
   
   bool ignore_pmt = false;
   if(detinfo.DetType()==kGEM) ignore_pmt = true;
@@ -604,7 +605,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
 	 << endl;
   }
     
-  const string geoprefix = "geo."+prefix;
+  //const string geoprefix = "geo."+prefix;
+  const string geoprefix = prefix;// EPAF: that will be much more convenient for a common db between libsbsdig and analysis
   
   if(detinfo.DetType()==kGEM || detinfo.DetType()==kScint){
     UInt_t nplanes;
