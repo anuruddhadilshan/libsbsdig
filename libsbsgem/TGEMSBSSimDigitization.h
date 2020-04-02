@@ -75,6 +75,11 @@ public:
   Float_t  GetCharge (Int_t n) const {return fCharge[n];}
   Int_t    GetADC (Int_t n, Int_t ks) const {return fStripADC[n*fNSamples+ks];}
   Int_t    GetSimADC (Int_t n, Int_t ks) const {return fStripSimADC[n*fNSamples+ks];}
+  Int_t    GetSimADCSum (Int_t n) const {
+    Int_t sum = 0;
+    for(int i = 0; i<fNSamples; i++)sum+= GetSimADC (n, i);
+    return sum;
+  }
   void SetSimADC (Int_t n, Int_t ks, Int_t adc){fStripSimADC[n*fNSamples+ks] = adc;}
   UShort_t GetNSamples() const {return fNSamples;}
   UShort_t GetNStrips() const {return fNStrips;}
@@ -147,6 +152,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   Float_t GetCharge (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetCharge (n);}
   Int_t   GetADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetADC (n, ks);}
   Int_t   GetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetSimADC (n, ks);}
+  Int_t   GetSimADCSum (UInt_t ich, UInt_t ip, Int_t n) const {return fDP[ich][ip]->GetSimADCSum (n);}
   void SetSimADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks, Int_t adc) {fDP[ich][ip]->SetSimADC (n, ks,adc);}
   UInt_t   GetNChambers() const {return fNChambers;};
   UInt_t   GetNPlanes (const UInt_t i) const {return fNPlanes[i];}
@@ -172,6 +178,7 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   
   void SetTimeZero(double t0){fTimeZero = t0;}
   Double_t CommonMode(UInt_t i_mpd);
+  Double_t ZeroSupThreshold(UInt_t i_mpd);
   
   // APV cross talk parameters
   static Int_t    fDoCrossTalk;  //whether we want to do cross talk simulation
@@ -272,8 +279,9 @@ class TGEMSBSSimDigitization: public THaAnalysisObject
   std::vector<Short_t>  fDADC;
 
   //zero suppression and common mode
+  Bool_t fDoZeroSup;
   Double_t fZeroSup;
-  Bool_t fApplyCommonMode;
+  Bool_t fDoCommonMode;
   std::vector<Double_t> fCommonModeArray;
   
   // Tree

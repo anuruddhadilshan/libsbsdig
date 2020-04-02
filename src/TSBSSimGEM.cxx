@@ -359,8 +359,8 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	//if I have to reloop anyway...
         for(UInt_t istrip = 0; istrip < mpd_data.nstrips; istrip++, strip++) {
 	  for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
-            adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
-            // Negative values convert poorly to unsigned integers, so just
+	    adc = fGEMDigi->GetSimADC(ich,ip,strip,s);
+	    // Negative values convert poorly to unsigned integers, so just
 	    // set them to zero if the actual ADC is negative
 	    // which should not be the case if common mode is switched on
 	    mpd_data.samples[idx++] = (adc>0 ? adc : 0);
@@ -402,26 +402,30 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
 	  data_dec.clear();
 	  pl_strip = fManager->GetGlobalStripPlane(strip, plane, module, ip);
 	  
-          for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
-            adc = fGEMDigi->GetSimADC(ich,ip,strip,s)
-	      -fGEMDigi->CommonMode(mpd_data.mpd_id);
-	    ADCsum+=adc;
-	    if(s%2==0)data.push_back(data_mpd[i_++]);
-	    data_dec.push_back(adc);
-            if(adc>0)
-              SetHasDataFlag(true);
-          }
-	  
-	  event.fSimDigSampOutData[planename].fNHits++;
-	  //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
-	  event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
-	  //this is a bit of abuse: I use the dataword in this case to store the size of the vector samples
-	  event.fSimDigSampOutData[planename].fDataWord.push_back(ceil(mpd_data.nsamples/2));//This way if nsamples is odd, we still save the singleton sample
-	  assert(data.size()==ceil(mpd_data.nsamples/2));
-	  event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
-	  event.fSimDigSampOutData[planename].fNsamps.push_back(mpd_data.nsamples);
-	  event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
-	  event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	  //zero suppression here:
+	  if(fDebug>=5)cout << fGEMDigi->GetSimADCSum(ich,ip,strip) << " " << fGEMDigi->ZeroSupThreshold(idx) << endl;
+	  if(fGEMDigi->GetSimADCSum(ich,ip,strip)>=fGEMDigi->ZeroSupThreshold(mpd_data.mpd_id)){
+	    for(UShort_t s = 0; s < mpd_data.nsamples; s++) {
+	      adc = fGEMDigi->GetSimADC(ich,ip,strip,s)
+		-fGEMDigi->CommonMode(mpd_data.mpd_id);
+	      ADCsum+=adc;
+	      if(s%2==0)data.push_back(data_mpd[i_++]);
+	      data_dec.push_back(adc);
+	      if(adc>0)
+		SetHasDataFlag(true);
+	    }
+	    
+	    event.fSimDigSampOutData[planename].fNHits++;
+	    //event.fSimDigSampOutData[planename].fChannel.push_back(strip);
+	    event.fSimDigSampOutData[planename].fChannel.push_back(pl_strip);
+	    //this is a bit of abuse: I use the dataword in this case to store the size of the vector samples
+	    event.fSimDigSampOutData[planename].fDataWord.push_back(ceil(mpd_data.nsamples/2));//This way if nsamples is odd, we still save the singleton sample
+	    assert(data.size()==ceil(mpd_data.nsamples/2));
+	    event.fSimDigSampOutData[planename].fADC.push_back(ADCsum);
+	    event.fSimDigSampOutData[planename].fNsamps.push_back(mpd_data.nsamples);
+	    event.fSimDigSampOutData[planename].fADC_samps.push_back(data_dec);
+	    event.fSimDigSampOutData[planename].fDataWord_samps.push_back(data);
+	  }
 	}
 	//event.fDetectorData.push_back(data);
 	mpd_data.adc_id++;

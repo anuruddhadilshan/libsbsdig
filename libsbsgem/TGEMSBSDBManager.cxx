@@ -234,7 +234,8 @@ void TGEMSBSDBManager::LoadGeneralInfo(const string& fileName)
 void TGEMSBSDBManager::LoadGeoInfo(const string& fileName)
 {
   //const string& fileName = "db_"+prefix+".dat";
-  const string prefix = "geo."+fSpecName+"."+fDetName+".";
+  //const string prefix = "geo."+fSpecName+"."+fDetName+".";
+  const string prefix = fSpecName+"."+fDetName+".";
     
   //ifstream input;
   FILE *input = OpenFile(fileName.c_str(), GetInitDate());;

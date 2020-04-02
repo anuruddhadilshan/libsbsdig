@@ -292,7 +292,8 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
     }
     fDetInfo.push_back(detinfo);
 
-    const string digprefix_gem = "dig."+prefix;
+    //const string digprefix_gem = "dig."+prefix;
+    const string digprefix_gem = prefix;
     //need to read at least GateWindow before returning
     double gatewidth_gem;
     DBRequest request_gate[] = {

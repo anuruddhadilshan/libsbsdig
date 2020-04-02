@@ -204,7 +204,7 @@ TGEMSBSSimDigitization::TGEMSBSSimDigitization( const TGEMSBSSpec& spect,
   : THaAnalysisObject(name, "GEM simulation digitizer"),
     fDoMapSector(false), fSignalSector(0), fDP(0), fdh(0), fNChambers(0), fNPlanes(0),
     fRNIon(0), //fOFile(0), fOTree(0), fEvent(0), 
-    fZeroSup(1.e38), fApplyCommonMode(false), 
+    fDoZeroSup(false), fZeroSup(1.e38), fDoCommonMode(false), 
     fManager(manager)
 {
   Init();
@@ -308,7 +308,8 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
   
   vector<Double_t>* offset = 0;
   vector<Double_t>* commonmode = 0;
-  const char *prefix = Form("dig.%s",fPrefix);
+  //const char *prefix = Form("dig.%s",fPrefix);
+  const char *prefix = Form("%s",fPrefix);
   try{
     offset = new vector<Double_t>;
     commonmode = new vector<Double_t>;
@@ -351,8 +352,9 @@ TGEMSBSSimDigitization::ReadDatabase (const TDatime& date)
 	{ "crosstalk_mean",            &fCrossFactor,               kDouble },
 	{ "crosstalk_sigma",           &fCrossSigma,                kDouble },
 	{ "crosstalk_strip_apart",     &fNCStripApart,              kInt    },
+	{ "do_zerosup",                &fDoZeroSup,                 kInt    , 0, 1},
 	{ "zerosup",                   &fZeroSup,                   kDouble , 0, 1},
-	{ "applycommonmode",           &fApplyCommonMode,           kInt    , 0, 1},
+	{ "do_commonmode",             &fDoCommonMode,              kInt    , 0, 1},
 	{ "commonmode_array",          commonmode,                  kDoubleV, 0, 1},
 	{ 0 }
       };
@@ -1105,13 +1107,30 @@ TGEMSBSSimDigitization::PrintSamples() const
 Double_t
 TGEMSBSSimDigitization::CommonMode(UInt_t i_mpd)
 {
-  if(fCommonModeArray.size() && fApplyCommonMode){
+  if(fCommonModeArray.size() && fDoCommonMode){
     i_mpd = (i_mpd<fCommonModeArray.size() ? i_mpd: 0);
     return fCommonModeArray[i_mpd];
   }else{
     return 0;
   }
 }
+
+Double_t
+TGEMSBSSimDigitization::ZeroSupThreshold(UInt_t i_mpd)
+{
+  //i_mpd
+  if(fDoZeroSup){
+    if(fDoCommonMode){
+      return fZeroSup+CommonMode(i_mpd)*fEleSamplingPoints;
+    }else{
+      return fZeroSup;
+    }
+  }else{
+    return -1000;
+  }
+}
+
+
 
 // Tree methods
 void
@@ -1342,7 +1361,7 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	{
 	  UInt_t nstrips = GetNStrips(ich,ip);
 	  for (UInt_t istrip = 0; istrip < nstrips; istrip++) {
-	    if(istrip%128==0 && fApplyCommonMode){
+	    if(istrip%128==0 && fDoCommonMode){
 	      mpd_id++;
 	      //saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-CommonMode(mpd_id);
 	    }
@@ -1354,14 +1373,14 @@ TGEMSBSSimDigitization::SetTreeStrips()
 	      strip.fADC[ss] = GetADC(ich, ip, idx, ss);
 	      // cout << strip.fADC[ss] << " ";
 	       strip.fADC[ss] += fTrnd.Gaus(0, fPulseNoiseSigma);//allowing negative value, before implementing common mode;
-	       if(fApplyCommonMode)strip.fADC[ss] += CommonMode(mpd_id);
+	       if(fDoCommonMode)strip.fADC[ss] += CommonMode(mpd_id);
 	      // cout << strip.fADC[ss] << " ";
 	       //saturation = 4000;
 	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
-        // TODO: Shouldn't common mode be added at some point? Specially
-        // before encoding it into unsigned integers which don't
-        // take kindly to negative values?
-        SetSimADC(ich,ip,idx,ss,strip.fADC[ss]);
+	      // TODO: Shouldn't common mode be added at some point? Specially
+	      // before encoding it into unsigned integers which don't
+	      // take kindly to negative values?
+	      SetSimADC(ich,ip,idx,ss,strip.fADC[ss]);
 	      const vector<Int_t>& sclust = GetStripClusterADC(ich, ip, idx, ss);
 	      
 	      strip.fClusterRatio[ss].Set( sclust.size(), &sclust[0] );

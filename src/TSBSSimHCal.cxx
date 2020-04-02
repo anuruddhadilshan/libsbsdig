@@ -42,26 +42,19 @@ void TSBSSimHCal::Init()
   double t0 = 0.0;//+fDetInfo.DigInfo().SPE_TransitTime()-fDetInfo.DigInfo().TriggerOffset();
   
   fSPE = new TSPEModel(fName.Data(), tau, sigma, t0, tmin, tmax);
-  
+
+  /*
+  fSignals.resize(fDetInfo.NChan());
+  for(size_t i_ch = 0; i_ch<fDetInfo.NChan(); i_ch++){
+    fSignals[i_ch].Clear();
+    fSignals[i_ch].SetNpeChargeConv(fDetInfo.DigInfo().NpeChargeConv(i_ch));
+  }
+  */
   fSignals.resize(fDetInfo.NChan());
   for(uint i = 0; i<fDetInfo.NChan(); i++){
     fSignals[i].mint = tmin;
     fSignals[i].maxt = tmax;
   }
-  /*
-    fSPE = new SPEModel();
-    //fSPE = new SPEModel( new TF1("fHCalSignal",*fConvolution,mint,maxt,
-    //    fConvolution->GetNpar()));
-    fSignals.resize(288); // TODO: Don't hard code this!!!
-  */
-  //fFileOut = new TFile("rootfiles/testout.root","RECREATE");
-  //fTreeOut = new TTree("TTest","");
-  /*for(int m = 0; m < int(fSignals.size()); m++) {
-    fTreeOut->Branch(TString::Format("m%d.npe",m),&(fSignals[m].npe));
-    fTreeOut->Branch(TString::Format("m%d.sum",m),&(fSignals[m].sum));
-    fTreeOut->Branch(TString::Format("m%d.samples",m),&(fSignals[m].samples));
-    }
-  */
 }
 
 
@@ -69,37 +62,6 @@ void TSBSSimHCal::LoadEventData(const std::vector<g4sbshitdata*> &evbuffer)
 {
   Clear();
   LoadAccumulateData(evbuffer);
-  /*
-  // Just make HCAL be 288 modules for now to make it easier....
-  //Double_t mint = 1e9;
-  int mod = 0;
-  int type = 0;
-  double data = 0;
-  double pulsenorm = 0;
-  // for( const g4sbshitdata *ev: evbuffer) {
-  for(std::vector<g4sbshitdata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
-    g4sbshitdata* ev = (*it);
-    // Only get detector data for HCAL
-    // TODO: Don't hard code DetID here!!!
-    if(ev->GetDetType() == kHCal) {
-      mod  = ev->GetData(0);
-      type = ev->GetData(1);
-      data = ev->GetData(2);
-      if(type == 0) {
-        //std::cout << "Filling data for mod: " << ev->GetData(0) << ", t=" << 
-        // ev->GetData(1) - 60. << std::endl;
-        //if(ev->GetData(1)<mint)
-        //  mint = ev->GetData(1);
-	pulsenorm = fDetInfo.DigInfo().Gain(mod)*fDetInfo.DigInfo().ROImpedance()*qe/spe_unit;
-        //fSignals[mod].Fill(fSPE, data-75.);
-	fSignals[mod].Fill(fSPE, pulsenorm,data-75.);
-      } else if (type == 1) { // sumedep data
-        fSignals[mod].sumedep = data;
-      }
-    }
-  }
-  //std::cout << "Mint = " << mint << std::endl;
-  */
 }
 
 
