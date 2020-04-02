@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Set build type (Debug is default)")
 set(DEV_WARNING "cmake build of SBS-Offline is still in development. Please test and report issues")
 
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
-project(sbs)
+project(sbsdig)
 
 # Setup GNUInstallDirs for installation:
 #----------------------------------------------------------------------------
@@ -153,24 +153,12 @@ if(VERBOSE)
   list(APPEND VERBOSE)
 endif()
 
-
-#if(DEFINED ENV{EVIO_INCDIR})
-#  set(EVIO_INCLUDE_DIR $ENV{EVIO_INCDIR})
-#  message(STATUS "Found EVIO at ${EVIO_INCLUDE_DIR}")
-#else() # assuming that if the user has not specified EVIO_INCDIR, then user is using Podd's self-built EVIO installation:
-#  set(EVIO_INCLUDE_DIR $ENV{ANALYZER}/include)
-#  message(WARNING "No EVIO directory found. Defaulting to $ENV{ANALYZER}/include, assuming use of Podd's built-in EVIO verison...")
-#endif()
-
-
-
-include_directories(${ROOT_INCLUDE_DIR} ${Podd_INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
-#${EVIO_INCLUDE_DIR} 
+include_directories(${ROOT_INCLUDE_DIR} ${Podd_INCLUDE_DIR} ${SBS_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/libsbsgem)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 
 ## Generate the ROOT dictionary
 set(PROJECT_DICTIONARY ${PROJECT_NAME}Dict)
-ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${headers} OPTIONS -I${PROJECT_SOURCE_DIR} MODULE ${PROJECT_NAME} LINKDEF ${PROJECT_SOURCE_DIR}/src/LinkDef.h )
+ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${headers} OPTIONS -I${PROJECT_SOURCE_DIR} MODULE ${PROJECT_NAME} LINKDEF src/Linkdef.h )
 
 ## Create the library
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers} ${PROJECT_DICTIONARY}.cxx )
@@ -195,8 +183,8 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/DB DESTINATION ${CMAKE_INSTALL_PREFIX})
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/replay DESTINATION ${CMAKE_INSTALL_PREFIX})
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/scripts DESTINATION ${CMAKE_INSTALL_PREFIX})
-INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sbsenv.sh DESTINATION ${CMAKE_INSTALL_BINDIR})
-INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sbsenv.csh DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sbsdigenv.sh DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sbsdigenv.csh DESTINATION ${CMAKE_INSTALL_BINDIR})
 #install all headers under cmake_install_prefix/include
 INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # install the ROOT dictionary files: eventually we should learn how to do this in a smarter way. Put the .cxx file under "include"
