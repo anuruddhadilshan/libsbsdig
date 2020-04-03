@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #script to set up the environment for SBS-offline
-export SBS=${CMAKE_INSTALL_PREFIX}
+export LIBSBSDIG=${CMAKE_INSTALL_PREFIX}
 
 if test "x$PATH" = "x" ; then
     export PATH=${CMAKE_INSTALL_FULL_BINDIR}

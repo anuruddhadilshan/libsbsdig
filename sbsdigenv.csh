@@ -1,7 +1,7 @@
 #!/bin/csh
 
 #script to set up the environment for SBS-offline
-setenv SBS @CMAKE_INSTALL_PREFIX@
+setenv LIBSBSDIG @CMAKE_INSTALL_PREFIX@
 
 if( ! ${?PATH} ) then
     setenv PATH @CMAKE_INSTALL_FULL_BINDIR@
