@@ -88,7 +88,7 @@ set(VERBOSE ON CACHE BOOL "Compile extra code for printing verbose messages")
 set(TESTCODE ON CACHE BOOL "Compile extra diagnostic code (extra computations and global variables")
 set(MCDATA ON CACHE BOOL "Compile support code for MC input data")
 set(CXXMAXERRORS 0 CACHE INT "Maximum number of allowed errors before cxx stops")
-list(APPEND SBSEXTRADEF_LIST VERBOSE TESTCODE MCDATA)
+list(APPEND SBSDIGEXTRADEF_LIST VERBOSE TESTCODE MCDATA)
 
 #----------------------------------------------------------------------------
 # Find ROOT 
@@ -118,22 +118,22 @@ find_package(SBS REQUIRED)
 include(TestForSSTREAM)
 if(CMAKE_HAS_ANSI_STRING_STREAM)
   set(HAS_SSTREAM ON)
-  list(APPEND SBSEXTRADEF_LIST HAS_SSTREAM)
+  list(APPEND SBSDIGEXTRADEF_LIST HAS_SSTREAM)
 endif()
 
 ##----------------------------------------------------------------------------
 ## OS Type (not sure what exactly uses this, but since it's in the Makefile
 ## I'll just copy it here too...
-set(SBS_LINKFLAGS "")
+set(SBSDIG_LINKFLAGS "")
 if(UNIX) ## Can be anything from Linux to Mac OS X
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
   if(APPLE)
     set(MACVERS ON)
-    list(APPEND SBSEXTRADEF_LIST MACVERS)
-    set(SBS_LINKFLAGS "${SBS_LINKFLAGS} -Wl,-undefined,dynamic_lookup")
+    list(APPEND SBSDIGEXTRADEF_LIST MACVERS)
+    set(SBSDIG_LINKFLAGS "${SBS_LINKFLAGS} -Wl,-undefined,dynamic_lookup")
   else()
     set(LINUXVERS ON)
-    list(APPEND SBSEXTRADEF_LIST LINUXVERS)
+    list(APPEND SBSDIGEXTRADEF_LIST LINUXVERS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual")
     if(EXTRAWARN AND CMAKE_COMPILER_IS_GNUCXX AND NOT
         CMAKE_CXX_COMPILER_VERSION LESS 4)
@@ -158,11 +158,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 
 ## Generate the ROOT dictionary
 set(PROJECT_DICTIONARY ${PROJECT_NAME}Dict)
-ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${headers} OPTIONS -I${PROJECT_SOURCE_DIR} MODULE ${PROJECT_NAME} LINKDEF src/Linkdef.h )
+ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${headers} OPTIONS -I${PROJECT_SOURCE_DIR}/src -I${PROJECT_SOURCE_DIR}/libsbsgem MODULE ${PROJECT_NAME} LINKDEF src/${PROJECT_NAME}_LinkDef.h )
 
 ## Create the library
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers} ${PROJECT_DICTIONARY}.cxx )
-set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${SBS_LINKFLAGS}")
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${SBSDIG_LINKFLAGS}")
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
 #message(FATAL_ERROR "${PROJECT_NAME} PRIVATE ${SBSEXTRADEFINES}")
 ## Get a list of preprocessor flags to pass to the targets
