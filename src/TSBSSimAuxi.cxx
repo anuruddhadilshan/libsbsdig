@@ -377,9 +377,11 @@ void TPMTSignal::Fill(TSPEModel *model, int npe, double thr, double evttime, int
 
 void TPMTSignal::Digitize(TDigInfo diginfo, int chan)
 {
-  if(fNpe<=0)
+  if(fNpe<=0){
+    fADC = fRN->Gaus(diginfo.Pedestal(chan), diginfo.PedestalNoise(chan));
     return;
-  
+  }
+    
 #if DEBUG>0
   cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
 #endif

@@ -99,7 +99,7 @@ void TSBSSimECal::Digitize(TSBSSimEvent &event)
     //simdata.clear();
     if(fDebug>=3)cout << "digitize channel " << m << endl;
     fSignals[m].Digitize(fDetInfo.DigInfo(), m);
-    if(fSignals[m].Npe() > 0) {
+    if(fSignals[m].Npe() >= 0) {// we want the blocks with no signal, for the pedestals
       any_events = true;
       //data.fDetID = UniqueDetID();
       //data.fChannel = m;

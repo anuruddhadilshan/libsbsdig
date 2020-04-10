@@ -31,9 +31,9 @@ Int_t TSBSDBManager::LoadGenInfo(const string& fileName)
         exit(0);
   }
   */
-  std::string path = "../db/";
-  if(std::getenv("SBS_DIGI_DB")) {
-    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
+  std::string path = std::string(std::getenv("LIBSBSDIG")) +"/db/";
+  if(std::getenv("DB_DIR")) {
+    path = std::string(std::getenv("DB_DIR")) + "/";
   }
   const string& PathfileName = path+fileName;
   
@@ -186,10 +186,10 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   // values.
   // Include DB_DIR (standard Hall A analyzer DB path in the search)
   // If any is not specified, the default path is ../db/
-  std::string path = "../db/";
-  std::string pathCommon = "../db/";
-  if(std::getenv("SBS_DIGI_DB")) {
-    path = std::string(std::getenv("SBS_DIGI_DB")) + "/";
+  std::string path = std::string(std::getenv("LIBSBSDIG")) +"/db/";
+  std::string pathCommon = std::string(std::getenv("LIBSBSDIG")) +"/db/";
+  if(std::getenv("DB_DIR")) {
+    path = std::string(std::getenv("DB_DIR")) + "/";
   }
   if(std::getenv("DB_DIR")) {
     pathCommon = std::string(std::getenv("DB_DIR")) + "/";
