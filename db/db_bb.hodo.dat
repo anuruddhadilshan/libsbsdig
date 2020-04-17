@@ -3,7 +3,7 @@
 bb.hodo.dettype = Scint
 bb.hodo.unique_id = 30
 
-bb.hodo.nchan = 180
+bb.hodo.nchan = 182
 bb.hodo.nplanes = 1
 bb.hodo.nmodules = 1
 bb.hodo.first_crate = 5
