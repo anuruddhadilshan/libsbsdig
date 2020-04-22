@@ -40,6 +40,7 @@ void digi_gmn(const char* output_file, ULong64_t nentries, const char* input_sig
   if(debuglevel>=1)cout << "Setup digitizer " << endl;
   
   // Create the SBS Digitizer (will control the digitization process)
+  // Assumes there is a directory called "digitized" in the directory the script is run
   TSBSSimDigitizer *digitizer = new TSBSSimDigitizer(Form("digitized/%s", output_file));
   digitizer->SetDebug(debuglevel);
   

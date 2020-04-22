@@ -346,7 +346,9 @@ Int_t TSBSDBManager::LoadDetInfo(const string& specname, const string& detname)
   } else {
     int crate,slot,ch_lo,ch_hi, ch_count;
     uint chan_count = 0;
-    for(size_t k = 0; k < detmap.size(); k+=4) {
+    int nparam_mod = 4;
+    if(detmap[4]==-1)nparam_mod = 5;
+    for(size_t k = 0; k < detmap.size(); k+=nparam_mod) {
       ch_count = 0;
       crate  = detmap[k];
       slot   = detmap[k+1];
