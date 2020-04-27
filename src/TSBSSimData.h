@@ -61,24 +61,63 @@ class g4sbshitdata {
 // // of the gendata array defined in TSolEVIOFile class
 
 class g4sbsgendata : public g4sbshitdata {
-    public:
-	g4sbsgendata();
-	~g4sbsgendata(){;}
-	
-	int	GetTRID() const { return IsFilled()? (int) fData[0] : -1e9; }//G4 particle ID
-	int	GetPID() const { return IsFilled()? (int) fData[1] : -1e9; }//G4 particle ID
-	double  GetWeight() const { return fData[8]; }//cross section
-	TVector3 GetP() const { return IsFilled()? TVector3(fData[2], fData[3], fData[4]) : TVector3(-1e9, -1e9, -1e9 ); }//Track momentum 3-vector
-	TVector3 GetV() const { return IsFilled()? TVector3(fData[5], fData[6], fData[7]) : TVector3(-1e9, -1e9, -1e9 ); }//Track vtx 3-vector
-
+ public:
+  g4sbsgendata( int detid, unsigned int size = __DEFAULT_DATA_SIZE );
+  ~g4sbsgendata(){;}
+  
+  int	GetTRID() const { return IsFilled()? (int) fData[0] : -1e9; }//G4 particle ID
+  int	GetPID() const { return IsFilled()? (int) fData[1] : -1e9; }//G4 particle ID
+  double  GetWeight() const { return IsFilled()? fData[8] : -1e9; }//cross section
+  TVector3 GetP() const { return IsFilled()? TVector3(fData[2], fData[3], fData[4]) : TVector3(-1e9, -1e9, -1e9 ); }//Track momentum 3-vector
+  TVector3 GetV() const { return IsFilled()? TVector3(fData[5], fData[6], fData[7]) : TVector3(-1e9, -1e9, -1e9 ); }//Track vtx 3-vector
+  
   // This is from libsbsgem/TSBSGeant4File.h
   TVector3 GetMomentumAtTarget() const { return IsFilled()? TVector3(fData[9], fData[10], fData[11]) : TVector3(-1e9, -1e9, -1e9 ); }
   TVector3 GetVertexAtTarget() const { return IsFilled()? TVector3(fData[12], fData[13], fData[14]) : TVector3(-1e9, -1e9, -1e9 ); }
+  
+  double GetX() const { return IsFilled()? fData[15] : -1e9; }
+  double GetY() const { return IsFilled()? fData[16] : -1e9; }
+  double GetE() const { return IsFilled()? fData[17] : -1e9; }
+  double GetT() const { return IsFilled()? fData[18] : -1e9; }
 };
 
 //
 // Output data classes
 //
+class trackmchit_outdata{
+ public: 
+  trackmchit_outdata();
+  ~trackmchit_outdata();
+
+  UInt_t fNTrackMCHits;
+  std::vector<Short_t>   fTrackMCSource;
+  std::vector<Short_t>   fTrackMCTRID;
+  std::vector<Int_t>     fTrackMCPID;
+  std::vector<Double_t>  fTrackMCWeight;
+  std::vector<Double_t>  fTrackMCtrpx;
+  std::vector<Double_t>  fTrackMCtrpy;
+  std::vector<Double_t>  fTrackMCtrpz;
+  std::vector<Double_t>  fTrackMCtrx;
+  std::vector<Double_t>  fTrackMCtry;
+  /*
+  std::vector<Double_t>  fTrackMCtrz;
+  std::vector<Double_t>  fTrackMCtrpx_v;
+  std::vector<Double_t>  fTrackMCtrpy_v;
+  std::vector<Double_t>  fTrackMCtrpz_v;
+  std::vector<Double_t>  fTrackMCtrx_v;
+  std::vector<Double_t>  fTrackMCtry_v;
+  std::vector<Double_t>  fTrackMCtrz_v;
+  */
+  std::vector<Double_t>  fTrackMCXhit;
+  std::vector<Double_t>  fTrackMCYhit;
+  std::vector<Double_t>  fTrackMCThit;
+  std::vector<Double_t>  fTrackMCE;
+  
+  
+  void Clear();
+  bool CheckSize(bool print = false);
+};
+
 class simhitmc_outdata{
  public: 
   simhitmc_outdata();

@@ -70,14 +70,139 @@ g4sbshitdata::~g4sbshitdata(){
 
 // Size is 1 bigger because we are also including the weight
 // Set that default to 1
-g4sbsgendata::g4sbsgendata():g4sbshitdata(-1, __GENERATED_SIZE+2){
-    SetData(8,1.0);
+g4sbsgendata::g4sbsgendata(int unique_detid, unsigned int size ):g4sbshitdata(unique_detid, size){
+  SetData(8,1.0);
 }
 
 
 // -------------------------------------- //
 //          Output data classes           //
 // -------------------------------------- //
+
+//////////////////////
+// Track MC hit data
+trackmchit_outdata::trackmchit_outdata(){
+  Clear();
+}
+
+trackmchit_outdata::~trackmchit_outdata(){
+  Clear();
+}
+
+void trackmchit_outdata::Clear(){
+  fNTrackMCHits = 0;
+  fTrackMCSource.clear();
+  fTrackMCTRID.clear();
+  fTrackMCPID.clear();
+  fTrackMCWeight.clear();
+  /*
+  fTrackMCtrpx.clear();
+  fTrackMCtrpy.clear();
+  fTrackMCtrpz.clear();
+  fTrackMCtrx.clear();
+  fTrackMCtry.clear();
+  fTrackMCtrz.clear();
+  fTrackMCtrpx_v.clear();
+  fTrackMCtrpy_v.clear();
+  fTrackMCtrpz_v.clear();
+  fTrackMCtrx_v.clear();
+  fTrackMCtry_v.clear();
+  fTrackMCtrz_v.clear();
+  */
+  fTrackMCXhit.clear();
+  fTrackMCYhit.clear();
+  fTrackMCThit.clear();
+  fTrackMCE.clear();
+}
+
+bool trackmchit_outdata::CheckSize(bool print)
+{
+  bool checkout = true;
+  if(fTrackMCSource.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCSource.size() = %zu != %u\n", fTrackMCSource.size(), fNTrackMCHits);
+  }
+  if(fTrackMCTRID.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCTRID.size() = %zu != %u\n", fTrackMCTRID.size(), fNTrackMCHits);
+  }
+  if(fTrackMCPID.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCPID.size() = %zu != %u\n", fTrackMCPID.size(), fNTrackMCHits);
+  }
+  if(fTrackMCWeight.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCWeight.size() = %zu != %u\n", fTrackMCWeight.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpx.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpx.size() = %zu != %u\n", fTrackMCtrpx.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpy.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpy.size() = %zu != %u\n", fTrackMCtrpy.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpz.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpz.size() = %zu != %u\n", fTrackMCtrpz.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrx.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrx.size() = %zu != %u\n", fTrackMCtrx.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtry.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtry.size() = %zu != %u\n", fTrackMCtry.size(), fNTrackMCHits);
+  }
+  /*
+  if(fTrackMCtrz.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrz.size() = %zu != %u\n", fTrackMCtrz.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpx_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpx_v.size() = %zu != %u\n", fTrackMCtrpx_v.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpy_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpy_v.size() = %zu != %u\n", fTrackMCtrpy_v.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrpz_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrpz_v.size() = %zu != %u\n", fTrackMCtrpz_v.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrx_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrx_v.size() = %zu != %u\n", fTrackMCtrx_v.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtry_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtry_v.size() = %zu != %u\n", fTrackMCtry_v.size(), fNTrackMCHits);
+  }
+  if(fTrackMCtrz_v.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCtrz_v.size() = %zu != %u\n", fTrackMCtrz_v.size(), fNTrackMCHits);
+  }
+  */
+  if(fTrackMCXhit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCXhit.size() = %zu != %u\n", fTrackMCXhit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCYhit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCYhit.size() = %zu != %u\n", fTrackMCYhit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCThit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCE.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
+  }
+  
+  return checkout;
+}
 
 ////////////////
 // MC hit data
@@ -92,8 +217,8 @@ simhitmc_outdata::~simhitmc_outdata(){
 void simhitmc_outdata::Clear(){
   fNSimHits = 0;
   fSimSource.clear();
-  fSimTRID.clear();
-  fSimPID.clear();
+  //fSimTRID.clear();
+  //fSimPID.clear();
   fSimChannel.clear();
   fSimEdep.clear();
   fSimNpe.clear();
@@ -112,6 +237,7 @@ bool simhitmc_outdata::CheckSize(bool check_edep,
     checkout = false;
     if(print)printf("fSimSource.size() = %zu != %u\n", fSimSource.size(), fNSimHits);
   }
+  /*
   if(fSimTRID.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fSimTRID.size() = %zu != %u\n", fSimTRID.size(), fNSimHits);
@@ -120,6 +246,7 @@ bool simhitmc_outdata::CheckSize(bool check_edep,
     checkout = false;
     if(print)printf("fSimPID.size() = %zu != %u\n", fSimPID.size(), fNSimHits);
   }
+  */
   if(fSimChannel.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fSimChannel.size() = %zu != %u\n", fSimChannel.size(), fNSimHits);

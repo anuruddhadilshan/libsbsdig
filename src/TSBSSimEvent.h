@@ -67,7 +67,7 @@ public:
   };
   std::vector<DetectorData> fDetectorData;
   std::vector<SimDetectorData> fSimDetectorData;
-  */
+
   std::map< std::string, Int_t >         NSimDetHits;
   std::map< std::string, std::vector<Short_t> >  SimDetSource;
   std::map< std::string, std::vector<Short_t> >  SimDetChannel;
@@ -76,7 +76,9 @@ public:
   std::map< std::string, std::vector<Double_t> > SimDetTime;
   std::map< std::string, std::vector<Double_t> > SimDetLeadTime;
   std::map< std::string, std::vector<Double_t> > SimDetTrailTime;
-
+  */
+  
+  std::map< std::string, trackmchit_outdata > fTrackMCHitOutData;
   std::map< std::string, simhitmc_outdata > fSimHitMCOutData;
   std::map< std::string, simgemhitmc_outdata > fSimGEMHitMCOutData;
   std::map< std::string, simdig_outdata > fSimDigOutData;

@@ -186,8 +186,8 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].mc_source);
-      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].trid);
-      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].pid);
+      //event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].trid);
+      //event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].pid);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(Short_t(m));
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fSignals[m].sumedep);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].npe);

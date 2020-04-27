@@ -99,8 +99,8 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);
-      fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
-      fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
+      //fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
+      //fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
       fOutTree->Branch(Form("%s.simhit.chan", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimChannel);
       fOutTree->Branch(Form("%s.simhit.edep", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimEdep);
       fOutTree->Branch(Form("%s.simhit.npe", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimNpe);
@@ -123,11 +123,28 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       }
       break;
     default:
+      //Track MC hits
+      fOutTree->Branch(Form("%s.trackmchit.nhits", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fNTrackMCHits);
+      fOutTree->Branch(Form("%s.trackmchit.nhits", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCSource);
+      fOutTree->Branch(Form("%s.trackmchit.trid", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCTRID);
+      fOutTree->Branch(Form("%s.trackmchit.pid", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCPID);
+      fOutTree->Branch(Form("%s.trackmchit.weight", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCWeight);
+      fOutTree->Branch(Form("%s.trackmchit.trpx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpx);
+      fOutTree->Branch(Form("%s.trackmchit.trpy", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpy);
+      fOutTree->Branch(Form("%s.trackmchit.trpz", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpz);
+      fOutTree->Branch(Form("%s.trackmchit.trx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrx);
+      fOutTree->Branch(Form("%s.trackmchit.try", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtry);
+      /**/
+      fOutTree->Branch(Form("%s.trackmchit.xhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCXhit);
+      fOutTree->Branch(Form("%s.trackmchit.yhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCYhit);
+      fOutTree->Branch(Form("%s.trackmchit.thit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCThit);
+      fOutTree->Branch(Form("%s.trackmchit.e", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCE);
+      
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);
-      fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
-      fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
+      //fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
+      //fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
       fOutTree->Branch(Form("%s.simhit.chan", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimChannel);
       if(dettype!=kCher)fOutTree->Branch(Form("%s.simhit.edep", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimEdep);
       fOutTree->Branch(Form("%s.simhit.npe", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimNpe);

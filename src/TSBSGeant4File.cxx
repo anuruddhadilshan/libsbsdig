@@ -172,6 +172,86 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       fg4sbsHitData.push_back(grinchhit);
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
+    
+    //add here MC info: pid, trid, P, V + x, y  in entrance window.
+    double z_det = 1.3824;// TODO ? DB ???
+    if(d_flag>=3)printf("Unfolding MC info \n");
+    for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
+	it != fTree->GEMs.end(); it++) {
+      if(d_flag>=3)printf("GEM tree %ld\n", std::distance(fTree->GEMs.begin(), it));
+      
+      TSBSGeant4::TrackerData_t &t = it->Track_tree;
+      if(t.ntracks) {
+	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
+	for(int k = 0; k < t.ntracks; k++) {
+	  g4sbsgendata *grinchgenhit = new g4sbsgendata(GRINCH_UNIQUE_DETID, 19);
+	  grinchgenhit->SetData(0, t.TID->at(k)); 
+	  grinchgenhit->SetData(1, t.PID->at(k)); 
+	  
+	  double pz = sqrt( pow(t.P->at(k), 2)/
+			    ( pow(t.Xp->at(k), 2) + 
+			      pow(t.Yp->at(k), 2) + 1.0) );
+	  
+	  grinchgenhit->SetData(2, t.Xp->at(k)*pz); 
+	  grinchgenhit->SetData(3, t.Yp->at(k)*pz); 
+	  grinchgenhit->SetData(4, pz); 
+	  if(d_flag>=3)
+	    printf("P = %f (%f, %f, %f)\n", 
+		   t.P->at(k), 
+		   grinchgenhit->GetData(2),
+		   grinchgenhit->GetData(3),
+		   grinchgenhit->GetData(4)
+		   );
+	  
+	  grinchgenhit->SetData(5, t.X->at(k)); 
+	  grinchgenhit->SetData(6, t.Y->at(k)); 
+	  grinchgenhit->SetData(7, 0.0); 
+	  
+	  grinchgenhit->SetData(8, 1.0);// TODO: weight
+	  // TODO: momentum at target (use SD tracks...)
+	  grinchgenhit->SetData(9, 0);
+	  grinchgenhit->SetData(10, 0); 
+	  grinchgenhit->SetData(11, 0); 
+	  // TODO: vertex at target (use SD tracks...)
+	  grinchgenhit->SetData(12, 0); 
+	  grinchgenhit->SetData(13, 0); 
+	  grinchgenhit->SetData(14, 0); 
+
+	  grinchgenhit->SetData(15, t.X->at(k)+t.Xp->at(k)*z_det); 
+	  grinchgenhit->SetData(16, t.Y->at(k)+t.Yp->at(k)*z_det); 
+	  
+	  if(d_flag>=3)
+	    printf("X0 = %f, Y0 = %f, Xp = %f, Yp = %f, X = %f, Y = %f\n",
+		   t.X->at(k), t.Y->at(k), 
+		   t.Xp->at(k), t.Yp->at(k), 
+		   grinchgenhit->GetData(15),
+		   grinchgenhit->GetData(16)
+		   );
+	  
+	  grinchgenhit->SetData(17, sqrt( pow(t.P->at(k), 2) + 
+					  pow(M_p(t.PID->at(k)), 2) ) ); 
+	  
+	  if(d_flag>=3)
+	    printf("M = %f, P = %f => E = %f;\n", 
+		   M_p(t.PID->at(k)),
+		   t.P->at(k),
+		   grinchgenhit->GetData(17)
+		   );
+	  
+	  double beta = t.P->at(k)/grinchgenhit->GetData(17);
+	  grinchgenhit->SetData(18, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+
+	  if(d_flag>=3)
+	    printf("beta = %f, z = %f => T = %f;\n", 
+		   beta,
+		   z_det*t.P->at(k)/pz, 
+		   grinchgenhit->GetData(18)
+		   );
+	  
+	  fg4sbsGenData.push_back(grinchgenhit);
+	}// end loop on tracks
+      }
+    }//end loop on GEM tree;
   }
     
   // Process hodoscope data
@@ -205,6 +285,86 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       }
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
+    
+    //add here MC info: pid, trid, P, V + x, y  in entrance window.
+    double z_det = 2.59241;// TODO ? DB ???
+    if(d_flag>=3)printf("Unfolding MC info \n");
+    for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
+	it != fTree->GEMs.end(); it++) {
+      if(d_flag>=3)printf("GEM tree %ld\n", std::distance(fTree->GEMs.begin(), it));
+      
+      TSBSGeant4::TrackerData_t &t = it->Track_tree;
+      if(t.ntracks) {
+	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
+	for(int k = 0; k < t.ntracks; k++) {
+	  g4sbsgendata *hodogenhit = new g4sbsgendata(HODO_UNIQUE_DETID, 19);
+	  hodogenhit->SetData(0, t.TID->at(k)); 
+	  hodogenhit->SetData(1, t.PID->at(k)); 
+	  
+	  double pz = sqrt( pow(t.P->at(k), 2)/
+			    ( pow(t.Xp->at(k), 2) + 
+			      pow(t.Yp->at(k), 2) + 1.0) );
+	  
+	  hodogenhit->SetData(2, t.Xp->at(k)*pz); 
+	  hodogenhit->SetData(3, t.Yp->at(k)*pz); 
+	  hodogenhit->SetData(4, pz); 
+	  if(d_flag>=3)
+	    printf("P = %f (%f, %f, %f)\n", 
+		   t.P->at(k), 
+		   hodogenhit->GetData(2),
+		   hodogenhit->GetData(3),
+		   hodogenhit->GetData(4)
+		   );
+	  
+	  hodogenhit->SetData(5, t.X->at(k)); 
+	  hodogenhit->SetData(6, t.Y->at(k)); 
+	  hodogenhit->SetData(7, 0.0); 
+	  
+	  hodogenhit->SetData(8, 1.0);// TODO: weight
+	  // TODO: momentum at target (use SD tracks...)
+	  hodogenhit->SetData(9, 0);
+	  hodogenhit->SetData(10, 0); 
+	  hodogenhit->SetData(11, 0); 
+	  // TODO: vertex at target (use SD tracks...)
+	  hodogenhit->SetData(12, 0); 
+	  hodogenhit->SetData(13, 0); 
+	  hodogenhit->SetData(14, 0); 
+
+	  hodogenhit->SetData(15, t.X->at(k)+t.Xp->at(k)*z_det); 
+	  hodogenhit->SetData(16, t.Y->at(k)+t.Yp->at(k)*z_det); 
+	  
+	  if(d_flag>=3)
+	    printf("X0 = %f, Y0 = %f, Xp = %f, Yp = %f, X = %f, Y = %f\n",
+		   t.X->at(k), t.Y->at(k), 
+		   t.Xp->at(k), t.Yp->at(k), 
+		   hodogenhit->GetData(15),
+		   hodogenhit->GetData(16)
+		   );
+	  
+	  hodogenhit->SetData(17, sqrt( pow(t.P->at(k), 2) + 
+					  pow(M_p(t.PID->at(k)), 2) ) ); 
+	  
+	  if(d_flag>=3)
+	    printf("M = %f, P = %f => E = %f;\n", 
+		   M_p(t.PID->at(k)),
+		   t.P->at(k),
+		   hodogenhit->GetData(17)
+		   );
+	  
+	  double beta = t.P->at(k)/hodogenhit->GetData(17);
+	  hodogenhit->SetData(18, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+
+	  if(d_flag>=3)
+	    printf("beta = %f, z = %f => T = %f;\n", 
+		   beta,
+		   z_det*t.P->at(k)/pz, 
+		   hodogenhit->GetData(18)
+		   );
+	  
+	  fg4sbsGenData.push_back(hodogenhit);
+	}// end loop on tracks
+      }
+    }//end loop on GEM tree;
   }
 
   // Process BB PS data
@@ -236,6 +396,86 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       */
     }
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
+    
+    //add here MC info: pid, trid, P, V + x, y  in entrance window.
+    double z_det = 2.5319;// TODO ? DB ???
+    if(d_flag>=3)printf("Unfolding MC info \n");
+    for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
+	it != fTree->GEMs.end(); it++) {
+      if(d_flag>=3)printf("GEM tree %ld\n", std::distance(fTree->GEMs.begin(), it));
+      
+      TSBSGeant4::TrackerData_t &t = it->Track_tree;
+      if(t.ntracks) {
+	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
+	for(int k = 0; k < t.ntracks; k++) {
+	  g4sbsgendata *bbpsgenhit = new g4sbsgendata(BBPS_UNIQUE_DETID, 19);
+	  bbpsgenhit->SetData(0, t.TID->at(k)); 
+	  bbpsgenhit->SetData(1, t.PID->at(k)); 
+	  
+	  double pz = sqrt( pow(t.P->at(k), 2)/
+			    ( pow(t.Xp->at(k), 2) + 
+			      pow(t.Yp->at(k), 2) + 1.0) );
+	  
+	  bbpsgenhit->SetData(2, t.Xp->at(k)*pz); 
+	  bbpsgenhit->SetData(3, t.Yp->at(k)*pz); 
+	  bbpsgenhit->SetData(4, pz); 
+	  if(d_flag>=3)
+	    printf("P = %f (%f, %f, %f)\n", 
+		   t.P->at(k), 
+		   bbpsgenhit->GetData(2),
+		   bbpsgenhit->GetData(3),
+		   bbpsgenhit->GetData(4)
+		   );
+	  
+	  bbpsgenhit->SetData(5, t.X->at(k)); 
+	  bbpsgenhit->SetData(6, t.Y->at(k)); 
+	  bbpsgenhit->SetData(7, 0.0); 
+	  
+	  bbpsgenhit->SetData(8, 1.0);// TODO: weight
+	  // TODO: momentum at target (use SD tracks...)
+	  bbpsgenhit->SetData(9, 0);
+	  bbpsgenhit->SetData(10, 0); 
+	  bbpsgenhit->SetData(11, 0); 
+	  // TODO: vertex at target (use SD tracks...)
+	  bbpsgenhit->SetData(12, 0); 
+	  bbpsgenhit->SetData(13, 0); 
+	  bbpsgenhit->SetData(14, 0); 
+
+	  bbpsgenhit->SetData(15, t.X->at(k)+t.Xp->at(k)*z_det); 
+	  bbpsgenhit->SetData(16, t.Y->at(k)+t.Yp->at(k)*z_det); 
+	  
+	  if(d_flag>=3)
+	    printf("X0 = %f, Y0 = %f, Xp = %f, Yp = %f, X = %f, Y = %f\n",
+		   t.X->at(k), t.Y->at(k), 
+		   t.Xp->at(k), t.Yp->at(k), 
+		   bbpsgenhit->GetData(15),
+		   bbpsgenhit->GetData(16)
+		   );
+	  
+	  bbpsgenhit->SetData(17, sqrt( pow(t.P->at(k), 2) + 
+					  pow(M_p(t.PID->at(k)), 2) ) ); 
+	  
+	  if(d_flag>=3)
+	    printf("M = %f, P = %f => E = %f;\n", 
+		   M_p(t.PID->at(k)),
+		   t.P->at(k),
+		   bbpsgenhit->GetData(17)
+		   );
+	  
+	  double beta = t.P->at(k)/bbpsgenhit->GetData(17);
+	  bbpsgenhit->SetData(18, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+
+	  if(d_flag>=3)
+	    printf("beta = %f, z = %f => T = %f;\n", 
+		   beta,
+		   z_det*t.P->at(k)/pz, 
+		   bbpsgenhit->GetData(18)
+		   );
+	  
+	  fg4sbsGenData.push_back(bbpsgenhit);
+	}// end loop on tracks
+      }
+    }//end loop on GEM tree;
   }
   
   // Process BB SH data
@@ -267,6 +507,86 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       */
      }
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
+    
+    //add here MC info: pid, trid, P, V + x, y  in entrance window.
+    double z_det = 2.5319;// TODO ? DB ???
+    if(d_flag>=3)printf("Unfolding MC info \n");
+    for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
+	it != fTree->GEMs.end(); it++) {
+      if(d_flag>=3)printf("GEM tree %ld\n", std::distance(fTree->GEMs.begin(), it));
+      
+      TSBSGeant4::TrackerData_t &t = it->Track_tree;
+      if(t.ntracks) {
+	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
+	for(int k = 0; k < t.ntracks; k++) {
+	  g4sbsgendata *bbshgenhit = new g4sbsgendata(BBSH_UNIQUE_DETID, 19);
+	  bbshgenhit->SetData(0, t.TID->at(k)); 
+	  bbshgenhit->SetData(1, t.PID->at(k)); 
+	  
+	  double pz = sqrt( pow(t.P->at(k), 2)/
+			    ( pow(t.Xp->at(k), 2) + 
+			      pow(t.Yp->at(k), 2) + 1.0) );
+	  
+	  bbshgenhit->SetData(2, t.Xp->at(k)*pz); 
+	  bbshgenhit->SetData(3, t.Yp->at(k)*pz); 
+	  bbshgenhit->SetData(4, pz); 
+	  if(d_flag>=3)
+	    printf("P = %f (%f, %f, %f)\n", 
+		   t.P->at(k), 
+		   bbshgenhit->GetData(2),
+		   bbshgenhit->GetData(3),
+		   bbshgenhit->GetData(4)
+		   );
+	  
+	  bbshgenhit->SetData(5, t.X->at(k)); 
+	  bbshgenhit->SetData(6, t.Y->at(k)); 
+	  bbshgenhit->SetData(7, 0.0); 
+	  
+	  bbshgenhit->SetData(8, 1.0);// TODO: weight
+	  // TODO: momentum at target (use SD tracks...)
+	  bbshgenhit->SetData(9, 0);
+	  bbshgenhit->SetData(10, 0); 
+	  bbshgenhit->SetData(11, 0); 
+	  // TODO: vertex at target (use SD tracks...)
+	  bbshgenhit->SetData(12, 0); 
+	  bbshgenhit->SetData(13, 0); 
+	  bbshgenhit->SetData(14, 0); 
+
+	  bbshgenhit->SetData(15, t.X->at(k)+t.Xp->at(k)*z_det); 
+	  bbshgenhit->SetData(16, t.Y->at(k)+t.Yp->at(k)*z_det); 
+	  
+	  if(d_flag>=3)
+	    printf("X0 = %f, Y0 = %f, Xp = %f, Yp = %f, X = %f, Y = %f\n",
+		   t.X->at(k), t.Y->at(k), 
+		   t.Xp->at(k), t.Yp->at(k), 
+		   bbshgenhit->GetData(15),
+		   bbshgenhit->GetData(16)
+		   );
+	  
+	  bbshgenhit->SetData(17, sqrt( pow(t.P->at(k), 2) + 
+					  pow(M_p(t.PID->at(k)), 2) ) ); 
+	  
+	  if(d_flag>=3)
+	    printf("M = %f, P = %f => E = %f;\n", 
+		   M_p(t.PID->at(k)),
+		   t.P->at(k),
+		   bbshgenhit->GetData(17)
+		   );
+	  
+	  double beta = t.P->at(k)/bbshgenhit->GetData(17);
+	  bbshgenhit->SetData(18, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+
+	  if(d_flag>=3)
+	    printf("beta = %f, z = %f => T = %f;\n", 
+		   beta,
+		   z_det*t.P->at(k)/pz, 
+		   bbshgenhit->GetData(18)
+		   );
+	  
+	  fg4sbsGenData.push_back(bbshgenhit);
+	}// end loop on tracks
+      }
+    }//end loop on GEM tree;
   }
   
   // Hadron Arm
@@ -506,5 +826,31 @@ void TSBSGeant4File::Clear(){
 
   return;
 }
+
+double TSBSGeant4File::M_p(int pid)
+{
+  switch(TMath::Abs(pid)){
+  case (11):
+    return 0.000511;
+    break;
+  case (13):
+    return 0.105658;
+    break;
+  case (211):
+    return 0.139570;
+    break;
+  case (321):
+    return 0.493677;
+    break;
+  case (2212):
+    return 0.938272;
+    break;
+  default:
+    return 0.00511;
+    break;
+  }
+  
+}
+
 
 #endif//__CINT__

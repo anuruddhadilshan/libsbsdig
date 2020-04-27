@@ -81,6 +81,9 @@ class TSBSGeant4File : public TFile {
   //void GetCherData(TSBSCherData* gd);
   
  private:
+  //functions:
+  double M_p(int pid);
+  
   // Members
   // 2019/10/18: TSBSGeant4File now inherits of TFile (EF)
   //char  fFilename[255];

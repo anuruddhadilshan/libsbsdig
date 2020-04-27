@@ -124,8 +124,8 @@ void TSBSSimCher::Digitize(TSBSSimEvent &event)
       for(uint i_mc = 0; i_mc<fSignals[m].MCHitSize(); i_mc++){
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].MCHitSource(i_mc));
-	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
-	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
+	//event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
+	//event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].MCHitSource(i_mc));//dummy values for the moment
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(Short_t(m));
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].MCHitNpe(i_mc));
 	event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].MCHitTime(i_mc));
