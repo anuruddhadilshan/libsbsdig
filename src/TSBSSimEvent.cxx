@@ -53,6 +53,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
     
+    fTrackMCHitOutData[fulldetname].Clear();
     //Clean the containers for the output data
     switch(DetInfo_i.DetType()){
     case(kGEM):
@@ -77,7 +78,6 @@ void TSBSSimEvent::Clear( const Option_t* opt )
       fSimDigSampOutData[fulldetname].Clear();
       break;
     default:
-      fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigOutData[fulldetname].Clear();
       break;

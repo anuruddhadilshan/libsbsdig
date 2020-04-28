@@ -205,6 +205,7 @@ int TSBSSimDigitizer::AddFileToEvent(TSBSGeant4File *f, double tjitter)
       double t0 = tjitter+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
       fDetectors[det]->SetTimeZero(t0);
       fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+      fDetectors[det]->LoadMCTrackData(f->GetGenDataVector(), *fEvent);
       if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
     }
   }

@@ -151,7 +151,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
     
     //add here MC info: pid, trid, P, V + x, y  in entrance window.
-    z_det = 1.3824;// TODO: DB ?
+    z_det = 1.3824-0.80;// TODO: DB ?
     if(d_flag>=3)printf("Unfolding MC info \n");
     for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
 	it != fTree->GEMs.end(); it++) {
@@ -161,6 +161,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       if(t.ntracks) {
 	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
 	for(int k = 0; k < t.ntracks; k++) {
+	  if(t.NumPlanes->at(k)<5)continue;
 	  g4sbsgendata *grinchgenhit = new g4sbsgendata(GRINCH_UNIQUE_DETID, 20);
 	  grinchgenhit->SetData(0, fSource); 
 	  grinchgenhit->SetData(1, t.TID->at(k)); 
@@ -222,7 +223,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
     
     //add here MC info: pid, trid, P, V + x, y  in entrance window.
-    double z_det = 2.59241;// TODO ? DB ???
+    double z_det = 2.59241-0.80;// TODO ? DB ???
     if(d_flag>=3)printf("Unfolding MC info \n");
     for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
 	it != fTree->GEMs.end(); it++) {
@@ -232,6 +233,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       if(t.ntracks) {
 	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
 	for(int k = 0; k < t.ntracks; k++) {
+	  if(t.NumPlanes->at(k)<5)continue;
 	  g4sbsgendata *hodogenhit = new g4sbsgendata(HODO_UNIQUE_DETID, 20);
 	  hodogenhit->SetData(0, fSource); 
 	  hodogenhit->SetData(1, t.TID->at(k)); 
@@ -291,7 +293,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Accumulated data = %lu\n", fg4sbsHitData.size());
     
     //add here MC info: pid, trid, P, V + x, y  in entrance window.
-    double z_det = 2.5319;// TODO ? DB ???
+    double z_det = 2.5319-0.80;// TODO ? DB ???
     if(d_flag>=3)printf("Unfolding MC info \n");
     for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
 	it != fTree->GEMs.end(); it++) {
@@ -301,6 +303,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       if(t.ntracks) {
 	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
 	for(int k = 0; k < t.ntracks; k++) {
+	  if(t.NumPlanes->at(k)<5)continue;
 	  g4sbsgendata *bbpsgenhit = new g4sbsgendata(BBPS_UNIQUE_DETID, 20);
 	  bbpsgenhit->SetData(0, fSource); 
 	  bbpsgenhit->SetData(1, t.TID->at(k)); 
@@ -361,7 +364,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
     if(d_flag>=3)printf("Accumulated data = %lu\n" , fg4sbsHitData.size());
     
     //add here MC info: pid, trid, P, V + x, y  in entrance window.
-    double z_det = 2.5319;// TODO ? DB ???
+    double z_det = 2.5319-0.80;// TODO ? DB ???
     if(d_flag>=3)printf("Unfolding MC info \n");
     for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
 	it != fTree->GEMs.end(); it++) {
@@ -371,6 +374,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       if(t.ntracks) {
 	if(d_flag>=3)printf("%d tracks \n", t.ntracks);
 	for(int k = 0; k < t.ntracks; k++) {
+	  if(t.NumPlanes->at(k)<5)continue;
 	  g4sbsgendata *bbshgenhit = new g4sbsgendata(BBSH_UNIQUE_DETID, 20);
 	  bbshgenhit->SetData(0, fSource); 
 	  bbshgenhit->SetData(1, t.TID->at(k)); 
@@ -535,6 +539,35 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
           gemhit->SetData(33,t.yout->at(k));
           gemhit->SetData(34,t.zout->at(k));
           fg4sbsHitData.push_back(gemhit);
+	  
+	  /*
+	  if(d_flag>=3){
+	    TSBSGeant4::TrackerData_t &tt = it->Track_tree;
+	    if(tt.ntracks) {
+	      if(d_flag>=3)printf("%d tracks \n", tt.ntracks);
+	      for(int kk = 0; kk < tt.ntracks; kk++) {
+		if(t.trid->at(k)==tt.TID->at(kk)){
+		  printf("plane %d, z = %f\n", t.plane->at(k), t.z->at(k)); 
+		  double dx = t.tx->at(k)-tt.X->at(kk);
+		  double dy = t.ty->at(k)-tt.Y->at(kk);
+		  printf("x: %f-%f = %f\n", t.tx->at(k), tt.X->at(kk), dx);
+		  printf("y: %f-%f = %f\n", t.ty->at(k), tt.Y->at(kk), dy);
+		  double dz1 = dx/t.txp->at(k);
+		  double dz2 = dy/t.typ->at(k);
+		  double dz3 = dx/tt.Xp->at(kk);
+		  double dz4 = dy/tt.Yp->at(kk);
+		  printf("dx/dz: %f (hit) => dz = %f ; %f (track) => dz = %f \n",
+			 t.txp->at(k), dz1, tt.Xp->at(kk), dz3);
+		  printf("dy/dz: %f (hit) => dz = %f ; %f (track) => dz = %f \n",
+			 t.typ->at(k), dz2, tt.Yp->at(kk), dz4);
+		  printf("z0 = %f, %f, %f, %f\n", 
+			 t.z->at(k)-dz1, t.z->at(k)-dz2, 
+			 t.z->at(k)-dz3, t.z->at(k)-dz4);
+		}
+	      }
+	    }//
+	  }//end if d_flag
+	  */
         }
       }
     }
