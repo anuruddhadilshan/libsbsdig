@@ -65,7 +65,8 @@ class TSBSGeant4File : public TFile {
 
   // Returns a pointer to the data vector
   std::vector<g4sbshitdata*>& GetDataVector() { return fg4sbsHitData; }
-  
+  std::vector<g4sbsgendata*>& GetGenDataVector() { return fg4sbsGenData; }
+ 
   //return the size of the hit arrays
   UInt_t GetNData() const { return fg4sbsHitData.size(); }
   UInt_t GetNGen() const { return fg4sbsGenData.size(); }

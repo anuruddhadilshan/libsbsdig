@@ -11,6 +11,7 @@
 //#include "TF1Convolution.h"
 
 class g4sbshitdata;
+class g4sbsgendata;
 class TSBSSimEvent;
 class TSBSDBManager;
 //class THaAnalysisObject;
@@ -30,6 +31,9 @@ public:
   static int GetEventNum() { return fEvNum; }
   double GetTimeZero(){return fTimeZero;};
   void SetTimeZero(double t0){fTimeZero = t0;};
+
+  void LoadMCTrackData(const std::vector<g4sbsgendata*> &evbuffer, 
+		       TSBSSimEvent &event);
   
 protected:
   void SetHasDataFlag(bool has_data) { fHasData = has_data; }

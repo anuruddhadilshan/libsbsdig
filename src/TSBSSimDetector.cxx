@@ -1,5 +1,7 @@
 #include "TSBSSimDetector.h"
 #include "TSBSDBManager.h"
+#include "TSBSSimData.h"
+#include "TSBSSimEvent.h"
 
 
 int TSBSSimDetector::fEvNum = 0;
@@ -21,6 +23,39 @@ void TSBSSimDetector::Init()
 TSBSSimDetector::~TSBSSimDetector()
 {
   fDBmanager->Delete();
+}
+
+void TSBSSimDetector::LoadMCTrackData(const std::vector<g4sbsgendata*> &evbuffer, 
+				      TSBSSimEvent &event)
+{
+  for(std::vector<g4sbsgendata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
+    g4sbsgendata* ev = (*it);
+    if(ev->GetDetUniqueID() == UniqueDetID()) {
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fNTrackMCHits++;
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCSource.push_back(ev->GetSource());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCTRID.push_back(ev->GetTRID());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCPID.push_back(ev->GetPID());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCXhit.push_back(ev->GetX());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCYhit.push_back(ev->GetY());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCThit.push_back(ev->GetT()+fTimeZero);
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCE.push_back(ev->GetE());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCWeight.push_back(ev->GetWeight());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpx.push_back(ev->GetP().X());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpy.push_back(ev->GetP().Y());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpz.push_back(ev->GetP().Z());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrx.push_back(ev->GetV().X());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry.push_back(ev->GetV().Y());
+      /*
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrz.push_back(ev->GetV().Z());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpx_v.push_back(ev->GetMomentumAtTarget().X());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpy_v.push_back(ev->GetMomentumAtTarget().Y());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpz_v.push_back(ev->GetMomentumAtTarget().Z());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrx_v.push_back(ev->GetVertexAtTarget().X());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry_v.push_back(ev->GetVertexAtTarget().Y());
+      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry_v.push_back(ev->GetVertexAtTarget().Z());
+      */
+    }
+  }//end loop on g4sbsgendata
 }
 
 void TSBSSimDetector::CopyEncodedData(SBSSimDataEncoder *enc,

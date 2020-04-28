@@ -125,20 +125,28 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
     default:
       //Track MC hits
       fOutTree->Branch(Form("%s.trackmchit.nhits", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fNTrackMCHits);
-      fOutTree->Branch(Form("%s.trackmchit.nhits", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCSource);
+      fOutTree->Branch(Form("%s.trackmchit.source", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCSource);
       fOutTree->Branch(Form("%s.trackmchit.trid", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCTRID);
       fOutTree->Branch(Form("%s.trackmchit.pid", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCPID);
+      fOutTree->Branch(Form("%s.trackmchit.xhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCXhit);
+      fOutTree->Branch(Form("%s.trackmchit.yhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCYhit);
+      fOutTree->Branch(Form("%s.trackmchit.thit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCThit);
+      fOutTree->Branch(Form("%s.trackmchit.e", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCE);
       fOutTree->Branch(Form("%s.trackmchit.weight", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCWeight);
       fOutTree->Branch(Form("%s.trackmchit.trpx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpx);
       fOutTree->Branch(Form("%s.trackmchit.trpy", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpy);
       fOutTree->Branch(Form("%s.trackmchit.trpz", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpz);
       fOutTree->Branch(Form("%s.trackmchit.trx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrx);
       fOutTree->Branch(Form("%s.trackmchit.try", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtry);
-      /**/
-      fOutTree->Branch(Form("%s.trackmchit.xhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCXhit);
-      fOutTree->Branch(Form("%s.trackmchit.yhit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCYhit);
-      fOutTree->Branch(Form("%s.trackmchit.thit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCThit);
-      fOutTree->Branch(Form("%s.trackmchit.e", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCE);
+      /*
+      fOutTree->Branch(Form("%s.trackmchit.trz", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrz);
+      fOutTree->Branch(Form("%s.trackmchit.trpx_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpx_v);
+      fOutTree->Branch(Form("%s.trackmchit.trpy_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpy_v);
+      fOutTree->Branch(Form("%s.trackmchit.trpz_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpz_v);
+      fOutTree->Branch(Form("%s.trackmchit.trx_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrx_v);
+      fOutTree->Branch(Form("%s.trackmchit.try_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtry_v);
+      fOutTree->Branch(Form("%s.trackmchit.trz_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrz_v);	
+      */
       
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
@@ -275,6 +283,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	if(fDebug>=3)cout << "f->GetDataVector().size() " << f->GetDataVector().size() << endl;
 	fDetectors[det]->SetTimeZero(tjitter);
 	fDetectors[det]->LoadEventData(f->GetDataVector());
+	fDetectors[det]->LoadMCTrackData(f->GetGenDataVector(), *fEvent);
 	if(fDebug>=3)cout << " event loaded for  " << fDetectors[det]->GetName() << endl;
       }
       //now loop on other chains to add background
@@ -330,6 +339,7 @@ int TSBSSimDigitizer::Process(ULong_t max_events)
 	      t0 = tjitter+fRN->Uniform(-fManager->GetBkgdSpreadTimeWindowHW(), fManager->GetBkgdSpreadTimeWindowHW());
 	      fDetectors[det]->SetTimeZero(t0);
 	      fDetectors[det]->LoadAccumulateData(f->GetDataVector());
+	      fDetectors[det]->LoadMCTrackData(f->GetGenDataVector(), *fEvent);
 	      if(fDebug>=3)cout << "Done loading data in " << fDetectors[det]->GetName() << endl;
 	    }
 	    //AddFileToEvent(f_b);

@@ -71,7 +71,7 @@ g4sbshitdata::~g4sbshitdata(){
 // Size is 1 bigger because we are also including the weight
 // Set that default to 1
 g4sbsgendata::g4sbsgendata(int unique_detid, unsigned int size ):g4sbshitdata(unique_detid, size){
-  SetData(8,1.0);
+  //SetData(8,1.0);
 }
 
 
@@ -94,13 +94,17 @@ void trackmchit_outdata::Clear(){
   fTrackMCSource.clear();
   fTrackMCTRID.clear();
   fTrackMCPID.clear();
+  fTrackMCXhit.clear();
+  fTrackMCYhit.clear();
+  fTrackMCThit.clear();
+  fTrackMCE.clear();
   fTrackMCWeight.clear();
-  /*
   fTrackMCtrpx.clear();
   fTrackMCtrpy.clear();
   fTrackMCtrpz.clear();
   fTrackMCtrx.clear();
   fTrackMCtry.clear();
+  /*
   fTrackMCtrz.clear();
   fTrackMCtrpx_v.clear();
   fTrackMCtrpy_v.clear();
@@ -109,10 +113,6 @@ void trackmchit_outdata::Clear(){
   fTrackMCtry_v.clear();
   fTrackMCtrz_v.clear();
   */
-  fTrackMCXhit.clear();
-  fTrackMCYhit.clear();
-  fTrackMCThit.clear();
-  fTrackMCE.clear();
 }
 
 bool trackmchit_outdata::CheckSize(bool print)
@@ -129,6 +129,22 @@ bool trackmchit_outdata::CheckSize(bool print)
   if(fTrackMCPID.size()!=fNTrackMCHits){
     checkout = false;
     if(print)printf("fTrackMCPID.size() = %zu != %u\n", fTrackMCPID.size(), fNTrackMCHits);
+  }
+  if(fTrackMCXhit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCXhit.size() = %zu != %u\n", fTrackMCXhit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCYhit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCYhit.size() = %zu != %u\n", fTrackMCYhit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCThit.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
+  }
+  if(fTrackMCE.size()!=fNTrackMCHits){
+    checkout = false;
+    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
   }
   if(fTrackMCWeight.size()!=fNTrackMCHits){
     checkout = false;
@@ -184,22 +200,6 @@ bool trackmchit_outdata::CheckSize(bool print)
     if(print)printf("fTrackMCtrz_v.size() = %zu != %u\n", fTrackMCtrz_v.size(), fNTrackMCHits);
   }
   */
-  if(fTrackMCXhit.size()!=fNTrackMCHits){
-    checkout = false;
-    if(print)printf("fTrackMCXhit.size() = %zu != %u\n", fTrackMCXhit.size(), fNTrackMCHits);
-  }
-  if(fTrackMCYhit.size()!=fNTrackMCHits){
-    checkout = false;
-    if(print)printf("fTrackMCYhit.size() = %zu != %u\n", fTrackMCYhit.size(), fNTrackMCHits);
-  }
-  if(fTrackMCThit.size()!=fNTrackMCHits){
-    checkout = false;
-    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
-  }
-  if(fTrackMCE.size()!=fNTrackMCHits){
-    checkout = false;
-    if(print)printf("fTrackMCThit.size() = %zu != %u\n", fTrackMCThit.size(), fNTrackMCHits);
-  }
   
   return checkout;
 }
