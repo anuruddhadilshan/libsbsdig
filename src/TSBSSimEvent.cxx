@@ -53,10 +53,10 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     TDetInfo DetInfo_i = AllDetInfo.at(i);
     std::string fulldetname = DetInfo_i.DetFullName();
     
-    fTrackMCHitOutData[fulldetname].Clear();
     //Clean the containers for the output data
     switch(DetInfo_i.DetType()){
     case(kGEM):
+      fMCTrackOutData[fulldetname].Clear();
       fSimGEMHitMCOutData[fulldetname].Clear();
       GEMDBManager = DetInfo_i.GetGEMDB();
       for(int ipl = 0; ipl<GEMDBManager->GetNGEMPlane(); ipl++){
@@ -74,10 +74,12 @@ void TSBSSimEvent::Clear( const Option_t* opt )
       }
       break;
     case(kHCal):
+      //fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigSampOutData[fulldetname].Clear();
       break;
     default:
+      fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigOutData[fulldetname].Clear();
       break;

@@ -25,6 +25,7 @@
 //#pragma link C++ class TSBSSimData+;
 #pragma link C++ class g4sbshitdata+;
 #pragma link C++ class g4sbsgendata+;
+#pragma link C++ class mctrack_outdata+;
 #pragma link C++ class trackmchit_outdata+;
 #pragma link C++ class simhitmc_outdata+;
 #pragma link C++ class simgemhitmc_outdata+;

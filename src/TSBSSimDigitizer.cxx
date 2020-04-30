@@ -50,7 +50,26 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
 
     switch(DetInfo_i.DetType()){
     case(kGEM):
-      //MC info
+      //MC track info
+      fOutTree->Branch(Form("%s.mctrack.ntracks", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fNMCTracks);
+      fOutTree->Branch(Form("%s.mctrack.source", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackSource);
+      fOutTree->Branch(Form("%s.mctrack.trid", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackTRID);
+      fOutTree->Branch(Form("%s.mctrack.pid", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackPID);
+      fOutTree->Branch(Form("%s.mctrack.x", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackX);
+      fOutTree->Branch(Form("%s.mctrack.y", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackY);
+      fOutTree->Branch(Form("%s.mctrack.t", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackT);
+      fOutTree->Branch(Form("%s.mctrack.p", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackP);
+      fOutTree->Branch(Form("%s.mctrack.dx", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackdX);
+      fOutTree->Branch(Form("%s.mctrack.dy", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackdY);
+      fOutTree->Branch(Form("%s.mctrack.xv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackXv);
+      fOutTree->Branch(Form("%s.mctrack.yv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackYv);	
+      fOutTree->Branch(Form("%s.mctrack.zv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackZv);	
+      fOutTree->Branch(Form("%s.mctrack.pxv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackPXv);
+      fOutTree->Branch(Form("%s.mctrack.pyv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackPYv);	
+      fOutTree->Branch(Form("%s.mctrack.pzv", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackPZv);
+      fOutTree->Branch(Form("%s.mctrack.weight", fulldetname.c_str()),&fEvent->fMCTrackOutData[fulldetname.c_str()].fMCTrackWeight);
+      
+      //MC hit info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimSource);
       fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimGEMHitMCOutData[fulldetname.c_str()].fSimTRID);
@@ -99,8 +118,8 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);
-      //fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
-      //fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
+      fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
+      fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
       fOutTree->Branch(Form("%s.simhit.chan", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimChannel);
       fOutTree->Branch(Form("%s.simhit.edep", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimEdep);
       fOutTree->Branch(Form("%s.simhit.npe", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimNpe);
@@ -133,26 +152,12 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.trackmchit.thit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCThit);
       fOutTree->Branch(Form("%s.trackmchit.e", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCE);
       fOutTree->Branch(Form("%s.trackmchit.weight", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCWeight);
-      fOutTree->Branch(Form("%s.trackmchit.trpx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpx);
-      fOutTree->Branch(Form("%s.trackmchit.trpy", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpy);
-      fOutTree->Branch(Form("%s.trackmchit.trpz", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpz);
-      fOutTree->Branch(Form("%s.trackmchit.trx", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrx);
-      fOutTree->Branch(Form("%s.trackmchit.try", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtry);
-      /*
-      fOutTree->Branch(Form("%s.trackmchit.trz", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrz);
-      fOutTree->Branch(Form("%s.trackmchit.trpx_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpx_v);
-      fOutTree->Branch(Form("%s.trackmchit.trpy_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpy_v);
-      fOutTree->Branch(Form("%s.trackmchit.trpz_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrpz_v);
-      fOutTree->Branch(Form("%s.trackmchit.trx_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrx_v);
-      fOutTree->Branch(Form("%s.trackmchit.try_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtry_v);
-      fOutTree->Branch(Form("%s.trackmchit.trz_v", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCtrz_v);	
-      */
-      
+            
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);
-      //fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
-      //fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
+      fOutTree->Branch(Form("%s.simhit.trid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTRID);
+      fOutTree->Branch(Form("%s.simhit.pid", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimPID);
       fOutTree->Branch(Form("%s.simhit.chan", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimChannel);
       if(dettype!=kCher)fOutTree->Branch(Form("%s.simhit.edep", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimEdep);
       fOutTree->Branch(Form("%s.simhit.npe", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimNpe);

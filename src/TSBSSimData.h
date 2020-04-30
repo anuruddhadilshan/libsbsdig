@@ -74,19 +74,51 @@ class g4sbsgendata : public g4sbshitdata {
   double GetT() const { return IsFilled()? fData[5] : -1e9; }
   double GetE() const { return IsFilled()? fData[6] : -1e9; }
   
-  double  GetWeight() const { return IsFilled()? fData[7] : -1e9; }//cross section
-  TVector3 GetP() const { return IsFilled()? TVector3(fData[8], fData[9], fData[10]) : TVector3(-1e9, -1e9, -1e9 ); }//Track momentum 3-vector
-  TVector3 GetV() const { return IsFilled()? TVector3(fData[11], fData[12], fData[13]) : TVector3(-1e9, -1e9, -1e9 ); }//Track vtx 3-vector
+  double GetP() const { return IsFilled()? fData[6] : -1e9; }
+  
+  double GetdX() const { return (IsFilled()&&fSize>=16)? fData[7] : -1e9; }
+  double GetdY() const { return (IsFilled()&&fSize>=16)? fData[8] : -1e9; }
+  
+  //TVector3 GetP() const { return IsFilled()? TVector3(fData[8], fData[9], fData[10]) : TVector3(-1e9, -1e9, -1e9 ); }//Track momentum 3-vector
+  //TVector3 GetV() const { return IsFilled()? TVector3(fData[11], fData[12], fData[13]) : TVector3(-1e9, -1e9, -1e9 ); }//Track vtx 3-vector
   
   // This is from libsbsgem/TSBSGeant4File.h
-  TVector3 GetMomentumAtTarget() const { return IsFilled()? TVector3(fData[14], fData[15], fData[16]) : TVector3(-1e9, -1e9, -1e9 ); }
-  TVector3 GetVertexAtTarget() const { return IsFilled()? TVector3(fData[17], fData[18], fData[19]) : TVector3(-1e9, -1e9, -1e9 ); }
+  TVector3 GetMomentumAtTarget() const {  return (IsFilled()&&fSize>=16)? TVector3(fData[12], fData[13], fData[14]) : TVector3(-1e9, -1e9, -1e9 ); }
+  TVector3 GetVertexAtTarget() const { return (IsFilled()&&fSize>=16)? TVector3(fData[9], fData[10], fData[11]) : TVector3(-1e9, -1e9, -1e9 ); }
   
+  double  GetWeight() const { return IsFilled()? fData[fSize-1] : -1e9; }//cross section
 };
 
 //
 // Output data classes
 //
+class mctrack_outdata{
+ public: 
+  mctrack_outdata();
+  ~mctrack_outdata();
+
+  UInt_t fNMCTracks;
+  std::vector<Short_t>   fMCTrackSource;
+  std::vector<Short_t>   fMCTrackTRID;
+  std::vector<Int_t>     fMCTrackPID;
+  std::vector<Double_t>  fMCTrackX;
+  std::vector<Double_t>  fMCTrackY;
+  std::vector<Double_t>  fMCTrackT;
+  std::vector<Double_t>  fMCTrackP;
+  std::vector<Double_t>  fMCTrackdX;
+  std::vector<Double_t>  fMCTrackdY;
+  std::vector<Double_t>  fMCTrackXv;
+  std::vector<Double_t>  fMCTrackYv;
+  std::vector<Double_t>  fMCTrackZv;
+  std::vector<Double_t>  fMCTrackPXv;
+  std::vector<Double_t>  fMCTrackPYv;
+  std::vector<Double_t>  fMCTrackPZv;
+  std::vector<Double_t>  fMCTrackWeight;
+  
+  void Clear();
+  bool CheckSize(bool print = false);
+};
+
 class trackmchit_outdata{
  public: 
   trackmchit_outdata();
@@ -101,20 +133,6 @@ class trackmchit_outdata{
   std::vector<Double_t>  fTrackMCThit;
   std::vector<Double_t>  fTrackMCE;
   std::vector<Double_t>  fTrackMCWeight;
-  std::vector<Double_t>  fTrackMCtrpx;
-  std::vector<Double_t>  fTrackMCtrpy;
-  std::vector<Double_t>  fTrackMCtrpz;
-  std::vector<Double_t>  fTrackMCtrx;
-  std::vector<Double_t>  fTrackMCtry;
-  /*
-  std::vector<Double_t>  fTrackMCtrz;
-  std::vector<Double_t>  fTrackMCtrpx_v;
-  std::vector<Double_t>  fTrackMCtrpy_v;
-  std::vector<Double_t>  fTrackMCtrpz_v;
-  std::vector<Double_t>  fTrackMCtrx_v;
-  std::vector<Double_t>  fTrackMCtry_v;
-  std::vector<Double_t>  fTrackMCtrz_v;
-  */
   
   void Clear();
   bool CheckSize(bool print = false);

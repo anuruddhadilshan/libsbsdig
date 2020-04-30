@@ -31,29 +31,37 @@ void TSBSSimDetector::LoadMCTrackData(const std::vector<g4sbsgendata*> &evbuffer
   for(std::vector<g4sbsgendata*>::const_iterator it = evbuffer.begin(); it!= evbuffer.end(); ++it ) {
     g4sbsgendata* ev = (*it);
     if(ev->GetDetUniqueID() == UniqueDetID()) {
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fNTrackMCHits++;
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCSource.push_back(ev->GetSource());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCTRID.push_back(ev->GetTRID());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCPID.push_back(ev->GetPID());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCXhit.push_back(ev->GetX());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCYhit.push_back(ev->GetY());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCThit.push_back(ev->GetT()+fTimeZero);
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCE.push_back(ev->GetE());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCWeight.push_back(ev->GetWeight());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpx.push_back(ev->GetP().X());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpy.push_back(ev->GetP().Y());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpz.push_back(ev->GetP().Z());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrx.push_back(ev->GetV().X());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry.push_back(ev->GetV().Y());
-      /*
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrz.push_back(ev->GetV().Z());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpx_v.push_back(ev->GetMomentumAtTarget().X());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpy_v.push_back(ev->GetMomentumAtTarget().Y());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrpz_v.push_back(ev->GetMomentumAtTarget().Z());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtrx_v.push_back(ev->GetVertexAtTarget().X());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry_v.push_back(ev->GetVertexAtTarget().Y());
-      event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCtry_v.push_back(ev->GetVertexAtTarget().Z());
-      */
+      if(fDetInfo.DetFullName().find("gem")!=std::string::npos){//GEMs
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fNMCTracks++;
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackSource.push_back(ev->GetSource());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackTRID.push_back(ev->GetTRID());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackPID.push_back(ev->GetPID());
+	
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackX.push_back(ev->GetX());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackY.push_back(ev->GetY());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackT.push_back(ev->GetT());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackP.push_back(ev->GetP());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackdX.push_back(ev->GetdX());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackdY.push_back(ev->GetdY());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackXv.push_back(ev->GetVertexAtTarget().X());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackYv.push_back(ev->GetVertexAtTarget().Y());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackZv.push_back(ev->GetVertexAtTarget().Z());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackPXv.push_back(ev->GetMomentumAtTarget().X());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackPYv.push_back(ev->GetMomentumAtTarget().Y());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackPZv.push_back(ev->GetMomentumAtTarget().Z());
+	event.fMCTrackOutData[fDetInfo.DetFullName()].fMCTrackWeight.push_back(ev->GetWeight());
+      }else{
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fNTrackMCHits++;
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCSource.push_back(ev->GetSource());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCTRID.push_back(ev->GetTRID());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCPID.push_back(ev->GetPID());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCXhit.push_back(ev->GetX());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCYhit.push_back(ev->GetY());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCThit.push_back(ev->GetT()+fTimeZero);
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCE.push_back(ev->GetE());
+	event.fTrackMCHitOutData[fDetInfo.DetFullName()].fTrackMCWeight.push_back(ev->GetWeight());
+      }
+
     }
   }//end loop on g4sbsgendata
 }
