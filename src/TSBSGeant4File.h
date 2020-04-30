@@ -100,6 +100,14 @@ class TSBSGeant4File : public TFile {
   TSBSDBManager *fManager;
   TRndmManager *fRN;
   
+  //useful parameters that we don't want to recalculate everytime:
+  double fThetaSBS;
+  double fdHCal;
+  double fzGrinch;
+  double fzHodo;
+  double fzPS;
+  double fzSH;
+  
   ClassDef(TSBSGeant4File,1)
 };
 

@@ -61,7 +61,32 @@ Int_t TSBSGeant4File::Open(){
   // g4sbs_tree declare all variables, branches, etc... 
   // to read, event by event, the varaibles stored in the tree. 
   // See comments in g4sbs_tree for more details...
+
+  fThetaSBS = fdHCal = 0;
+  fzGrinch = fzHodo = fzPS = fzSH = 0;
   
+  if(fManager->IsDetInfoAvailable("hcal")){
+    TSpectroInfo sbsinfo = fManager->GetSpectroInfo("sbs");
+    fThetaSBS = sbsinfo.MCAngle();
+    TDetInfo hcalinfo = fManager->GetDetInfo("hcal");
+    fdHCal = hcalinfo.GeoInfo(0).ZPos();
+  }
+  if(fManager->IsDetInfoAvailable("grinch")){
+    TDetInfo grinchinfo = fManager->GetDetInfo("grinch");
+    fzGrinch = grinchinfo.GeoInfo(0).ZPos();
+  }
+  if(fManager->IsDetInfoAvailable("hodo")){
+    TDetInfo hodoinfo = fManager->GetDetInfo("hodo");
+    fzHodo = hodoinfo.GeoInfo(0).ZPos();
+  }
+  if(fManager->IsDetInfoAvailable("ps")){
+    TDetInfo psinfo = fManager->GetDetInfo("ps");
+    fzPS = psinfo.GeoInfo(0).ZPos();
+  }
+  if(fManager->IsDetInfoAvailable("sh")){
+    TDetInfo shinfo = fManager->GetDetInfo("sh");
+    fzSH = shinfo.GeoInfo(0).ZPos();
+  }
   fEvNum = -1;
   
 #if D_FLAG>1 
@@ -119,24 +144,10 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   int Npe;
   double t;
   
-  TSpectroInfo sbsinfo = fManager->GetSpectroInfo("sbs");
-  double theta = sbsinfo.MCAngle();
-  TDetInfo hcalinfo = fManager->GetDetInfo("hcal");
-  double dHCal = hcalinfo.GeoInfo(0).ZPos();
-  
-  double x_ref = dHCal*sin(theta);
-  double z_ref = dHCal*cos(theta);
+  double x_ref = fdHCal*sin(fThetaSBS);
+  double z_ref = fdHCal*cos(fThetaSBS);
   
   double z_hit, Npe_Edep_ratio, sigma_tgen;
-  
-  TDetInfo grinchinfo = fManager->GetDetInfo("grinch");
-  double z_grinch = grinchinfo.GeoInfo(0).ZPos();
-  TDetInfo hodoinfo = fManager->GetDetInfo("hodo");
-  double z_hodo = hodoinfo.GeoInfo(0).ZPos();
-  TDetInfo psinfo = fManager->GetDetInfo("ps");
-  double z_ps = psinfo.GeoInfo(0).ZPos();
-  TDetInfo shinfo = fManager->GetDetInfo("sh");
-  double z_sh = shinfo.GeoInfo(0).ZPos();
 
   double z_det, pz, E, beta;
   
@@ -183,7 +194,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	fg4sbsGenData.push_back(bbgemgentrack);
 	
 	if(fTree->Earm_GRINCH.nhits){
-	  z_det = z_grinch-0.80;
+	  z_det = fzGrinch-0.80;
 	  g4sbsgendata *grinchgenhit = new g4sbsgendata(GRINCH_UNIQUE_DETID, 8);
 	  grinchgenhit->SetData(0, fSource); 
 	  grinchgenhit->SetData(1, t.TID->at(k)); 
@@ -197,7 +208,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	}
 	
 	if(fTree->Earm_BBHodoScint.nhits){  
-	  z_det = z_hodo-0.80;
+	  z_det = fzHodo-0.80;
 	  g4sbsgendata *hodogenhit = new g4sbsgendata(HODO_UNIQUE_DETID, 8);
 	  hodogenhit->SetData(0, fSource); 
 	  hodogenhit->SetData(1, t.TID->at(k)); 
@@ -211,7 +222,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	}
 	
 	if(fTree->Earm_BBPSTF1.nhits){
-	  z_det = z_ps-0.80;
+	  z_det = fzPS-0.80;
 	  g4sbsgendata *bbpsgenhit = new g4sbsgendata(BBPS_UNIQUE_DETID, 8);
 	  bbpsgenhit->SetData(0, fSource); 
 	  bbpsgenhit->SetData(1, t.TID->at(k)); 
@@ -225,7 +236,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	}
 	
 	if(fTree->Earm_BBSHTF1.nhits){
-	  double z_det = z_sh-0.80;
+	  double z_det = fzSH-0.80;
 	  g4sbsgendata *bbshgenhit = new g4sbsgendata(BBSH_UNIQUE_DETID, 8);
 	  bbshgenhit->SetData(0, fSource); 
 	  bbshgenhit->SetData(1, t.TID->at(k)); 
@@ -513,7 +524,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       hcalscinthit->SetData(3,fTree->hcalscint.sumedep->at(k));
       fg4sbsHitData.push_back(hcalscinthit);
 
-      z_hit = -(fTree->hcalscint.xhitg->at(k)-x_ref)*sin(theta)+(fTree->hcalscint.zhitg->at(k)-z_ref)*cos(theta);
+      z_hit = -(fTree->hcalscint.xhitg->at(k)-x_ref)*sin(fThetaSBS)+(fTree->hcalscint.zhitg->at(k)-z_ref)*cos(fThetaSBS);
       
       // Evaluation of number of photoelectrons from energy deposit documented at:
       // https://sbs.jlab.org/DocDB/0000/000043/002/HCal_Digi_EdepOnly_2.pdf
