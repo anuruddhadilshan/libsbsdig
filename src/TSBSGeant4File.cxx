@@ -159,6 +159,24 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   
   if(d_flag>=3)printf("Unfolding MC info \n");
   
+  //if(fManager->IsDetInfoAvailable("hcal")){
+  /*
+  if(fTree->hcalscint.sumedep){
+    z_det = fdHCal;
+    g4sbsgendata *hcalgenhit = new g4sbsgendata(HCAL_UNIQUE_DETID, 8);
+    hcalgenhit->SetData(0, fSource); 
+    hcalgenhit->SetData(1, t.TID->at(k));
+    hcalgenhit->SetData(2, t.PID->at(k));
+    hcalgenhit->SetData(3, t.X->at(k)+t.Xp->at(k)*z_det); 
+    hcalgenhit->SetData(4, t.Y->at(k)+t.Yp->at(k)*z_det); 
+    hcalgenhit->SetData(5, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+    hcalgenhit->SetData(6, E);
+    hcalgenhit->SetData(7, 1.0);// TODO: weight
+    fg4sbsGenData.push_back(hcalgenhit);
+  }
+  */
+  //}
+  
   //was redoing that loop over and over again... what a waste... need to condense
   for(std::vector<gem_branch>::iterator it = fTree->GEMs.begin();
       it != fTree->GEMs.end(); it++) {
@@ -184,14 +202,22 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	bbgemgentrack->SetData(6, t.P->at(k));
 	bbgemgentrack->SetData(7, t.Xp->at(k));
 	bbgemgentrack->SetData(8, t.Yp->at(k));
-	bbgemgentrack->SetData(9, 0.);//TODO
-	bbgemgentrack->SetData(10, 0.);//TODO
-	bbgemgentrack->SetData(11, 0.);//TODO
-	bbgemgentrack->SetData(12, 0.);//TODO
-	bbgemgentrack->SetData(13, 0.);//TODO
-	bbgemgentrack->SetData(14, 0.);//TODO
+	if(fSource==0 && t.TID->at(k)==1){
+	  bbgemgentrack->SetData(9, fTree->ev_vx);
+	  bbgemgentrack->SetData(10, fTree->ev_vy);
+	  bbgemgentrack->SetData(11, fTree->ev_vz);
+	  bbgemgentrack->SetData(12, fTree->ev_npy);
+	  bbgemgentrack->SetData(14, fTree->ev_npx);
+	  bbgemgentrack->SetData(13, fTree->ev_npy);
+	  bbgemgentrack->SetData(14, fTree->ev_npz);
+	}else{
+	  for(int j = 9; j<15; j++){
+	    bbgemgentrack->SetData(j, 0.);
+	  }
+	}
 	bbgemgentrack->SetData(15, 1.0);// TODO: weight
 	fg4sbsGenData.push_back(bbgemgentrack);
+
 	
 	if(fTree->Earm_GRINCH.nhits){
 	  z_det = fzGrinch-0.80;
