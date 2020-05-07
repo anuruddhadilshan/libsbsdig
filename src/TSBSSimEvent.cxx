@@ -74,7 +74,7 @@ void TSBSSimEvent::Clear( const Option_t* opt )
       }
       break;
     case(kHCal):
-      //fTrackMCHitOutData[fulldetname].Clear();
+      fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigSampOutData[fulldetname].Clear();
       break;

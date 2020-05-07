@@ -160,21 +160,44 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   if(d_flag>=3)printf("Unfolding MC info \n");
   
   //if(fManager->IsDetInfoAvailable("hcal")){
-  /*
-  if(fTree->hcalscint.sumedep){
-    z_det = fdHCal;
+  if(fSource==0 && fTree->hcalscint.sumedep){
+    Double_t alpha = atan2(fTree->ev_npx,fTree->ev_npz);
+    Double_t tanbeta = fTree->ev_npy/sqrt(fTree->ev_npx*fTree->ev_npx+fTree->ev_npz*fTree->ev_npz);
+    Double_t v = fTree->ev_vz + fTree->ev_vx*fTree->ev_npx/fTree->ev_npz;
+    Short_t PID = 2112;
+    if(fTree->ev_nucl==1)PID = 2122;
+    //SIDIS ?
+    if(fManager->GetExpType()==kSIDIS){
+      switch(TMath::Abs(fTree->ev_hadr)){
+      case(0):
+	PID = 111;
+	break;
+      case(1):
+	PID = 211;
+	break;
+      case(2):
+	PID = 311;
+	break;
+      default:
+	PID = 2122;
+	break;
+      }
+      if(fTree->ev_hadr<0)PID = -PID;
+    }
+    E = sqrt(fTree->ev_np*fTree->ev_np) + M_p(PID)*M_p(PID);
+    beta = fTree->ev_np/E;
     g4sbsgendata *hcalgenhit = new g4sbsgendata(HCAL_UNIQUE_DETID, 8);
     hcalgenhit->SetData(0, fSource); 
-    hcalgenhit->SetData(1, t.TID->at(k));
-    hcalgenhit->SetData(2, t.PID->at(k));
-    hcalgenhit->SetData(3, t.X->at(k)+t.Xp->at(k)*z_det); 
-    hcalgenhit->SetData(4, t.Y->at(k)+t.Yp->at(k)*z_det); 
-    hcalgenhit->SetData(5, t.T->at(k)+z_det*t.P->at(k)/pz/(beta*0.299792458) );
+    hcalgenhit->SetData(1, 2);
+    hcalgenhit->SetData(2, PID);
+    //Assumes NO bending (which is *wrong* for anything except neutrons)
+    hcalgenhit->SetData(3, -(fdHCal-v*cos(fThetaSBS))*tanbeta/cos(alpha-fThetaSBS)-fTree->ev_vy); 
+    hcalgenhit->SetData(4, (fdHCal-v*cos(fThetaSBS))*tan(alpha-fThetaSBS)-v*sin(fThetaSBS)); 
+    hcalgenhit->SetData(5, fdHCal*fTree->ev_np/fTree->ev_npz/(beta*0.299792458) );
     hcalgenhit->SetData(6, E);
     hcalgenhit->SetData(7, 1.0);// TODO: weight
     fg4sbsGenData.push_back(hcalgenhit);
   }
-  */
   //}
   
   //was redoing that loop over and over again... what a waste... need to condense
@@ -188,8 +211,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       for(int k = 0; k < t.ntracks; k++) {
 	//if(t.NumPlanes->at(k)<5)continue;
 	
-	pz = sqrt( pow(t.P->at(k), 2)/ ( pow(t.Xp->at(k), 2) + pow(t.Yp->at(k), 2) + 1.0) );
-	E = sqrt( pow(t.P->at(k), 2) + pow(M_p(t.PID->at(k)), 2) );
+	pz = sqrt( t.P->at(k)*t.P->at(k) / ( t.Xp->at(k)*t.Xp->at(k) + t.Yp->at(k)*t.Yp->at(k) + 1.0) );
+	E = sqrt( t.P->at(k)*t.P->at(k) + M_p(t.PID->at(k))*M_p(t.PID->at(k)) );
 	beta = t.P->at(k)/E;
 	
 	g4sbsgendata *bbgemgentrack = new g4sbsgendata(BBGEM_UNIQUE_DETID, 16);
@@ -206,10 +229,9 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	  bbgemgentrack->SetData(9, fTree->ev_vx);
 	  bbgemgentrack->SetData(10, fTree->ev_vy);
 	  bbgemgentrack->SetData(11, fTree->ev_vz);
-	  bbgemgentrack->SetData(12, fTree->ev_npy);
-	  bbgemgentrack->SetData(14, fTree->ev_npx);
-	  bbgemgentrack->SetData(13, fTree->ev_npy);
-	  bbgemgentrack->SetData(14, fTree->ev_npz);
+	  bbgemgentrack->SetData(12, fTree->ev_epx);
+	  bbgemgentrack->SetData(13, fTree->ev_epy);
+	  bbgemgentrack->SetData(14, fTree->ev_epz);
 	}else{
 	  for(int j = 9; j<15; j++){
 	    bbgemgentrack->SetData(j, 0.);
@@ -622,6 +644,9 @@ double TSBSGeant4File::M_p(int pid)
   case (13):
     return 0.105658;
     break;
+  case (111):
+    return 0.134977;
+    break;
   case (211):
     return 0.139570;
     break;
@@ -632,7 +657,7 @@ double TSBSGeant4File::M_p(int pid)
     return 0.938272;
     break;
   default:
-    return 0.00511;
+    return 0.0;
     break;
   }
   
