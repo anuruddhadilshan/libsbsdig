@@ -56,6 +56,9 @@ void TSBSSimEvent::Clear( const Option_t* opt )
     //Clean the containers for the output data
     switch(DetInfo_i.DetType()){
     case(kGEM):
+      if(!fMCTrackOutData[fulldetname].CheckSize(true))
+	cout << "Warning: vectors for fMCTrackOutData[" << fulldetname.c_str() 
+	     << "] don't have the same size!" << endl;
       fMCTrackOutData[fulldetname].Clear();
       fSimGEMHitMCOutData[fulldetname].Clear();
       GEMDBManager = DetInfo_i.GetGEMDB();
@@ -74,11 +77,17 @@ void TSBSSimEvent::Clear( const Option_t* opt )
       }
       break;
     case(kHCal):
+      if(!fTrackMCHitOutData[fulldetname].CheckSize(true))
+	cout << "Warning: vectors for fTrackMCHitOutData[" << fulldetname.c_str() 
+	     << "] don't have the same size!" << endl;
       fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigSampOutData[fulldetname].Clear();
       break;
     default:
+      if(!fTrackMCHitOutData[fulldetname].CheckSize(true))
+	cout << "Warning: vectors for fTrackMCHitOutData[" << fulldetname.c_str() 
+	     << "] don't have the same size!" << endl;
       fTrackMCHitOutData[fulldetname].Clear();
       fSimHitMCOutData[fulldetname].Clear();
       fSimDigOutData[fulldetname].Clear();

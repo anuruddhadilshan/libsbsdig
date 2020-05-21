@@ -137,7 +137,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.simhit.time", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTime);
       fOutTree->Branch(Form("%s.simhit.t_lead", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimLeadTime);
       fOutTree->Branch(Form("%s.simhit.t_trail", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimTrailTime);
-      
+
       //digitized info
       fOutTree->Branch(Form("%s.hit.nhits", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fNHits);
       fOutTree->Branch(Form("%s.hit.chan", fulldetname.c_str()),&fEvent->fSimDigSampOutData[fulldetname.c_str()].fChannel);
@@ -163,7 +163,7 @@ TSBSSimDigitizer::TSBSSimDigitizer(const char* outputfilename) :
       fOutTree->Branch(Form("%s.trackmchit.thit", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCThit);
       fOutTree->Branch(Form("%s.trackmchit.e", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCE);
       fOutTree->Branch(Form("%s.trackmchit.weight", fulldetname.c_str()),&fEvent->fTrackMCHitOutData[fulldetname.c_str()].fTrackMCWeight);
-            
+      
       //MC info
       fOutTree->Branch(Form("%s.simhit.nhits", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fNSimHits);
       fOutTree->Branch(Form("%s.simhit.src", fulldetname.c_str()),&fEvent->fSimHitMCOutData[fulldetname.c_str()].fSimSource);

@@ -306,6 +306,7 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fGEMDigi->fGEMClust[i_mc].fSource);
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fGEMDigi->fGEMClust[i_mc].fTRID);
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fGEMDigi->fGEMClust[i_mc].fPID);
+    event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(-1);
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fPlane.push_back(fGEMDigi->fGEMClust[i_mc].fPlane);
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fModule.push_back(fGEMDigi->fGEMClust[i_mc].fModule);
     event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fGEMDigi->fGEMClust[i_mc].fCharge);
@@ -432,8 +433,11 @@ void TSBSSimGEM::Digitize(TSBSSimEvent &event)
       }
       //data.fChannel++;
       //if(fDebug>=3)
-      if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(true, true)){
+      if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(true, fDebug>=1)){
 	cout << "Warning: output vectors for" << planename << " don't have the same size!" << endl;
+      }
+      if(!event.fSimGEMHitMCOutData[fDetInfo.DetFullName()].CheckSize(fDebug>=1)){
+	cout << "Warning: MC output vectors for" << planename << " don't have the same size!" << endl;
       }
       
     }

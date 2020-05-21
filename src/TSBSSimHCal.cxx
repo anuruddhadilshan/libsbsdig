@@ -186,24 +186,35 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fNSimHits++;
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimSource.push_back(fSignals[m].mc_source);
-      //event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].trid);
-      //event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].pid);
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTRID.push_back(fSignals[m].trid);
+      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimPID.push_back(fSignals[m].pid);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimChannel.push_back(Short_t(m));
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimEdep.push_back(fSignals[m].sumedep);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimNpe.push_back(fSignals[m].npe);
       event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTime.push_back(fSignals[m].tdc_time);
       
       if(fDebug>=4)cout << " encode TDC ? " << fEncoderTDC << endl; 
-      if(fEncoderTDC && fSignals[m].tdc.time.size()){
-	if(fDebug>=4)cout << "tdc size " << fSignals[m].tdc.time.size() << endl;
-	for(uint i = 0; i<fSignals[m].tdc.time.size(); i++){
-	  if(fSignals[m].tdc.getEdge(i)==0){
-	    event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(i));
-	  }else{
-	    event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].tdc.getTime(i));
+      if(fEncoderTDC){
+	if(fSignals[m].tdc.time.size()){
+	  if(fDebug>=4)cout << "tdc size " << fSignals[m].tdc.time.size() << endl;
+	  bool tlfill = false;
+	  bool ttfill = false;
+	  for(uint i = 0; i<fSignals[m].tdc.time.size(); i++){
+	    if(fSignals[m].tdc.getEdge(i)==0){
+	      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(fSignals[m].tdc.getTime(i));
+	      tlfill = true;
+	    }else{
+	      event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(fSignals[m].tdc.getTime(i));
+	      ttfill = true;
+	    }
 	  }
+	  if(!tlfill)event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(-1000000);
+	  if(!ttfill)event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(-1000000);
+	}else{
+	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimLeadTime.push_back(-1000000);
+	  event.fSimHitMCOutData[fDetInfo.DetFullName()].fSimTrailTime.push_back(-1000000);
 	}
-      }
+      }//end if(encoder)
       
       if(fDebug>=4)cout << " encode ADC " << endl; 
       mult = 0;
@@ -307,9 +318,14 @@ void TSBSSimHCal::Digitize(TSBSSimEvent &event)
       */
     }
   }
-  if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderTDC), fDebug>=2)){
+  if(!event.fSimDigSampOutData[fDetInfo.DetFullName()].CheckSize(bool(fEncoderTDC), fDebug>=1)){
     cout << "Warning: output vectors for" << fDetInfo.DetFullName() << " don't have the same size! (any events ?" << any_events << ")" << endl;
   }
+  if(!event.fSimHitMCOutData[fDetInfo.DetFullName()].CheckSize(true, true, bool(fEncoderTDC), fDebug>=1)){
+  //if(!event.fSimHitMCOutData[fDetInfo.DetFullName()].CheckSize(true, true, false, fDebug>=1)){
+    cout << "Warning:  output MC vectors for " << fDetInfo.DetFullName() << " don't have the same size! " << endl;
+  }
+
   SetHasDataFlag(any_events);
 }
 

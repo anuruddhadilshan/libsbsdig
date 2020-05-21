@@ -254,8 +254,8 @@ simhitmc_outdata::~simhitmc_outdata(){
 void simhitmc_outdata::Clear(){
   fNSimHits = 0;
   fSimSource.clear();
-  //fSimTRID.clear();
-  //fSimPID.clear();
+  fSimTRID.clear();
+  fSimPID.clear();
   fSimChannel.clear();
   fSimEdep.clear();
   fSimNpe.clear();
@@ -274,7 +274,6 @@ bool simhitmc_outdata::CheckSize(bool check_edep,
     checkout = false;
     if(print)printf("fSimSource.size() = %zu != %u\n", fSimSource.size(), fNSimHits);
   }
-  /*
   if(fSimTRID.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fSimTRID.size() = %zu != %u\n", fSimTRID.size(), fNSimHits);
@@ -283,7 +282,6 @@ bool simhitmc_outdata::CheckSize(bool check_edep,
     checkout = false;
     if(print)printf("fSimPID.size() = %zu != %u\n", fSimPID.size(), fNSimHits);
   }
-  */
   if(fSimChannel.size()!=fNSimHits){
     checkout = false;
     if(print)printf("fSimChannel.size() = %zu != %u\n", fSimChannel.size(), fNSimHits);
