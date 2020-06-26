@@ -29,12 +29,12 @@ bb.ps.nrows = 26
 bb.ps.ncols = 2
 bb.ps.xsize = 2.34 #m
 bb.ps.ysize = 0.74 #m
-bb.ps.zpos =  2.5177544 #m # Front surface
+bb.ps.zpos =  2.49179 # 2.5177544 #m # Front surface
 bb.ps.xoffset = 0.0 #m
 bb.ps.yoffset = 0.0 #m
 
 ## Positions in [m] where +z is rotated by bb.theta ????
-bb.ps.position = 0 0 2.5177544
+bb.ps.position = 0 0 2.49179 # 2.5177544
 ## Test settings for one sub-assembly
 bb.ps.size = 0.74  2.34  0.09
 ## Position of first module
@@ -196,3 +196,7 @@ bb.ps.adc_calib = # gain per ch
  1.003  1.003 
  1.003  1.003 
 # 1.003  1.003 
+
+
+#NB: 1.425
+#FB: 1.003

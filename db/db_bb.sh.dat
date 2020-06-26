@@ -42,12 +42,12 @@ bb.sh.nrows = 27
 bb.sh.ncols = 7
 bb.sh.xsize = 2.295 #m
 bb.sh.ysize = 0.595 #m
-bb.sh.zpos =  2.6921544 #m # front surface
+bb.sh.zpos =  2.66619 # 2.6921544 #m # front surface
 bb.sh.xoffset = 0.0 #m
 bb.sh.yoffset = 0.0 #m
 
 ## Positions in [m] where +z is roated by bb.theta ????
-bb.sh.position = 0 0 2.6921544
+bb.sh.position = 0 0 2.66619 # 2.6921544
 ## Test settings for one sub-assembly
 bb.sh.size = 0.595  2.295  0.37
 ## Position of first module
@@ -209,3 +209,6 @@ bb.sh.adc_calib = # gain per ch
  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464 
  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464 
  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464  0.6464 
+
+#NB: 0.7491
+#FB: 0.6464
