@@ -66,7 +66,7 @@ bb.ps.adcbits = 12
 bb.ps.threshold = 0.006 #V
 bb.ps.triggerjitter = 3.0  # ns
 bb.ps.triggeroffset = 37.2  # ns 
-bb.ps.gatewidth = 200. #ns
+bb.ps.gatewidth = 100. #ns
 
 bb.ps.spe_tau = 0.65  # ns
 bb.ps.spe_sigma = 1.05  # ns
@@ -140,35 +140,35 @@ bb.ps.pednoise = # pedestal per ch - ADC channels
 #2.00597   2.43246   
 
 bb.ps.gain = # gain per ch
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
- 5.0e5  5.0e5 
-# 5.0e5  5.0e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+ 2.5e5  2.5e5 
+# 2.5e5  2.5e5 
 
-bb.ps.adc_calib = # gain per ch
+#bb.ps.adc_calib = # gain per ch
  1.003  1.003 
  1.003  1.003 
  1.003  1.003 
