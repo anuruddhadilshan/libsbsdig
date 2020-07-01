@@ -351,8 +351,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	genpeyield = fRN->Uniform(0, 1)<=1-exp(0.29-950.*fTree->Earm_BBPSTF1.sumedep->at(i));
       //if we're go, let's generate
       if(genpeyield){
-	//Used to be 454.: just wrong
-	Npe = fRN->Poisson(1500.0*fTree->Earm_BBPSTF1.sumedep->at(i));
+	//1500. Used to be 454.: just wrong// but we'll leave it at that the time to test
+	Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
 	t = fTree->Earm_BBPSTF1.tavg->at(i)+fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
 	g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
 	bbpshit->SetData(0, fSource);
@@ -373,14 +373,14 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       // Evaluation of number of photoelectrons and time from energy deposit documented at:
       // 
       // TODO: put that stuff in DB...
-      //Used to be 932.: just wrong
        if(fTree->Earm_BBSHTF1.sumedep->at(i)<3.e-4)continue;
       //check probability to generate p.e. yield
       bool genpeyield = true;
       if(fTree->Earm_BBSHTF1.sumedep->at(i)<1.e-2)genpeyield = fRN->Uniform(0, 1)<=1-exp(0.29-950.*fTree->Earm_BBSHTF1.sumedep->at(i));
       //if we're go, let's generate
       if(genpeyield){
-	Npe = fRN->Poisson(1800.0*fTree->Earm_BBSHTF1.sumedep->at(i));
+	//1800. Used to be 932.: just wrong// but we'll leave it at that the time to test
+	Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
 	t = fTree->Earm_BBSHTF1.tavg->at(i)+fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
 	g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
 	bbshhit->SetData(0, fSource);
