@@ -79,6 +79,10 @@ string(REGEX REPLACE .cxx .h headers "${sources}")
 ## sbs_LinkDef.h header here, that is further down this cmake config.
 list(APPEND headers "src/g4sbs_types.h" "libsbsgem/types.h")
 
+
+string(REPLACE "src/" "" dictheaders1 "${headers}")
+string(REPLACE "libsbsgem/" "" dictheaders "${dictheaders1}")
+
 ## Setup default variables (copied from Makefile)
 #FIXME: should be configure'd:
 set(EXTRAWARN ON CACHE BOOL "g++ Wextra warn options if supported")
@@ -158,7 +162,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 
 ## Generate the ROOT dictionary
 set(PROJECT_DICTIONARY ${PROJECT_NAME}Dict)
-ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${headers} OPTIONS -I${PROJECT_SOURCE_DIR}/src -I${PROJECT_SOURCE_DIR}/libsbsgem MODULE ${PROJECT_NAME} LINKDEF src/${PROJECT_NAME}_LinkDef.h )
+ROOT_GENERATE_DICTIONARY( ${PROJECT_DICTIONARY} ${dictheaders} OPTIONS -I${PROJECT_SOURCE_DIR}/src -I${PROJECT_SOURCE_DIR}/libsbsgem MODULE ${PROJECT_NAME} LINKDEF src/${PROJECT_NAME}_LinkDef.h )
 
 ## Create the library
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers} ${PROJECT_DICTIONARY}.cxx )
