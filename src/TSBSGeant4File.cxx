@@ -141,6 +141,8 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   }
 
   //Useful variables for the processing
+  const double m_e = 511.e-6;
+  const double n_lg = 1.68;
   int Npe;
   double t;
   
@@ -150,7 +152,7 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
   double z_hit, Npe_Edep_ratio, sigma_tgen;
 
   double z_det, pz, E, beta;
-  
+  double sin2thetaC;
   // Electron Arm
   
   // Process GRINCH data
@@ -351,8 +353,13 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
 	genpeyield = fRN->Uniform(0, 1)<=1-exp(0.29-950.*fTree->Earm_BBPSTF1.sumedep->at(i));
       //if we're go, let's generate
       if(genpeyield){
-	//1500. Used to be 454.: just wrong// but we'll leave it at that the time to test
-	Npe = fRN->Poisson(454.0*fTree->Earm_BBPSTF1.sumedep->at(i));
+	beta = sqrt( pow(m_e+fTree->Earm_BBPSTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + fTree->Earm_BBPSTF1.sumedep->at(i));
+	sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	//1500. Used to be 454.: just wrong
+	Npe = fRN->Poisson(300.0*
+			   fTree->Earm_BBPSTF1.sumedep->at(i)*
+			   sin2thetaC/(1.-1./(n_lg*n_lg)) 
+			   );
 	t = fTree->Earm_BBPSTF1.tavg->at(i)+fRN->Gaus(3.2-5.805*fTree->Earm_BBPSTF1.zhit->at(i)-17.77*pow(fTree->Earm_BBPSTF1.zhit->at(i), 2), 0.5);
 	g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
 	bbpshit->SetData(0, fSource);
@@ -379,8 +386,13 @@ Int_t TSBSGeant4File::ReadNextEvent(int d_flag){
       if(fTree->Earm_BBSHTF1.sumedep->at(i)<1.e-2)genpeyield = fRN->Uniform(0, 1)<=1-exp(0.29-950.*fTree->Earm_BBSHTF1.sumedep->at(i));
       //if we're go, let's generate
       if(genpeyield){
-	//1800. Used to be 932.: just wrong// but we'll leave it at that the time to test
-	Npe = fRN->Poisson(932.0*fTree->Earm_BBSHTF1.sumedep->at(i));
+	beta = sqrt( pow(m_e+fTree->Earm_BBSHTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + fTree->Earm_BBSHTF1.sumedep->at(i));
+	sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	//1800. Used to be 932.: just wrong
+	Npe = fRN->Poisson(360.0*
+			   fTree->Earm_BBSHTF1.sumedep->at(i)*
+			   sin2thetaC/(1.-1./(n_lg*n_lg)) 
+			   );
 	t = fTree->Earm_BBSHTF1.tavg->at(i)+fRN->Gaus(2.216-8.601*fTree->Earm_BBSHTF1.zhit->at(i)-7.469*pow(fTree->Earm_BBSHTF1.zhit->at(i), 2), 0.8);
 	g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
 	bbshhit->SetData(0, fSource);
