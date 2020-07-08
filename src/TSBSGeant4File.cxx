@@ -44,7 +44,10 @@ void TSBSGeant4File::SetFilename( const char *f ){
 
 Int_t TSBSGeant4File::Open(){
     // Return 0 on fail, 1 on success
-  if( GetName() == '\0' ){ return 0; }
+
+  char ctest = '\0';
+  
+  if( GetName() == &ctest ){ return 0; }
 
   //delete fFile;
   //fFile = new TFile(fFilename);
