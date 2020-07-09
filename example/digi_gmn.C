@@ -19,7 +19,12 @@
 
 //a bit more complex macro, where you have to provide the paths to the g4sbs files via  input_sigfile and input_bkgdfile (if you want background)
 
-void digi_gmn(const char* output_file, ULong64_t nentries, const char* input_sigfile, int nbkgd = 0, const char* input_bkgdfile = "", int debuglevel = 1)
+void digi_gmn(const char* output_file, // name of output file (must include the suffix)
+	      ULong64_t nentries, // number of signal events to process
+	      const char* input_sigfile, // name of the *text* file containing the list of g4sbs signal input files to process
+	      int nbkgd = 0, // number of background files to add on top of each signal event
+	      const char* input_bkgdfile = "", //  name of the *text* file containing the list of g4sbs minimum bias background files
+	      int debuglevel = 1)// set the debug level: the higher the number, the more printouts
 {
   printf("\n** This gets called with 'analyzer' and not 'root' **\n");
   printf("** If you're getting missing symbol errors, this is likely the cause **\n\n");
