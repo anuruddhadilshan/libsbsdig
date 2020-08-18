@@ -1,18 +1,18 @@
 //includes
-
 #include <iostream>
-#include <math>
+#include <string>
+#include <TROOT.h>
 
 #ifdef __APPLE__
 #include "unistd.h"
 #endif
 
-
+using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
   string inputsigfile, inputbkgdfile = "";
   ULong64_t nentries = -1;
-  UShort nbkgd = 0;
+  UShort_t nbkgd = 0;
   
   if(argc<2){
     cout << "*** Not enough arguments! ***" << endl
