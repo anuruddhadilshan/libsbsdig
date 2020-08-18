@@ -3,6 +3,8 @@
 #include <string>
 #include <TROOT.h>
 
+#include "gmn_tree.h"
+
 #ifdef __APPLE__
 #include "unistd.h"
 #endif

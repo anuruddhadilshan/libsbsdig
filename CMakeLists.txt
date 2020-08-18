@@ -57,9 +57,9 @@ endif()
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
 #
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/g4sbs_*.cxx)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/gmn_tree.C) # *.cxx)
 #
-file(GLOB headers ${PROJECT_SOURCE_DIR}/src/g4sbs_*.h)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/src/gmn_tree.h) # *.h)
 
 ##----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
