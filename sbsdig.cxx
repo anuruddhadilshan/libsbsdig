@@ -10,7 +10,7 @@
 #include "TChainElement.h"
 
 //includes: specific
-//#include "G4SBSRunData.hh"
+#include "G4SBSRunData.hh"
 #include "gmn_tree.h"
 
 #ifdef __APPLE__

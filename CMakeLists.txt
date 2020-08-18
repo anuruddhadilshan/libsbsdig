@@ -126,6 +126,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 #find_package(SBS REQUIRED)
 
 ##----------------------------------------------------------------------------
+## Setup the G4SBS library
+find_package(G4SBS REQUIRED)
+
+
+##----------------------------------------------------------------------------
 ## Check for SStream support
 include(TestForSSTREAM)
 if(CMAKE_HAS_ANSI_STRING_STREAM)
@@ -166,7 +171,7 @@ if(VERBOSE)
 endif()
 
 #include_directories(${ROOT_INCLUDE_DIR} ${Podd_INCLUDE_DIR} ${SBS_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/libsbsgem)
-include_directories(${ROOT_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/src)
+include_directories(${ROOT_INCLUDE_DIR} ${G4SBS_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/src)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 
 ## Generate the ROOT dictionary
