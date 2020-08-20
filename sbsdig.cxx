@@ -83,7 +83,6 @@ int main(int argc, char** argv){
   TIter next_b(fileElements_b);
   TChainElement *chEl_b=0;
   
-  
   gmn_tree *T_s, *T_b;
   Long64_t Nev_fs, Nev_fb;
   Long64_t ev_s, ev_b;
@@ -101,7 +100,17 @@ int main(int argc, char** argv){
     
     cout << chEl_s->GetTitle() << ": " << Nev_fs << " entries" << endl;
     
-    // Expend tree here! (again, signal only!!!)
+    // Expend tree here! (again, for signal only!!!)
+    // so, options: 
+    // - expend the tree straight in here. 
+    // Pros: easiest; Cons: that will make the macro difficult to read.
+    // - create function (here or
+    // Pros: cleaner; Cons: that will be a function with a bunch of arguments
+    // - add it in the tree? 
+    // Pros: simpler to call here, adaptable to each tree. 
+    // Cons: access of new variables??? 
+    // not a pb if the varaibles themselves are defined in the "public"
+    // (but is it really?): need to add it in the tree class.
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
@@ -138,3 +147,18 @@ int main(int argc, char** argv){
   
 }
 
+/*
+I put this here temporarily not to have to retrieve the link every single time.
+void tree3AddBranch() {
+    TFile f("tree3.root", "update");
+    Float_t new_v;
+    TTree *t3 = (TTree*)f->Get("t3");
+    TBranch *newBranch = t3->Branch("new_v", &new_v, "new_v/F");
+    Long64_t nentries = t3->GetEntries(); // read the number of entries in the t3
+    for (Long64_t i = 0; i < nentries; i++) {
+        new_v= gRandom->Gaus(0, 1);
+        newBranch->Fill();
+    }
+    t3->Write("", TObject::kOverwrite); // save only the new version of the tree
+}
+ */

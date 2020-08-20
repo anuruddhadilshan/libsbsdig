@@ -57,9 +57,9 @@ endif()
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
 #
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/gmn_tree.C) # *.cxx)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 #
-file(GLOB headers ${PROJECT_SOURCE_DIR}/src/gmn_tree.h) # *.h)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
 ##----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
@@ -83,7 +83,8 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/gmn_tree.h) # *.h)
 #string(REGEX REPLACE .cxx .h headers "${sources}")
 ## Append a few extra header files in the repository.  (But do not append the
 ## sbs_LinkDef.h header here, that is further down this cmake config.
-list(APPEND headers "src/g4sbs_types.h" "libsbsgem/types.h")
+#list(APPEND headers "src/g4sbs_types.h" "libsbsgem/types.h")
+list(APPEND headers "src/g4sbs_types.h")
 
 
 string(REPLACE "src/" "" dictheaders1 "${headers}")
