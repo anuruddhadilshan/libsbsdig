@@ -17,11 +17,11 @@
 //#pragma link C++ class TDigGEMSlot+;
 //#pragma link C++ class TDigSlot+;
 //#pragma link C++ class TGeoInfo+;
-//#pragma link C++ class TPMTSignal+;
+//#pragma link C++ class PMTSignal+;
 //#pragma link C++ class TRndmManager+;
 //#pragma link C++ class TSignalInfo+;
 //#pragma link C++ class TSpectroInfo+;
-//#pragma link C++ class TSPEModel+;
+//#pragma link C++ class SPEModel+;
 //#pragma link C++ class TSBSSimEvent+;
 //#pragma link C++ class TSBSSimData+;
 //#pragma link C++ class g4sbshitdata+;

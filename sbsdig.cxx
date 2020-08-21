@@ -14,6 +14,7 @@
 //includes: specific
 #include "G4SBSRunData.hh"
 #include "gmn_tree.h"
+#include "SBSDigAuxi.h"
 
 #ifdef __APPLE__
 #include "unistd.h"
@@ -22,7 +23,7 @@
 using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
-
+  
   // Step 0: read out arguments
   string inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
@@ -86,6 +87,10 @@ int main(int argc, char** argv){
   TIter next_b(fileElements_b);
   TChainElement *chEl_b=0;
   
+  G4SBSRunData* run_data;
+  
+  double Theta_SBS, D_HCal;
+  
   gmn_tree *T_s, *T_b;
   ULong64_t Nev_fs, Nev_fb;
   ULong64_t ev_s, ev_b;
@@ -94,14 +99,16 @@ int main(int argc, char** argv){
   UShort_t nbkgd = 0;
   
   int i_fs = 0;
+  bool has_data;
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
       break;
     }
-    cout << chEl_s->GetTitle() << endl;
-    
     TFile f_s(chEl_s->GetTitle(), "UPDATE");
+    run_data = (G4SBSRunData*)f_s.Get("run_data");
+    Theta_SBS = run_data->fSBStheta;
+    D_HCal = run_data->fHCALdist;
     //TFile f_s(chEl_s->GetTitle());
     //f_s.Print();
     //f_s.ls();
@@ -117,32 +124,23 @@ int main(int argc, char** argv){
     //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
     T_s = new gmn_tree(C_s);
+    
+    // Expend tree here! (again, for signal only!!!)
     T_s->AddDigBranches();
     
     Nev_fs = C_s->GetEntries();
     
-    cout << chEl_s->GetTitle() << ": " << Nev_fs << " entries" << endl;
-    
-    // Expend tree here! (again, for signal only!!!)
-    // so, options: 
-    // - expend the tree straight in here. 
-    // Pros: easiest; Cons: that will make the macro difficult to read.
-    // - create function (here or
-    // Pros: cleaner; Cons: that will be a function with a bunch of arguments
-    // - add it in the tree? 
-    // Pros: simpler to call here, adaptable to each tree. 
-    // Cons: access of new variables??? 
-    // not a pb if the varaibles themselves are defined in the "public"
-    // (but is it really?): need to add it in the tree class.
-    
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
       if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
-
+      has_data = false;
+      
       T_s->ClearDigBranches();
       T_s->GetEntry(ev_s);
       
-      // unfold the thing then...
+      // unfold the thing then... but where???
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R);
+      if(!has_data)continue;
       
       // loop here for background
       if(Nbkgd>0){
@@ -158,7 +156,9 @@ int main(int argc, char** argv){
 	  cout << chEl_b->GetTitle() << ": " << Nev_fb << " entries" << endl;
 	  
 	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
-	    //T_b->GetEntry(ev_b);
+	    T_b->GetEntry(ev_b);
+	    UnfoldData(T_b, Theta_SBS, D_HCal, R);
+	    
 	  }// end loop on background events
 	  nbkgd++;
 	}// end loop on background files
