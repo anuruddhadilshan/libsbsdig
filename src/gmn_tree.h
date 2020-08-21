@@ -393,33 +393,83 @@ public :
    Int_t Earm_BBGEM_1x_dighit_nstrips;
    vector<int>     *Earm_BBGEM_1x_dighit_strip;
    vector<int>     *Earm_BBGEM_1x_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_1x_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_1x_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_1x_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_1x_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_1x_dighit_adc_5;
    Int_t Earm_BBGEM_1y_dighit_nstrips;
    vector<int>     *Earm_BBGEM_1y_dighit_strip;
    vector<int>     *Earm_BBGEM_1y_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_1y_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_1y_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_1y_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_1y_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_1y_dighit_adc_5;
    Int_t Earm_BBGEM_2x_dighit_nstrips;
    vector<int>     *Earm_BBGEM_2x_dighit_strip;
    vector<int>     *Earm_BBGEM_2x_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_2x_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_2x_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_2x_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_2x_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_2x_dighit_adc_5;
    Int_t Earm_BBGEM_2y_dighit_nstrips;
    vector<int>     *Earm_BBGEM_2y_dighit_strip;
    vector<int>     *Earm_BBGEM_2y_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_2y_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_2y_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_2y_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_2y_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_2y_dighit_adc_5;
    Int_t Earm_BBGEM_3x_dighit_nstrips;
    vector<int>     *Earm_BBGEM_3x_dighit_strip;
    vector<int>     *Earm_BBGEM_3x_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_3x_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_3x_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_3x_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_3x_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_3x_dighit_adc_5;
    Int_t Earm_BBGEM_3y_dighit_nstrips;
    vector<int>     *Earm_BBGEM_3y_dighit_strip;
    vector<int>     *Earm_BBGEM_3y_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_3y_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_3y_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_3y_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_3y_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_3y_dighit_adc_5;
    Int_t Earm_BBGEM_4x_dighit_nstrips;
    vector<int>     *Earm_BBGEM_4x_dighit_strip;
    vector<int>     *Earm_BBGEM_4x_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_4x_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_4x_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_4x_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_4x_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_4x_dighit_adc_5;
    Int_t Earm_BBGEM_4y_dighit_nstrips;
    vector<int>     *Earm_BBGEM_4y_dighit_strip;
    vector<int>     *Earm_BBGEM_4y_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_4y_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_4y_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_4y_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_4y_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_4y_dighit_adc_5;
    Int_t Earm_BBGEM_5x_dighit_nstrips;
    vector<int>     *Earm_BBGEM_5x_dighit_strip;
    vector<int>     *Earm_BBGEM_5x_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_5x_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_5x_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_5x_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_5x_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_5x_dighit_adc_5;
    Int_t Earm_BBGEM_5y_dighit_nstrips;
    vector<int>     *Earm_BBGEM_5y_dighit_strip;
    vector<int>     *Earm_BBGEM_5y_dighit_adc_0;
+   vector<int>     *Earm_BBGEM_5y_dighit_adc_1;
+   vector<int>     *Earm_BBGEM_5y_dighit_adc_2;
+   vector<int>     *Earm_BBGEM_5y_dighit_adc_3;
+   vector<int>     *Earm_BBGEM_5y_dighit_adc_4;
+   vector<int>     *Earm_BBGEM_5y_dighit_adc_5;
    Int_t Harm_HCal_dighit_nchan;
    vector<int>     *Harm_HCal_dighit_chan;
    vector<int>     *Harm_HCal_dighit_adc_0;
@@ -773,33 +823,83 @@ public :
    TBranch        *b_Earm_BBGEM_1x_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_1x_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_1x_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_1x_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_1x_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_1x_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_1x_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_1x_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_1y_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_1y_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_1y_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_1y_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_1y_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_1y_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_1y_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_1y_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_2x_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_2x_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_2x_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_2x_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_2x_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_2x_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_2x_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_2x_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_2y_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_2y_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_2y_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_2y_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_2y_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_2y_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_2y_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_2y_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_3x_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_3x_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_3x_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_3x_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_3x_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_3x_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_3x_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_3x_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_3y_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_3y_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_3y_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_3y_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_3y_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_3y_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_3y_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_3y_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_4x_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_4x_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_4x_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_4x_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_4x_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_4x_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_4x_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_4x_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_4y_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_4y_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_4y_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_4y_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_4y_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_4y_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_4y_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_4y_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_5x_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_5x_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_5x_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_5x_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_5x_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_5x_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_5x_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_5x_dighit_adc_5;   //!
    TBranch        *b_Earm_BBGEM_5y_dighit_nstrips;   //!
    TBranch        *b_Earm_BBGEM_5y_dighit_strip;   //!
    TBranch        *b_Earm_BBGEM_5y_dighit_adc_0;   //!
+   TBranch        *b_Earm_BBGEM_5y_dighit_adc_1;   //!
+   TBranch        *b_Earm_BBGEM_5y_dighit_adc_2;   //!
+   TBranch        *b_Earm_BBGEM_5y_dighit_adc_3;   //!
+   TBranch        *b_Earm_BBGEM_5y_dighit_adc_4;   //!
+   TBranch        *b_Earm_BBGEM_5y_dighit_adc_5;   //!
    TBranch        *b_Harm_HCal_dighit_nchan;   //!
    TBranch        *b_Harm_HCal_dighit_chan;   //!
    TBranch        *b_Harm_HCal_dighit_adc_0;   //!
@@ -1543,33 +1643,83 @@ void gmn_tree::AddDigBranches()
   Earm_BBGEM_1x_dighit_nstrips = 0;
   Earm_BBGEM_1x_dighit_strip = new vector<int>;
   Earm_BBGEM_1x_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_1x_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_1x_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_1x_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_1x_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_1x_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_1y_dighit_nstrips = 0;
   Earm_BBGEM_1y_dighit_strip = new vector<int>;
   Earm_BBGEM_1y_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_1y_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_1y_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_1y_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_1y_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_1y_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_2x_dighit_nstrips = 0;
   Earm_BBGEM_2x_dighit_strip = new vector<int>;
   Earm_BBGEM_2x_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_2x_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_2x_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_2x_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_2x_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_2x_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_2y_dighit_nstrips = 0;
   Earm_BBGEM_2y_dighit_strip = new vector<int>;
   Earm_BBGEM_2y_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_2y_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_2y_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_2y_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_2y_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_2y_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_3x_dighit_nstrips = 0;
   Earm_BBGEM_3x_dighit_strip = new vector<int>;
   Earm_BBGEM_3x_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_3x_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_3x_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_3x_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_3x_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_3x_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_3y_dighit_nstrips = 0;
   Earm_BBGEM_3y_dighit_strip = new vector<int>;
   Earm_BBGEM_3y_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_3y_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_3y_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_3y_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_3y_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_3y_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_4x_dighit_nstrips = 0;
   Earm_BBGEM_4x_dighit_strip = new vector<int>;
   Earm_BBGEM_4x_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_4x_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_4x_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_4x_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_4x_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_4x_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_4y_dighit_nstrips = 0;
   Earm_BBGEM_4y_dighit_strip = new vector<int>;
   Earm_BBGEM_4y_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_4y_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_4y_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_4y_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_4y_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_4y_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_5x_dighit_nstrips = 0;
   Earm_BBGEM_5x_dighit_strip = new vector<int>;
   Earm_BBGEM_5x_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_5x_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_5x_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_5x_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_5x_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_5x_dighit_adc_5 = new vector<int>;
   Earm_BBGEM_5y_dighit_nstrips = 0;
   Earm_BBGEM_5y_dighit_strip = new vector<int>;
   Earm_BBGEM_5y_dighit_adc_0 = new vector<int>;
+  Earm_BBGEM_5y_dighit_adc_1 = new vector<int>;
+  Earm_BBGEM_5y_dighit_adc_2 = new vector<int>;
+  Earm_BBGEM_5y_dighit_adc_3 = new vector<int>;
+  Earm_BBGEM_5y_dighit_adc_4 = new vector<int>;
+  Earm_BBGEM_5y_dighit_adc_5 = new vector<int>;
   Harm_HCal_dighit_nchan = 0;
   Harm_HCal_dighit_chan = new vector<int>;
   Harm_HCal_dighit_adc_0 = new vector<int>;
@@ -1614,33 +1764,83 @@ void gmn_tree::AddDigBranches()
   b_Earm_BBGEM_1x_dighit_nstrips = fChain->Branch("Earm.BBGEM.1x.dighit.nstrips", &Earm_BBGEM_1x_dighit_nstrips);
   b_Earm_BBGEM_1x_dighit_strip = fChain->Branch("Earm.BBGEM.1x.dighit.strip", &Earm_BBGEM_1x_dighit_strip);
   b_Earm_BBGEM_1x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_0", &Earm_BBGEM_1x_dighit_adc_0);
+  b_Earm_BBGEM_1x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_1", &Earm_BBGEM_1x_dighit_adc_1);
+  b_Earm_BBGEM_1x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_2", &Earm_BBGEM_1x_dighit_adc_2);
+  b_Earm_BBGEM_1x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_3", &Earm_BBGEM_1x_dighit_adc_3);
+  b_Earm_BBGEM_1x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_4", &Earm_BBGEM_1x_dighit_adc_4);
+  b_Earm_BBGEM_1x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_5", &Earm_BBGEM_1x_dighit_adc_5);
   b_Earm_BBGEM_1y_dighit_nstrips = fChain->Branch("Earm.BBGEM.1y.dighit.nstrips", &Earm_BBGEM_1y_dighit_nstrips);
   b_Earm_BBGEM_1y_dighit_strip = fChain->Branch("Earm.BBGEM.1y.dighit.strip", &Earm_BBGEM_1y_dighit_strip);
   b_Earm_BBGEM_1y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_0", &Earm_BBGEM_1y_dighit_adc_0);
+  b_Earm_BBGEM_1y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_1", &Earm_BBGEM_1y_dighit_adc_1);
+  b_Earm_BBGEM_1y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_2", &Earm_BBGEM_1y_dighit_adc_2);
+  b_Earm_BBGEM_1y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_3", &Earm_BBGEM_1y_dighit_adc_3);
+  b_Earm_BBGEM_1y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_4", &Earm_BBGEM_1y_dighit_adc_4);
+  b_Earm_BBGEM_1y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_5", &Earm_BBGEM_1y_dighit_adc_5);
   b_Earm_BBGEM_2x_dighit_nstrips = fChain->Branch("Earm.BBGEM.2x.dighit.nstrips", &Earm_BBGEM_2x_dighit_nstrips);
   b_Earm_BBGEM_2x_dighit_strip = fChain->Branch("Earm.BBGEM.2x.dighit.strip", &Earm_BBGEM_2x_dighit_strip);
   b_Earm_BBGEM_2x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_0", &Earm_BBGEM_2x_dighit_adc_0);
+  b_Earm_BBGEM_2x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_1", &Earm_BBGEM_2x_dighit_adc_1);
+  b_Earm_BBGEM_2x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_2", &Earm_BBGEM_2x_dighit_adc_2);
+  b_Earm_BBGEM_2x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_3", &Earm_BBGEM_2x_dighit_adc_3);
+  b_Earm_BBGEM_2x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_4", &Earm_BBGEM_2x_dighit_adc_4);
+  b_Earm_BBGEM_2x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_5", &Earm_BBGEM_2x_dighit_adc_5);
   b_Earm_BBGEM_2y_dighit_nstrips = fChain->Branch("Earm.BBGEM.2y.dighit.nstrips", &Earm_BBGEM_2y_dighit_nstrips);
   b_Earm_BBGEM_2y_dighit_strip = fChain->Branch("Earm.BBGEM.2y.dighit.strip", &Earm_BBGEM_2y_dighit_strip);
   b_Earm_BBGEM_2y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_0", &Earm_BBGEM_2y_dighit_adc_0);
+  b_Earm_BBGEM_2y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_1", &Earm_BBGEM_2y_dighit_adc_1);
+  b_Earm_BBGEM_2y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_2", &Earm_BBGEM_2y_dighit_adc_2);
+  b_Earm_BBGEM_2y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_3", &Earm_BBGEM_2y_dighit_adc_3);
+  b_Earm_BBGEM_2y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_4", &Earm_BBGEM_2y_dighit_adc_4);
+  b_Earm_BBGEM_2y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_5", &Earm_BBGEM_2y_dighit_adc_5);
   b_Earm_BBGEM_3x_dighit_nstrips = fChain->Branch("Earm.BBGEM.3x.dighit.nstrips", &Earm_BBGEM_3x_dighit_nstrips);
   b_Earm_BBGEM_3x_dighit_strip = fChain->Branch("Earm.BBGEM.3x.dighit.strip", &Earm_BBGEM_3x_dighit_strip);
   b_Earm_BBGEM_3x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_0", &Earm_BBGEM_3x_dighit_adc_0);
+  b_Earm_BBGEM_3x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_1", &Earm_BBGEM_3x_dighit_adc_1);
+  b_Earm_BBGEM_3x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_2", &Earm_BBGEM_3x_dighit_adc_2);
+  b_Earm_BBGEM_3x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_3", &Earm_BBGEM_3x_dighit_adc_3);
+  b_Earm_BBGEM_3x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_4", &Earm_BBGEM_3x_dighit_adc_4);
+  b_Earm_BBGEM_3x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_5", &Earm_BBGEM_3x_dighit_adc_5);
   b_Earm_BBGEM_3y_dighit_nstrips = fChain->Branch("Earm.BBGEM.3y.dighit.nstrips", &Earm_BBGEM_3y_dighit_nstrips);
   b_Earm_BBGEM_3y_dighit_strip = fChain->Branch("Earm.BBGEM.3y.dighit.strip", &Earm_BBGEM_3y_dighit_strip);
   b_Earm_BBGEM_3y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_0", &Earm_BBGEM_3y_dighit_adc_0);
+  b_Earm_BBGEM_3y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_1", &Earm_BBGEM_3y_dighit_adc_1);
+  b_Earm_BBGEM_3y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_2", &Earm_BBGEM_3y_dighit_adc_2);
+  b_Earm_BBGEM_3y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_3", &Earm_BBGEM_3y_dighit_adc_3);
+  b_Earm_BBGEM_3y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_4", &Earm_BBGEM_3y_dighit_adc_4);
+  b_Earm_BBGEM_3y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_5", &Earm_BBGEM_3y_dighit_adc_5);
   b_Earm_BBGEM_4x_dighit_nstrips = fChain->Branch("Earm.BBGEM.4x.dighit.nstrips", &Earm_BBGEM_4x_dighit_nstrips);
   b_Earm_BBGEM_4x_dighit_strip = fChain->Branch("Earm.BBGEM.4x.dighit.strip", &Earm_BBGEM_4x_dighit_strip);
   b_Earm_BBGEM_4x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_0", &Earm_BBGEM_4x_dighit_adc_0);
+  b_Earm_BBGEM_4x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_1", &Earm_BBGEM_4x_dighit_adc_1);
+  b_Earm_BBGEM_4x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_2", &Earm_BBGEM_4x_dighit_adc_2);
+  b_Earm_BBGEM_4x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_3", &Earm_BBGEM_4x_dighit_adc_3);
+  b_Earm_BBGEM_4x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_4", &Earm_BBGEM_4x_dighit_adc_4);
+  b_Earm_BBGEM_4x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_5", &Earm_BBGEM_4x_dighit_adc_5);
   b_Earm_BBGEM_4y_dighit_nstrips = fChain->Branch("Earm.BBGEM.4y.dighit.nstrips", &Earm_BBGEM_4y_dighit_nstrips);
   b_Earm_BBGEM_4y_dighit_strip = fChain->Branch("Earm.BBGEM.4y.dighit.strip", &Earm_BBGEM_4y_dighit_strip);
   b_Earm_BBGEM_4y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_0", &Earm_BBGEM_4y_dighit_adc_0);
+  b_Earm_BBGEM_4y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_1", &Earm_BBGEM_4y_dighit_adc_1);
+  b_Earm_BBGEM_4y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_2", &Earm_BBGEM_4y_dighit_adc_2);
+  b_Earm_BBGEM_4y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_3", &Earm_BBGEM_4y_dighit_adc_3);
+  b_Earm_BBGEM_4y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_4", &Earm_BBGEM_4y_dighit_adc_4);
+  b_Earm_BBGEM_4y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_5", &Earm_BBGEM_4y_dighit_adc_5);
   b_Earm_BBGEM_5x_dighit_nstrips = fChain->Branch("Earm.BBGEM.5x.dighit.nstrips", &Earm_BBGEM_5x_dighit_nstrips);
   b_Earm_BBGEM_5x_dighit_strip = fChain->Branch("Earm.BBGEM.5x.dighit.strip", &Earm_BBGEM_5x_dighit_strip);
   b_Earm_BBGEM_5x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_0", &Earm_BBGEM_5x_dighit_adc_0);
+  b_Earm_BBGEM_5x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_1", &Earm_BBGEM_5x_dighit_adc_1);
+  b_Earm_BBGEM_5x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_2", &Earm_BBGEM_5x_dighit_adc_2);
+  b_Earm_BBGEM_5x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_3", &Earm_BBGEM_5x_dighit_adc_3);
+  b_Earm_BBGEM_5x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_4", &Earm_BBGEM_5x_dighit_adc_4);
+  b_Earm_BBGEM_5x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.5x.dighit.adc_5", &Earm_BBGEM_5x_dighit_adc_5);
   b_Earm_BBGEM_5y_dighit_nstrips = fChain->Branch("Earm.BBGEM.5y.dighit.nstrips", &Earm_BBGEM_5y_dighit_nstrips);
   b_Earm_BBGEM_5y_dighit_strip = fChain->Branch("Earm.BBGEM.5y.dighit.strip", &Earm_BBGEM_5y_dighit_strip);
   b_Earm_BBGEM_5y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_0", &Earm_BBGEM_5y_dighit_adc_0);
+  b_Earm_BBGEM_5y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_1", &Earm_BBGEM_5y_dighit_adc_1);
+  b_Earm_BBGEM_5y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_2", &Earm_BBGEM_5y_dighit_adc_2);
+  b_Earm_BBGEM_5y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_3", &Earm_BBGEM_5y_dighit_adc_3);
+  b_Earm_BBGEM_5y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_4", &Earm_BBGEM_5y_dighit_adc_4);
+  b_Earm_BBGEM_5y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_5", &Earm_BBGEM_5y_dighit_adc_5);
   b_Harm_HCal_dighit_nchan = fChain->Branch("Earm.BBGEM.dighit.nchan", &Harm_HCal_dighit_nchan);
   b_Harm_HCal_dighit_chan = fChain->Branch("Earm.BBGEM.dighit.chan", &Harm_HCal_dighit_chan);
   b_Harm_HCal_dighit_adc_0 = fChain->Branch("Earm.BBGEM.dighit.adc_0", &Harm_HCal_dighit_adc_0);
@@ -1687,33 +1887,83 @@ void gmn_tree::ClearDigBranches()
   Earm_BBGEM_1x_dighit_nstrips = 0;
   Earm_BBGEM_1x_dighit_strip->clear();
   Earm_BBGEM_1x_dighit_adc_0->clear();
+  Earm_BBGEM_1x_dighit_adc_1->clear();
+  Earm_BBGEM_1x_dighit_adc_2->clear();
+  Earm_BBGEM_1x_dighit_adc_3->clear();
+  Earm_BBGEM_1x_dighit_adc_4->clear();
+  Earm_BBGEM_1x_dighit_adc_5->clear();
   Earm_BBGEM_1y_dighit_nstrips = 0;
   Earm_BBGEM_1y_dighit_strip->clear();
   Earm_BBGEM_1y_dighit_adc_0->clear();
+  Earm_BBGEM_1y_dighit_adc_1->clear();
+  Earm_BBGEM_1y_dighit_adc_2->clear();
+  Earm_BBGEM_1y_dighit_adc_3->clear();
+  Earm_BBGEM_1y_dighit_adc_4->clear();
+  Earm_BBGEM_1y_dighit_adc_5->clear();
   Earm_BBGEM_2x_dighit_nstrips = 0;
   Earm_BBGEM_2x_dighit_strip->clear();
   Earm_BBGEM_2x_dighit_adc_0->clear();
+  Earm_BBGEM_2x_dighit_adc_1->clear();
+  Earm_BBGEM_2x_dighit_adc_2->clear();
+  Earm_BBGEM_2x_dighit_adc_3->clear();
+  Earm_BBGEM_2x_dighit_adc_4->clear();
+  Earm_BBGEM_2x_dighit_adc_5->clear();
   Earm_BBGEM_2y_dighit_nstrips = 0;
   Earm_BBGEM_2y_dighit_strip->clear();
   Earm_BBGEM_2y_dighit_adc_0->clear();
+  Earm_BBGEM_2y_dighit_adc_1->clear();
+  Earm_BBGEM_2y_dighit_adc_2->clear();
+  Earm_BBGEM_2y_dighit_adc_3->clear();
+  Earm_BBGEM_2y_dighit_adc_4->clear();
+  Earm_BBGEM_2y_dighit_adc_5->clear();
   Earm_BBGEM_3x_dighit_nstrips = 0;
   Earm_BBGEM_3x_dighit_strip->clear();
   Earm_BBGEM_3x_dighit_adc_0->clear();
+  Earm_BBGEM_3x_dighit_adc_1->clear();
+  Earm_BBGEM_3x_dighit_adc_2->clear();
+  Earm_BBGEM_3x_dighit_adc_3->clear();
+  Earm_BBGEM_3x_dighit_adc_4->clear();
+  Earm_BBGEM_3x_dighit_adc_5->clear();
   Earm_BBGEM_3y_dighit_nstrips = 0;
   Earm_BBGEM_3y_dighit_strip->clear();
   Earm_BBGEM_3y_dighit_adc_0->clear();
+  Earm_BBGEM_3y_dighit_adc_1->clear();
+  Earm_BBGEM_3y_dighit_adc_2->clear();
+  Earm_BBGEM_3y_dighit_adc_3->clear();
+  Earm_BBGEM_3y_dighit_adc_4->clear();
+  Earm_BBGEM_3y_dighit_adc_5->clear();
   Earm_BBGEM_4x_dighit_nstrips = 0;
   Earm_BBGEM_4x_dighit_strip->clear();
   Earm_BBGEM_4x_dighit_adc_0->clear();
+  Earm_BBGEM_4x_dighit_adc_1->clear();
+  Earm_BBGEM_4x_dighit_adc_2->clear();
+  Earm_BBGEM_4x_dighit_adc_3->clear();
+  Earm_BBGEM_4x_dighit_adc_4->clear();
+  Earm_BBGEM_4x_dighit_adc_5->clear();
   Earm_BBGEM_4y_dighit_nstrips = 0;
   Earm_BBGEM_4y_dighit_strip->clear();
   Earm_BBGEM_4y_dighit_adc_0->clear();
+  Earm_BBGEM_4y_dighit_adc_1->clear();
+  Earm_BBGEM_4y_dighit_adc_2->clear();
+  Earm_BBGEM_4y_dighit_adc_3->clear();
+  Earm_BBGEM_4y_dighit_adc_4->clear();
+  Earm_BBGEM_4y_dighit_adc_5->clear();
   Earm_BBGEM_5x_dighit_nstrips = 0;
   Earm_BBGEM_5x_dighit_strip->clear();
   Earm_BBGEM_5x_dighit_adc_0->clear();
+  Earm_BBGEM_5x_dighit_adc_1->clear();
+  Earm_BBGEM_5x_dighit_adc_2->clear();
+  Earm_BBGEM_5x_dighit_adc_3->clear();
+  Earm_BBGEM_5x_dighit_adc_4->clear();
+  Earm_BBGEM_5x_dighit_adc_5->clear();
   Earm_BBGEM_5y_dighit_nstrips = 0;
   Earm_BBGEM_5y_dighit_strip->clear();
   Earm_BBGEM_5y_dighit_adc_0->clear();
+  Earm_BBGEM_5y_dighit_adc_1->clear();
+  Earm_BBGEM_5y_dighit_adc_2->clear();
+  Earm_BBGEM_5y_dighit_adc_3->clear();
+  Earm_BBGEM_5y_dighit_adc_4->clear();
+  Earm_BBGEM_5y_dighit_adc_5->clear();
   Harm_HCal_dighit_nchan = 0;
   Harm_HCal_dighit_chan->clear();
   Harm_HCal_dighit_adc_0->clear();
@@ -1760,33 +2010,83 @@ void gmn_tree::FillDigBranches()
   b_Earm_BBGEM_1x_dighit_nstrips->Fill();
   b_Earm_BBGEM_1x_dighit_strip->Fill();
   b_Earm_BBGEM_1x_dighit_adc_0->Fill();
+  b_Earm_BBGEM_1x_dighit_adc_1->Fill();
+  b_Earm_BBGEM_1x_dighit_adc_2->Fill();
+  b_Earm_BBGEM_1x_dighit_adc_3->Fill();
+  b_Earm_BBGEM_1x_dighit_adc_4->Fill();
+  b_Earm_BBGEM_1x_dighit_adc_5->Fill();
   b_Earm_BBGEM_1y_dighit_nstrips->Fill();
   b_Earm_BBGEM_1y_dighit_strip->Fill();
   b_Earm_BBGEM_1y_dighit_adc_0->Fill();
+  b_Earm_BBGEM_1y_dighit_adc_1->Fill();
+  b_Earm_BBGEM_1y_dighit_adc_2->Fill();
+  b_Earm_BBGEM_1y_dighit_adc_3->Fill();
+  b_Earm_BBGEM_1y_dighit_adc_4->Fill();
+  b_Earm_BBGEM_1y_dighit_adc_5->Fill();
   b_Earm_BBGEM_2x_dighit_nstrips->Fill();
   b_Earm_BBGEM_2x_dighit_strip->Fill();
   b_Earm_BBGEM_2x_dighit_adc_0->Fill();
+  b_Earm_BBGEM_2x_dighit_adc_1->Fill();
+  b_Earm_BBGEM_2x_dighit_adc_2->Fill();
+  b_Earm_BBGEM_2x_dighit_adc_3->Fill();
+  b_Earm_BBGEM_2x_dighit_adc_4->Fill();
+  b_Earm_BBGEM_2x_dighit_adc_5->Fill();
   b_Earm_BBGEM_2y_dighit_nstrips->Fill();
   b_Earm_BBGEM_2y_dighit_strip->Fill();
   b_Earm_BBGEM_2y_dighit_adc_0->Fill();
+  b_Earm_BBGEM_2y_dighit_adc_1->Fill();
+  b_Earm_BBGEM_2y_dighit_adc_2->Fill();
+  b_Earm_BBGEM_2y_dighit_adc_3->Fill();
+  b_Earm_BBGEM_2y_dighit_adc_4->Fill();
+  b_Earm_BBGEM_2y_dighit_adc_5->Fill();
   b_Earm_BBGEM_3x_dighit_nstrips->Fill();
   b_Earm_BBGEM_3x_dighit_strip->Fill();
   b_Earm_BBGEM_3x_dighit_adc_0->Fill();
+  b_Earm_BBGEM_3x_dighit_adc_1->Fill();
+  b_Earm_BBGEM_3x_dighit_adc_2->Fill();
+  b_Earm_BBGEM_3x_dighit_adc_3->Fill();
+  b_Earm_BBGEM_3x_dighit_adc_4->Fill();
+  b_Earm_BBGEM_3x_dighit_adc_5->Fill();
   b_Earm_BBGEM_3y_dighit_nstrips->Fill();
   b_Earm_BBGEM_3y_dighit_strip->Fill();
   b_Earm_BBGEM_3y_dighit_adc_0->Fill();
+  b_Earm_BBGEM_3y_dighit_adc_1->Fill();
+  b_Earm_BBGEM_3y_dighit_adc_2->Fill();
+  b_Earm_BBGEM_3y_dighit_adc_3->Fill();
+  b_Earm_BBGEM_3y_dighit_adc_4->Fill();
+  b_Earm_BBGEM_3y_dighit_adc_5->Fill();
   b_Earm_BBGEM_4x_dighit_nstrips->Fill();
   b_Earm_BBGEM_4x_dighit_strip->Fill();
   b_Earm_BBGEM_4x_dighit_adc_0->Fill();
+  b_Earm_BBGEM_4x_dighit_adc_1->Fill();
+  b_Earm_BBGEM_4x_dighit_adc_2->Fill();
+  b_Earm_BBGEM_4x_dighit_adc_3->Fill();
+  b_Earm_BBGEM_4x_dighit_adc_4->Fill();
+  b_Earm_BBGEM_4x_dighit_adc_5->Fill();
   b_Earm_BBGEM_4y_dighit_nstrips->Fill();
   b_Earm_BBGEM_4y_dighit_strip->Fill();
   b_Earm_BBGEM_4y_dighit_adc_0->Fill();
+  b_Earm_BBGEM_4y_dighit_adc_1->Fill();
+  b_Earm_BBGEM_4y_dighit_adc_2->Fill();
+  b_Earm_BBGEM_4y_dighit_adc_3->Fill();
+  b_Earm_BBGEM_4y_dighit_adc_4->Fill();
+  b_Earm_BBGEM_4y_dighit_adc_5->Fill();
   b_Earm_BBGEM_5x_dighit_nstrips->Fill();
   b_Earm_BBGEM_5x_dighit_strip->Fill();
   b_Earm_BBGEM_5x_dighit_adc_0->Fill();
+  b_Earm_BBGEM_5x_dighit_adc_1->Fill();
+  b_Earm_BBGEM_5x_dighit_adc_2->Fill();
+  b_Earm_BBGEM_5x_dighit_adc_3->Fill();
+  b_Earm_BBGEM_5x_dighit_adc_4->Fill();
+  b_Earm_BBGEM_5x_dighit_adc_5->Fill();
   b_Earm_BBGEM_5y_dighit_nstrips->Fill();
   b_Earm_BBGEM_5y_dighit_strip->Fill();
   b_Earm_BBGEM_5y_dighit_adc_0->Fill();
+  b_Earm_BBGEM_5y_dighit_adc_1->Fill();
+  b_Earm_BBGEM_5y_dighit_adc_2->Fill();
+  b_Earm_BBGEM_5y_dighit_adc_3->Fill();
+  b_Earm_BBGEM_5y_dighit_adc_4->Fill();
+  b_Earm_BBGEM_5y_dighit_adc_5->Fill();
   b_Harm_HCal_dighit_nchan->Fill();
   b_Harm_HCal_dighit_chan->Fill();
   b_Harm_HCal_dighit_adc_0->Fill();
