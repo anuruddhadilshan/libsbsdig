@@ -423,6 +423,25 @@ public :
    Int_t Harm_HCal_dighit_nchan;
    vector<int>     *Harm_HCal_dighit_chan;
    vector<int>     *Harm_HCal_dighit_adc_0;
+   vector<int>     *Harm_HCal_dighit_adc_1;
+   vector<int>     *Harm_HCal_dighit_adc_2;
+   vector<int>     *Harm_HCal_dighit_adc_3;
+   vector<int>     *Harm_HCal_dighit_adc_4;
+   vector<int>     *Harm_HCal_dighit_adc_5;
+   vector<int>     *Harm_HCal_dighit_adc_6;
+   vector<int>     *Harm_HCal_dighit_adc_7;
+   vector<int>     *Harm_HCal_dighit_adc_8;
+   vector<int>     *Harm_HCal_dighit_adc_9;
+   vector<int>     *Harm_HCal_dighit_adc_10;
+   vector<int>     *Harm_HCal_dighit_adc_11;
+   vector<int>     *Harm_HCal_dighit_adc_12;
+   vector<int>     *Harm_HCal_dighit_adc_13;
+   vector<int>     *Harm_HCal_dighit_adc_14;
+   vector<int>     *Harm_HCal_dighit_adc_15;
+   vector<int>     *Harm_HCal_dighit_adc_16;
+   vector<int>     *Harm_HCal_dighit_adc_17;
+   vector<int>     *Harm_HCal_dighit_adc_18;
+   vector<int>     *Harm_HCal_dighit_adc_19;
    vector<int>     *Harm_HCal_dighit_tdc;
    
    
@@ -784,6 +803,25 @@ public :
    TBranch        *b_Harm_HCal_dighit_nchan;   //!
    TBranch        *b_Harm_HCal_dighit_chan;   //!
    TBranch        *b_Harm_HCal_dighit_adc_0;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_1;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_2;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_3;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_4;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_5;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_6;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_7;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_8;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_9;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_10;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_11;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_12;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_13;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_14;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_15;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_16;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_17;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_18;   //!
+   TBranch        *b_Harm_HCal_dighit_adc_19;   //!
    TBranch        *b_Harm_HCal_dighit_tdc;   //!
 
 
@@ -1535,6 +1573,25 @@ void gmn_tree::AddDigBranches()
   Harm_HCal_dighit_nchan = 0;
   Harm_HCal_dighit_chan = new vector<int>;
   Harm_HCal_dighit_adc_0 = new vector<int>;
+  Harm_HCal_dighit_adc_1 = new vector<int>;
+  Harm_HCal_dighit_adc_2 = new vector<int>;
+  Harm_HCal_dighit_adc_3 = new vector<int>;
+  Harm_HCal_dighit_adc_4 = new vector<int>;
+  Harm_HCal_dighit_adc_5 = new vector<int>;
+  Harm_HCal_dighit_adc_6 = new vector<int>;
+  Harm_HCal_dighit_adc_7 = new vector<int>;
+  Harm_HCal_dighit_adc_8 = new vector<int>;
+  Harm_HCal_dighit_adc_9 = new vector<int>;
+  Harm_HCal_dighit_adc_10 = new vector<int>;
+  Harm_HCal_dighit_adc_11 = new vector<int>;
+  Harm_HCal_dighit_adc_12 = new vector<int>;
+  Harm_HCal_dighit_adc_13 = new vector<int>;
+  Harm_HCal_dighit_adc_14 = new vector<int>;
+  Harm_HCal_dighit_adc_15 = new vector<int>;
+  Harm_HCal_dighit_adc_16 = new vector<int>;
+  Harm_HCal_dighit_adc_17 = new vector<int>;
+  Harm_HCal_dighit_adc_18 = new vector<int>;
+  Harm_HCal_dighit_adc_19 = new vector<int>;
   Harm_HCal_dighit_tdc = new vector<int>;
 
   if(!fChain)return;
@@ -1587,6 +1644,25 @@ void gmn_tree::AddDigBranches()
   b_Harm_HCal_dighit_nchan = fChain->Branch("Earm.BBGEM.dighit.nchan", &Harm_HCal_dighit_nchan);
   b_Harm_HCal_dighit_chan = fChain->Branch("Earm.BBGEM.dighit.chan", &Harm_HCal_dighit_chan);
   b_Harm_HCal_dighit_adc_0 = fChain->Branch("Earm.BBGEM.dighit.adc_0", &Harm_HCal_dighit_adc_0);
+  b_Harm_HCal_dighit_adc_1 = fChain->Branch("Earm.BBGEM.dighit.adc_1", &Harm_HCal_dighit_adc_1);
+  b_Harm_HCal_dighit_adc_2 = fChain->Branch("Earm.BBGEM.dighit.adc_2", &Harm_HCal_dighit_adc_2);
+  b_Harm_HCal_dighit_adc_3 = fChain->Branch("Earm.BBGEM.dighit.adc_3", &Harm_HCal_dighit_adc_3);
+  b_Harm_HCal_dighit_adc_4 = fChain->Branch("Earm.BBGEM.dighit.adc_4", &Harm_HCal_dighit_adc_4);
+  b_Harm_HCal_dighit_adc_5 = fChain->Branch("Earm.BBGEM.dighit.adc_5", &Harm_HCal_dighit_adc_5);
+  b_Harm_HCal_dighit_adc_6 = fChain->Branch("Earm.BBGEM.dighit.adc_6", &Harm_HCal_dighit_adc_6);
+  b_Harm_HCal_dighit_adc_7 = fChain->Branch("Earm.BBGEM.dighit.adc_7", &Harm_HCal_dighit_adc_7);
+  b_Harm_HCal_dighit_adc_8 = fChain->Branch("Earm.BBGEM.dighit.adc_8", &Harm_HCal_dighit_adc_8);
+  b_Harm_HCal_dighit_adc_9 = fChain->Branch("Earm.BBGEM.dighit.adc_9", &Harm_HCal_dighit_adc_9);
+  b_Harm_HCal_dighit_adc_10 = fChain->Branch("Earm.BBGEM.dighit.adc_10", &Harm_HCal_dighit_adc_10);
+  b_Harm_HCal_dighit_adc_11 = fChain->Branch("Earm.BBGEM.dighit.adc_11", &Harm_HCal_dighit_adc_11);
+  b_Harm_HCal_dighit_adc_12 = fChain->Branch("Earm.BBGEM.dighit.adc_12", &Harm_HCal_dighit_adc_12);
+  b_Harm_HCal_dighit_adc_13 = fChain->Branch("Earm.BBGEM.dighit.adc_13", &Harm_HCal_dighit_adc_13);
+  b_Harm_HCal_dighit_adc_14 = fChain->Branch("Earm.BBGEM.dighit.adc_14", &Harm_HCal_dighit_adc_14);
+  b_Harm_HCal_dighit_adc_15 = fChain->Branch("Earm.BBGEM.dighit.adc_15", &Harm_HCal_dighit_adc_15);
+  b_Harm_HCal_dighit_adc_16 = fChain->Branch("Earm.BBGEM.dighit.adc_16", &Harm_HCal_dighit_adc_16);
+  b_Harm_HCal_dighit_adc_17 = fChain->Branch("Earm.BBGEM.dighit.adc_17", &Harm_HCal_dighit_adc_17);
+  b_Harm_HCal_dighit_adc_18 = fChain->Branch("Earm.BBGEM.dighit.adc_18", &Harm_HCal_dighit_adc_18);
+  b_Harm_HCal_dighit_adc_19 = fChain->Branch("Earm.BBGEM.dighit.adc_19", &Harm_HCal_dighit_adc_19);
   b_Harm_HCal_dighit_tdc = fChain->Branch("Earm.BBGEM.dighit.tdc", &Harm_HCal_dighit_tdc);
 }
 
@@ -1641,6 +1717,25 @@ void gmn_tree::ClearDigBranches()
   Harm_HCal_dighit_nchan = 0;
   Harm_HCal_dighit_chan->clear();
   Harm_HCal_dighit_adc_0->clear();
+  Harm_HCal_dighit_adc_1->clear();
+  Harm_HCal_dighit_adc_2->clear();
+  Harm_HCal_dighit_adc_3->clear();
+  Harm_HCal_dighit_adc_4->clear();
+  Harm_HCal_dighit_adc_5->clear();
+  Harm_HCal_dighit_adc_6->clear();
+  Harm_HCal_dighit_adc_7->clear();
+  Harm_HCal_dighit_adc_8->clear();
+  Harm_HCal_dighit_adc_9->clear();
+  Harm_HCal_dighit_adc_10->clear();
+  Harm_HCal_dighit_adc_11->clear();
+  Harm_HCal_dighit_adc_12->clear();
+  Harm_HCal_dighit_adc_13->clear();
+  Harm_HCal_dighit_adc_14->clear();
+  Harm_HCal_dighit_adc_15->clear();
+  Harm_HCal_dighit_adc_16->clear();
+  Harm_HCal_dighit_adc_17->clear();
+  Harm_HCal_dighit_adc_18->clear();
+  Harm_HCal_dighit_adc_19->clear();
   Harm_HCal_dighit_tdc->clear();
 }
 
@@ -1695,6 +1790,25 @@ void gmn_tree::FillDigBranches()
   b_Harm_HCal_dighit_nchan->Fill();
   b_Harm_HCal_dighit_chan->Fill();
   b_Harm_HCal_dighit_adc_0->Fill();
+  b_Harm_HCal_dighit_adc_1->Fill();
+  b_Harm_HCal_dighit_adc_2->Fill();
+  b_Harm_HCal_dighit_adc_3->Fill();
+  b_Harm_HCal_dighit_adc_4->Fill();
+  b_Harm_HCal_dighit_adc_5->Fill();
+  b_Harm_HCal_dighit_adc_6->Fill();
+  b_Harm_HCal_dighit_adc_7->Fill();
+  b_Harm_HCal_dighit_adc_8->Fill();
+  b_Harm_HCal_dighit_adc_9->Fill();
+  b_Harm_HCal_dighit_adc_10->Fill();
+  b_Harm_HCal_dighit_adc_11->Fill();
+  b_Harm_HCal_dighit_adc_12->Fill();
+  b_Harm_HCal_dighit_adc_13->Fill();
+  b_Harm_HCal_dighit_adc_14->Fill();
+  b_Harm_HCal_dighit_adc_15->Fill();
+  b_Harm_HCal_dighit_adc_16->Fill();
+  b_Harm_HCal_dighit_adc_17->Fill();
+  b_Harm_HCal_dighit_adc_18->Fill();
+  b_Harm_HCal_dighit_adc_19->Fill();
   b_Harm_HCal_dighit_tdc->Fill();
 }
 
