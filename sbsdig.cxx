@@ -8,6 +8,8 @@
 #include "TString.h"
 #include "TChain.h"
 #include "TChainElement.h"
+#include "TMath.h"
+#include "TRandom3.h"
 
 //includes: specific
 #include "G4SBSRunData.hh"
@@ -55,6 +57,7 @@ int main(int argc, char** argv){
   // the tree extension might have to be coded in the custom tree class
   
   // Step 1: read input files build the input chains
+  TRandom3* R = new TRandom3(0);
   TString currentline;
   
   // build signal chain
@@ -84,18 +87,38 @@ int main(int argc, char** argv){
   TChainElement *chEl_b=0;
   
   gmn_tree *T_s, *T_b;
-  Long64_t Nev_fs, Nev_fb;
-  Long64_t ev_s, ev_b;
+  ULong64_t Nev_fs, Nev_fb;
+  ULong64_t ev_s, ev_b;
   
-  Long64_t NEventsTotal = 0;
+  ULong64_t NEventsTotal = 0;
   UShort_t nbkgd = 0;
   
+  int i_fs = 0;
+  
   while (( chEl_s=(TChainElement*)next_s() )) {
-    if(NEventsTotal>=Nentries)break;
+    if(NEventsTotal>=Nentries){
+      break;
+    }
+    cout << chEl_s->GetTitle() << endl;
     
-    TFile f_s(chEl_s->GetTitle());
+    TFile f_s(chEl_s->GetTitle(), "UPDATE");
+    //TFile f_s(chEl_s->GetTitle());
+    //f_s.Print();
+    //f_s.ls();
+    //TFile* fs_c = (TFile*)f_s.Clone(Form("simdigtest_%d.root", i_fs));
+    //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
+    //f_s.Cp(Form("digitized/simdigtest_%d.root", i_fs));
+    //new TFile(Form("simdigtest_%d.root", i_fs), "UPDATE");
+    //cout << &f_s << " " << &fs_c << endl;
+    //fs_c.Print();
+    //fs_c.ls();
+    //if(fs_c.IsOpen())cout << "copy of file is open" << endl;
+    //cout << fs_c->ReOpen("UPDATE") << endl;
+    //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
     T_s = new gmn_tree(C_s);
+    T_s->AddDigBranches();
+    
     Nev_fs = C_s->GetEntries();
     
     cout << chEl_s->GetTitle() << ": " << Nev_fs << " entries" << endl;
@@ -115,36 +138,45 @@ int main(int argc, char** argv){
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
       if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
-      
+
+      T_s->ClearDigBranches();
       T_s->GetEntry(ev_s);
       
       // unfold the thing then...
       
       // loop here for background
-      nbkgd = 0;
-      while (( chEl_b=(TChainElement*)next_b() )) {
-	if(nbkgd>=Nbkgd)break;
-	
-	TFile f_b(chEl_b->GetTitle());
-	C_b = (TChain*)f_b.Get("T");
-	T_b = new gmn_tree(C_b);
-	Nev_fb = C_b->GetEntries();
-	
-	cout << chEl_b->GetTitle() << ": " << Nev_fb << " entries" << endl;
-	
-	for(ev_b = 0; ev_b<Nev_fb; ev_b++){
+      if(Nbkgd>0){
+	nbkgd = 0;
+	while (( chEl_b=(TChainElement*)next_b() )) {
+	  if(nbkgd>=Nbkgd)break;
 	  
+	  TFile f_b(chEl_b->GetTitle());
+	  C_b = (TChain*)f_b.Get("T");
+	  T_b = new gmn_tree(C_b);
+	  Nev_fb = C_b->GetEntries();
 	  
-	  T_b->GetEntry(ev_b);
-	}// end loop on background events
-	nbkgd++;
-      }// end loop on background files
-      
+	  cout << chEl_b->GetTitle() << ": " << Nev_fb << " entries" << endl;
+	  
+	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
+	    //T_b->GetEntry(ev_b);
+	  }// end loop on background events
+	  nbkgd++;
+	}// end loop on background files
+      }//end if Nbkgd>0
+      T_s->FillDigBranches();
+      //T_s->fChain->Fill();
     }// end loop on signal events 
     
+    T_s->fChain->Write("", TObject::kOverwrite);
+    //fs_c.Write();
+    //fs_c.Close();
+    f_s.Write();
+    f_s.Close();
+    i_fs++;
   }// end loop on signal files
   
   
+  exit(0);
 }
 
 /*
