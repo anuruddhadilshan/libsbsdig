@@ -64,20 +64,8 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 ##----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
 #set(sources ${PROJECT_SOURCE_DIR}/src/*.cxx ${PROJECT_SOURCE_DIR}/libsbsgem/*.cxx)
-#set(sources src/g4sbs_tree.cxx)
-
-#    src/g4sbs_data.cxx src/g4sbs_tree.cxx src/TSBSDBManager.cxx 
-#    src/TSBSGeant4File.cxx src/TSBSSimAuxi.cxx src/TSBSSimCher.cxx 
-#    src/TSBSSimData.cxx src/TSBSSimDetector.cxx src/TSBSSimDigitizer.cxx 
-#    src/TSBSSimECal.cxx src/TSBSSimEvent.cxx src/TSBSSimGEM.cxx 
-#    src/TSBSSimHCal.cxx src/TSBSSimScint.cxx src/TSBSSpec.cxx
-#    libsbsgem/TGEMSBSBox.cxx libsbsgem/TGEMSBSDBManager.cxx 
-#    libsbsgem/TGEMSBSGEMChamber.cxx libsbsgem/TGEMSBSGEMHit.cxx 
-#    libsbsgem/TGEMSBSGEMPlane.cxx libsbsgem/TGEMSBSGEMSimHitData.cxx 
-#    libsbsgem/TGEMSBSSimAuxi.cxx libsbsgem/TGEMSBSSimDigitization.cxx 
-#    libsbsgem/TGEMSBSSpec.cxx)
-#
-
+#set(sources src/gmn_tree.cxx src/SBSDigGEMPlane.cxx src/SBSDigAuxi.cxx 
+#            src/SPEModel.cxx )
 
 ## Make corresponding header files
 #string(REGEX REPLACE .cxx .h headers "${sources}")

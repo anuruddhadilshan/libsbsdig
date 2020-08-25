@@ -8,6 +8,8 @@
 #include "TString.h"
 #include "TChain.h"
 #include "TChainElement.h"
+#include "TCut.h"
+#include "TEventList.h"
 #include "TMath.h"
 #include "TRandom3.h"
 
@@ -73,15 +75,21 @@ int main(int argc, char** argv){
   TIter next_s(fileElements_s);
   TChainElement *chEl_s=0;
   
+  /* need to change this... */
   // build background chain
   ifstream beam_inputfile(inputbkgdfile);
   TChain *C_b = new TChain("T");
+  //TCut global_cut = "";
+  //TEventList *eblist = new TEventList("eblist");
   if(Nbkgd!=0){
     while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
       if( !currentline.BeginsWith("#") ){
 	C_b->Add(currentline.Data());
+	//global_cut += currentline.Data();
+	//cout << currentline.Data() << endl;
       }
     }
+    //C_b->Draw(">>eblist",global_cut);
   }
   TObjArray *fileElements_b=C_b->GetListOfFiles();
   TIter next_b(fileElements_b);
@@ -92,14 +100,20 @@ int main(int argc, char** argv){
   double Theta_SBS, D_HCal;
   
   gmn_tree *T_s, *T_b;
+
   ULong64_t Nev_fs, Nev_fb;
   ULong64_t ev_s, ev_b;
   
   ULong64_t NEventsTotal = 0;
   UShort_t nbkgd = 0;
+  int treenum = 0;
+  int oldtreenum = 0;
   
   int i_fs = 0;
   bool has_data;
+
+  T_b = new gmn_tree(C_b);
+  ev_b = 0;
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
@@ -109,16 +123,8 @@ int main(int argc, char** argv){
     run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
-    //TFile f_s(chEl_s->GetTitle());
-    //f_s.Print();
-    //f_s.ls();
-    //TFile* fs_c = (TFile*)f_s.Clone(Form("simdigtest_%d.root", i_fs));
     //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
     //f_s.Cp(Form("digitized/simdigtest_%d.root", i_fs));
-    //new TFile(Form("simdigtest_%d.root", i_fs), "UPDATE");
-    //cout << &f_s << " " << &fs_c << endl;
-    //fs_c.Print();
-    //fs_c.ls();
     //if(fs_c.IsOpen())cout << "copy of file is open" << endl;
     //cout << fs_c->ReOpen("UPDATE") << endl;
     //C_s = (TChain*)fs_c.Get("T");
@@ -133,6 +139,7 @@ int main(int argc, char** argv){
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
       if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
+	
       has_data = false;
       
       T_s->ClearDigBranches();
@@ -145,23 +152,32 @@ int main(int argc, char** argv){
       // loop here for background
       if(Nbkgd>0){
 	nbkgd = 0;
+	while( T_b->GetEntry(ev_b++) ){
+	//while( T_b->GetEntry(eblist->GetEntry(ev_b++)) ){
+	  treenum = C_b->GetTreeNumber();
+	  if(treenum!=oldtreenum){
+	    oldtreenum = treenum;
+	    nbkgd++;
+	    if(nbkgd>=Nbkgd)break;
+	  }
+	  //UnfoldData(T_b, Theta_SBS, D_HCal, R);
+	  //if(treenum)
+	}
+	/*
 	while (( chEl_b=(TChainElement*)next_b() )) {
 	  if(nbkgd>=Nbkgd)break;
-	  
+	  cout << chEl_b->GetTitle() << endl;
 	  TFile f_b(chEl_b->GetTitle());
 	  C_b = (TChain*)f_b.Get("T");
 	  T_b = new gmn_tree(C_b);
 	  Nev_fb = C_b->GetEntries();
-	  
-	  cout << chEl_b->GetTitle() << ": " << Nev_fb << " entries" << endl;
-	  
 	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
 	    T_b->GetEntry(ev_b);
 	    UnfoldData(T_b, Theta_SBS, D_HCal, R);
-	    
 	  }// end loop on background events
 	  nbkgd++;
 	}// end loop on background files
+	*/
       }//end if Nbkgd>0
       T_s->FillDigBranches();
       //T_s->fChain->Fill();
@@ -178,19 +194,3 @@ int main(int argc, char** argv){
   
   exit(0);
 }
-
-/*
-I put this here temporarily not to have to retrieve the link every single time.
-void tree3AddBranch() {
-    TFile f("tree3.root", "update");
-    Float_t new_v;
-    TTree *t3 = (TTree*)f->Get("t3");
-    TBranch *newBranch = t3->Branch("new_v", &new_v, "new_v/F");
-    Long64_t nentries = t3->GetEntries(); // read the number of entries in the t3
-    for (Long64_t i = 0; i < nentries; i++) {
-        new_v= gRandom->Gaus(0, 1);
-        newBranch->Fill();
-    }
-    t3->Write("", TObject::kOverwrite); // save only the new version of the tree
-}
- */

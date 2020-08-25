@@ -1,0 +1,82 @@
+#ifndef SBSDIGPMTSIGNAL_H
+#define SBSDIGPMTSIGNAL_H
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <TROOT.h>
+//#include "g4sbs_types.h"
+#include "TF1.h"
+#include "TH1D.h"
+
+//
+// classes for signal digitization
+//
+//________________________________
+class SPEModel {
+ public:
+  SPEModel();
+  SPEModel(const char* detname, double tau, double sigma, double t0 = 0, double tmin = -100, double tmax = +100);
+  virtual ~SPEModel();
+  double Eval(double t){return fPulseHisto->Interpolate(t);};
+  bool   PulseOverThr(double charge, double thr);
+  bool   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
+  
+ private:
+  TH1D *fPulseHisto;//At least we'll have to setup and use one per detector
+  double GetHistoX(double y, double x1, double x2);
+  
+  //ClassDef(SPEModel,1);//it actually doesn't like classdef... (not sure why...)
+};
+
+//_________________________________
+class PMTSignal {
+ public:
+  PMTSignal();
+  PMTSignal(double npechargeconv);
+  void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
+  void Digitize();
+  void Clear(Option_t* opt = "");
+  ~PMTSignal(){Clear();};
+  
+  void AddSumEdep(double edep){
+    fSumEdep+= edep;
+  };
+  void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
+    
+  double SumEdep(){return fSumEdep;};
+  UInt_t Npe(){return fNpe;};
+  double Charge(){return fNpe*fNpeChargeConv;};
+  UInt_t ADC(){return fADC;};
+
+  double EventTime(){return fEventTime;};
+  UInt_t LeadTimesSize(){return fLeadTimes.size();};
+  double LeadTime(int i){return fLeadTimes.at(i);};
+  UInt_t TrailTimesSize(){return fTrailTimes.size();};
+  double TrailTime(int i){return fTrailTimes.at(i);};
+  UInt_t TDCSize(){return fTDCs.size();};
+  UInt_t TDC(int i){return fTDCs.at(i);};
+  //SimEncoder::tdc_data TDCData() { return fTDCData; }
+  
+  //check vectors size
+  bool check_vec_size(bool ignore_edep = false);
+  
+ private:
+  //summing variables for dig...
+  double fSumEdep;//Not forced to use it for everything
+  UInt_t fNpe;
+  double fNpeChargeConv;
+  UInt_t fADC;// One unique ADC value ?
+
+  double fEventTime;
+  //TDCs: multiple values possible.
+  std::vector<double> fLeadTimes;
+  std::vector<double> fTrailTimes;
+  std::vector<UInt_t> fTDCs;
+  //SimEncoder::tdc_data fTDCData;
+  //TRndmManager* fRN;
+};
+
+
+
+#endif

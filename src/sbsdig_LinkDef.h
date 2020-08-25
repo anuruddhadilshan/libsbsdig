@@ -7,6 +7,8 @@
 #pragma link C++ nestedtypedef;
 
 #pragma link C++ class gmn_tree+;
+#pragma link C++ class SBSDigGEMPlane+;
+#pragma link C++ class SPEModel+;
 //#pragma link C++ class g4sbs_data+;
 //#pragma link C++ class g4sbs_tree+;
 //#pragma link C++ class TSBSDBManager+;
@@ -21,7 +23,6 @@
 //#pragma link C++ class TRndmManager+;
 //#pragma link C++ class TSignalInfo+;
 //#pragma link C++ class TSpectroInfo+;
-//#pragma link C++ class SPEModel+;
 //#pragma link C++ class TSBSSimEvent+;
 //#pragma link C++ class TSBSSimData+;
 //#pragma link C++ class g4sbshitdata+;
