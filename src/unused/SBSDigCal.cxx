@@ -18,3 +18,8 @@ SBSDigCal::~SBSDigCal()
 {
   
 }
+
+void SBSDigCal::Clear()
+{
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Clear();
+}

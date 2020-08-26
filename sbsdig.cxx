@@ -17,6 +17,8 @@
 #include "G4SBSRunData.hh"
 #include "gmn_tree.h"
 #include "SBSDigAuxi.h"
+#include "SBSDigPMTDet.h"
+#include "SBSDigGEMDet.h"
 
 #ifdef __APPLE__
 #include "unistd.h"
@@ -62,6 +64,21 @@ int main(int argc, char** argv){
   // Step 1: read input files build the input chains
   TRandom3* R = new TRandom3(0);
   TString currentline;
+  
+  //double nstrips_bbgem[10] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
+  double nstrips_bbgem[32] = {1280, 1024, 1280, 1024, 1280, 1024, 
+			      1280, 1024, 1280, 1024, 1280, 1024, 
+			      1280, 1024, 1280, 1024, 1280, 1024, 
+			      1280, 1024, 1280, 1024, 1280, 1024, 
+			      1280, 1536, 1280, 1536, 1280, 1536, 1280, 1536};
+  
+  //Declaring detectors
+  SBSDigGEMDet* bbgem = new SBSDigGEMDet(32, nstrips_bbgem, 6, 240);
+  SBSDigPMTDet* bbps = new SBSDigPMTDet(52, 1.0);
+  SBSDigPMTDet* bbsh = new SBSDigPMTDet(189, 1.0);
+  SBSDigPMTDet* grinch = new SBSDigPMTDet(510, 1.0);
+  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(180, 1.0);
+  SBSDigPMTDet* hcal = new SBSDigPMTDet(288, 1.0);
   
   // build signal chain
   ifstream sig_inputfile(inputsigfile);
@@ -139,7 +156,14 @@ int main(int argc, char** argv){
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
       if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
-	
+
+      bbgem->Clear();
+      bbps->Clear();
+      bbsh->Clear();
+      grinch->Clear();
+      bbhodo->Clear();
+      hcal->Clear();
+      
       has_data = false;
       
       T_s->ClearDigBranches();

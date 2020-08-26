@@ -1,5 +1,5 @@
-#ifndef SBSDIGCHER_H
-#define SBSDIGCHER_H
+#ifndef SBSDIGPMTDET_H
+#define SBSDIGPMTDET_H
 
 #include <iostream>
 #include <vector>
@@ -7,11 +7,12 @@
 #include "SBSDigPMTSignal.h"
 
 //________________________________
-class SBSDigCher {
+class SBSDigPMTDet {
  public:
-  SBSDigCher();
-  SBSDigCher(int nchan, double npechargeconv);
-  virtual ~SBSDigCher();
+  SBSDigPMTDet();
+  SBSDigPMTDet(int nchan, double npechargeconv);
+  virtual ~SBSDigPMTDet();
+  void Clear();
   
  private:
   int fNChan;

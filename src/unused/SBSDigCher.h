@@ -1,5 +1,5 @@
-#ifndef SBSDIGSCINT_H
-#define SBSDIGSCINT_H
+#ifndef SBSDIGCHER_H
+#define SBSDIGCHER_H
 
 #include <iostream>
 #include <vector>
@@ -7,13 +7,14 @@
 #include "SBSDigPMTSignal.h"
 
 //________________________________
-class SBSDigScint {
+class SBSDigCher {
  public:
-  SBSDigScint();
-  SBSDigScint(int nchan, double npechargeconv);
-  virtual ~SBSDigScint();
+  SBSDigCher();
+  SBSDigCher(int nchan, double npechargeconv);
+  virtual ~SBSDigCher();
+  void Clear();
   
- private:
+  //private:
   int fNChan;
   std::map<int, PMTSignal> PMTmap;
   

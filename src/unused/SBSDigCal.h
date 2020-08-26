@@ -12,6 +12,7 @@ class SBSDigCal {
   SBSDigCal();
   SBSDigCal(int nchan, double npechargeconv);
   virtual ~SBSDigCal();
+  void Clear();
   
  private:
   int fNChan;

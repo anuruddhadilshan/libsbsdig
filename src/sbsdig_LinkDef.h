@@ -9,10 +9,12 @@
 #pragma link C++ class gmn_tree+;
 #pragma link C++ class PMTSignal+;
 #pragma link C++ class SBSDigGEMPlane+;
-#pragma link C++ class SBSDigCal+;
-#pragma link C++ class SBSDigCher+;
-#pragma link C++ class SBSDigScint+;
+#pragma link C++ class SBSDigGEMDet+;
+#pragma link C++ class SBSDigPMTDet+;
 #pragma link C++ class SPEModel+;
+//#pragma link C++ class SBSDigCal+;
+//#pragma link C++ class SBSDigCher+;
+//#pragma link C++ class SBSDigScint+;
 //#pragma link C++ class g4sbs_data+;
 //#pragma link C++ class g4sbs_tree+;
 //#pragma link C++ class TSBSDBManager+;

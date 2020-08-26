@@ -18,3 +18,9 @@ SBSDigCher::~SBSDigCher()
 {
   
 }
+
+void SBSDigCher::Clear()
+{
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Clear();
+}
+
