@@ -8,10 +8,10 @@ SBSDigGEMDet::SBSDigGEMDet()
 {
 }
 
-SBSDigGEMDet::SBSDigGEMDet(int nplanes, double* nstrips, int nsamp, double zsup_thr)
+SBSDigGEMDet::SBSDigGEMDet(UInt_t nplanes, double* nstrips, int nsamp, double zsup_thr):
+  fNPlanes(nplanes)
 {
-  fNPlanes = nplanes;
-  for(int i = 0; i<fNPlanes; i++)GEMPlanes[i] = SBSDigGEMPlane(nstrips[i], nsamp, zsup_thr);
+  for(uint i = 0; i<fNPlanes; i++)GEMPlanes[i] = SBSDigGEMPlane(nstrips[i], nsamp, zsup_thr);
 }
 
 SBSDigGEMDet::~SBSDigGEMDet()
@@ -21,5 +21,5 @@ SBSDigGEMDet::~SBSDigGEMDet()
 
 void SBSDigGEMDet::Clear()
 {
-  for(int i = 0; i<fNPlanes; i++)GEMPlanes[i].Clear();
+  for(uint i = 0; i<fNPlanes; i++)GEMPlanes[i].Clear();
 }

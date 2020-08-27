@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 
 //includes: root
 #include <TROOT.h>
@@ -15,6 +16,7 @@
 
 //includes: specific
 #include "G4SBSRunData.hh"
+#include "g4sbs_types.h"
 #include "gmn_tree.h"
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
@@ -23,6 +25,68 @@
 #ifdef __APPLE__
 #include "unistd.h"
 #endif
+
+#define qe 1.602e-19
+
+#define NPlanes_BBGEM 32 // modules...
+#define NChan_BBPS 52
+#define NChan_BBSH 189
+#define NChan_BBHODO 180 
+#define NChan_GRINCH 510 
+#define NChan_HCAL 288
+
+#define ROimpedance 50.0 //Ohm
+#define TriggerJitter 3.0 //ns
+#define ADCbits 12 
+#define gatewidth_PMT 100 //ns
+#define gatewidth_GEM 400 //ns
+
+//DB???
+#define sigmapulse_BBPSSH 3.0 //ns / 1.2 of 
+#define sigmapulse_BBHODO 1.6 //ns
+#define sigmapulse_GRINCH 3.75 //ns
+
+#define gain_BBPS 2.e6
+#define ped_BBPS 600.0 // ADC channel
+#define pedsigma_BBPS 3.0 // ADC channel
+#define trigoffset_BBPS 18.2 //ns
+#define ADCconv_BBPS 50 //fC/ch
+
+#define gain_BBSH 7.5e5
+#define ped_BBSH 500.0 // ADC channel
+#define pedsigma_BBSH 4.5 // ADC channel
+#define trigoffset_BBSH 18.5 //ns
+#define ADCconv_BBSH 50 //fC/ch
+
+#define gain_GRINCH 7.0e6
+#define ped_GRINCH 0.0 
+#define pedsigma_GRINCH 0.0
+#define trigoffset_GRINCH 15.3 //ns
+#define threshold_GRINCH 3.e-3 //V
+#define ADCconv_GRINCH 100 //fC/ch
+#define TDCconv_GRINCH 1.0 //ns/channel
+#define TDCbits_GRINCH 16 //ns/channel
+
+#define gain_BBHODO 1.0e5
+#define ped_BBHODO 0.0 
+#define pedsigma_BBHODO 0.0
+#define trigoffset_BBHODO 18.6 //ns
+#define threshold_BBHODO 3.e-3 //V
+#define ADCconv_BBHODO 100 //fC/ch
+#define TDCconv_BBHODO 0.1 //ns/channel
+#define TDCbits_BBHODO 19 //ns/channel
+
+#define gain_HCAL 1.0e6
+#define ped_HCAL 0.0 
+#define pedsigma_HCAL 0.0
+#define trigoffset_HCAL 81.0 //ns
+#define threshold_HCAL 3.e-3 //V
+#define ADCconv_HCAL 1.0 //fC/ch //??
+#define TDCconv_HCAL 0.5 //ns/channel
+#define TDCbits_HCAL 16 //ns/channel
+
+
+
 
 using namespace std;
 //____________________________________________________
@@ -65,20 +129,82 @@ int main(int argc, char** argv){
   TRandom3* R = new TRandom3(0);
   TString currentline;
   
-  //double nstrips_bbgem[10] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
-  double nstrips_bbgem[32] = {1280, 1024, 1280, 1024, 1280, 1024, 
-			      1280, 1024, 1280, 1024, 1280, 1024, 
-			      1280, 1024, 1280, 1024, 1280, 1024, 
-			      1280, 1024, 1280, 1024, 1280, 1024, 
-			      1280, 1536, 1280, 1536, 1280, 1536, 1280, 1536};
+  //double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
+  double nstrips_bbgem[NPlanes_BBGEM] = {1280, 1024, 1280, 1024, 1280, 1024, 
+					 1280, 1024, 1280, 1024, 1280, 1024, 
+					 1280, 1024, 1280, 1024, 1280, 1024, 
+					 1280, 1024, 1280, 1024, 1280, 1024, 
+					 1280, 1536, 1280, 1536, 
+					 1280, 1536, 1280, 1536};
+  
+  //double NpeChargeConv
   
   //Declaring detectors
-  SBSDigGEMDet* bbgem = new SBSDigGEMDet(32, nstrips_bbgem, 6, 240);
-  SBSDigPMTDet* bbps = new SBSDigPMTDet(52, 1.0);
-  SBSDigPMTDet* bbsh = new SBSDigPMTDet(189, 1.0);
-  SBSDigPMTDet* grinch = new SBSDigPMTDet(510, 1.0);
-  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(180, 1.0);
-  SBSDigPMTDet* hcal = new SBSDigPMTDet(288, 1.0);
+  SBSDigGEMDet* bbgem = new SBSDigGEMDet(NPlanes_BBGEM, nstrips_bbgem, 6, 240);
+  SBSDigPMTDet* bbps = new SBSDigPMTDet(NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_PMT);
+  SBSDigPMTDet* bbsh = new SBSDigPMTDet(NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_PMT);
+  SBSDigPMTDet* grinch = new SBSDigPMTDet(NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_PMT);
+  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_PMT);
+  SBSDigPMTDet* hcal = new SBSDigPMTDet(NChan_HCAL);
+  
+  bbps->fGain = gain_BBPS;
+  bbps->fPedestal = ped_BBPS;
+  bbps->fPedSigma = pedsigma_BBPS;
+  bbps->fTrigOffset = trigoffset_BBPS;
+  bbps->fGateWidth = gatewidth_PMT;
+  bbps->fADCconv = ADCconv_BBPS;
+  bbps->fADCbits = ADCbits;
+  
+  bbsh->fGain = gain_BBSH;
+  bbsh->fPedestal = ped_BBSH;
+  bbsh->fPedSigma = pedsigma_BBSH;
+  bbsh->fTrigOffset = trigoffset_BBSH;
+  bbsh->fGateWidth = gatewidth_PMT;
+  bbsh->fADCconv = ADCconv_BBSH;
+  bbsh->fADCbits = ADCbits;
+  
+  grinch->fGain = gain_GRINCH;
+  grinch->fPedestal = ped_GRINCH;
+  grinch->fPedSigma = pedsigma_GRINCH;
+  grinch->fTrigOffset = trigoffset_GRINCH;
+  grinch->fThreshold = threshold_GRINCH;
+  grinch->fGateWidth = gatewidth_PMT;
+  grinch->fADCconv = ADCconv_GRINCH;
+  grinch->fADCbits = ADCbits;
+  grinch->fTDCconv = TDCconv_GRINCH;
+  grinch->fTDCbits = TDCbits_GRINCH; 
+  
+  bbhodo->fGain = gain_BBHODO;
+  bbhodo->fPedestal = ped_BBHODO;
+  bbhodo->fPedSigma = pedsigma_BBHODO;
+  bbhodo->fTrigOffset = trigoffset_BBHODO;
+  bbhodo->fThreshold = threshold_BBHODO;
+  bbhodo->fGateWidth = gatewidth_PMT;
+  bbhodo->fADCconv = ADCconv_BBHODO;
+  bbhodo->fADCbits = ADCbits;
+  bbhodo->fTDCconv = TDCconv_BBHODO;
+  bbhodo->fTDCbits = TDCbits_BBHODO; 
+  
+  hcal->fGain = gain_HCAL;
+  hcal->fPedestal = ped_HCAL;
+  hcal->fPedSigma = pedsigma_HCAL;
+  hcal->fTrigOffset = trigoffset_HCAL;
+  hcal->fThreshold = threshold_HCAL;
+  hcal->fGateWidth = gatewidth_PMT-20.;
+  hcal->fADCconv = ADCconv_HCAL;
+  hcal->fADCbits = ADCbits;
+  hcal->fTDCconv = TDCconv_HCAL;
+  hcal->fTDCbits = TDCbits_HCAL; 
+  hcal->SetSamples();
+  
+  std::map<int, SBSDigPMTDet*> PMTdetectors;
+  PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
+  PMTdetectors[HODO_UNIQUE_DETID] = bbhodo;
+  PMTdetectors[BBPS_UNIQUE_DETID] = bbps;
+  PMTdetectors[BBSH_UNIQUE_DETID] = bbsh;
+  PMTdetectors[GRINCH_UNIQUE_DETID] = grinch;
+  std::map<int, SBSDigGEMDet*> GEMdetectors;
+  GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
   
   // build signal chain
   ifstream sig_inputfile(inputsigfile);
@@ -170,7 +296,7 @@ int main(int argc, char** argv){
       T_s->GetEntry(ev_s);
       
       // unfold the thing then... but where???
-      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R);
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors);
       if(!has_data)continue;
       
       // loop here for background
@@ -184,7 +310,7 @@ int main(int argc, char** argv){
 	    nbkgd++;
 	    if(nbkgd>=Nbkgd)break;
 	  }
-	  //UnfoldData(T_b, Theta_SBS, D_HCal, R);
+	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors);
 	  //if(treenum)
 	}
 	/*

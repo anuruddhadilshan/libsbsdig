@@ -16,7 +16,7 @@
 class SPEModel {
  public:
   SPEModel();
-  SPEModel(const char* detname, double tau, double sigma, double t0 = 0, double tmin = -100, double tmax = +100);
+  SPEModel(double sigma, double t0 = 0, double tmin = -50, double tmax = +50);
   virtual ~SPEModel();
   double Eval(double t){return fPulseHisto->Interpolate(t);};
   bool   PulseOverThr(double charge, double thr);
@@ -35,14 +35,16 @@ class PMTSignal {
   PMTSignal();
   PMTSignal(double npechargeconv);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
+  void Fill(int npe, double thr, double evttime, double sigmatime, int signal);
   void Digitize();
-  void Clear(Option_t* opt = "");
+  void Clear(bool dosamples = false);
   ~PMTSignal(){Clear();};
   
   void AddSumEdep(double edep){
     fSumEdep+= edep;
   };
   void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
+  void SetSamples(double tmin, double tmax, double sampsize);
     
   double SumEdep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
@@ -57,9 +59,8 @@ class PMTSignal {
   UInt_t TDCSize(){return fTDCs.size();};
   UInt_t TDC(int i){return fTDCs.at(i);};
   //SimEncoder::tdc_data TDCData() { return fTDCData; }
-  
-  //check vectors size
-  bool check_vec_size(bool ignore_edep = false);
+
+  UInt_t ADCSamples(int i){return fADCSamples[i];};
   
  private:
   //summing variables for dig...
@@ -75,6 +76,12 @@ class PMTSignal {
   std::vector<UInt_t> fTDCs;
   //SimEncoder::tdc_data fTDCData;
   //TRndmManager* fRN;
+
+  //let's try something for HCal
+  int fNSamps;
+  double fSampSize;
+  double* fSamples;
+  double* fADCSamples;
 };
 
 

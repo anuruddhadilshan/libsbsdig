@@ -1,10 +1,13 @@
+#include "g4sbs_types.h"
 #include "SBSDigAuxi.h"
 #include "TMath.h"
 #define DEBUG 0
 
 using namespace std;
 
-bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
+bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R, 
+		std::map<int, SBSDigPMTDet*> pmtdets, 
+		std::map<int, SBSDigGEMDet*> gemdets)
 {
   //for the time being
   const double m_e = 511.e-6;
@@ -22,20 +25,17 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
 
   double z_det, pz, E, beta;
   double sin2thetaC;
-
+  
+  int chan;
+  
   // Process GRINCH data
   if(T->Earm_GRINCH_hit_nhits){
     for(int i = 0; i<T->Earm_GRINCH_hit_nhits; i++){
-      //g4sbshitdata *grinchhit = new g4sbshitdata(GRINCH_UNIQUE_DETID, 4);
-      //grinchhit->SetData(0, fSource);
-      //grinchhit->SetData(1, 
-      int(T->Earm_GRINCH_hit_PMT->at(i)/5)-1;//);
-      // -1 is to range from 0 to 509 instead of 1 to 510 :/
-      //grinchhit->SetData(2, 
-      T->Earm_GRINCH_hit_Time_avg->at(i);//);
-      //grinchhit->SetData(3, 
-      T->Earm_GRINCH_hit_NumPhotoelectrons->at(i);//);
-      //fg4sbsHitData.push_back(grinchhit);
+      chan = int(T->Earm_GRINCH_hit_PMT->at(i)/5)-1;
+      t = T->Earm_GRINCH_hit_Time_avg->at(i);
+      Npe = T->Earm_GRINCH_hit_NumPhotoelectrons->at(i);
+      
+      pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[GRINCH_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[GRINCH_UNIQUE_DETID]->fThreshold, t, 1);
     }
     has_data = true;
   }
@@ -46,18 +46,12 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	// Evaluation of number of photoelectrons and time from energy deposit documented at:
 	// https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
-	// TODO: put that stuff in DB...
 	Npe = R->Poisson(1.0e7*T->Earm_BBHodoScint_hit_sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/1.03533)* 0.24);
 	t = T->Earm_BBHodoScint_hit_tavg->at(i)+(0.55+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/0.15;
-	//g4sbshitdata *hodopmthit = new g4sbshitdata(HODO_UNIQUE_DETID, 5);
-	//hodopmthit->SetData(0, fSource);
-	//hodopmthit->SetData(1, 
-	T->Earm_BBHodoScint_hit_cell->at(i)*2+j;//);
-	//hodopmthit->SetData(2, t);
-	//hodopmthit->SetData(3, Npe);
-	//hodopmthit->SetData(4, 
-	T->Earm_BBHodoScint_hit_sumedep->at(i);//);
-	//fg4sbsHitData.push_back(hodopmthit);
+	chan = T->Earm_BBHodoScint_hit_cell->at(i)*2+j;
+	//T->Earm_BBHodoScint_hit_sumedep->at(i);
+	
+	pmtdets[HODO_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[HODO_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[HODO_UNIQUE_DETID]->fThreshold, t, 1);
       }
     }
     has_data = true;
@@ -82,15 +76,10 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
 			   sin2thetaC/(1.-1./(n_lg*n_lg)) 
 			   );
 	t = T->Earm_BBPSTF1_hit_tavg->at(i)+R->Gaus(3.2-5.805*T->Earm_BBPSTF1_hit_zhit->at(i)-17.77*pow(T->Earm_BBPSTF1_hit_zhit->at(i), 2), 0.5);
-	//g4sbshitdata *bbpshit = new g4sbshitdata(BBPS_UNIQUE_DETID, 5);
-	//bbpshit->SetData(0, fSource);
-	//bbpshit->SetData(1, 
-	T->Earm_BBPSTF1_hit_cell->at(i);//);
-	//bbpshit->SetData(2, t);
-	//bbpshit->SetData(3, Npe);
-	//bbpshit->SetData(4, 
-	T->Earm_BBPSTF1_hit_sumedep->at(i);//);
-	//fg4sbsHitData.push_back(bbpshit);
+	chan = T->Earm_BBPSTF1_hit_cell->at(i);
+	//T->Earm_BBPSTF1_hit_sumedep->at(i);
+	
+	pmtdets[BBPS_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBPS_UNIQUE_DETID]->fRefPulse, Npe, 0, t, 1);
       }
     }
     has_data = true;
@@ -114,16 +103,11 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
 			   sin2thetaC/(1.-1./(n_lg*n_lg)) 
 			   );
 	t = T->Earm_BBSHTF1_hit_tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1_hit_zhit->at(i)-7.469*pow(T->Earm_BBSHTF1_hit_zhit->at(i), 2), 0.8);
-	//g4sbshitdata *bbshhit = new g4sbshitdata(BBSH_UNIQUE_DETID, 5);
-	//bbshhit->SetData(0, fSource);
-	//bbshhit->SetData(1, 
-	T->Earm_BBSHTF1_hit_cell->at(i);//);
-	//bbshhit->SetData(2, 0);
-	//bbshhit->SetData(2, t);
-	//bbshhit->SetData(3, Npe);
-	//bbshhit->SetData(4, 
-	T->Earm_BBSHTF1_hit_sumedep->at(i);//);
-	//fg4sbsHitData.push_back(bbshhit);
+	chan = T->Earm_BBSHTF1_hit_cell->at(i);
+	//T->Earm_BBSHTF1_hit_sumedep->at(i);
+	
+	
+	pmtdets[BBSH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBSH_UNIQUE_DETID]->fRefPulse, Npe, 0, t, 1);
       }
     }
     has_data = true;
@@ -131,14 +115,9 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
   
   if(T->Harm_HCalScint_hit_sumedep) {
     for(size_t k = 0; k < T->Harm_HCalScint_hit_sumedep->size(); k++) {
-      //g4sbshitdata *hcalscinthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
-      //hcalscinthit->SetData(0,fSource);
-      //hcalscinthit->SetData(1,
-      T->Harm_HCalScint_hit_cell->at(k);//);
-      //hcalscinthit->SetData(2,1); // data type 1 == sumedep
-      //hcalscinthit->SetData(3,T->Harm_HCalScint_hit_sumedep->at(k));
-      //fg4sbsHitData.push_back(hcalscinthit);
-
+      chan = T->Harm_HCalScint_hit_cell->at(k);
+      //T->Harm_HCalScint_hit_sumedep->at(k);
+      
       z_hit = -(T->Harm_HCalScint_hit_xhitg->at(k)-x_ref)*sin(theta_sbs)+(T->Harm_HCalScint_hit_zhitg->at(k)-z_ref)*cos(theta_sbs);
       
       // Evaluation of number of photoelectrons from energy deposit documented at:
@@ -149,17 +128,9 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R)
       t = R->Gaus(T->Harm_HCalScint_hit_tavg->at(k)+10.11, 1.912);
       
       sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
-      //for(int l = 0; l<Npe; l++){
       //Generate here,...
-      //g4sbshitdata *hcalpmthit = new g4sbshitdata(HCAL_UNIQUE_DETID,4);
-      //hcalpmthit->SetData(0,fSource);
-      //hcalpmthit->SetData(1,
-      T->Harm_HCalScint_hit_cell->at(k);//);
-      //hcalpmthit->SetData(2,0); // data type 0 == optical photon
-      //hcalpmthit->SetData(3,
-      R->Landau(t, sigma_tgen);//);
-      //fg4sbsHitData.push_back(hcalpmthit);
-      //}
+      //R->Landau(t, sigma_tgen);
+      
     }
     has_data = true;
   }

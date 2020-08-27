@@ -10,14 +10,13 @@
 class SBSDigGEMDet {
  public:
   SBSDigGEMDet();
-  SBSDigGEMDet(int nplanes, double* nstrips, int nsamp, double zsup_thr);
+  SBSDigGEMDet(UInt_t nplanes, double* nstrips, int nsamp, double zsup_thr);
   virtual ~SBSDigGEMDet();
   void Clear();
   
  private:
-  int fNPlanes;
+  UInt_t fNPlanes;
   std::map<int, SBSDigGEMPlane> GEMPlanes;
-  
 };
 
 #endif

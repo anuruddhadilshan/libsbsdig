@@ -11,13 +11,12 @@ SPEModel::SPEModel()
   fPulseHisto = new TH1D("fPulseHisto", "", 1000, -50, 50);
 }
 
-SPEModel::SPEModel(const char* detname, 
-		   double tau, double sigma, 
+SPEModel::SPEModel(double sigma, 
 		   double t0, double tmin, double tmax)
 {
   TF1 fFunc("fFunc", "landaun", tmin, tmax);
   const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
-  fPulseHisto = new TH1D(Form("fPulseHisto%s",detname), "", NbinsTotal, tmin, tmax);
+  fPulseHisto = new TH1D("fPulseHisto", "", NbinsTotal, tmin, tmax);
   double t_i;//, t_j;
   double ps_i;//, g_j;
   for(int i = 1; i<=NbinsTotal; i++){
@@ -25,8 +24,6 @@ SPEModel::SPEModel(const char* detname,
     ps_i = fFunc.Eval(t_i);
     fPulseHisto->Fill(t_i, ps_i);
   }
-  
-  cout << endl<< detname << " pulse histo built with address << " << fPulseHisto << endl;
 }
 
 SPEModel::~SPEModel()
@@ -287,7 +284,16 @@ void PMTSignal::Digitize()//TDigInfo diginfo, int chan)
   fSumEdep*=1.0e9;// store in eV.
 }
 
-void PMTSignal::Clear(Option_t*)
+void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
+{
+  fSampSize = sampsize;
+  fNSamps = round((tmax-tmin)/fSampSize);
+  fADCSamples = new double[fNSamps];
+  int Nsamps2 = round((tmax-tmin)*10);
+  fADCSamples = new double[Nsamps2];
+}
+
+void PMTSignal::Clear(bool dosamples)
 {
   //cout << " PMTSignal::Clear() " << endl;
   
@@ -299,6 +305,11 @@ void PMTSignal::Clear(Option_t*)
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  if(dosamples){
+    memset(fSamples, 0, fNSamps*sizeof(double));
+    memset(fADCSamples, 0, fNSamps*40*sizeof(double));
+  }
 }
 
 

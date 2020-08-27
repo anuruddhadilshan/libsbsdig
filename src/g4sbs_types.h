@@ -47,6 +47,7 @@
 #define PRPOLBS_GEM_UNIQUE_DETID 47
 #define PRPOLFS_GEM_UNIQUE_DETID 48
 
+/*
 enum exp_type{
   kNeutronExp, kGEp, kGEnRP, 
   kSIDIS, kA1n, kTDIS, kDVCS
@@ -57,6 +58,7 @@ enum det_type{
   kCher, kScint,
   kGEM
 };
+*/
 
 const std::string kProj_str[2] = {"x", "y"};
 
