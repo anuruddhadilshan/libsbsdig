@@ -16,6 +16,7 @@ SPEModel::SPEModel(UShort_t uniqueid, double sigma,
 		   double t0, double tmin, double tmax)
 {
   TF1 fFunc("fFunc", "landaun", tmin, tmax);
+  fFunc.SetParameters(1., t0, sigma);
   const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
   fPulseHisto = new TH1D(Form("fPulseHisto_%d", uniqueid), "", NbinsTotal, tmin, tmax);
   double t_i;//, t_j;
@@ -24,7 +25,9 @@ SPEModel::SPEModel(UShort_t uniqueid, double sigma,
     t_i = fPulseHisto->GetBinCenter(i+1);
     ps_i = fFunc.Eval(t_i);
     fPulseHisto->Fill(t_i, ps_i);
+    //cout << fPulseHisto->GetBinContent(i) << " ";
   }
+  //cout << endl;
 }
 
 SPEModel::~SPEModel()
@@ -43,12 +46,14 @@ bool SPEModel::PulseOverThr(double charge, double thr)
  
 bool SPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail)
 {
+  //cout << charge << " " << thr << endl;  
   if(!PulseOverThr(charge, thr)){
     t_lead = 1.0e38;
     t_trail = 1.0e38;
     return false;
   }else{
     double xmax = fPulseHisto->GetBinCenter(fPulseHisto->GetMaximumBin());
+    //cout << fPulseHisto->GetBinContent(1)<< " " << thr/charge << " " << fPulseHisto->GetBinContent(fPulseHisto->GetNbinsX())<< endl; 
     if(fPulseHisto->GetBinContent(1)<thr/charge){
       t_lead = GetHistoX(thr/charge, fPulseHisto->GetBinLowEdge(1), xmax);
     }else{
@@ -115,6 +120,8 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
   bool goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  
+  //cout << t_lead << " " << t_trail << endl;
   
   t_lead+=evttime;
   t_trail+=evttime;
@@ -239,10 +246,10 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   double t_lead, t_trail;
   bool goodtime = false;//model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   if(fNSamps){
-    fSamples[0]+= f1->Eval(fTmin+(0.5)*fSampSize)*fSampSize;
-    //Evaluate this function might be a bit of a time drain!!!
+    fSamples[0]+= f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
+    //Evaluate this function might be a bit of a time drain!
     for(int i = 1; i<fNSamps; i++){
-      fSamples[i]+= f1->Eval(fTmin+(i+0.5)*fSampSize)*fSampSize;
+      fSamples[i]+= f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
       //if(i>0){
       if(fSamples[i-1]<=thr && thr<fSamples[i]){
 	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
@@ -409,7 +416,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
   if(fNSamps){
     fADC = 0;
     for(int i = 0; i<fNADCSamps; i++){
-      for(int j = 0; j<10; j++)fADCSamples[i]+=fSamples[i*10+j];
+      for(int j = 0; j<10; j++)fADCSamples[i]+=fSamples[i*10+j]*fSampSize;//renormalize the sample for the integration;
       fADCSamples[i]*=ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
       fADC+=fADCSamples[i];
@@ -436,7 +443,6 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_BBHodo_dighit_chan->push_back(chan);
     T->Earm_BBHodo_dighit_adc->push_back(fADC);
     if(fTDCs.size()){
-      cout << "hou" << endl;
       T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[0]);
       T->Earm_BBHodo_dighit_tdc_t->push_back(fTDCs[1]);
     }else{

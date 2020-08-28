@@ -51,7 +51,6 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	t = T->Earm_BBHodoScint_hit_tavg->at(i)+(0.55+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/0.15-pmtdets[HODO_UNIQUE_DETID]->fTrigOffset;
 	chan = T->Earm_BBHodoScint_hit_cell->at(i)*2+j;
 	//T->Earm_BBHodoScint_hit_sumedep->at(i);
-	
 	if(chan>pmtdets[HODO_UNIQUE_DETID]->fNChan)cout << chan << endl;
 	pmtdets[HODO_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[HODO_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[HODO_UNIQUE_DETID]->fThreshold, t, signal);
       }

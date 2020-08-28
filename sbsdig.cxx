@@ -27,6 +27,7 @@
 #endif
 
 #define qe 1.602e-19
+#define spe_unit 1.0e-9
 
 #define NPlanes_BBGEM 32 // modules...
 #define NChan_BBPS 52
@@ -169,7 +170,7 @@ int main(int argc, char** argv){
   grinch->fPedestal = ped_GRINCH;
   grinch->fPedSigma = pedsigma_GRINCH;
   grinch->fTrigOffset = trigoffset_GRINCH;
-  grinch->fThreshold = threshold_GRINCH/ROimpedance;
+  grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
   grinch->fGateWidth = gatewidth_PMT;
   grinch->fADCconv = ADCconv_GRINCH;
   grinch->fADCbits = ADCbits;
@@ -180,7 +181,7 @@ int main(int argc, char** argv){
   bbhodo->fPedestal = ped_BBHODO;
   bbhodo->fPedSigma = pedsigma_BBHODO;
   bbhodo->fTrigOffset = trigoffset_BBHODO;
-  bbhodo->fThreshold = threshold_BBHODO/ROimpedance;
+  bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
   bbhodo->fGateWidth = gatewidth_PMT;
   bbhodo->fADCconv = ADCconv_BBHODO;
   bbhodo->fADCbits = ADCbits;
@@ -191,7 +192,7 @@ int main(int argc, char** argv){
   hcal->fPedestal = ped_HCAL;
   hcal->fPedSigma = pedsigma_HCAL;
   hcal->fTrigOffset = trigoffset_HCAL;
-  hcal->fThreshold = threshold_HCAL/ROimpedance;
+  hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
   hcal->fGateWidth = gatewidth_PMT-20.;
   hcal->fADCconv = ADCconv_HCAL;
   hcal->fADCbits = ADCbits;
