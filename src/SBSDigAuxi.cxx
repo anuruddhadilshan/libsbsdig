@@ -197,3 +197,84 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   
   return has_data;
 }
+
+
+bool FillDigTree(gmn_tree* T, 
+		 std::map<int, SBSDigPMTDet*> pmtdets, 
+		 std::map<int, SBSDigGEMDet*> gemdets)
+{
+  T->Earm_BBPS_dighit_nchan = pmtdets[BBPS_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Earm_BBPS_dighit_nchan; i++){
+    T->Earm_BBPS_dighit_chan->push_back(i);
+    T->Earm_BBPS_dighit_adc->push_back(pmtdets[BBPS_UNIQUE_DETID]->PMTmap[i].ADC());
+  }
+  
+  T->Earm_BBSH_dighit_nchan = pmtdets[BBSH_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Earm_BBSH_dighit_nchan; i++){
+    T->Earm_BBSH_dighit_chan->push_back(i);
+    T->Earm_BBSH_dighit_adc->push_back(pmtdets[BBSH_UNIQUE_DETID]->PMTmap[i].ADC());
+  }
+  
+  T->Earm_BBHodo_dighit_nchan = pmtdets[HODO_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Earm_BBHodo_dighit_nchan; i++){
+    T->Earm_BBHodo_dighit_chan->push_back(i);
+    T->Earm_BBHodo_dighit_adc->push_back(pmtdets[HODO_UNIQUE_DETID]->PMTmap[i].ADC());
+    if(pmtdets[HODO_UNIQUE_DETID]->PMTmap[i].TDCSize()>0){
+      T->Earm_BBHodo_dighit_tdc_l->push_back(pmtdets[HODO_UNIQUE_DETID]->PMTmap[i].LeadTime(0));
+      T->Earm_BBHodo_dighit_tdc_t->push_back(pmtdets[HODO_UNIQUE_DETID]->PMTmap[i].TrailTime(0));
+    }
+  }
+  
+  T->Earm_GRINCH_dighit_nchan = pmtdets[GRINCH_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Earm_GRINCH_dighit_nchan; i++){
+    T->Earm_GRINCH_dighit_chan->push_back(i);
+    T->Earm_GRINCH_dighit_adc->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].ADC());
+    if(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].TDCSize()>0){
+      T->Earm_GRINCH_dighit_tdc_l->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].LeadTime(0));
+      T->Earm_GRINCH_dighit_tdc_t->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].TrailTime(0));
+    }
+  }
+  
+  T->Earm_GRINCH_dighit_nchan = pmtdets[GRINCH_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Earm_GRINCH_dighit_nchan; i++){
+    T->Earm_GRINCH_dighit_chan->push_back(i);
+    T->Earm_GRINCH_dighit_adc->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].ADC());
+    if(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].TDCSize()>0){
+      T->Earm_GRINCH_dighit_tdc_l->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].LeadTime(0));
+      T->Earm_GRINCH_dighit_tdc_t->push_back(pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[i].TrailTime(0));
+    }
+  }
+  
+  T->Harm_HCal_dighit_nchan = pmtdets[HCAL_UNIQUE_DETID]->fNChan;
+  for(int i = 0; i<T->Harm_HCal_dighit_nchan; i++){
+    T->Harm_HCal_dighit_chan->push_back(i);
+    T->Harm_HCal_dighit_adc_0->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(0));
+    T->Harm_HCal_dighit_adc_1->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(1));
+    T->Harm_HCal_dighit_adc_2->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(2));
+    T->Harm_HCal_dighit_adc_3->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(3));
+    T->Harm_HCal_dighit_adc_4->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(4));
+    T->Harm_HCal_dighit_adc_5->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(5));
+    T->Harm_HCal_dighit_adc_6->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(6));
+    T->Harm_HCal_dighit_adc_7->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(7));
+    T->Harm_HCal_dighit_adc_8->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(8));
+    T->Harm_HCal_dighit_adc_9->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(9));
+     T->Harm_HCal_dighit_adc_10->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(10));
+     T->Harm_HCal_dighit_adc_11->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(11));
+     T->Harm_HCal_dighit_adc_12->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(12));
+     T->Harm_HCal_dighit_adc_13->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(13));
+     T->Harm_HCal_dighit_adc_14->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(14));
+     T->Harm_HCal_dighit_adc_15->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(15));
+     T->Harm_HCal_dighit_adc_16->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(16));
+     T->Harm_HCal_dighit_adc_17->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(17));
+     T->Harm_HCal_dighit_adc_18->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(18));
+     T->Harm_HCal_dighit_adc_19->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].ADCSamples(19));
+    
+    if(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].TDCSize()>0){
+      T->Harm_HCal_dighit_tdc->push_back(pmtdets[HCAL_UNIQUE_DETID]->PMTmap[i].LeadTime(0));
+    }
+  }
+  
+  
+  
+  return true;
+}

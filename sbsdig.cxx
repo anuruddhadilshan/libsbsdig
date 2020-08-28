@@ -338,6 +338,9 @@ int main(int argc, char** argv){
       bbhodo->Digitize(R);
       hcal->Digitize(R);
       
+      //How come this function is so taxing in time???
+      FillDigTree(T_s, PMTdetectors, GEMdetectors);
+
       T_s->FillDigBranches();
       //T_s->fChain->Fill();
     }// end loop on signal events 
