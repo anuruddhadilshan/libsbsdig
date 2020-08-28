@@ -298,7 +298,7 @@ int main(int argc, char** argv){
       T_s->GetEntry(ev_s);
       
       // unfold the thing then... but where???
-      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors);
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors, 0);
       if(!has_data)continue;
       
       // loop here for background
@@ -312,7 +312,7 @@ int main(int argc, char** argv){
 	    nbkgd++;
 	    if(nbkgd>=Nbkgd)break;
 	  }
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors);
+	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors, 1);
 	  //if(treenum)
 	}
 	/*
@@ -331,6 +331,13 @@ int main(int argc, char** argv){
 	}// end loop on background files
 	*/
       }//end if Nbkgd>0
+      
+      bbps->Digitize(R);
+      bbsh->Digitize(R);
+      grinch->Digitize(R);
+      bbhodo->Digitize(R);
+      hcal->Digitize(R);
+      
       T_s->FillDigBranches();
       //T_s->fChain->Fill();
     }// end loop on signal events 

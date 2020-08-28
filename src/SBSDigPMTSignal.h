@@ -8,6 +8,7 @@
 //#include "g4sbs_types.h"
 #include "TF1.h"
 #include "TH1D.h"
+#include "TRandom3.h"
 
 //
 // classes for signal digitization
@@ -36,7 +37,7 @@ class PMTSignal {
   PMTSignal(double npechargeconv);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
   void Fill(int npe, double thr, double evttime, double sigmatime, int signal);
-  void Digitize();
+  void Digitize(TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits);
   void Clear(bool dosamples = false);
   ~PMTSignal(){Clear();};
   

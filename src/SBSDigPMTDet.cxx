@@ -26,6 +26,11 @@ SBSDigPMTDet::~SBSDigPMTDet()
   
 }
 
+void SBSDigPMTDet::Digitize(TRandom3* R)
+{
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits);
+}
+  
 void SBSDigPMTDet::SetSamples(double sampsize)
 {
   for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2, fGateWidth/2, sampsize);

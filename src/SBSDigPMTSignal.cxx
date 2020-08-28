@@ -239,6 +239,7 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   bool goodtime = false;//model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   if(fNSamps){
     fSamples[0]+= f1->Eval(fTmin+(0.5)*fSampSize)*fSampSize;
+    //Evaluate this function might be a bit of a time drain!!!
     for(int i = 1; i<fNSamps; i++){
       fSamples[i]+= f1->Eval(fTmin+(i+0.5)*fSampSize)*fSampSize;
       //if(i>0){
@@ -366,77 +367,67 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
 
 
 
-void PMTSignal::Digitize()//TDigInfo diginfo, int chan)
+void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits)//TDigInfo diginfo, int chan)
 {
-  /*
   if(fNpe<=0){
-    fADC = R->Gaus(diginfo.Pedestal(chan), diginfo.PedestalNoise(chan));
+    fADC = R->Gaus(ped, ped_noise);
     return;
   }
-    
-#if DEBUG>0
-  cout << "Charge (C) " << Charge() << " (fC) " << Charge()*1.0e15 << ", ADC conversion (fC/ch) " << diginfo.ADCConversion();
-#endif
-  
-  fADC = TMath::Nint(Charge()*1.0e15/diginfo.ADCConversion()+R->Gaus(diginfo.Pedestal(chan), diginfo.PedestalNoise(chan)));
-  //if ADC value bigger than number of ADC bits, ADC saturates
-  if( fADC>UInt_t(TMath::Nint( TMath::Power(2, diginfo.ADCBits()) )) ){
-    fADC = TMath::Nint( TMath::Power(2, diginfo.ADCBits()) );
+
+  fADC = TMath::Nint(Charge()*1.0e15/ADCconv+R->Gaus(ped, ped_noise));
+
+  if( fADC>UInt_t(TMath::Nint( TMath::Power(2, ADCbits) )) ){
+    fADC = TMath::Nint( TMath::Power(2, ADCbits) );
   }
-  //cout << "PMTSignal::Digitize():  " << fLeadTimes.size() << " - " << fTrailTimes.size() << endl;
+  Int_t tdc_value;
   
-#if DEBUG>0
-  cout << " => ADC = " << fADC << endl;
-#endif
-  
-  UInt_t tdc_value;
-  
-  // For the sake of going forward, we assume that the signal is the first entry of each vector
-  fTDCData.time.clear();
-  if(fLeadTimes.size() && fTrailTimes.size()){
+  if(fLeadTimes.size()){
     for(size_t i = 0; i<fLeadTimes.size(); i++){
-#if DEBUG>0
-      cout << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) 
-	   << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
-#endif
+      //cout << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) 
+      //   << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
       // trim "all" bits that are above the number of TDC bits - a couple to speed it up
       // (since TDC have a revolving clock, as far as I understand)
       // let's use an arbitrary reference time offset of 1us before the trigger
-      tdc_value = TMath::Nint((fLeadTimes.at(i)+1.e3)/diginfo.TDCConversion());
-      for(int j = 30; j>=diginfo.TDCBits(); j--){
+      tdc_value = TMath::Nint((fLeadTimes.at(i)+1.e3)/TDCconv);
+      for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
       tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (31) );
-      fTDCData.time.push_back(tdc_value);
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
       // also mark the traling time with setting bin 31 to 1 // need to reconvert then
-      tdc_value = TMath::Nint((fTrailTimes.at(i)+1.e3)/diginfo.TDCConversion());
-      for(int j = 30; j>=diginfo.TDCBits(); j--){
+      tdc_value = TMath::Nint((fTrailTimes.at(i)+1.e3)/TDCconv);
+      for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
       tdc_value ^= ( -1 ^ tdc_value) & ( 1 << (31) );
       fTDCs.push_back(tdc_value);
-      fTDCData.time.push_back(tdc_value);
-      
-#if DEBUG>0
-      cout << " fTDCs.at(0) " << fTDCs.at(0) << " fTDCs.at(1) " << fTDCs.at(1) << endl;
-#endif
     }
   }
-  */
-  fSumEdep*=1.0e9;// store in eV.
+  
+  if(fNSamps){
+    fADC = 0;
+    for(int i = 0; i<fNADCSamps; i++){
+      for(int j = 0; j<10; j++)fADCSamples[i]+=fSamples[i*10+j];
+      fADCSamples[i]*=ADCconv;
+      fADCSamples[i]+=R->Gaus(ped, ped_noise);
+      fADC+=fADCSamples[i];
+    }
+  }
+  //fSumEdep*=1.0e9;// store in eV.
 }
 
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
 {
   fTmin = tmin;
   fADCSampSize = sampsize;
-  fSampSize = sampsize*2.5;
+  fSampSize = sampsize/10;
   fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
   fADCSamples = new double[fNADCSamps];
   fSamples = new double[fNSamps];
+  
+  //cout << fNADCSamps << " " << fNSamps << " " << fADCSampsSize << " " << fSampSize << endl;
   
   memset(fSamples, 0, fNSamps*sizeof(double));
   memset(fADCSamples, 0, fNADCSamps*sizeof(double));
@@ -458,7 +449,7 @@ void PMTSignal::Clear(bool dosamples)
   
   if(dosamples){
     memset(fSamples, 0, fNSamps*sizeof(double));
-    memset(fADCSamples, 0, fNSamps*sizeof(double));
+    memset(fADCSamples, 0, fNADCSamps*sizeof(double));
   }
 }
 

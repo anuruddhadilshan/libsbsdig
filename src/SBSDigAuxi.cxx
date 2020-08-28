@@ -7,7 +7,7 @@ using namespace std;
 
 bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R, 
 		std::map<int, SBSDigPMTDet*> pmtdets, 
-		std::map<int, SBSDigGEMDet*> gemdets)
+		std::map<int, SBSDigGEMDet*> gemdets, int signal)
 {
   //for the time being
   const double m_e = 511.e-6;
@@ -35,7 +35,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       t = T->Earm_GRINCH_hit_Time_avg->at(i)+pmtdets[GRINCH_UNIQUE_DETID]->fTrigOffset;
       Npe = T->Earm_GRINCH_hit_NumPhotoelectrons->at(i);
       
-      pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[GRINCH_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[GRINCH_UNIQUE_DETID]->fThreshold, t, 1);
+      if(chan>pmtdets[GRINCH_UNIQUE_DETID]->fNChan)cout << chan << endl;
+      pmtdets[GRINCH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[GRINCH_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[GRINCH_UNIQUE_DETID]->fThreshold, t, signal);
     }
     has_data = true;
   }
@@ -51,7 +52,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	chan = T->Earm_BBHodoScint_hit_cell->at(i)*2+j;
 	//T->Earm_BBHodoScint_hit_sumedep->at(i);
 	
-	pmtdets[HODO_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[HODO_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[HODO_UNIQUE_DETID]->fThreshold, t, 1);
+	if(chan>pmtdets[HODO_UNIQUE_DETID]->fNChan)cout << chan << endl;
+	pmtdets[HODO_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[HODO_UNIQUE_DETID]->fRefPulse, Npe, pmtdets[HODO_UNIQUE_DETID]->fThreshold, t, signal);
       }
     }
     has_data = true;
@@ -79,7 +81,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	chan = T->Earm_BBPSTF1_hit_cell->at(i);
 	//T->Earm_BBPSTF1_hit_sumedep->at(i);
 	
-	pmtdets[BBPS_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBPS_UNIQUE_DETID]->fRefPulse, Npe, 0, t, 1);
+	if(chan>pmtdets[BBPS_UNIQUE_DETID]->fNChan)cout << chan << endl;
+	pmtdets[BBPS_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBPS_UNIQUE_DETID]->fRefPulse, Npe, 0, t, signal);
       }
     }
     has_data = true;
@@ -106,7 +109,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	chan = T->Earm_BBSHTF1_hit_cell->at(i);
 	//T->Earm_BBSHTF1_hit_sumedep->at(i);
 		
-	pmtdets[BBSH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBSH_UNIQUE_DETID]->fRefPulse, Npe, 0, t, 1);
+	if(chan>pmtdets[BBSH_UNIQUE_DETID]->fNChan)cout << chan << endl;
+	pmtdets[BBSH_UNIQUE_DETID]->PMTmap[chan].Fill(pmtdets[BBSH_UNIQUE_DETID]->fRefPulse, Npe, 0, t, signal);
       }
     }
     has_data = true;
@@ -129,8 +133,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
       //Generate here,...
       //R->Landau(t, sigma_tgen);
-      
-      pmtdets[HCAL_UNIQUE_DETID]->PMTmap[chan].Fill(Npe, pmtdets[HCAL_UNIQUE_DETID]->fThreshold, t, sigma_tgen, 1);
+      if(chan>pmtdets[HCAL_UNIQUE_DETID]->fNChan)cout << chan << endl;
+      pmtdets[HCAL_UNIQUE_DETID]->PMTmap[chan].Fill(Npe, pmtdets[HCAL_UNIQUE_DETID]->fThreshold, t, sigma_tgen, signal);
     }
     has_data = true;
   }

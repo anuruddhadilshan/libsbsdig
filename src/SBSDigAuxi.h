@@ -14,7 +14,7 @@
 
 bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R, 
 		std::map<int, SBSDigPMTDet*> pmtdets, 
-		std::map<int, SBSDigGEMDet*> gemdets);
+		std::map<int, SBSDigGEMDet*> gemdets, int signal);
 
 /*
 */
