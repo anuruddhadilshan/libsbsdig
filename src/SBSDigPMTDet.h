@@ -10,14 +10,15 @@
 class SBSDigPMTDet {
  public:
   SBSDigPMTDet();
-  SBSDigPMTDet(UInt_t nchan);
-  SBSDigPMTDet(UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth);
+  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan);
+  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth);
   virtual ~SBSDigPMTDet();
   void Clear(bool dosamples = false);
-  void SetSamples();
+  void SetSamples(double sampsize);
   
   //private:
   UInt_t fNChan;
+  UShort_t fUniqueID;
   std::map<int, PMTSignal> PMTmap;
   SPEModel* fRefPulse;
   

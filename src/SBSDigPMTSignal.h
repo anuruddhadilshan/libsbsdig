@@ -16,7 +16,7 @@
 class SPEModel {
  public:
   SPEModel();
-  SPEModel(double sigma, double t0 = 0, double tmin = -50, double tmax = +50);
+  SPEModel(UShort_t uniqueid, double sigma, double t0 = 0, double tmin = -50, double tmax = +50);
   virtual ~SPEModel();
   double Eval(double t){return fPulseHisto->Interpolate(t);};
   bool   PulseOverThr(double charge, double thr);
@@ -78,12 +78,14 @@ class PMTSignal {
   //TRndmManager* fRN;
 
   //let's try something for HCal
+  TF1* f1;
+  int fNADCSamps;
   int fNSamps;
   double fSampSize;
+  double fADCSampSize;
+  double fTmin;
   double* fSamples;
   double* fADCSamples;
 };
-
-
 
 #endif

@@ -8,17 +8,17 @@ SBSDigPMTDet::SBSDigPMTDet()
 {
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UInt_t nchan):
-  fNChan(nchan)
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan):
+  fUniqueID(uniqueid), fNChan(nchan)
 {
   for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):
-  fNChan(nchan)
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):
+  fUniqueID(uniqueid), fNChan(nchan)
 {
   for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal(NpeChargeConv);
-  fRefPulse = new SPEModel(sigmapulse, 0, -gatewidth/2., gatewidth/2.);
+  fRefPulse = new SPEModel(fUniqueID, sigmapulse, 0, -gatewidth/2., gatewidth/2.);
 }
 
 SBSDigPMTDet::~SBSDigPMTDet()
@@ -26,9 +26,9 @@ SBSDigPMTDet::~SBSDigPMTDet()
   
 }
 
-void SBSDigPMTDet::SetSamples()
+void SBSDigPMTDet::SetSamples(double sampsize)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2, fGateWidth/2, 4.0);
+  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2, fGateWidth/2, sampsize);
 }
 
 void SBSDigPMTDet::Clear(bool dosamples)

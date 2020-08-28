@@ -11,12 +11,12 @@ SPEModel::SPEModel()
   fPulseHisto = new TH1D("fPulseHisto", "", 1000, -50, 50);
 }
 
-SPEModel::SPEModel(double sigma, 
+SPEModel::SPEModel(UShort_t uniqueid, double sigma, 
 		   double t0, double tmin, double tmax)
 {
   TF1 fFunc("fFunc", "landaun", tmin, tmax);
   const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
-  fPulseHisto = new TH1D("fPulseHisto", "", NbinsTotal, tmin, tmax);
+  fPulseHisto = new TH1D(Form("fPulseHisto_%d", uniqueid), "", NbinsTotal, tmin, tmax);
   double t_i;//, t_j;
   double ps_i;//, g_j;
   for(int i = 1; i<=NbinsTotal; i++){
@@ -84,21 +84,24 @@ double SPEModel::GetHistoX(double y, double x1, double x2)
 // Class PMTSignal
 //
 PMTSignal::PMTSignal()
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fNADCSamps(0), fNSamps(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
   
+  f1 = 0;
   //R = TRndmManager::GetInstance();
 }
 
 PMTSignal::PMTSignal(double npechargeconv)
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fNADCSamps(0), fNSamps(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  f1 = 0;
 }
 
 void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int signal)
@@ -222,6 +225,147 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   }//end if(t_lead && t_trail<30)
 }
 
+void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int signal)
+{
+  if(signal==0)fEventTime = evttime;
+  fNpe+= npe;
+  //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
+  
+  if(evttime>=fTmin+fNSamps*fSampSize)return;
+  
+  f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
+  //determine lead and trail times
+  double t_lead, t_trail;
+  bool goodtime = false;//model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  if(fNSamps){
+    fSamples[0]+= f1->Eval(fTmin+(0.5)*fSampSize)*fSampSize;
+    for(int i = 1; i<fNSamps; i++){
+      fSamples[i]+= f1->Eval(fTmin+(i+0.5)*fSampSize)*fSampSize;
+      //if(i>0){
+      if(fSamples[i-1]<=thr && thr<fSamples[i]){
+	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
+	goodtime = true;
+      }
+      if(fSamples[i-1]>=thr && thr>fSamples[i]){
+	t_trail = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
+	goodtime = true;
+      }
+    }
+  }
+    
+  // find the lead and trail time for *this* pulse, not the total pulse
+  //t_lead+=evttime;
+  //t_trail+=evttime;
+  
+  if(goodtime){
+    //Filter here the lead and trail times
+    if(fLeadTimes.size()>0){
+      // Check if the lead and trail times are inside an existing lead time- trail time pair
+      // we assume here that fLeadTimes and fTrailTimes are same size 
+      // *if we do things correctly, that should be the case*
+      // we shall keep lead-trail times pair in timing order
+      // we neglect pulse overlaps ftm.
+      if(fLeadTimes.size()!=fTrailTimes.size()){
+	cout << " B - Warning: size of lead times container: " << fLeadTimes.size() 
+	     << " != size of trail times container: " << fTrailTimes.size() << endl;
+      }
+      
+      for(size_t i = 0; i<fLeadTimes.size(); i++){
+	// possibility of the current pair straddling with others.... :/
+	// treat those separately to simplify...
+	// tL < tT_i-1 < tL_i < tT
+	if(i>0){
+	  if(t_lead < fTrailTimes.at(i-1) && fLeadTimes.at(i) < t_trail){
+	    //do necessary substitutions first, then erase
+	    // tL < tL_i-1 => tL *replaces* tL_i-1
+	    if(t_lead < fLeadTimes.at(i-1)){
+	      fLeadTimes.erase(fLeadTimes.begin()+i-1);
+	      fLeadTimes.insert(fLeadTimes.begin()+i-1, t_lead);
+	    }
+	    // tT_i < tT => tT *replaces* tT_i
+	    if(fTrailTimes.at(i) < t_trail){
+	      fTrailTimes.erase(fTrailTimes.begin()+i);
+	      fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	    }
+	    fLeadTimes.erase(fLeadTimes.begin()+i);
+	    fTrailTimes.erase(fTrailTimes.begin()+i-1);
+	    break;
+	  }
+	}//end if(i>0)
+	// tL < tT_i < tL_i+1 < tT
+	if(i<fLeadTimes.size()-1){
+	  if(t_lead < fTrailTimes.at(i) && fLeadTimes.at(i+1) < t_trail){
+	    //do necessary substitutions first, then erase
+	    // tL < tL_i => tL *replaces* tL_i
+	    if(t_lead < fLeadTimes.at(i)){
+	      fLeadTimes.erase(fLeadTimes.begin()+i);
+	      fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	    }
+	    // tT_i+1 < tT => tT *replaces* tT_i+1
+	    if(fTrailTimes.at(i+1) < t_trail){
+	      fTrailTimes.erase(fTrailTimes.begin()+i+1);
+	      fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	    }
+	    fLeadTimes.erase(fLeadTimes.begin()+i+1);
+	    fTrailTimes.erase(fTrailTimes.begin()+i);
+	    break;
+	  }
+	}//end if(i<fLeadTimes.size()-1)
+	
+	// if not, 6 cases to consider:
+	// tL < tT < tL_i < tT_i => both inserted *before* existing pair 
+	if(t_trail < fLeadTimes.at(i)){
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail); 
+	  break;
+	}
+	// tL < tL_i < tT < tT_i => tL *replaces* tL_i
+	if(t_lead < fLeadTimes.at(i) && fLeadTimes.at(i) < t_trail && t_trail < fTrailTimes.at(i)){
+	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  break;
+	}
+	// tL_i < tL < tT < tT_i => tL *replaces* tL_i AND tT *replaces* tT_i
+	if(t_lead < fLeadTimes.at(i) && fTrailTimes.at(i) < t_trail){
+	  fLeadTimes.erase(fLeadTimes.begin()+i);
+	  fLeadTimes.insert(fLeadTimes.begin()+i, t_lead);
+	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	  break;
+	}
+	if(fLeadTimes.at(i) < t_lead && t_trail < fTrailTimes.at(i)){
+	  break;
+	}
+	if(fLeadTimes.at(i) < t_lead && t_lead < fTrailTimes.at(i) && fTrailTimes.at(i) < t_trail){
+	  fTrailTimes.erase(fTrailTimes.begin()+i);
+	  fTrailTimes.insert(fTrailTimes.begin()+i, t_trail);
+	}
+	if(fTrailTimes.at(i) < t_lead){
+	  fLeadTimes.insert(fLeadTimes.begin()+i+1, t_lead);
+	  fTrailTimes.insert(fTrailTimes.begin()+i+1, t_trail);
+	  break;
+	}
+	if(fLeadTimes.size()!=fTrailTimes.size()){
+	  cout << " A - Warning: size of lead times container: " << fLeadTimes.size() 
+	       << " != size of trail times container: " << fTrailTimes.size() << endl;
+	}
+	if(i>=fLeadTimes.size())cout << "Warning: i = " << i << " >= size of containers = " << fLeadTimes.size() << endl;
+      }
+    }else{
+      //of course, if initial size was 0, just psuh it back
+      //hopefully it will be the case most of the time
+      fLeadTimes.push_back(t_lead);
+      fTrailTimes.push_back(t_trail);
+    }
+    if(fLeadTimes.size()!=fTrailTimes.size()){
+      cout << " A - Warning: size of lead times container: " << fLeadTimes.size() 
+	   << " != size of trail times container: " << fTrailTimes.size() << endl;
+    }
+  }//end if(t_lead && t_trail<30)
+}
+
+
+
 void PMTSignal::Digitize()//TDigInfo diginfo, int chan)
 {
   /*
@@ -286,11 +430,17 @@ void PMTSignal::Digitize()//TDigInfo diginfo, int chan)
 
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
 {
-  fSampSize = sampsize;
+  fTmin = tmin;
+  fADCSampSize = sampsize;
+  fSampSize = sampsize*2.5;
+  fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
-  fADCSamples = new double[fNSamps];
-  int Nsamps2 = round((tmax-tmin)*10);
-  fADCSamples = new double[Nsamps2];
+  fADCSamples = new double[fNADCSamps];
+  fSamples = new double[fNSamps];
+  
+  memset(fSamples, 0, fNSamps*sizeof(double));
+  memset(fADCSamples, 0, fNADCSamps*sizeof(double));
+  f1 = new TF1("f1", "landaun", tmin, tmax);
 }
 
 void PMTSignal::Clear(bool dosamples)
@@ -308,7 +458,7 @@ void PMTSignal::Clear(bool dosamples)
   
   if(dosamples){
     memset(fSamples, 0, fNSamps*sizeof(double));
-    memset(fADCSamples, 0, fNSamps*40*sizeof(double));
+    memset(fADCSamples, 0, fNSamps*sizeof(double));
   }
 }
 

@@ -41,6 +41,8 @@
 #define gatewidth_PMT 100 //ns
 #define gatewidth_GEM 400 //ns
 
+#define FADC_sampsize 4.0 //ns
+
 //DB???
 #define sigmapulse_BBPSSH 3.0 //ns / 1.2 of 
 #define sigmapulse_BBHODO 1.6 //ns
@@ -82,7 +84,7 @@
 #define trigoffset_HCAL 81.0 //ns
 #define threshold_HCAL 3.e-3 //V
 #define ADCconv_HCAL 1.0 //fC/ch //??
-#define TDCconv_HCAL 0.5 //ns/channel
+#define TDCconv_HCAL 0.12 //ns/channel
 #define TDCbits_HCAL 16 //ns/channel
 
 
@@ -140,12 +142,12 @@ int main(int argc, char** argv){
   //double NpeChargeConv
   
   //Declaring detectors
-  SBSDigGEMDet* bbgem = new SBSDigGEMDet(NPlanes_BBGEM, nstrips_bbgem, 6, 240);
-  SBSDigPMTDet* bbps = new SBSDigPMTDet(NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_PMT);
-  SBSDigPMTDet* bbsh = new SBSDigPMTDet(NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_PMT);
-  SBSDigPMTDet* grinch = new SBSDigPMTDet(NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_PMT);
-  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_PMT);
-  SBSDigPMTDet* hcal = new SBSDigPMTDet(NChan_HCAL);
+  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, 6, 240);
+  SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_PMT);
+  SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_PMT);
+  SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_PMT);
+  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_PMT);
+  SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
   
   bbps->fGain = gain_BBPS;
   bbps->fPedestal = ped_BBPS;
@@ -167,7 +169,7 @@ int main(int argc, char** argv){
   grinch->fPedestal = ped_GRINCH;
   grinch->fPedSigma = pedsigma_GRINCH;
   grinch->fTrigOffset = trigoffset_GRINCH;
-  grinch->fThreshold = threshold_GRINCH;
+  grinch->fThreshold = threshold_GRINCH/ROimpedance;
   grinch->fGateWidth = gatewidth_PMT;
   grinch->fADCconv = ADCconv_GRINCH;
   grinch->fADCbits = ADCbits;
@@ -178,7 +180,7 @@ int main(int argc, char** argv){
   bbhodo->fPedestal = ped_BBHODO;
   bbhodo->fPedSigma = pedsigma_BBHODO;
   bbhodo->fTrigOffset = trigoffset_BBHODO;
-  bbhodo->fThreshold = threshold_BBHODO;
+  bbhodo->fThreshold = threshold_BBHODO/ROimpedance;
   bbhodo->fGateWidth = gatewidth_PMT;
   bbhodo->fADCconv = ADCconv_BBHODO;
   bbhodo->fADCbits = ADCbits;
@@ -189,13 +191,13 @@ int main(int argc, char** argv){
   hcal->fPedestal = ped_HCAL;
   hcal->fPedSigma = pedsigma_HCAL;
   hcal->fTrigOffset = trigoffset_HCAL;
-  hcal->fThreshold = threshold_HCAL;
+  hcal->fThreshold = threshold_HCAL/ROimpedance;
   hcal->fGateWidth = gatewidth_PMT-20.;
   hcal->fADCconv = ADCconv_HCAL;
   hcal->fADCbits = ADCbits;
   hcal->fTDCconv = TDCconv_HCAL;
   hcal->fTDCbits = TDCbits_HCAL; 
-  hcal->SetSamples();
+  hcal->SetSamples(FADC_sampsize);
   
   std::map<int, SBSDigPMTDet*> PMTdetectors;
   PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
@@ -288,7 +290,7 @@ int main(int argc, char** argv){
       bbsh->Clear();
       grinch->Clear();
       bbhodo->Clear();
-      hcal->Clear();
+      hcal->Clear(true);
       
       has_data = false;
       
