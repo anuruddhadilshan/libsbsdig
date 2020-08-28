@@ -1,5 +1,6 @@
 #include "SBSDigPMTSignal.h"
 #include "TMath.h"
+#include "g4sbs_types.h"
 
 using namespace std;
 
@@ -367,10 +368,10 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
 
 
 
-void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits)//TDigInfo diginfo, int chan)
+void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits)//TDigInfo diginfo, int chan)
 {
   if(fNpe<=0){
-    fADC = R->Gaus(ped, ped_noise);
+    //fADC = R->Gaus(ped, ped_noise);
     return;
   }
 
@@ -379,16 +380,15 @@ void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCco
   if( fADC>UInt_t(TMath::Nint( TMath::Power(2, ADCbits) )) ){
     fADC = TMath::Nint( TMath::Power(2, ADCbits) );
   }
-  Int_t tdc_value;
   
+  Int_t tdc_value;
   if(fLeadTimes.size()){
     for(size_t i = 0; i<fLeadTimes.size(); i++){
-      //cout << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) 
-      //   << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
+      //cout << "detid " << detid << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
       // trim "all" bits that are above the number of TDC bits - a couple to speed it up
       // (since TDC have a revolving clock, as far as I understand)
       // let's use an arbitrary reference time offset of 1us before the trigger
-      tdc_value = TMath::Nint((fLeadTimes.at(i)+1.e3)/TDCconv);
+      tdc_value = TMath::Nint((fLeadTimes.at(i))/TDCconv);
       for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
@@ -396,7 +396,7 @@ void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCco
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
       // also mark the traling time with setting bin 31 to 1 // need to reconvert then
-      tdc_value = TMath::Nint((fTrailTimes.at(i)+1.e3)/TDCconv);
+      tdc_value = TMath::Nint((fTrailTimes.at(i))/TDCconv);
       for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
@@ -404,6 +404,7 @@ void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCco
       fTDCs.push_back(tdc_value);
     }
   }
+  //cout << "detid " << detid << " TDC size " << fTDCs.size() << endl;
   
   if(fNSamps){
     fADC = 0;
@@ -415,6 +416,76 @@ void PMTSignal::Digitize(TRandom3* R, double ped, double ped_noise, double ADCco
     }
   }
   //fSumEdep*=1.0e9;// store in eV.
+  
+  //Fill in directly (hoping it takes less time...)
+  //switch(detid){
+  //case(BBPS_UNIQUE_DETID):
+  //}
+  if(detid==BBPS_UNIQUE_DETID){
+    T->Earm_BBPS_dighit_nchan++;
+    T->Earm_BBPS_dighit_chan->push_back(chan);
+    T->Earm_BBPS_dighit_adc->push_back(fADC);
+  }
+  if(detid==BBSH_UNIQUE_DETID){
+    T->Earm_BBSH_dighit_nchan++;
+    T->Earm_BBSH_dighit_chan->push_back(chan);
+    T->Earm_BBSH_dighit_adc->push_back(fADC);
+  }
+  if(detid==HODO_UNIQUE_DETID){
+    T->Earm_BBHodo_dighit_nchan++;
+    T->Earm_BBHodo_dighit_chan->push_back(chan);
+    T->Earm_BBHodo_dighit_adc->push_back(fADC);
+    if(fTDCs.size()){
+      cout << "hou" << endl;
+      T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[0]);
+      T->Earm_BBHodo_dighit_tdc_t->push_back(fTDCs[1]);
+    }else{
+      T->Earm_BBHodo_dighit_tdc_l->push_back(-1000000);
+      T->Earm_BBHodo_dighit_tdc_t->push_back(-1000000);
+    }
+  }
+  if(detid==GRINCH_UNIQUE_DETID){
+    T->Earm_GRINCH_dighit_nchan++;
+    T->Earm_GRINCH_dighit_chan->push_back(chan);
+    T->Earm_GRINCH_dighit_adc->push_back(fADC);
+    if(fTDCs.size()){
+      T->Earm_GRINCH_dighit_tdc_l->push_back(fTDCs[0]);
+      T->Earm_GRINCH_dighit_tdc_t->push_back(fTDCs[1]);
+    }else{
+      T->Earm_GRINCH_dighit_tdc_l->push_back(-1000000);
+      T->Earm_GRINCH_dighit_tdc_t->push_back(-1000000);
+    }
+  }
+  if(detid==HCAL_UNIQUE_DETID){
+    T->Harm_HCal_dighit_nchan++;
+    T->Harm_HCal_dighit_chan->push_back(chan);
+    T->Harm_HCal_dighit_adc_0->push_back(fADCSamples[0]);
+    T->Harm_HCal_dighit_adc_1->push_back(fADCSamples[1]);
+    T->Harm_HCal_dighit_adc_2->push_back(fADCSamples[2]);
+    T->Harm_HCal_dighit_adc_3->push_back(fADCSamples[3]);
+    T->Harm_HCal_dighit_adc_4->push_back(fADCSamples[4]);
+    T->Harm_HCal_dighit_adc_5->push_back(fADCSamples[5]);
+    T->Harm_HCal_dighit_adc_6->push_back(fADCSamples[6]);
+    T->Harm_HCal_dighit_adc_7->push_back(fADCSamples[7]);
+    T->Harm_HCal_dighit_adc_8->push_back(fADCSamples[8]);
+    T->Harm_HCal_dighit_adc_9->push_back(fADCSamples[9]);
+    T->Harm_HCal_dighit_adc_10->push_back(fADCSamples[10]);
+    T->Harm_HCal_dighit_adc_11->push_back(fADCSamples[11]);
+    T->Harm_HCal_dighit_adc_12->push_back(fADCSamples[12]);
+    T->Harm_HCal_dighit_adc_13->push_back(fADCSamples[13]);
+    T->Harm_HCal_dighit_adc_14->push_back(fADCSamples[14]);
+    T->Harm_HCal_dighit_adc_15->push_back(fADCSamples[15]);
+    T->Harm_HCal_dighit_adc_16->push_back(fADCSamples[16]);
+    T->Harm_HCal_dighit_adc_17->push_back(fADCSamples[17]);
+    T->Harm_HCal_dighit_adc_18->push_back(fADCSamples[18]);
+    T->Harm_HCal_dighit_adc_19->push_back(fADCSamples[19]);
+    if(fTDCs.size()){
+      T->Harm_HCal_dighit_tdc->push_back(fTDCs[0]);
+    }else{
+      T->Harm_HCal_dighit_tdc->push_back(-1000000);
+    }
+  }
+
 }
 
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)

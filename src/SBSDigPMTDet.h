@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "gmn_tree.h"
 #include "SBSDigPMTSignal.h"
 
 //________________________________
@@ -13,7 +14,7 @@ class SBSDigPMTDet {
   SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan);
   SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth);
   virtual ~SBSDigPMTDet();
-  void Digitize(TRandom3* R);
+  void Digitize(gmn_tree* T, TRandom3* R);
   void Clear(bool dosamples = false);
   void SetSamples(double sampsize);
   

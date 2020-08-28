@@ -5,10 +5,10 @@
 #include <vector>
 #include <map>
 #include <TROOT.h>
-//#include "g4sbs_types.h"
 #include "TF1.h"
 #include "TH1D.h"
 #include "TRandom3.h"
+#include "gmn_tree.h"
 
 //
 // classes for signal digitization
@@ -37,7 +37,7 @@ class PMTSignal {
   PMTSignal(double npechargeconv);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
   void Fill(int npe, double thr, double evttime, double sigmatime, int signal);
-  void Digitize(TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits);
+  void Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits);
   void Clear(bool dosamples = false);
   ~PMTSignal(){Clear();};
   

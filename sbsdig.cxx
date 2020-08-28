@@ -332,14 +332,15 @@ int main(int argc, char** argv){
 	*/
       }//end if Nbkgd>0
       
-      bbps->Digitize(R);
-      bbsh->Digitize(R);
-      grinch->Digitize(R);
-      bbhodo->Digitize(R);
-      hcal->Digitize(R);
+      bbps->Digitize(T_s,R);
+      bbsh->Digitize(T_s,R);
+      grinch->Digitize(T_s,R);
+      bbhodo->Digitize(T_s,R);
+      hcal->Digitize(T_s,R);
       
-      //How come this function is so taxing in time???
-      FillDigTree(T_s, PMTdetectors, GEMdetectors);
+      //How come this function is so taxing in time??? 
+      // Answer in the function... hope we've found a workaround
+      //FillDigTree(T_s, PMTdetectors, GEMdetectors);
 
       T_s->FillDigBranches();
       //T_s->fChain->Fill();
