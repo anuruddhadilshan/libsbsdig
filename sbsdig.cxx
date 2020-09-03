@@ -200,6 +200,20 @@ int main(int argc, char** argv){
   hcal->fTDCbits = TDCbits_HCAL; 
   hcal->SetSamples(FADC_sampsize);
   
+  std::vector<SBSDigPMTDet*> PMTdetectors;
+  std::vector<int> detmap;
+  std::vector<SBSDigGEMDet*> GEMdetectors;
+  std::vector<int> gemmap;
+  
+  //ordered by increasing uinque id
+  PMTdetectors.push_back(hcal);  detmap.push_back(HCAL_UNIQUE_DETID);
+  PMTdetectors.push_back(bbps);  detmap.push_back(BBPS_UNIQUE_DETID);
+  PMTdetectors.push_back(bbsh);  detmap.push_back(BBSH_UNIQUE_DETID);
+  PMTdetectors.push_back(grinch);  detmap.push_back(GRINCH_UNIQUE_DETID);
+  PMTdetectors.push_back(bbhodo);  detmap.push_back(HODO_UNIQUE_DETID);
+
+  GEMdetectors.push_back(bbgem); gemmap.push_back(BBGEM_UNIQUE_DETID);
+  /*  
   std::map<int, SBSDigPMTDet*> PMTdetectors;
   PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
   PMTdetectors[HODO_UNIQUE_DETID] = bbhodo;
@@ -208,6 +222,7 @@ int main(int argc, char** argv){
   PMTdetectors[GRINCH_UNIQUE_DETID] = grinch;
   std::map<int, SBSDigGEMDet*> GEMdetectors;
   GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
+  */
   
   // build signal chain
   ifstream sig_inputfile(inputsigfile);
@@ -237,9 +252,9 @@ int main(int argc, char** argv){
     }
     //C_b->Draw(">>eblist",global_cut);
   }
-  TObjArray *fileElements_b=C_b->GetListOfFiles();
-  TIter next_b(fileElements_b);
-  TChainElement *chEl_b=0;
+  //TObjArray *fileElements_b=C_b->GetListOfFiles();
+  //TIter next_b(fileElements_b);
+  //TChainElement *chEl_b=0;
   
   G4SBSRunData* run_data;
   
@@ -299,7 +314,7 @@ int main(int argc, char** argv){
       T_s->GetEntry(ev_s);
       
       // unfold the thing then... but where???
-      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors, 0);
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, 0);
       if(!has_data)continue;
       
       // loop here for background
@@ -313,7 +328,7 @@ int main(int argc, char** argv){
 	    nbkgd++;
 	    if(nbkgd>=Nbkgd)break;
 	  }
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, GEMdetectors, 1);
+	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, 1);
 	  //if(treenum)
 	}
 	/*

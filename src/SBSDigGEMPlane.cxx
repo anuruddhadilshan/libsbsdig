@@ -16,6 +16,7 @@ SBSDigGEMPlane::SBSDigGEMPlane(int nstrips, int nsamples, double thr) :
 {
   fStripADCsum = new UInt_t[fNStrips];
   fStripADC = new UShort_t[fNStrips*fNSamples];
+  Clear();
 }
 
 SBSDigGEMPlane::~SBSDigGEMPlane()
@@ -28,6 +29,7 @@ void SBSDigGEMPlane::Clear()
 {
   memset(fStripADCsum, 0, fNStrips*sizeof(UInt_t));
   memset(fStripADC, 0, fNStrips*fNSamples*sizeof(UShort_t));
+  fGEMhits.clear();
 }
 
 //ClassImp(SBSDigGEMPlane);

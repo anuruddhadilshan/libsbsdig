@@ -14,10 +14,11 @@ class SBSDigGEMDet {
   virtual ~SBSDigGEMDet();
   void Clear();
   
- private:
+  //private:
   UShort_t fUniqueID;
   UInt_t fNPlanes;
-  std::map<int, SBSDigGEMPlane> GEMPlanes;
+  //std::map<int, SBSDigGEMPlane> GEMPlanes;
+  std::vector<SBSDigGEMPlane> GEMPlanes;
 };
 
 #endif

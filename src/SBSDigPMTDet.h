@@ -21,7 +21,8 @@ class SBSDigPMTDet {
   //private:
   UInt_t fNChan;
   UShort_t fUniqueID;
-  std::map<int, PMTSignal> PMTmap;
+  //std::map<int, PMTSignal> PMTmap;
+  std::vector<PMTSignal> PMTmap;
   SPEModel* fRefPulse;
   
   double fGain;

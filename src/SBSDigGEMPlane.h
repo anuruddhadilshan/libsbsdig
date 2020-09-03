@@ -20,6 +20,20 @@ class SBSDigGEMPlane {
   UShort_t GetADC(int strip, int samp){return fStripADC[strip*fNSamples+samp];};
   UInt_t GetADCSum(int strip){return fStripADCsum[strip];};
   
+  struct gemhit{
+    double edep;
+    double tmin;
+    double tmax;
+    double xin;
+    double yin;
+    double zin;
+    double xout;
+    double yout;
+    double zout;
+  };
+
+  std::vector<gemhit> fGEMhits;
+  
  private:
   // ADC sampled value of strip array of each axis
   Int_t fNStrips;
@@ -27,6 +41,7 @@ class SBSDigGEMPlane {
   Double_t fStripThr;//threshold for ADC sum
   UInt_t* fStripADCsum;
   UShort_t* fStripADC;
+  
   
   //ClassDef(SBSDigGEMPlane, 1)
 };

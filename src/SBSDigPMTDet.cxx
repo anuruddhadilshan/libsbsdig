@@ -11,13 +11,15 @@ SBSDigPMTDet::SBSDigPMTDet()
 SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan):
   fUniqueID(uniqueid), fNChan(nchan)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
+  //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal());
 }
 
 SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):
   fUniqueID(uniqueid), fNChan(nchan)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal(NpeChargeConv);
+  //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal(NpeChargeConv);
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv));
   fRefPulse = new SPEModel(fUniqueID, sigmapulse, 0, -gatewidth/2., gatewidth/2.);
 }
 
