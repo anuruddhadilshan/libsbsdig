@@ -152,6 +152,9 @@ int main(int argc, char** argv){
 				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0};
+  for(int i = 0; i<NPlanes_BBGEM; i++){
+    angle_bbgem[i]*= TMath::DegToRad();
+  }
   
   double triggeroffset[NPlanes_BBGEM/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
 					   122., 122., 122., 122.5, 122.5, 122.5,  

@@ -125,7 +125,7 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     // |<-------fRoutZ---------|--->|
     // |      |<-lion*vseg->   |    |
     // |      |             <--LL-->|
-
+    
     Double_t LD = TMath::Abs(xi.Z() - fEntranceRef);//usually should be 0,
                                             //unless particle is produced inside the gas layer
 
@@ -133,7 +133,7 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     Double_t ttime = LL/fGasDriftVelocity; // traveling time from the drift gap to the readout
     
     //cout << " rout Z  (mm?) " << fRoutZ << ", LD (mm?) " << LD << " vseg Z (mm?) " << vseg.Z()  << endl;
-    //  cout << " travelling length (mm?) " << LL << ", travelling time:  " <<  ttime << endl;
+    //cout << " travelling length (mm?) " << LL << ", travelling time:  " <<  ttime << endl;
     
     fRTime0 = TMath::Min(ttime, fRTime0); // minimum traveling time [s]
 
@@ -321,10 +321,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     Double_t ys0 = x0*sin(roangle) + y0*cos(roangle);
     Double_t xs1 = x1*cos(roangle) - y1*sin(roangle); 
     Double_t ys1 = y1*sin(roangle) + y1*cos(roangle);
-// #if DBG_AVA > 0
+#if DBG_AVA > 0
 //     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
 //     cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
-// #endif
+#endif
 
     Int_t iL = max(0, TMath::FloorNint((xs0*1.e-3+dx/2.)/fStripPitch) );
     iL = min(iL, nstrips);
@@ -400,15 +400,26 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 #endif
     
     Int_t sumASize = nx * ny;
-    //  cout<<nx<<" : "<<ny<<" Nstrips: "<<nstrips<<endl;
-    Double_t fSumA[sumASize];
-    for(Int_t i=0; i<sumASize; i++){
-      fSumA[i] = 0;
-    }
+#if DBG_AVA > 0
+    cout<<nx<<" : "<<ny<< ", nx*ny " << sumASize <<" Nstrips: "<<nstrips<<endl;
+#endif
+    fSumA.resize(sumASize);
+    memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
+    //Double_t fSumA[sumASize];
+#if DBG_AVA > 0
+    cout<<nx<<" : "<<ny<<" Nstrips: "<<nstrips<<endl;
+#endif
+    //memset (fSumA, 0, sumASize * sizeof (Double_t));
+    //for(Int_t i=0; i<sumASize; i++){
+    //fSumA[i] = 0;
+    //}
     
     //    fSumA.resize(nx*ny);
     //memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
-
+#if DBG_AVA > 0
+    cout << fRNIon << " " << fRIon.size() << endl;
+#endif
+    
     for (UInt_t i = 0; i < fRNIon; i++){
       Double_t frxs = fRIon[i].X*cos(roangle) - fRIon[i].Y*sin(roangle);
       Double_t frys = fRIon[i].X*sin(roangle) + fRIon[i].Y*cos(roangle);
@@ -420,9 +431,9 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       Int_t iy = (frys-yb) / ybw;
       Int_t dx = fRIon[i].SNorm / xbw  + 1;
       Int_t dy = fRIon[i].SNorm / ybw  + 1;
-// #if DBG_AVA > 1
-//       cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
-// #endif
+#if DBG_AVA > 1
+       cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
+#endif
 
       //
       // NL change:
@@ -521,15 +532,16 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				     us,
 				     fPulseShapeTau);
 	//fPulseShapeTau0, fPulseShapeTau1 );
-
+	
 	Short_t dadc = ADCConvert( pulse,
 				   0,// fADCoffset,
 				   fADCgain,
 				   fADCbits );
 #if DBG_AVA > 0
-	cout << "strip number " << j << ", sampling number " << b << ", t0 = " << t0 << endl
-	     << "pulse = " << pulse << ", (val - off)/gain = " 
-	     << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
+	if(pulse>0)
+	  cout << "strip number " << j << ", sampling number " << b << ", t0 = " << t0 << endl
+	       << "pulse = " << pulse << ", (val - off)/gain = " 
+	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
 #endif
 	//fDADC[b] = dadc;
 	gemdet->GEMPlanes[ic*2+ipl].AddADC(j, b, dadc);
@@ -590,10 +602,10 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     // if(gdata.GetParticleType(ih)!=1){cout<<"x"<<endl;getchar();}
 
     // These vectors are in the spec frame, we need them in the chamber frame
-    TVector3 vv1(gemdet->fGEMhits[ih].xin*1.e3-gemdet->GEMPlanes[igem*2].Xoffset(), 
+    TVector3 vv1(gemdet->fGEMhits[ih].xin*1.e3,
 		 gemdet->fGEMhits[ih].yin*1.e3, 
 		 gemdet->fGEMhits[ih].zin*1.e3);
-    TVector3 vv2(gemdet->fGEMhits[ih].xout*1.e3-gemdet->GEMPlanes[igem*2].Xoffset(),  
+    TVector3 vv2(gemdet->fGEMhits[ih].xout*1.e3,
 		 gemdet->fGEMhits[ih].yout*1.e3, 
 		 gemdet->fGEMhits[ih].zout*1.e3);
     
@@ -603,7 +615,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       continue;
     }
     IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
-  
+    
     // Get Signal Start Time 'time_zero'
     if( is_background ) {
       // For background data, uniformly randomize event time between
@@ -619,19 +631,22 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     //  cout<<event_time<<"  "<<ih<<endl;
     // Adding drift time and trigger_jitter
     time_zero = event_time - fTriggerOffset[igem] + fRTime0*1e9 - trigger_jitter;
-   
+    
+    //cout << time_zero << " " << fTimeZero << " " << gemdet->fGEMhits[ih].t 
+    //<< " " << trigger_jitter << " " << fRTime0*1e9 << endl;
+    
 #if DBG_AVA > 0
     if(time_zero>200.0)
       cout << "time_zero " << time_zero 
 	   << "; evt time " << event_time 
-	   << "; hit time " << gdata.GetHitTime(ih)
+	   << "; hit time " << gemdet->fGEMhits[ih].t
 	   << "; drift time " << fRTime0*1e9
 	   << endl;
 #endif
     if (fRNIon > 0) {
-
+      //cout << "AvaModel..." << endl;
       AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
-
+      //cout << "Done!" << endl;
     }
     
   }//end loop on hits
@@ -661,14 +676,13 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 			       gmn_tree* T)
 {
   double commonmode = 0;
-  
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       if(fDoCommonMode)
 	if(j%128==0 && apv_ctr<fCommonModeArray.size())
 	  commonmode = fCommonModeArray[apv_ctr++];
-      
+
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
 	for(int k = 0; k<6; k++){
 	  gemdet->GEMPlanes[j].AddADC(j, k, R->Gaus(commonmode, fPulseNoiseSigma));
@@ -677,19 +691,126 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	}
 	if(fDoZeroSup){
 	  if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
-	    //T->Earm_BBGEM_1x_dighit_strip = j;
-	    //T->Earm_BBGEM_1x_dighit_adc_0 = gemdet->GEMPlanes[j].GetADC(j, 0);
-	    //T->Earm_BBGEM_1x_dighit_adc_0 = gemdet->GEMPlanes[j].GetADC(j, 0);
+	    FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
 	  }
 	}else{
-	    
+	   FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
 	}
 	
       }
     }
+  }  
+}
+
+void SBSDigGEMSimDig::FillBBGEMTree(SBSDigGEMPlane pl, gmn_tree* T, int j)
+{
+  short strip;
+  if(pl.Module()<3){
+    strip = j+pl.GetNStrips()*pl.Module();
+    if(pl.ROangle()==0){
+      T->Earm_BBGEM_1x_dighit_nstrips++;
+      T->Earm_BBGEM_1x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_1x_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_1x_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_1x_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_1x_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_1x_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_1x_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_1y_dighit_nstrips++;
+      T->Earm_BBGEM_1y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_1y_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_1y_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_1y_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_1y_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_1y_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_1y_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }
+  }else if(pl.Module()<6){
+    strip = j+pl.GetNStrips()*(pl.Module()-3);
+    if(pl.ROangle()==0){
+      T->Earm_BBGEM_2x_dighit_nstrips++;
+      T->Earm_BBGEM_2x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_2x_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_2x_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_2x_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_2x_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_2x_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_2x_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_2y_dighit_nstrips++;
+      T->Earm_BBGEM_2y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_2y_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_2y_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_2y_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_2y_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_2y_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_2y_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }
+  }else if(pl.Module()<9){
+    strip = j+pl.GetNStrips()*(pl.Module()-6);
+    if(pl.ROangle()==0){
+      T->Earm_BBGEM_3x_dighit_nstrips++;
+      T->Earm_BBGEM_3x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_3x_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_3x_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_3x_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_3x_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_3x_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_3x_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_3y_dighit_nstrips++;
+      T->Earm_BBGEM_3y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_3y_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_3y_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_3y_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_3y_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_3y_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_3y_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }
+  }else if(pl.Module()<12){
+    strip = j+pl.GetNStrips()*(pl.Module()-9);
+    if(pl.ROangle()==0){
+      T->Earm_BBGEM_4x_dighit_nstrips++;
+      T->Earm_BBGEM_4x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_4x_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_4x_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_4x_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_4x_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_4x_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_4x_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_4y_dighit_nstrips++;
+      T->Earm_BBGEM_4y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_4y_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_4y_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_4y_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_4y_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_4y_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_4y_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }
+  }else{
+    strip = j+pl.GetNStrips()*(pl.Module()-12);
+    if(pl.ROangle()==0){
+      T->Earm_BBGEM_5x_dighit_nstrips++;
+      T->Earm_BBGEM_5x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_5x_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_5x_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_5x_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_5x_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_5x_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_5x_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_5y_dighit_nstrips++;
+      T->Earm_BBGEM_5y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_5y_dighit_adc_0->push_back(pl.GetADC(strip, 0));
+      T->Earm_BBGEM_5y_dighit_adc_1->push_back(pl.GetADC(strip, 1));
+      T->Earm_BBGEM_5y_dighit_adc_2->push_back(pl.GetADC(strip, 2));
+      T->Earm_BBGEM_5y_dighit_adc_3->push_back(pl.GetADC(strip, 3));
+      T->Earm_BBGEM_5y_dighit_adc_4->push_back(pl.GetADC(strip, 4));
+      T->Earm_BBGEM_5y_dighit_adc_5->push_back(pl.GetADC(strip, 5));
+    }
   }
-  
-  
   
 }
 

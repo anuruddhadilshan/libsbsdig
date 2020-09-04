@@ -175,16 +175,18 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  mod = (T->Earm_BBGEM_hit_plane->at(k)-1)*3 + floor((T->Earm_BBGEM_hit_xin->at(k)+0.768)/0.512);
 	}
 	hit.module = mod; 
-	hit.edep = T->Earm_BBGEM_hit_edep->at(k)*1.0e3;
+	hit.edep = T->Earm_BBGEM_hit_edep->at(k)*1.0e9;//eV! not MeV!!!!
 	//hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
 	//hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
 	hit.t = T->Earm_BBGEM_hit_t->at(k);
-	hit.xin = T->Earm_BBGEM_hit_xin->at(k);
+	hit.xin = T->Earm_BBGEM_hit_xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yin = T->Earm_BBGEM_hit_yin->at(k);
-	hit.zin = T->Earm_BBGEM_hit_zin->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1];
-	hit.xout = T->Earm_BBGEM_hit_xout->at(k);
+	hit.zin = T->Earm_BBGEM_hit_zin->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1]+0.8031825;
+	hit.xout = T->Earm_BBGEM_hit_xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yout = T->Earm_BBGEM_hit_yout->at(k);
-	hit.zout = T->Earm_BBGEM_hit_zout->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1];
+	hit.zout = T->Earm_BBGEM_hit_zout->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1]+0.8031825;
+	
+	//cout << mod << " " << hit.xin << " " << hit.xout << endl;
 	gemdets[idet]->fGEMhits.push_back(hit);
 	//gemhit->SetData(0,fSource);
 	//gemhit->SetData(1,	T->Earm_BBGEM_hit_plane->at(k);//);

@@ -13,6 +13,7 @@
 #include <vector>
 
 class SBSDigGEMDet;
+class SBSDigGEMPlane;
 class gmn_tree;
 
 class SBSDigGEMSimDig {
@@ -27,6 +28,7 @@ class SBSDigGEMSimDig {
   Int_t Digitize (SBSDigGEMDet* gemdet,
 		  TRandom3* R);
   void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
+  void FillBBGEMTree(SBSDigGEMPlane pl, gmn_tree* T, int j);
   
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
@@ -60,7 +62,7 @@ class SBSDigGEMSimDig {
   Double_t fRTime0;
   Double_t fTimeZero;
   
-  //std::vector<Double_t> fSumA;
+  std::vector<Double_t> fSumA;
   //std::vector<Short_t>  fDADC;
 
   //zero suppression and common mode

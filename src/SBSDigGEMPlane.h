@@ -11,12 +11,13 @@
 class SBSDigGEMPlane {
  public:
   SBSDigGEMPlane();
-  SBSDigGEMPlane(int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
+  SBSDigGEMPlane(short mod, int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
   virtual ~SBSDigGEMPlane();
   void Clear();
   
-  //void SetStripThreshold(double thr){StripThr = ;};
+  //void SetStripThreshold(double thr){Striphr = ;};
 
+  Short_t Module(){return fModule;};
   Double_t dX(){return fdX;};
   Double_t Xoffset(){return fXoffset;};
   Double_t ROangle(){return fROangle;};
@@ -34,6 +35,7 @@ class SBSDigGEMPlane {
   
  private:
   // ADC sampled value of strip array of each axis
+  Short_t fModule;
   Int_t fNStrips;
   Int_t fNSamples;
   Double_t fStripThr;//threshold for ADC sum

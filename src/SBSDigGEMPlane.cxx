@@ -11,9 +11,10 @@ SBSDigGEMPlane::SBSDigGEMPlane() :
 {
 }
 
-SBSDigGEMPlane::SBSDigGEMPlane(int nstrips, int nsamples, double thr, double offset, double roangle) :
+SBSDigGEMPlane::SBSDigGEMPlane(short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
   fNStrips(nstrips), fNSamples(nsamples), fXoffset(offset), fStripThr(thr), fROangle(roangle)
 {
+  fModule = mod;
   fdX = fNStrips*4.e-4;
   
   fStripADCsum = new UInt_t[fNStrips];
