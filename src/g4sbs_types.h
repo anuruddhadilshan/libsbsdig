@@ -15,12 +15,8 @@
 
 #define qe 1.602e-19
 #define spe_unit 1.0e-9 //to convert ns to s...
-
-#define NBANKS 1
-
-// Tag numbers associated in the GEMC banks
-
-#define __GENERATED_SIZE 7
+#define m_e 511.e-6
+#define n_lg 1.68
 
 // List of detector unique IDs: 
 // by (proposed) convention: DetUniqueID = DetType*10+DetID
@@ -61,5 +57,6 @@ enum det_type{
 */
 
 const std::string kProj_str[2] = {"x", "y"};
+const double bbgem_z[5] = {0.85, 1.0, 1.15, 1.30, 2.33224};
 
 #endif//__GEMC_TYPES_H

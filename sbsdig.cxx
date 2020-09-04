@@ -21,6 +21,7 @@
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
 #include "SBSDigGEMDet.h"
+#include "SBSDigGEMSimDig.h"
 
 #ifdef __APPLE__
 #include "unistd.h"
@@ -139,11 +140,31 @@ int main(int argc, char** argv){
 					 1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1536, 1280, 1536, 
 					 1280, 1536, 1280, 1536};
+  double offset_bbgem[NPlanes_BBGEM] = {-0.512, 0., 0., 0., 0.512, 0., 
+					-0.512, 0., 0., 0., 0.512, 0., 
+					-0.512, 0., 0., 0., 0.512, 0., 
+					-0.512, 0., 0., 0., 0.512, 0., 
+					-0.768, 0., -0.256, 0., 
+					 0.256, 0.,  0.768, 0.};
+  double angle_bbgem[NPlanes_BBGEM] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+				       0.0, 90.0, 0.0, 90.0, 
+				       0.0, 90.0, 0.0, 90.0};
   
+  double triggeroffset[NPlanes_BBGEM/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
+					   122., 122., 122., 122.5, 122.5, 122.5,  
+					   126., 126., 126., 126.};
+  
+  double commonmode_array[1] = {1500.};
+    
   //double NpeChargeConv
   
   //Declaring detectors
-  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, 6, 240);
+  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, angle_bbgem, 6, 240.);
+  SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset, 240., 1, commonmode_array);
+  
   SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_PMT);
   SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_PMT);
   SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_PMT);
@@ -353,6 +374,8 @@ int main(int argc, char** argv){
       grinch->Digitize(T_s,R);
       bbhodo->Digitize(T_s,R);
       hcal->Digitize(T_s,R);
+      gemdig->Digitize(bbgem, R);
+      gemdig->CheckOut(bbgem, R, T_s);
       
       //How come this function is so taxing in time??? 
       // Answer in the function... hope we've found a workaround

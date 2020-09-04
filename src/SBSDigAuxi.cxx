@@ -14,10 +14,6 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 		//std::map<int, SBSDigGEMDet*> gemdets, 
 		int signal)
 {
-  //for the time being
-  const double m_e = 511.e-6;
-  const double n_lg = 1.68;
-  
   bool has_data = false;
   
   int Npe;
@@ -32,6 +28,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   double sin2thetaC;
   
   int chan;
+  int mod;
   
   int idet = 0;
   //ordering by increasing unique det ID
@@ -168,17 +165,27 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   if(idet>=0 && T->Earm_BBGEM_hit_nhits){
     for(int k = 0; k<T->Earm_BBGEM_hit_nhits; k++){
       if(T->Earm_BBGEM_hit_edep->at(k)>0){
-	SBSDigGEMPlane::gemhit hit; 
+	SBSDigGEMDet::gemhit hit; 
+	hit.source = signal;
+	if(T->Earm_BBGEM_hit_plane->at(k)==5){
+	  if(fabs(T->Earm_BBGEM_hit_xin->at(k))>=1.024)continue;
+	  mod = 12 + floor((T->Earm_BBGEM_hit_xin->at(k)+1.024)/0.512);
+	}else{
+	  if(fabs(T->Earm_BBGEM_hit_xin->at(k))>=0.768)continue;
+	  mod = (T->Earm_BBGEM_hit_plane->at(k)-1)*3 + floor((T->Earm_BBGEM_hit_xin->at(k)+0.768)/0.512);
+	}
+	hit.module = mod; 
 	hit.edep = T->Earm_BBGEM_hit_edep->at(k)*1.0e3;
-	hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
-	hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
+	//hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
+	//hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
+	hit.t = T->Earm_BBGEM_hit_t->at(k);
 	hit.xin = T->Earm_BBGEM_hit_xin->at(k);
 	hit.yin = T->Earm_BBGEM_hit_yin->at(k);
-	hit.zin = T->Earm_BBGEM_hit_zin->at(k);
+	hit.zin = T->Earm_BBGEM_hit_zin->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1];
 	hit.xout = T->Earm_BBGEM_hit_xout->at(k);
 	hit.yout = T->Earm_BBGEM_hit_yout->at(k);
-	hit.zout = T->Earm_BBGEM_hit_zout->at(k);
-	gemdets[idet]->GEMPlanes[T->Earm_BBGEM_hit_plane->at(k)-1].fGEMhits.push_back(hit);
+	hit.zout = T->Earm_BBGEM_hit_zout->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1];
+	gemdets[idet]->fGEMhits.push_back(hit);
 	//gemhit->SetData(0,fSource);
 	//gemhit->SetData(1,	T->Earm_BBGEM_hit_plane->at(k);//);
 	//gemhit->SetData(2,T->Earm_BBGEM_hit_strip->at(k));

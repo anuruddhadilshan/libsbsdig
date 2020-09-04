@@ -11,28 +11,26 @@
 class SBSDigGEMPlane {
  public:
   SBSDigGEMPlane();
-  SBSDigGEMPlane(int nstrips, int nsamples = 6, double thr = 100);
+  SBSDigGEMPlane(int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
   virtual ~SBSDigGEMPlane();
   void Clear();
   
   //void SetStripThreshold(double thr){StripThr = ;};
-  
+
+  Double_t dX(){return fdX;};
+  Double_t Xoffset(){return fXoffset;};
+  Double_t ROangle(){return fROangle;};
+  Int_t GetNStrips(){return fNStrips;};
   UShort_t GetADC(int strip, int samp){return fStripADC[strip*fNSamples+samp];};
   UInt_t GetADCSum(int strip){return fStripADCsum[strip];};
-  
-  struct gemhit{
-    double edep;
-    double tmin;
-    double tmax;
-    double xin;
-    double yin;
-    double zin;
-    double xout;
-    double yout;
-    double zout;
+  void SetADC(int strip, int samp, int adc){
+    fStripADCsum[strip]+= adc-fStripADC[strip*fNSamples+samp];
+    fStripADC[strip*fNSamples+samp] = adc;
   };
-
-  std::vector<gemhit> fGEMhits;
+  void AddADC(int strip, int samp, int adc){
+    fStripADC[strip*fNSamples+samp]+=adc;
+    fStripADCsum[strip]+=adc;
+  };
   
  private:
   // ADC sampled value of strip array of each axis
@@ -41,8 +39,9 @@ class SBSDigGEMPlane {
   Double_t fStripThr;//threshold for ADC sum
   UInt_t* fStripADCsum;
   UShort_t* fStripADC;
-  
-  
+  double fdX;
+  double fXoffset;
+  double fROangle;
   //ClassDef(SBSDigGEMPlane, 1)
 };
 #endif
