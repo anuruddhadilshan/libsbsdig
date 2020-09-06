@@ -154,13 +154,14 @@ int main(int argc, char** argv){
 				       0.0, 90.0, 0.0, 90.0};
   for(int i = 0; i<NPlanes_BBGEM; i++){
     angle_bbgem[i]*= TMath::DegToRad();
-  }
+    //cout << nstrips_bbgem[i] << " ";
+  }//cout << endl;
   
   double triggeroffset[NPlanes_BBGEM/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
 					   122., 122., 122., 122.5, 122.5, 122.5,  
 					   126., 126., 126., 126.};
   
-  double commonmode_array[1] = {1500.};
+  double commonmode_array[1] = {0.};
     
   //double NpeChargeConv
   
@@ -296,7 +297,9 @@ int main(int argc, char** argv){
   
   int i_fs = 0;
   bool has_data;
-
+  
+  double timeZero;
+  
   T_b = new gmn_tree(C_b);
   ev_b = 0;
   
@@ -324,8 +327,13 @@ int main(int argc, char** argv){
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
       if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
-
+      
+      timeZero = R->Gaus(0.0, TriggerJitter);
+      
       bbgem->Clear();
+      //for(int i = 0; i<NPlanes_BBGEM; i++){
+      //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
+      //}cout << endl;
       bbps->Clear();
       bbsh->Clear();
       grinch->Clear();
@@ -338,7 +346,7 @@ int main(int argc, char** argv){
       T_s->GetEntry(ev_s);
       
       // unfold the thing then... but where???
-      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, 0);
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 0);
       if(!has_data)continue;
       
       // loop here for background
@@ -352,7 +360,9 @@ int main(int argc, char** argv){
 	    nbkgd++;
 	    if(nbkgd>=Nbkgd)break;
 	  }
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, 1);
+	  timeZero = R->Uniform( -gatewidth_GEM-50., gatewidth_GEM/2.-50. );
+	  
+	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 1);
 	  //if(treenum)
 	}
 	/*

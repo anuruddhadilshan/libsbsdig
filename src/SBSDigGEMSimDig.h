@@ -24,6 +24,7 @@ class SBSDigGEMSimDig {
   // const TGEMSBSSpec& spect,
   //const char* name = "ratedig", TGEMSBSDBManager *manager = 0);
   virtual ~SBSDigGEMSimDig();
+  //Clear();
   
   Int_t Digitize (SBSDigGEMDet* gemdet,
 		  TRandom3* R);

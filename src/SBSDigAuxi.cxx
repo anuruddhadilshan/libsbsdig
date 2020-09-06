@@ -12,6 +12,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 		std::vector<int> gemmap,
 		//std::map<int, SBSDigPMTDet*> pmtdets, 
 		//std::map<int, SBSDigGEMDet*> gemdets, 
+		double tzero,
 		int signal)
 {
   bool has_data = false;
@@ -47,7 +48,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       // TODO: put that stuff in DB...
       Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
       Npe = R->Poisson(Npe_Edep_ratio*T->Harm_HCalScint_hit_sumedep->at(k)*1.0e3);
-      t = R->Gaus(T->Harm_HCalScint_hit_tavg->at(k)+10.11, 1.912)-pmtdets[idet]->fTrigOffset;
+      t = tzero+R->Gaus(T->Harm_HCalScint_hit_tavg->at(k)+10.11, 1.912)-pmtdets[idet]->fTrigOffset;
       
       sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
       //Generate here,...
@@ -79,7 +80,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 			   T->Earm_BBPSTF1_hit_sumedep->at(i)*
 			   sin2thetaC/(1.-1./(n_lg*n_lg)) 
 			   );
-	t = T->Earm_BBPSTF1_hit_tavg->at(i)+R->Gaus(3.2-5.805*T->Earm_BBPSTF1_hit_zhit->at(i)-17.77*pow(T->Earm_BBPSTF1_hit_zhit->at(i), 2), 0.5)-pmtdets[idet]->fTrigOffset;
+	t = tzero+T->Earm_BBPSTF1_hit_tavg->at(i)+R->Gaus(3.2-5.805*T->Earm_BBPSTF1_hit_zhit->at(i)-17.77*pow(T->Earm_BBPSTF1_hit_zhit->at(i), 2), 0.5)-pmtdets[idet]->fTrigOffset;
 	chan = T->Earm_BBPSTF1_hit_cell->at(i);
 	//T->Earm_BBPSTF1_hit_sumedep->at(i);
 	
@@ -110,7 +111,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 			 T->Earm_BBSHTF1_hit_sumedep->at(i)*
 			 sin2thetaC/(1.-1./(n_lg*n_lg)) 
 			 );
-	t = T->Earm_BBSHTF1_hit_tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1_hit_zhit->at(i)-7.469*pow(T->Earm_BBSHTF1_hit_zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	t = tzero+T->Earm_BBSHTF1_hit_tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1_hit_zhit->at(i)-7.469*pow(T->Earm_BBSHTF1_hit_zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
 	chan = T->Earm_BBSHTF1_hit_cell->at(i);
 	//T->Earm_BBSHTF1_hit_sumedep->at(i);
 		
@@ -128,7 +129,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   if(idet>=0 && T->Earm_GRINCH_hit_nhits){
     for(int i = 0; i<T->Earm_GRINCH_hit_nhits; i++){
       chan = int(T->Earm_GRINCH_hit_PMT->at(i)/5)-1;
-      t = T->Earm_GRINCH_hit_Time_avg->at(i)+pmtdets[idet]->fTrigOffset;
+      t = tzero+T->Earm_GRINCH_hit_Time_avg->at(i)+pmtdets[idet]->fTrigOffset;
       Npe = T->Earm_GRINCH_hit_NumPhotoelectrons->at(i);
       
       //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
@@ -147,7 +148,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	// Evaluation of number of photoelectrons and time from energy deposit documented at:
 	// https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
 	Npe = R->Poisson(1.0e7*T->Earm_BBHodoScint_hit_sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/1.03533)* 0.24);
-	t = T->Earm_BBHodoScint_hit_tavg->at(i)+(0.55+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	t = tzero+T->Earm_BBHodoScint_hit_tavg->at(i)+(0.55+pow(-1, j)*T->Earm_BBHodoScint_hit_xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	chan = T->Earm_BBHodoScint_hit_cell->at(i)*2+j;
 	//T->Earm_BBHodoScint_hit_sumedep->at(i);
 	//if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
@@ -178,7 +179,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	hit.edep = T->Earm_BBGEM_hit_edep->at(k)*1.0e9;//eV! not MeV!!!!
 	//hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
 	//hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
-	hit.t = T->Earm_BBGEM_hit_t->at(k);
+	hit.t = tzero+T->Earm_BBGEM_hit_t->at(k);
 	hit.xin = T->Earm_BBGEM_hit_xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yin = T->Earm_BBGEM_hit_yin->at(k);
 	hit.zin = T->Earm_BBGEM_hit_zin->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1]+0.8031825;

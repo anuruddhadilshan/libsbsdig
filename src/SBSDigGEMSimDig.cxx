@@ -272,10 +272,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   // larger than the wedge's active area (section of a ring)
   
   //const TGEMSBSGEMChamber& chamber = spect.GetChamber(ic);
-  Double_t glx = (-gemdet->GEMPlanes[ic*2].dX()+fStripPitch)/2.0*1000.;//(chamber.GetPlane(0).GetStripLowerEdge(0)+chamber.GetPlane(0).GetSPitch()/2.0) * 1000.0;
-  Double_t gly = (-gemdet->GEMPlanes[ic*2+1].dX()+fStripPitch)/2.0*1000.;
-  Double_t gux = (gemdet->GEMPlanes[ic*2].dX()+fStripPitch)/2.0*1000.;//(chamber.GetPlane(0).GetStripUpperEdge(chamber.GetPlane(0).GetNStrips()-1) -chamber.GetPlane(0).GetSPitch()/2.0) * 1000.0;
-  Double_t guy = (gemdet->GEMPlanes[ic*2+1].dX()+fStripPitch)/2.0*1000.;//(chamber.GetPlane(1).GetStripUpperEdge(chamber.GetPlane(1).GetNStrips()-1) -chamber.GetPlane(1).GetSPitch()/2.0) * 1000.0;
+  Double_t glx = (-gemdet->GEMPlanes[ic*2].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;//(chamber.GetPlane(0).GetStripLowerEdge(0)+chamber.GetPlane(0).GetSPitch()/2.0) * 1000.0;
+  Double_t gly = (-gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;
+  Double_t gux = (gemdet->GEMPlanes[ic*2].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;//(chamber.GetPlane(0).GetStripUpperEdge(chamber.GetPlane(0).GetNStrips()-1) -chamber.GetPlane(0).GetSPitch()/2.0) * 1000.0;
+  Double_t guy = (gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;//(chamber.GetPlane(1).GetStripUpperEdge(chamber.GetPlane(1).GetNStrips()-1) -chamber.GetPlane(1).GetSPitch()/2.0) * 1000.0;
   
   if (x1<glx || x0>gux ||
       y1<gly || y0>guy) { // out of the sector's bounding box
@@ -302,9 +302,9 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   //TGEMSBSGEMHit **virs;
   //virs = new TGEMSBSGEMHit *[fNROPlanes[ic]];
   for (UInt_t ipl = 0; ipl < fNROPlanes; ++ipl){
-// #if DBG_AVA > 0
-//     cout << "coordinate " << ipl << " =========================" << endl;
-// #endif
+#if DBG_AVA > 0
+     cout << "coordinate " << ipl << " =========================" << endl;
+#endif
 
     xt_factor = fCrossFactor+R->Gaus(fCrossSigma);
     isLeft = R->Uniform(1.) < 0.5 ? -1 : 1;
@@ -322,14 +322,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     Double_t xs1 = x1*cos(roangle) - y1*sin(roangle); 
     Double_t ys1 = y1*sin(roangle) + y1*cos(roangle);
 #if DBG_AVA > 0
-//     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
-//     cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
+     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
+     cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
 
-    Int_t iL = max(0, TMath::FloorNint((xs0*1.e-3+dx/2.)/fStripPitch) );
+    Int_t iL = max(0, Int_t((xs0*1.e-3+dx/2.)/fStripPitch) );
     iL = min(iL, nstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
-    Int_t iU = min(TMath::CeilNint((xs1*1.e-3+dx/2.)/fStripPitch), nstrips);
+    Int_t iU = min(Int_t((xs1*1.e-3+dx/2.)/fStripPitch), nstrips);
     iU = max(0, iU);
     //pl.GetStrip (xs1 * 1e-3, ys1 * 1e-3);
      
@@ -356,13 +356,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //
 
     // Limits in x are low edge of first strip to high edge of last
-// #if DBG_AVA > 0
-//     cout << "iL gsle " << iL << " " << pl.GetStripLowerEdge (iL) << endl;
-//     cout << "iU gsue " << iU << " " << pl.GetStripUpperEdge (iU) << endl;
-// #endif
-    Double_t xl = iL*fStripPitch-dx/2.;//pl.GetStripLowerEdge (iL) * 1000.0;
-    Double_t xr = iU*fStripPitch-dx/2.;//pl.GetStripUpperEdge (iU) * 1000.0;
+    Double_t xl = (iL*fStripPitch-dx/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
+    Double_t xr = (iU*fStripPitch-dx/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
 
+#if DBG_AVA > 0
+    cout << "iL gsle " << iL << " " << xl << endl;
+    cout << "iU gsue " << iU << " " << xr << endl;
+#endif
+    
     // Limits in y are y limits of track plus some reasonable margin
     // We do this in units of strip pitch for convenience (even though
     // this is the direction orthogonal to the pitch direction)
@@ -406,9 +407,6 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     fSumA.resize(sumASize);
     memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
     //Double_t fSumA[sumASize];
-#if DBG_AVA > 0
-    cout<<nx<<" : "<<ny<<" Nstrips: "<<nstrips<<endl;
-#endif
     //memset (fSumA, 0, sumASize * sizeof (Double_t));
     //for(Int_t i=0; i<sumASize; i++){
     //fSumA[i] = 0;
@@ -482,6 +480,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	  //    continue;
 	  // }
 	  if( xd2 + yd2 <= r2 ) {
+	    //cout << current_ion_amplitude << " " << xd2+yd2 << " " << eff_sigma_square << endl;
 	    fSumA[jx_base+jy] += current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
 	  }
 	}//cout<<endl;
@@ -521,6 +520,11 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	//	us += IntegralY( fSumA, j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
 	//if(us>0)cout << "k " << k << ", us " << us << endl;
       }
+
+#if DBG_AVA > 0
+      cout << "strip " << j << " us " << us << endl;
+#endif
+
       // cout <<setw(6)<< (Int_t)(us/100);
       //  cout<<iL+j<<" : "<<us<<endl;
       //generate the random pedestal phase and amplitude
@@ -546,7 +550,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	//fDADC[b] = dadc;
 	gemdet->GEMPlanes[ic*2+ipl].AddADC(j, b, dadc);
 	//posflag += dadc;
-	//cout <<setw(6)<< dadc;
+	//if(dadc>0)cout << t0 << " " << pulse << " " << dadc << endl;
 	//cross talk here ?
 	if(xt_factor>0){
 	  if(j+isLeft*fNCStripApart>=0 && j+isLeft*fNCStripApart<nstrips){
@@ -678,6 +682,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   double commonmode = 0;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
+    cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << endl;
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       if(fDoCommonMode)
 	if(j%128==0 && apv_ctr<fCommonModeArray.size())
@@ -687,14 +692,14 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	for(int k = 0; k<6; k++){
 	  gemdet->GEMPlanes[j].AddADC(j, k, R->Gaus(commonmode, fPulseNoiseSigma));
 	  //handle saturation
-	  if(gemdet->GEMPlanes[j].GetADC(j, k)>4096)gemdet->GEMPlanes[j].SetADC(j, k, 4096);
+	  if(gemdet->GEMPlanes[j].GetADC(j, k)>pow(2, fADCbits) )gemdet->GEMPlanes[j].SetADC(j, k, pow(2, fADCbits) );
 	}
 	if(fDoZeroSup){
 	  if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
 	    FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
 	  }
 	}else{
-	   FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
+	  FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
 	}
 	
       }
@@ -900,28 +905,6 @@ TGEMSBSDigitizedPlane::Cumulate (const TGEMSBSGEMHit *vv, Short_t type,
 
 */
 
-
-
-/*
-inline static
-Bool_t IsInActiveArea( const TGEMSBSGEMPlane& pl, Double_t xc, Double_t yc )
-{
-  
-  pl.StripToSpec(xc,yc);
-  return pl.GetBox().Contains(xc,yc);
-}
-#endif
-*/
-
-//___________________________________________________________________________________
-/*
-inline Double_t TGEMSBSSimDigitization::GetPedNoise(Double_t &phase, Double_t& amp, Int_t& isample)
-{
-  Double_t thisPhase = phase + isample*fEleSamplingPeriod;
-  return fTrnd.Gaus(5*fPulseNoiseSigma, fPulseNoiseSigma) //fTrnd.Gaus(0., fPulseNoiseSigma)
-    + amp*sin(2.*TMath::Pi()/fPulseNoisePeriod*thisPhase);
-}
-*/
 /*
 //___________________________________________________________________________________
 void
@@ -1029,95 +1012,6 @@ TGEMSBSSimDigitization::InitTree (const TGEMSBSSpec& spect, const TString& ofile
 
   // //fOTree->Branch( eventBranchName, "TGEMSBSSimEvent", &fEvent );
 }
-
-void
-TGEMSBSSimDigitization::SetTreeEvent (const TGEMSBSGEMSimHitData& tsgd,
-				      const TGEMSBSGeant4File& f, Int_t evnum )
-{
-  // Set overall event info.
-  fEvent->Clear("all");
-  fEvent->fRunID = tsgd.GetRun();
-  // FIXME: still makes sense if background added?
-  fEvent->fEvtID = (evnum < 0) ? tsgd.GetEvent() : evnum;
-  for( UInt_t i=0; i<f.GetNGen(); ++i ) {
-    const g4sbsgendata* gd = f.GetGenData(i);
-    fEvent->AddTrack( gd->GetTRID(), gd->GetPID(),
-		      gd->GetV(), // Vertex coordinates in [m]
-		      gd->GetP(),  // Momentum in [GeV]
-		      gd->GetVertexAtTarget(),
-		      gd->GetMomentumAtTarget());
-  }
-  
-  
-  for( UInt_t i=0; i<f.GetClusterSize(); i++ ) {
-    TGEMSBSECalCluster* clus = f.GetCluster(i);
-    
-    double Time = 0.0;
-    if(tsgd.GetSource()==0){
-      // if signal, by definition the cluster timing determines the trigger time
-      Time = fTrnd.Gaus(0,fTriggerJitter);
-    }else{
-      //fTrnd.
-      Time = fTrnd.Uniform(-50.0, 50.0)+fTrnd.Gaus(0,fTriggerJitter);
-      //We assume a Gate width of +- 50 ns for the time being
-    }
-    clus->SetTime(Time);
-    fEvent->fECalClusters.push_back(*clus);
-    delete clus;
-  }
-  //cout<<"nloop: "<<f.GetNGen()<<"   ntracks: "<<fEvent->GetNtracks()<<endl;
-  //getchar();
-  // FIXED: one GenData per event: signal, primary particle
-  if( f.GetNGen() > 0 )
-    fEvent->fWeight = f.GetGenData(0)->GetWeight();
-  
-  fEvent->fSectorsMapped = fDoMapSector;
-  //fEvent->fSignalSector = tsgd.GetSigSector();//CHECK ?
-  fEvent->fSignalSector = fSignalSector;
-}
-
-void
-TGEMSBSSimDigitization::SetTreeStrips()
-{
-  // Sets the variables in fEvent->fGEMStrips describing strip signals
-  // This is later used to fill the tree.
-  
-  //fEvent->fGEMStrips.clear();
-
-  //TGEMSBSSimEvent::
-  DigiGEMStrip strip;
-  UInt_t mpd_id = -1;// by convention: 1.x, 1.y, 2.x,... 
-  Double_t saturation = static_cast<Double_t>( (1<<fADCbits)-1 );//-CommonMode(mpd_id);
-  for (UInt_t ich = 0; ich < GetNChambers(); ++ich) {
-    
-    strip.fSector=0;
-    strip.fPlane=fManager->GetPlaneID(ich);
-    strip.fModule=fManager->GetModuleID(ich);
-    // cout<<ich<<" : "<<(3*strip.fPlane+strip.fModule)<<endl;
-    
-    //cout << "ich " << ich << " strip sector " <<  strip.fSector << " strip plane " << strip.fPlane << endl;
-    
-    // The "plane" here is actually the projection (= readout coordinate).
-    // TGEMSBSGEMChamber::ReadDatabase associates the name suffix "x" with
-    // the first "plane", and "y", with the second. However, strip angles can
-    // be different for each chamber, so what's "x" in one chamber may very
-    // well be something else, like "x'", in another. These angles don't even
-    // have to match anything in the Monte Carlo.
-    for (UInt_t ip = 0; ip < GetNPlanes (ich); ++ip) {
-      strip.fProj = (Short_t) ip;
-      strip.fNsamp = TMath::Min((UShort_t)MAXSAMP,//MC_MAXSAMP,
-				(UShort_t)GetNSamples(ich, ip));
-      
-      if(1)
-	{
-	  UInt_t nstrips = GetNStrips(ich,ip);
-	  for (UInt_t istrip = 0; istrip < nstrips; istrip++) {
-	    if(istrip%128==0 && fDoCommonMode){
-	      mpd_id++;
-	      //saturation = static_cast<Double_t>( (1<<fADCbits)-1 )-CommonMode(mpd_id);
-	    }
-	    Short_t idx = istrip;
-	    strip.fChan = idx;
 
 	    //setting strip sample adc and adding pedestal noise
 	    for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
