@@ -22,14 +22,14 @@ class SBSDigGEMPlane {
   Double_t Xoffset(){return fXoffset;};
   Double_t ROangle(){return fROangle;};
   Int_t GetNStrips(){return fNStrips;};
-  UShort_t GetADC(int strip, int samp){return fStripADC[strip*fNSamples+samp];};
-  UInt_t GetADCSum(int strip){return fStripADCsum[strip];};
+  Short_t GetADC(int strip, int samp){return fStripADC[strip*fNSamples+samp];};
+  Int_t GetADCSum(int strip){return fStripADCsum[strip];};
   void SetADC(int strip, int samp, int adc){
     fStripADCsum[strip]+= adc-fStripADC[strip*fNSamples+samp];
     fStripADC[strip*fNSamples+samp] = adc;
   };
   void AddADC(int strip, int samp, int adc){
-    if(strip>=fNStrips)printf(" hou %d\n", strip);
+    //if(strip>=fNStrips)printf(" hou %d > %d\n", strip, fNStrips);
     fStripADC[strip*fNSamples+samp]+=adc;
     fStripADCsum[strip]+=adc;
   };
@@ -40,8 +40,8 @@ class SBSDigGEMPlane {
   Int_t fNStrips;
   Int_t fNSamples;
   Double_t fStripThr;//threshold for ADC sum
-  UInt_t* fStripADCsum;
-  UShort_t* fStripADC;
+  Int_t* fStripADCsum;
+  Short_t* fStripADC;
   double fdX;
   double fXoffset;
   double fROangle;

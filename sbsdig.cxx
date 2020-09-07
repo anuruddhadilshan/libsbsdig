@@ -161,7 +161,7 @@ int main(int argc, char** argv){
 					   122., 122., 122., 122.5, 122.5, 122.5,  
 					   126., 126., 126., 126.};
   
-  double commonmode_array[1] = {0.};
+  double commonmode_array[1] = {1500.};
     
   //double NpeChargeConv
   
@@ -388,6 +388,7 @@ int main(int argc, char** argv){
       bbhodo->Digitize(T_s,R);
       hcal->Digitize(T_s,R);
       gemdig->Digitize(bbgem, R);
+      //cout << " hou hou " << bbgem->GEMPlanes[4].GetADCSum(400) << endl;
       gemdig->CheckOut(bbgem, R, T_s);
       
       //How come this function is so taxing in time??? 

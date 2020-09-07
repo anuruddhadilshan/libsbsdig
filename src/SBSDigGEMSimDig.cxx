@@ -295,7 +295,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 
   // Loop over chamber planes
   double roangle, dx, xoffset;
-  int nstrips;
+  int GEMstrips, nstrips;
   
   double xt_factor;
   int isLeft;
@@ -303,18 +303,20 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   //virs = new TGEMSBSGEMHit *[fNROPlanes[ic]];
   for (UInt_t ipl = 0; ipl < fNROPlanes; ++ipl){
 #if DBG_AVA > 0
-     cout << "coordinate " << ipl << " =========================" << endl;
+    cout << "coordinate " << ipl << " =========================" << endl;
 #endif
-
-    xt_factor = fCrossFactor+R->Gaus(fCrossSigma);
+     
+    xt_factor = R->Gaus(fCrossFactor, fCrossSigma);
     isLeft = R->Uniform(1.) < 0.5 ? -1 : 1;
+    
+    //cout << xt_factor << endl;
     
     // Compute strips affected by the avalanche
     //const SBSDigGEMPlane& pl = gemdet->GEMPlanes[ic*2+ipl];
     roangle = gemdet->GEMPlanes[ic*2+ipl].ROangle();
     dx = gemdet->GEMPlanes[ic*2+ipl].dX();
     //xoffset = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
-    nstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
+    GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
     
     // Positions in strip frame
     Double_t xs0 = x0*cos(roangle) - y0*sin(roangle);
@@ -327,9 +329,9 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 #endif
 
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx/2.)/fStripPitch) );
-    iL = min(iL, nstrips);
+    iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
-    Int_t iU = min(Int_t((xs1*1.e-3+dx/2.)/fStripPitch), nstrips);
+    Int_t iU = min(Int_t((xs1*1.e-3+dx/2.)/fStripPitch), GEMstrips);
     iU = max(0, iU);
     //pl.GetStrip (xs1 * 1e-3, ys1 * 1e-3);
      
@@ -522,11 +524,11 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       }
 
 #if DBG_AVA > 0
-      cout << "strip " << j << " us " << us << endl;
+      cout << "strip " << iL+j << " us " << us << endl;
 #endif
 
       // cout <<setw(6)<< (Int_t)(us/100);
-      //  cout<<iL+j<<" : "<<us<<endl;
+      // cout<<iL+j<<" : "<<us<<endl;
       //generate the random pedestal phase and amplitude
       // Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
       // Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
@@ -543,18 +545,22 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				   fADCbits );
 #if DBG_AVA > 0
 	if(pulse>0)
-	  cout << "strip number " << j << ", sampling number " << b << ", t0 = " << t0 << endl
+	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
 	       << "pulse = " << pulse << ", (val - off)/gain = " 
 	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
 #endif
 	//fDADC[b] = dadc;
-	gemdet->GEMPlanes[ic*2+ipl].AddADC(j, b, dadc);
+	//cout << ic*2+ipl << " " << iL+j << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) << " ==> ";
+	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
+	//cout << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) << endl;
 	//posflag += dadc;
 	//if(dadc>0)cout << t0 << " " << pulse << " " << dadc << endl;
 	//cross talk here ?
 	if(xt_factor>0){
-	  if(j+isLeft*fNCStripApart>=0 && j+isLeft*fNCStripApart<nstrips){
-	    gemdet->GEMPlanes[ic*2+ipl].AddADC(j+isLeft*fNCStripApart, b, dadc*xt_factor);
+	  if(iL+j+isLeft*fNCStripApart>=0 && iL+j+isLeft*fNCStripApart<GEMstrips){
+	    //cout << "induced: " << iL+j+isLeft*fNCStripApart << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j+isLeft*fNCStripApart) << " ==> ";
+	    gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j+isLeft*fNCStripApart, b, TMath::Nint(dadc*xt_factor));
+	    //cout << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j+isLeft*fNCStripApart) << endl;
 	  }
 	  
 	}
@@ -584,7 +590,8 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 
 Int_t
 SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
-			   TRandom3* R)
+			   TRandom3* R)//, 
+//gmn_tree* T)
 {
   // Digitize event. Add results to any existing digitized data.
 
@@ -651,6 +658,8 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       //cout << "AvaModel..." << endl;
       AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       //cout << "Done!" << endl;
+      //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
+      //CheckOut(gemdet, R, T);
     }
     
   }//end loop on hits
@@ -679,35 +688,157 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 			       TRandom3* R, 
 			       gmn_tree* T)
 {
+  //int test = gemdet->GEMPlanes[4].GetADCSum(400);
+  //cout << " hou hou " << test << endl;
+    
+  short strip;
   double commonmode = 0;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
-    cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << endl;
+    //cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << endl;
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
+      //if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
+      //cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " << i << " " << j << endl;
+      //test = gemdet->GEMPlanes[4].GetADCSum(400);
+      //}
       if(fDoCommonMode)
 	if(j%128==0 && apv_ctr<fCommonModeArray.size())
 	  commonmode = fCommonModeArray[apv_ctr++];
-
+      //if(i==4 && j==400){
+      //cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
+      //}
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
 	for(int k = 0; k<6; k++){
-	  gemdet->GEMPlanes[j].AddADC(j, k, R->Gaus(commonmode, fPulseNoiseSigma));
+	  //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
+	  gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma)));
+	  //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j)<< endl;
 	  //handle saturation
-	  if(gemdet->GEMPlanes[j].GetADC(j, k)>pow(2, fADCbits) )gemdet->GEMPlanes[j].SetADC(j, k, pow(2, fADCbits) );
+	  if(gemdet->GEMPlanes[i].GetADC(j, k)>pow(2, fADCbits) )gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)) );
 	}
-	if(fDoZeroSup){
-	  if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
-	    FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
-	  }
-	}else{
-	  FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
+	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
+	  //if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
+	  //FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
+	  
+  if(gemdet->GEMPlanes[i].Module()<3){
+    strip = j+gemdet->GEMPlanes[i].GetNStrips()*gemdet->GEMPlanes[i].Module();
+    if(gemdet->GEMPlanes[i].ROangle()==0){
+      T->Earm_BBGEM_1x_dighit_nstrips++;
+      T->Earm_BBGEM_1x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_1x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_1x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_1x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_1x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_1x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_1x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_1y_dighit_nstrips++;
+      T->Earm_BBGEM_1y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_1y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_1y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_1y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_1y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_1y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_1y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }
+  }else if(gemdet->GEMPlanes[i].Module()<6){
+    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-3);
+    if(gemdet->GEMPlanes[i].ROangle()==0){
+      T->Earm_BBGEM_2x_dighit_nstrips++;
+      T->Earm_BBGEM_2x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_2x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_2x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_2x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_2x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_2x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_2x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_2y_dighit_nstrips++;
+      T->Earm_BBGEM_2y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_2y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_2y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_2y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_2y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_2y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_2y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }
+  }else if(gemdet->GEMPlanes[i].Module()<9){
+    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-6);
+    if(gemdet->GEMPlanes[i].ROangle()==0){
+      T->Earm_BBGEM_3x_dighit_nstrips++;
+      T->Earm_BBGEM_3x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_3x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_3x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_3x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_3x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_3x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_3x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_3y_dighit_nstrips++;
+      T->Earm_BBGEM_3y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_3y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_3y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_3y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_3y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_3y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_3y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }
+  }else if(gemdet->GEMPlanes[i].Module()<12){
+    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-9);
+    if(gemdet->GEMPlanes[i].ROangle()==0){
+      T->Earm_BBGEM_4x_dighit_nstrips++;
+      T->Earm_BBGEM_4x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_4x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_4x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_4x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_4x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_4x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_4x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_4y_dighit_nstrips++;
+      T->Earm_BBGEM_4y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_4y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_4y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_4y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_4y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_4y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_4y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }
+  }else{
+    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-12);
+    if(gemdet->GEMPlanes[i].ROangle()==0){
+      T->Earm_BBGEM_5x_dighit_nstrips++;
+      T->Earm_BBGEM_5x_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_5x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_5x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_5x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_5x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_5x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_5x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }else{
+      T->Earm_BBGEM_5y_dighit_nstrips++;
+      T->Earm_BBGEM_5y_dighit_strip->push_back(strip);
+      T->Earm_BBGEM_5y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(strip, 0));
+      T->Earm_BBGEM_5y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(strip, 1));
+      T->Earm_BBGEM_5y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(strip, 2));
+      T->Earm_BBGEM_5y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(strip, 3));
+      T->Earm_BBGEM_5y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(strip, 4));
+      T->Earm_BBGEM_5y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(strip, 5));
+    }
+  }
+
+	  
 	}
+	//}else{
+	//FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
+	//}
 	
       }
     }
   }  
 }
 
-void SBSDigGEMSimDig::FillBBGEMTree(SBSDigGEMPlane pl, gmn_tree* T, int j)
+/*
+void SBSDigGEMSimDig::FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j)
 {
   short strip;
   if(pl.Module()<3){
@@ -818,97 +949,10 @@ void SBSDigGEMSimDig::FillBBGEMTree(SBSDigGEMPlane pl, gmn_tree* T, int j)
   }
   
 }
-
-/*
-void
-TGEMSBSDigitizedPlane::Cumulate (const TGEMSBSGEMHit *vv, Short_t type,
-			      Short_t clusterID )
-{
-  // cumulate hits (strips signals)
-  if (vv) {
-    //if(vv->GetSize()>20) {cout<<vv->GetSize();getchar();}
-    for( Int_t j=0; j < vv->GetSize(); j++ ) {
-      Double_t tempSumADC=0;
-      Int_t idx = vv->GetIdx(j);
-      assert( idx >= 0 && idx < fNStrips );
-      fType[idx] |= type;
-      fTime[idx] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
-      fCharge[idx] += vv->GetCharge(j);
-      bool was_below = !( fTotADC[idx] > fThreshold );
-      for( UInt_t k=0; k<fNSamples; k++ ) {
-	Int_t nnn = vv->GetADC(j,k);
-	fStripClusterADC[k][idx].push_back(nnn);// new
-	//cout << nnn << " ";
-	assert( nnn >= 0 );
-	if( nnn == 0 ) continue;
-	Int_t iadc = idx*fNSamples+k;
-	//cout << fStripADC[iadc] << " ";
-	fStripADC[iadc] = fStripADC[iadc] + nnn;
-  fStripSimADC[iadc] = 0;
-
-	//cout << fStripADC[iadc] << " ";
-	fTotADC[idx] += nnn;
-	tempSumADC   += nnn;
-      }//cout << endl;
-      if( was_below && fTotADC[idx] > fThreshold ) {
-	assert( fNOT < fNStrips );
-	fOverThr[fNOT] = idx;
-	++fNOT;
-      }
-      fStripWeightInCluster[idx].push_back(tempSumADC/vv->GetTotalADC());
-      //cout<<((Double_t)fTotADC[idx])/vv->GetTotalADC()<<endl; getchar();
-      fStripClusters[idx].push_back(clusterID);
-
-    }
-    
-    //do cross talk if requested, a big signal along the strips 
-    //will induce a smaller signal as the bigger one going to the APV, 
-    //the smaller signal will appear on strips that is 
-    //about 32 channels away from the big signal
-    if (!TGEMSBSSimDigitization::fDoCrossTalk) return;
-    Int_t isLeft = fRan.Uniform(1.) < 0.5 ? -1 : 1;
-    Double_t factor = TGEMSBSSimDigitization::fCrossFactor +
-      fRan.Gaus(0., TGEMSBSSimDigitization::fCrossSigma);
-    if (factor <= 0.) return; //no induced signal
-    
-    for( Int_t j=0; j < vv->GetSize(); j++ ) {
-      Int_t idx = vv->GetIdx(j);
-      assert( idx >= 0 && idx < fNStrips );
-      
-      Int_t idxInduce = idx + isLeft*TGEMSBSSimDigitization::fNCStripApart;
-      if (idxInduce < 0 || idxInduce >= fNStrips ) continue; //outside the readout
-      
-      SETBIT(fType[idxInduce], kInducedStrip);
-            
-      //same time as the main signal strip
-      fTime[idxInduce] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
-      fCharge[idxInduce] += factor*vv->GetCharge(j);
-      bool was_below = !( fTotADC[idxInduce] > fThreshold );
-      for( UInt_t k=0; k<fNSamples; k++ ) {
-	Int_t nnn = vv->GetADC(j,k);
-	assert( nnn >= 0 );
-	nnn *= factor;
-	if( nnn == 0 ) continue;
-	Int_t iadc = idxInduce*fNSamples+k;
-	fStripADC[iadc] = fStripADC[iadc] + nnn;
-  fStripSimADC[iadc] = 0;
-	fTotADC[idxInduce] += nnn;
-      }
-      if( was_below && fTotADC[idxInduce] > fThreshold ) {
-	assert( fNOT < fNStrips );
-	fOverThr[fNOT] = idxInduce;
-	++fNOT;
-      }
-    }
-  }
-};
-
 */
 
-/*
 //___________________________________________________________________________________
-void
-TGEMSBSSimDigitization::Print(Option_t*) const
+void SBSDigGEMSimDig::Print()
 {
   cout << "GEM digitization:" << endl;
   cout << "  Gas parameters:" << endl;
@@ -921,10 +965,10 @@ TGEMSBSSimDigitization::Print(Option_t*) const
   cout << "    Gain 0: " << fGain0 << endl;
 
   cout << "  Electronics parameters:" << endl;
-  cout << "    Trigger offsets: "; //<< fTriggerOffset 
-  for(int i = 0; i<fManager->GetNChamber(); i++)cout << fTriggerOffset[i] << " ";
-  cout << endl;
-  cout << "    Trigger jitter: " << fTriggerJitter << endl;
+  //cout << "    Trigger offsets: "; //<< fTriggerOffset 
+  //for(int i = 0; i<fManager->GetNChamber(); i++)cout << fTriggerOffset[i] << " ";
+  //cout << endl;
+  cout << "    APV time jitter: " << fAPVTimeJitter << endl;
   cout << "    Sampling Period: " << fEleSamplingPeriod << endl;
   cout << "    Sampling Points: " << fEleSamplingPoints   << endl;
   cout << "    Pulse Noise width: " << fPulseNoiseSigma << endl;
@@ -934,34 +978,11 @@ TGEMSBSSimDigitization::Print(Option_t*) const
   cout << "    Gate width: " << fGateWidth << endl;
 
   cout << "  Pulse shaping parameters:" << endl;
-  cout << "    Pulse shape tau0: " << fPulseShapeTau0 << endl;
-  cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
+  cout << "    Pulse shape tau: " << fPulseShapeTau << endl;
+  //cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
 }
 
-void
-TGEMSBSSimDigitization::PrintCharges() const
-{
-  cout << " Chb  Pln  Strip  Typ    ADC    Charge      Time\n";
-  for (UInt_t ic = 0; ic < fNChambers; ++ic)
-    {
-      for (UInt_t ip = 0; ip < fNROPlanes[ic]; ++ip)
-	for (UInt_t ist = 0; ist < (UInt_t) GetNStrips(ic, ip); ++ist)
-	  {
-	    if (fDP[ic][ip]->GetCharge (ist) > 0)
-	      cout << setw(4) << ic
-		   << " " << setw(4) << ip
-		   << " " << setw(6) << ist
-		   << " " << setw(4) << GetType (ic, ip, ist)
-		   << " " << setw(6) << GetTotADC (ic, ip, ist)
-		   << fixed << setprecision(1)
-		   << " " << setw(9) << GetCharge (ic, ip, ist)
-		   << fixed << setprecision(3)
-		   << " " << setw(9) << GetTime (ic, ip, ist)
-		   << endl;
-	  }
-    }
-}
-
+/*
 Double_t
 TGEMSBSSimDigitization::CommonMode(UInt_t i_mpd)
 {
@@ -987,106 +1008,4 @@ TGEMSBSSimDigitization::ZeroSupThreshold(UInt_t i_mpd)
     return -1000;
   }
 }
-
-
-
-// Tree methods
-void
-TGEMSBSSimDigitization::InitTree (const TGEMSBSSpec& spect, const TString& ofile)
-{
-  // fOFile = new TFile( ofile, "RECREATE");
-
-  // if (fOFile == 0 || fOFile->IsZombie() )
-  //   {
-  //     cerr << "Error: cannot open output file " << ofile << endl;
-  //     delete fOFile; fOFile = 0;
-  //     return;
-  //   }
-
-  // fOTree = new TTree( treeName, "Tree of digitized values");
-  // fOTree -> SetMaxTreeSize(100000000000);
-  // //fOTree -> SetMaxTreeSize(1000);
-
-
-  // // create the tree variables
-
-  // //fOTree->Branch( eventBranchName, "TGEMSBSSimEvent", &fEvent );
-}
-
-	    //setting strip sample adc and adding pedestal noise
-	    for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
-	      strip.fADC[ss] = GetADC(ich, ip, idx, ss);
-	      // cout << strip.fADC[ss] << " ";
-	       strip.fADC[ss] += fTrnd.Gaus(0, fPulseNoiseSigma);//allowing negative value, before implementing common mode;
-	       if(fDoCommonMode)strip.fADC[ss] += CommonMode(mpd_id);
-	      // cout << strip.fADC[ss] << " ";
-	       //saturation = 4000;
-	      if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
-	      // TODO: Shouldn't common mode be added at some point? Specially
-	      // before encoding it into unsigned integers which don't
-	      // take kindly to negative values?
-	      SetSimADC(ich,ip,idx,ss,strip.fADC[ss]);
-	      const vector<Int_t>& sclust = GetStripClusterADC(ich, ip, idx, ss);
-	      
-	      strip.fClusterRatio[ss].Set( sclust.size(), &sclust[0] );
-	      //     if(sclust.size()!=0){
-	      //	 cout<<idx<<" "<<ss<<" "<<sclust.size()<<" == "<<strip.fClusterRatio[ss].GetSize()<<" == "<<GetStripClusters(ich, ip, idx).size()<<endl; getchar();
-	      //    }
-	    }//cout << endl;
-	    if(GetTotADC(ich, ip, idx)==0)
-	      {
-		cout<<"Type: "<<GetType(ich, ip, idx)<<" Charge: "<<GetCharge(ich, ip, idx)<<" Time: "
-		    <<GetTime(ich, ip, idx)<<" cluster: "<<GetStripClusters(ich, ip, idx).size();
-		getchar();
-		continue;
-	      }
-	    
-	    strip.fSigType = GetType(ich, ip, idx);
-	    strip.fCharge  = GetCharge(ich, ip, idx);
-	    strip.fTime1   = GetTime(ich, ip, idx);
-	
-	    const vector<Short_t>& sc = GetStripClusters(ich, ip, idx);
-	    strip.fClusters.Set( sc.size(), &sc[0] );
-	    const vector<Double_t>& swc = GetStripWeightInCluster(ich, ip, idx);
-	    strip.fStripWeightInCluster.Set( swc.size(), &swc[0] );
-
-	    //fEvent->fGEMStrips.push_back( strip );
-	  }
-	}
-      else{
-	//modify this so recording all strips? 
-	UInt_t nover = GetNOverThr(ich, ip);
-	for (UInt_t iover = 0; iover < nover; iover++) {
-	  Short_t idx = GetIdxOverThr(ich, ip, iover);
-	  strip.fChan = idx;
-
-	  //setting strip sample adc and adding pedestal noise
-	  for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
-	    strip.fADC[ss] = GetADC(ich, ip, idx, ss);
-	    // cout << strip.fADC[ss] << " ";
-	    strip.fADC[ss] += fTrnd.Gaus(0, fPulseNoiseSigma);//allowing negative value, before implementing common mode;
-	    // cout << strip.fADC[ss] << " ";
-	    if(strip.fADC[ss]>saturation)strip.fADC[ss]=saturation;
-
-	    const vector<Int_t>& sclust = GetStripClusterADC(ich, ip, idx, ss);
-	    strip.fClusterRatio[ss].Set( sclust.size(), &sclust[0] );
-	    
-
-	  }//cout << endl;
-
-	  strip.fSigType = GetType(ich, ip, idx);
-	  strip.fCharge  = GetCharge(ich, ip, idx);
-	  strip.fTime1   = GetTime(ich, ip, idx);
-	
-	  const vector<Short_t>& sc = GetStripClusters(ich, ip, idx);
-	  strip.fClusters.Set( sc.size(), &sc[0] );
-	  
-	  //fEvent->fGEMStrips.push_back( strip );
-	}
-      }
-    }
-  }
-  fFilledStrips = true;
-}
-
 */

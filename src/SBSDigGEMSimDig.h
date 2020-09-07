@@ -21,15 +21,12 @@ class SBSDigGEMSimDig {
   //Constructor and destructor
   SBSDigGEMSimDig();
   SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv = 0, double* commonmode_array = 0);
-  // const TGEMSBSSpec& spect,
-  //const char* name = "ratedig", TGEMSBSDBManager *manager = 0);
   virtual ~SBSDigGEMSimDig();
-  //Clear();
+  void Print();
   
-  Int_t Digitize (SBSDigGEMDet* gemdet,
-		  TRandom3* R);
+  Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R);//, gmn_tree* T);
   void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
-  void FillBBGEMTree(SBSDigGEMPlane pl, gmn_tree* T, int j);
+  //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
   
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
