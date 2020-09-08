@@ -29,7 +29,6 @@ class SBSDigGEMPlane {
     fStripADC[strip*fNSamples+samp] = adc;
   };
   void AddADC(int strip, int samp, int adc){
-    //if(strip>=fNStrips)printf(" hou %d > %d\n", strip, fNStrips);
     fStripADC[strip*fNSamples+samp]+=adc;
     fStripADCsum[strip]+=adc;
   };

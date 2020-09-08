@@ -287,7 +287,7 @@ int main(int argc, char** argv){
   
   gmn_tree *T_s, *T_b;
 
-  ULong64_t Nev_fs, Nev_fb;
+  ULong64_t Nev_fs;//, Nev_fb;
   ULong64_t ev_s, ev_b;
   
   ULong64_t NEventsTotal = 0;
@@ -326,7 +326,8 @@ int main(int argc, char** argv){
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%1000==0)cout << NEventsTotal << "/" << Nentries << endl;
+      if(NEventsTotal%1000==0)
+	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);
       
@@ -389,6 +390,12 @@ int main(int argc, char** argv){
       hcal->Digitize(T_s,R);
       gemdig->Digitize(bbgem, R);
       //cout << " hou hou " << bbgem->GEMPlanes[4].GetADCSum(400) << endl;
+      // for(int j = 570; j<580; j++){
+      // 	cout << " * " << j << "   ";
+      // 	for(int b = 0; b<6; b++){
+      // 	  cout << " " << bbgem->GEMPlanes[30].GetADC(j, b);
+      // 	}cout << endl;
+      // }
       gemdig->CheckOut(bbgem, R, T_s);
       
       //How come this function is so taxing in time??? 

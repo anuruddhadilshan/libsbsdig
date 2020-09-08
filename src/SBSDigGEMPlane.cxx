@@ -12,7 +12,7 @@ SBSDigGEMPlane::SBSDigGEMPlane() :
 }
 
 SBSDigGEMPlane::SBSDigGEMPlane(short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
-  fNStrips(nstrips), fNSamples(nsamples), fXoffset(offset), fStripThr(thr), fROangle(roangle)
+  fNStrips(nstrips), fNSamples(nsamples), fStripThr(thr), fXoffset(offset), fROangle(roangle)
 {
   fModule = mod;
   fdX = fNStrips*4.e-4;

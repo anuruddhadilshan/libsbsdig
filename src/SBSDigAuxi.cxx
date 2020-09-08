@@ -25,8 +25,8 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   
   double z_hit, Npe_Edep_ratio, sigma_tgen;
 
-  double z_det, pz, E, beta;
-  double sin2thetaC;
+  //double z_det, pz, E, 
+  double beta, sin2thetaC;
   
   int chan;
   int mod;
