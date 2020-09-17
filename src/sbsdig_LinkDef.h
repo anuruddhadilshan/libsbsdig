@@ -8,6 +8,7 @@
 
 #pragma link C++ class gmn_tree+;
 #pragma link C++ class PMTSignal+;
+#pragma link C++ class SBSDigBkgdGen+;
 #pragma link C++ class SBSDigGEMDet+;
 #pragma link C++ class SBSDigGEMPlane+;
 #pragma link C++ class SBSDigGEMSimDig+;

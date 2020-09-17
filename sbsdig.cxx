@@ -22,6 +22,7 @@
 #include "SBSDigPMTDet.h"
 #include "SBSDigGEMDet.h"
 #include "SBSDigGEMSimDig.h"
+#include "SBSDigBkgdGen.h"
 
 #ifdef __APPLE__
 #include "unistd.h"
@@ -99,7 +100,8 @@ int main(int argc, char** argv){
   // Step 0: read out arguments
   string inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
-  UShort_t Nbkgd = 0;//number of background files to add to each event
+  //UShort_t Nbkgd = 0;//number of background files to add to each event
+  double LumiFrac = 0;
   
   if(argc<2){
     cout << "*** Not enough arguments! ***" << endl
@@ -116,9 +118,20 @@ int main(int argc, char** argv){
   cout << " Number of (signal) events to process = " << Nentries << endl;
   if(argc>4){
     inputbkgdfile = argv[3];
-    cout << " Background input files from: " << inputbkgdfile << endl;
-    Nbkgd = atoi(argv[4]);
-    cout << " Number of background files to superimpose to signal = " << Nbkgd << endl;
+    cout << " Background hsotgrams from: " << inputbkgdfile << endl;
+    LumiFrac = max(0., atof(argv[4]));
+    cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
+  }
+  
+  TFile* f_bkgd;
+  SBSDigBkgdGen* BkgdGenerator;
+  if(LumiFrac>0){
+    f_bkgd = TFile::Open(inputbkgdfile.c_str());
+    if(f_bkgd->IsZombie()){
+      LumiFrac = 0;
+    }else{
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd);
+    }
   }
   
   // ------------------- // dev notes // ------------------- //
@@ -261,7 +274,7 @@ int main(int argc, char** argv){
   TIter next_s(fileElements_s);
   TChainElement *chEl_s=0;
   
-  /* need to change this... */
+  /* need to change this... 
   // build background chain
   ifstream beam_inputfile(inputbkgdfile);
   TChain *C_b = new TChain("T");
@@ -280,28 +293,29 @@ int main(int argc, char** argv){
   //TObjArray *fileElements_b=C_b->GetListOfFiles();
   //TIter next_b(fileElements_b);
   //TChainElement *chEl_b=0;
+  */
   
   G4SBSRunData* run_data;
   
   double Theta_SBS, D_HCal;
   
-  gmn_tree *T_s, *T_b;
+  gmn_tree *T_s;//, *T_b;
 
   ULong64_t Nev_fs;//, Nev_fb;
-  ULong64_t ev_s, ev_b;
+  ULong64_t ev_s;//, ev_b;
   
   ULong64_t NEventsTotal = 0;
-  UShort_t nbkgd = 0;
-  int treenum = 0;
-  int oldtreenum = 0;
+  //UShort_t nbkgd = 0;
+  //int treenum = 0;
+  //int oldtreenum = 0;
   
   int i_fs = 0;
   bool has_data;
   
   double timeZero;
   
-  T_b = new gmn_tree(C_b);
-  ev_b = 0;
+  //T_b = new gmn_tree(C_b);
+  //ev_b = 0;
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
@@ -350,6 +364,11 @@ int main(int argc, char** argv){
       has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 0);
       if(!has_data)continue;
       
+      
+      if(LumiFrac>0){
+	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemmap, LumiFrac);
+      }
+      /*
       // loop here for background
       if(Nbkgd>0){
 	nbkgd = 0;
@@ -366,7 +385,7 @@ int main(int argc, char** argv){
 	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 1);
 	  //if(treenum)
 	}
-	/*
+	
 	while (( chEl_b=(TChainElement*)next_b() )) {
 	  if(nbkgd>=Nbkgd)break;
 	  cout << chEl_b->GetTitle() << endl;
@@ -380,8 +399,8 @@ int main(int argc, char** argv){
 	  }// end loop on background events
 	  nbkgd++;
 	}// end loop on background files
-	*/
       }//end if Nbkgd>0
+      */
       
       bbps->Digitize(T_s,R);
       bbsh->Digitize(T_s,R);
