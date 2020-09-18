@@ -59,7 +59,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   for(int m = 0; m<5; m++){
     //Nhits
     h1_BBGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_nhits_%d",m));
-    f1_gemnhits_[m] = new TF1(Form("f1_gemnhits_%d", m), "gaus", 150., 400.);
+    f1_gemnhits_[m] = new TF1(Form("f1_gemnhits_%d", m), "gaus", 100., 400.);
     h1_BBGEM_nhits_[m]->Fit(f1_gemnhits_[m], "QRN");
     mu = f1_gemnhits_[m]->GetParameter(1);
     sigma = f1_gemnhits_[m]->GetParameter(2);
@@ -84,6 +84,8 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     }else{
       h_EdephitBBGEMs->Add(h1_BBGEM_Edep_log_[m]);
     }
+    
+    //cout << m << " " << NhitsBBGEMs[m] << endl;
   }
   
   //HCal
@@ -105,10 +107,11 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
       h1_HCal_nhits_[m]->Fit(f1_hcalnhits_[m], "QR0");
     }
     NhitsHCal[m] = max(1.0, f1_hcalnhits_[m]->GetParameter(1));
+    //cout << m << " " << NhitsHCal[m] << endl;
   }
   h_EdephitHCal = h1_HCal_EdepHitVsChan_log->ProjectionY("h_EdephitHCal");
   h_zhitHCal = h1_HCal_zHitVsChan->ProjectionY("h_zhitHCal");
-  
+
   //PS
   cout << "PS" << endl;
   TH2D *h1_BBPS_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_BBPS_nhitsVsChan");
@@ -128,6 +131,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     }
     
     NhitsBBPS[m] = max(1.0, f1_bbpsnhits_[m]->GetParameter(1));
+    //cout << m << " " << NhitsBBPS[m] << endl;
   }
   h_EdephitBBPS = h1_BBPS_EdepHitVsChan_log->ProjectionY("h_EdephitBBPS");
   
@@ -149,6 +153,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
       h1_BBSH_nhits_[m]->Fit(f1_bbshnhits_[m], "QR0");
     }
     NhitsBBSH[m] = max(1.0, f1_bbshnhits_[m]->GetParameter(1));
+    //cout << m << " " << NhitsBBSH[m] << endl;
   }
   h_EdephitBBSH = h1_BBSH_EdepHitVsChan_log->ProjectionY("h_EdephitBBSH");
   
@@ -172,6 +177,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
       h1_BBHodo_nhits_[m]->Fit(f1_bbhodonhits_[m], "QR0");
     }
     NhitsBBHodo[m] = max(1.0, f1_bbhodonhits_[m]->GetParameter(1));
+    //cout << m << " " << NhitsBBHodo[m] << endl;
   }
   
   h_EdephitBBHodo = h1_BBHodo_EdepHitVsSlat_log->ProjectionY("h_EdephitBBHodo");
@@ -214,13 +220,14 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   //ordering by increasing unique det ID
   while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
-  
   if(idet>=0){
     for(int m = 0; m<288; m++){
       nhits = R->Poisson(NhitsHCal[m]*lumifrac);
+      //cout << m << " " << nhits << endl;
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitHCal->GetRandom();//R);
 	z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
+	cout << " " << i << " " << edep << " " << z_hit << endl;
 	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
 	Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
 	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
@@ -237,6 +244,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   if(idet>=0){
     for(int m = 0; m<52; m++){
       nhits = R->Poisson(NhitsBBPS[m]*lumifrac);
+      //cout << m << " " << nhits << endl;
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitBBPS->GetRandom();//R);
 	
@@ -286,6 +294,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     }
   }
   
+  //cout << "grinch" << endl;
   while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
  
@@ -313,7 +322,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     for(int m = 0; m<90; m++){
       nhits = R->Poisson(NhitsBBHodo[m]*lumifrac);
       for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitBBHodo->GetRandom();
+	edep =  h_EdephitBBHodo->GetRandom()*1.e6;
 	x_hit =  h_xhitBBHodo->GetRandom();
 	
 	p = R->Uniform(-50.,50.);

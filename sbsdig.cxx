@@ -133,6 +133,7 @@ int main(int argc, char** argv){
       BkgdGenerator = new SBSDigBkgdGen(f_bkgd);
     }
   }
+  //f_bkgd->Close();
   
   // ------------------- // dev notes // ------------------- //
   // The loop on the input signal and background chains 
@@ -340,7 +341,7 @@ int main(int argc, char** argv){
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%10000==0)
+      if(NEventsTotal%1000==0)
 	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);

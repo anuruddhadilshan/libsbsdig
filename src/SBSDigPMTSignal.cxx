@@ -466,7 +466,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_GRINCH_dighit_chan->push_back(chan);
     T->Earm_GRINCH_dighit_adc->push_back(fADC);
     if(fTDCs.size()>=2){
-      for(int j = 0;j<2; j++){
+      for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
 	  T->Earm_GRINCH_dighit_tdc_t->push_back(fTDCs[j]-1000);
