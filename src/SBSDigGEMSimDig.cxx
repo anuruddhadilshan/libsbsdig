@@ -731,6 +731,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	    //cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
 	  }
 	}
+	//#ifdef 
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
 	  //if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
 	  //FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
@@ -846,9 +847,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	      T->Earm_BBGEM_5y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
 	    }
 	  }
-	  //#endif
-	  
-	}
+	}//end if(...)
+	//#endif
 	//}else{
 	//FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
 	//}

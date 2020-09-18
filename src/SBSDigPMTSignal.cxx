@@ -395,7 +395,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
       // trim "all" bits that are above the number of TDC bits - a couple to speed it up
       // (since TDC have a revolving clock, as far as I understand)
       // let's use an arbitrary reference time offset of 1us before the trigger
-      tdc_value = TMath::Nint((fLeadTimes.at(i))/TDCconv);
+      tdc_value = TMath::Nint((fLeadTimes.at(i))/TDCconv)+1000;
       for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
@@ -403,7 +403,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
       //fTDCs.insert(fTDCs.begin()+0, TMath::Nint(fLeadTimes.at(0)*diginfo.TDCConversion()));//bug!!!!
       fTDCs.push_back(tdc_value);//they're already sorted in order, presumably
       // also mark the traling time with setting bin 31 to 1 // need to reconvert then
-      tdc_value = TMath::Nint((fTrailTimes.at(i))/TDCconv);
+      tdc_value = TMath::Nint((fTrailTimes.at(i))/TDCconv)+1000;
       for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
       }
@@ -442,9 +442,20 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_BBHodo_dighit_nchan++;
     T->Earm_BBHodo_dighit_chan->push_back(chan);
     T->Earm_BBHodo_dighit_adc->push_back(fADC);
-    if(fTDCs.size()){
-      T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[0]);
-      T->Earm_BBHodo_dighit_tdc_t->push_back(fTDCs[1]);
+    if(fTDCs.size()>=2){
+      for(int j = 0;j<fTDCs.size(); j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  T->Earm_BBHodo_dighit_tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[j]-1000);
+	}
+	if(j>3 && j%2==0){
+	  T->Earm_BBHodo_dighit_nchan++;
+	  T->Earm_BBHodo_dighit_chan->push_back(chan);
+	  T->Earm_BBHodo_dighit_adc->push_back(-1000000);
+	}
+      }
     }else{
       T->Earm_BBHodo_dighit_tdc_l->push_back(-1000000);
       T->Earm_BBHodo_dighit_tdc_t->push_back(-1000000);
@@ -454,9 +465,20 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_GRINCH_dighit_nchan++;
     T->Earm_GRINCH_dighit_chan->push_back(chan);
     T->Earm_GRINCH_dighit_adc->push_back(fADC);
-    if(fTDCs.size()){
-      T->Earm_GRINCH_dighit_tdc_l->push_back(fTDCs[0]);
-      T->Earm_GRINCH_dighit_tdc_t->push_back(fTDCs[1]);
+    if(fTDCs.size()>=2){
+      for(int j = 0;j<2; j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  T->Earm_GRINCH_dighit_tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  T->Earm_GRINCH_dighit_tdc_l->push_back(fTDCs[j]-1000);
+	}
+	if(j>3 && j%2==0){
+	  T->Earm_BBHodo_dighit_nchan++;
+	  T->Earm_BBHodo_dighit_chan->push_back(chan);
+	  T->Earm_BBHodo_dighit_adc->push_back(-1000000);
+	}
+      }
     }else{
       T->Earm_GRINCH_dighit_tdc_l->push_back(-1000000);
       T->Earm_GRINCH_dighit_tdc_t->push_back(-1000000);

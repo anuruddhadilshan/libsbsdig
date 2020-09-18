@@ -39,6 +39,7 @@ class SBSDigBkgdGen {
   
   Double_t* NhitsHCal;
   TH1D* h_EdephitHCal;
+  TH1D* h_zhitHCal;
   
   Double_t* NhitsBBPS;
   TH1D* h_EdephitBBPS;

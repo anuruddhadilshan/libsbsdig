@@ -74,7 +74,7 @@ class PMTSignal {
   //TDCs: multiple values possible.
   std::vector<double> fLeadTimes;
   std::vector<double> fTrailTimes;
-  std::vector<UInt_t> fTDCs;
+  std::vector<Int_t> fTDCs;
   //SimEncoder::tdc_data fTDCData;
   //TRndmManager* fRN;
 

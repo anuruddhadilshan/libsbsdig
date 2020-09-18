@@ -92,6 +92,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TH1D* h1_HCal_nhits_[288];
   TF1* f1_hcalnhits_[288];
   TH2D *h1_HCal_EdepHitVsChan_log = (TH2D*)f_bkgd->Get("h1_HCal_EdepHitVsChan_log");
+  TH2D *h1_HCal_zHitVsChan = (TH2D*)f_bkgd->Get("h1_HCal_zHitVsChan");
 
   for(int m = 0; m<288; m++){
     h1_HCal_nhits_[m] = h1_HCal_nhitsVsChan->ProjectionY(Form("h1_HCal_nhits_%d", m), m+1, m+1);
@@ -106,6 +107,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     NhitsHCal[m] = max(1.0, f1_hcalnhits_[m]->GetParameter(1));
   }
   h_EdephitHCal = h1_HCal_EdepHitVsChan_log->ProjectionY("h_EdephitHCal");
+  h_zhitHCal = h1_HCal_zHitVsChan->ProjectionY("h_zhitHCal");
   
   //PS
   cout << "PS" << endl;
@@ -218,7 +220,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
       nhits = R->Poisson(NhitsHCal[m]*lumifrac);
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitHCal->GetRandom();//R);
-	z_hit = R->Uniform(-0.91, 0.91);//for the time being
+	z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
 	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
 	Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
 	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
