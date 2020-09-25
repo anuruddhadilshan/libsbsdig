@@ -6,6 +6,8 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedef;
 
+#pragma link C++ class g4sbs_data+;
+#pragma link C++ class g4sbs_tree+;
 #pragma link C++ class gmn_tree+;
 #pragma link C++ class PMTSignal+;
 #pragma link C++ class SBSDigBkgdGen+;
@@ -17,8 +19,6 @@
 //#pragma link C++ class SBSDigCal+;
 //#pragma link C++ class SBSDigCher+;
 //#pragma link C++ class SBSDigScint+;
-//#pragma link C++ class g4sbs_data+;
-//#pragma link C++ class g4sbs_tree+;
 //#pragma link C++ class TSBSDBManager+;
 //#pragma link C++ class TSBSGeant4File+;
 //#pragma link C++ class TSBSSimAuxi+;

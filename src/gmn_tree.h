@@ -1841,7 +1841,7 @@ void gmn_tree::AddDigBranches()
   b_Earm_BBGEM_5y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_3", &Earm_BBGEM_5y_dighit_adc_3);
   b_Earm_BBGEM_5y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_4", &Earm_BBGEM_5y_dighit_adc_4);
   b_Earm_BBGEM_5y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.5y.dighit.adc_5", &Earm_BBGEM_5y_dighit_adc_5);
-  b_Harm_HCal_dighit_nchan = fChain->Branch("Earm.BBGEM.dighit.nchan", &Harm_HCal_dighit_nchan);
+  b_Harm_HCal_dighit_nchan = fChain->Branch("Harm.HCal.dighit.nchan", &Harm_HCal_dighit_nchan);
   b_Harm_HCal_dighit_chan = fChain->Branch("Harm.HCal.dighit.chan", &Harm_HCal_dighit_chan);
   b_Harm_HCal_dighit_adc_0 = fChain->Branch("Harm.HCal.dighit.adc_0", &Harm_HCal_dighit_adc_0);
   b_Harm_HCal_dighit_adc_1 = fChain->Branch("Harm.HCal.dighit.adc_1", &Harm_HCal_dighit_adc_1);
