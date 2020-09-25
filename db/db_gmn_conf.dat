@@ -1,80 +1,93 @@
-rseed 0
+#Random seed
+Rseed 0
 
-TriggerJitter 3.0 //ns
+#global trigger jitter for all detectors in ns
+TriggerJitter 3.0 
 
-detectors_list bbps bbsh grinch bbhodo hcal bbgem
+#list of detectors to digitize
+detectors_list hcal bbps bbsh grinch bbhodo bbgem 
 
-NChan_BBPS 52
-gatewidth_BBPS 100 //ns
+NChan_BBPS 52 
+gatewidth_BBPS 100 
 gain_BBPS 2.e6
-ped_BBPS 600.0 // ADC channel
-pedsigma_BBPS 3.0 // ADC channel
-trigoffset_BBPS 18.2 //ns
-ADCconv_BBPS 50 //fC/ch
+ped_BBPS 600.0 
+pedsigma_BBPS 3.0 
+trigoffset_BBPS 18.2 
+ADCconv_BBPS 50 
 ADCbits_BBPS 12 
-sigmapulse_BBPS 3.0 //ns / 1.2 of 
+sigmapulse_BBPS 3.0 
 
 NChan_BBSH 189
-gatewidth_BBSH 100 //ns
+gatewidth_BBSH 100 
 gain_BBSH 7.5e5
-ped_BBSH 500.0 // ADC channel
-pedsigma_BBSH 4.5 // ADC channel
-trigoffset_BBSH 18.5 //ns
-ADCconv_BBSH 50 //fC/ch
+ped_BBSH 500.0 
+pedsigma_BBSH 4.5 
+trigoffset_BBSH 18.5 
+ADCconv_BBSH 50 
 ADCbits_BBSH 12 
-sigmapulse_BBSH 3.0 //ns / 1.2 of 
+sigmapulse_BBSH 3.0 
 
 NChan_GRINCH 510 
-gatewidth_GRINCH 100 //ns
+gatewidth_GRINCH 100 
 gain_GRINCH 7.0e6
 ped_GRINCH 0.0 
 pedsigma_GRINCH 0.0
-trigoffset_GRINCH 15.3 //ns
-threshold_GRINCH 3.e-3 //V
-ADCconv_GRINCH 100 //fC/ch
+trigoffset_GRINCH 15.3 
+threshold_GRINCH 3.e-3 
+ADCconv_GRINCH 100 
 ADCbits_GRINCH 12 
-TDCconv_GRINCH 1.0 //ns/channel
-TDCbits_GRINCH 16 //ns/channel
-sigmapulse_GRINCH 3.75 //ns
+TDCconv_GRINCH 1.0 
+TDCbits_GRINCH 16 
+sigmapulse_GRINCH 3.75 
 
 NChan_BBHODO 180 
-gatewidth_BBHODO 100 //ns
+gatewidth_BBHODO 100 
 gain_BBHODO 1.0e5
 ped_BBHODO 0.0 
 pedsigma_BBHODO 0.0
-trigoffset_BBHODO 18.6 //ns
-threshold_BBHODO 3.e-3 //V
-ADCconv_BBHODO 100 //fC/ch
+trigoffset_BBHODO 18.6 
+threshold_BBHODO 3.e-3 
+ADCconv_BBHODO 100 
 ADCbits_BBHODO 12 
-TDCconv_BBHODO 0.1 //ns/channel
-TDCbits_BBHODO 19 //ns/channel
-sigmapulse_BBHODO 1.6 //ns
+TDCconv_BBHODO 0.1 
+TDCbits_BBHODO 19 
+sigmapulse_BBHODO 1.6 
 
 NChan_HCAL 288
-gatewidth_HCAL 80 //ns
+gatewidth_HCAL 80 
 gain_HCAL 1.0e6
 ped_HCAL 0.0 
 pedsigma_HCAL 0.0
-trigoffset_HCAL 81.0 //ns
-threshold_HCAL 3.e-3 //V
-ADCconv_HCAL 1.0 //fC/ch //??
-TDCconv_HCAL 0.12 //ns/channel
-TDCbits_HCAL 16 //ns/channel
+trigoffset_HCAL 81.0 
+threshold_HCAL 3.e-3 
+ADCconv_HCAL 1.0 
+TDCconv_HCAL 0.12 
+TDCbits_HCAL 16 
 FADC_ADCbits 12 
-FADC_sampsize 4.0 //ns
+FADC_sampsize 4.0 
 
-NPlanes_BBGEM 32 // number of planes/modules/readout
+# number of planes/modules/readout
+NPlanes_BBGEM 32 
 
-gatewidth_BBGEM 400 //ns
+# data acquisition window for BBGEM in ns
+gatewidth_BBGEM 400 
 
-nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 #number of strips for each plane/module
-					
-offset_bbgem -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. #offset in transport coordinate for each plane/module
+#number of strips for each plane/module
+nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 
 
-strip_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 #strip angle for all BB GEM readouts
+#offset in transport coordinate for each plane/module in meters
+offset_bbgem -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
 
-triggeroffset_bbgem 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. #trigger offsets for all planes
+#strip angle for all BB GEM readouts in degrees
+strip_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
 
+#trigger offsets for all planes in ns
+triggeroffset_bbgem 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. 
+
+#zero suppression threshold for GEMs in ADC channels
 ZsupThr_bbgem 240.
 
-commonmode_array 1500.
+#common mode value/array for BBGEMs in ADC channels
+commonmode_array_bbgem 1500.
+
+endconfig

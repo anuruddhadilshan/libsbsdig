@@ -97,12 +97,12 @@ using namespace std;
 int main(int argc, char** argv){
   
   // Step 0: read out arguments
-  string inputsigfile, inputbkgdfile = "";//sources of files
+  string db_file, inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
   double LumiFrac = 0;
       
-  if(argc<2){
+  if(argc<3){
     cout << "*** Not enough arguments! ***" << endl
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
@@ -112,11 +112,13 @@ int main(int argc, char** argv){
     return(-1);
   }
   
-  inputsigfile = argv[1];
+  db_file = argv[1];
+  cout << " database file " << db_file << endl;
+  inputsigfile = argv[2];
   cout << " Signal input files from: " << inputsigfile << endl;
-  if(argc>2)Nentries = atoi(argv[2]);
+  if(argc>3)Nentries = atoi(argv[2]);
   cout << " Number of (signal) events to process = " << Nentries << endl;
-  if(argc>4){
+  if(argc>5){
     inputbkgdfile = argv[3];
     cout << " Background histgrams from: " << inputbkgdfile << endl;
     LumiFrac = max(0., atof(argv[4]));
@@ -142,10 +144,6 @@ int main(int argc, char** argv){
   // First, we want to extend the input tree (for signal only!!!)
   // I guess in order to avoid adding extra layers of code, 
   // the tree extension might have to be coded in the custom tree class
-  
-  // Step 1: read input files build the input chains
-  TRandom3* R = new TRandom3(0);
-  TString currentline;
   
   /*
   double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
@@ -181,155 +179,292 @@ int main(int argc, char** argv){
   
   double commonmode_array[1] = {1500.};
   */
-
+  
   std::vector<SBSDigPMTDet*> PMTdetectors;
   std::vector<int> detmap;
   std::vector<SBSDigGEMDet*> GEMdetectors;
+  std::vector<SBSDigGEMSimDig*> GEMsimDig;
   std::vector<int> gemmap;
   
-  Int_t Rseed;
-  Double_t TriggerJitter;
+  // Variable parameters. 
+  // Can be configured with the database, but are provided with defaults.
+  Int_t Rseed = 0;
+  Double_t TriggerJitter = 3.0;
   
-  string* detectors_list;
+  std::vector<TString> detectors_list;
   
-  Int_t NChan_BBPS;
-  Double_t gatewidth_BBPS;
-  Double_t gain_BBPS;
-  Double_t ped_BBPS;
-  Double_t pedsigma_BBPS;
-  Double_t trigoffset_BBPS;
-  Double_t ADCconv_BBPS;
-  Int_t ADCbits_BBPS;
-  Double_t sigmapulse_BBPSSH;
+  Int_t NChan_BBPS = 52;
+  Double_t gatewidth_BBPS = 100.;
+  Double_t gain_BBPS = 2.e6;
+  Double_t ped_BBPS = 600.;//
+  Double_t pedsigma_BBPS = 3.;//
+  Double_t trigoffset_BBPS = 18.2;//
+  Double_t ADCconv_BBPS = 50.;
+  Int_t ADCbits_BBPS = 12;
+  Double_t sigmapulse_BBPSSH = 3.0;
     
-  Int_t NChan_BBSH;
-  Double_t gatewidth_BBSH;
-  Double_t gain_BBSH;
-  Double_t ped_BBSH;
-  Double_t pedsigma_BBSH;
-  Double_t trigoffset_BBSH;
-  Double_t ADCconv_BBSH;
-  Int_t ADCbits_BBSH;
-  Double_t sigmapulse_BBSH;
+  Int_t NChan_BBSH = 189;
+  Double_t gatewidth_BBSH = 100.;
+  Double_t gain_BBSH = 7.5e5;
+  Double_t ped_BBSH = 500.;
+  Double_t pedsigma_BBSH = 4.5;
+  Double_t trigoffset_BBSH = 18.5;
+  Double_t ADCconv_BBSH = 50.;
+  Int_t ADCbits_BBSH = 12;
+  Double_t sigmapulse_BBSH = 3.0;
     
-  Int_t NChan_GRINCH;
-  Double_t gatewidth_GRINCH;
-  Double_t gain_GRINCH;
-  Double_t ped_GRINCH;
-  Double_t pedsigma_GRINCH;
-  Double_t trigoffset_GRINCH;
-  Double_t threshold_GRINCH;
-  Double_t ADCconv_GRINCH;
-  Int_t ADCbits_GRINCH;
-  Double_t TDCconv_GRINCH;
-  Int_t TDCbits_GRINCH;
-  Double_t sigmapulse_GRINCH;
+  Int_t NChan_GRINCH = 510;
+  Double_t gatewidth_GRINCH = 100.;
+  Double_t gain_GRINCH = 7.e6;
+  Double_t ped_GRINCH = 0.;
+  Double_t pedsigma_GRINCH = 0.;
+  Double_t trigoffset_GRINCH = 15.3;
+  Double_t threshold_GRINCH = 3.e-3;
+  Double_t ADCconv_GRINCH = 100;
+  Int_t ADCbits_GRINCH = 12;
+  Double_t TDCconv_GRINCH = 1.;
+  Int_t TDCbits_GRINCH = 16;
+  Double_t sigmapulse_GRINCH = 3.75;
  
-  Int_t NChan_BBHODO;
-  Double_t gatewidth_BBHODO;
-  Double_t gain_BBHODO;
-  Double_t ped_BBHODO;
-  Double_t pedsigma_BBHODO;
-  Double_t trigoffset_BBHODO;
-  Double_t threshold_BBHODO;
-  Double_t ADCconv_BBHODO;
-  Int_t ADCbits_BBHODO;
-  Double_t TDCconv_BBHODO;
-  Int_t TDCbits_BBHODO;
-  Double_t sigmapulse_BBHODO;
+  Int_t NChan_BBHODO = 180;
+  Double_t gatewidth_BBHODO = 100.;
+  Double_t gain_BBHODO = 1.e5;
+  Double_t ped_BBHODO = 0.;
+  Double_t pedsigma_BBHODO = 0.;
+  Double_t trigoffset_BBHODO = 18.6;
+  Double_t threshold_BBHODO = 3.e3;
+  Double_t ADCconv_BBHODO = 100.;
+  Int_t ADCbits_BBHODO = 12;
+  Double_t TDCconv_BBHODO = 0.1;
+  Int_t TDCbits_BBHODO = 19;
+  Double_t sigmapulse_BBHODO = 1.6;
 
-  Int_t NChan_HCAL;
-  Double_t gatewidth_HCAL;
-  Double_t gain_HCAL;
-  Double_t ped_HCAL;
-  Double_t pedsigma_HCAL;
-  Double_t trigoffset_HCAL;
-  Double_t threshold_HCAL;
-  Double_t ADCconv_HCAL;
-  Double_t TDCconv_HCAL;
-  Int_t TDCbits_HCAL;
-  Int_t FADC_ADCbits;
-  Double_t FADC_sampsize;
+  Int_t NChan_HCAL = 288;
+  Double_t gatewidth_HCAL = 80;
+  Double_t gain_HCAL = 1.e6;
+  Double_t ped_HCAL = 0.;
+  Double_t pedsigma_HCAL = 0.;
+  Double_t trigoffset_HCAL = 81.;
+  Double_t threshold_HCAL = 3.e-3;
+  Double_t ADCconv_HCAL = 1.;
+  Double_t TDCconv_HCAL = 0.12;
+  Int_t TDCbits_HCAL = 16;
+  Int_t FADC_ADCbits = 12;
+  Double_t FADC_sampsize = 4.0;
  
-  Double_t NPlanes_BBGEM;// 32 // number of planes/modules/readout
-  Double_t gatewidth_BBGEM;
+  Int_t NPlanes_BBGEM = 32;// 32 // number of planes/modules/readout
+  Double_t gatewidth_BBGEM = 400.;
   Int_t* nstrips_bbgem;
   Double_t* offset_bbgem;
   Double_t* strip_angle_bbgem;
   Double_t* triggeroffset_bbgem;
-  Double_t ZsupThr_bbgem;
-  Double_t* commonmode_array;
+  Double_t ZsupThr_bbgem = 240.;
+  Double_t* commonmode_array_bbgem;
   
-  //double NpeChargeConv
+  //Add param for other detectors there...
   
-  //Declaring detectors
-  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
-  SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array);
-  
-  SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_BBPS);
-  SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_BBSH);
-  SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_GRINCH);
-  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
-  SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
-  
-  bbps->fGain = gain_BBPS;
-  bbps->fPedestal = ped_BBPS;
-  bbps->fPedSigma = pedsigma_BBPS;
-  bbps->fTrigOffset = trigoffset_BBPS;
-  bbps->fGateWidth = gatewidth_BBPS;
-  bbps->fADCconv = ADCconv_BBPS;
-  bbps->fADCbits = ADCbits_BBPS;
-  
-  bbsh->fGain = gain_BBSH;
-  bbsh->fPedestal = ped_BBSH;
-  bbsh->fPedSigma = pedsigma_BBSH;
-  bbsh->fTrigOffset = trigoffset_BBSH;
-  bbsh->fGateWidth = gatewidth_BBSH;
-  bbsh->fADCconv = ADCconv_BBSH;
-  bbsh->fADCbits = ADCbits_BBSH;
-  
-  grinch->fGain = gain_GRINCH;
-  grinch->fPedestal = ped_GRINCH;
-  grinch->fPedSigma = pedsigma_GRINCH;
-  grinch->fTrigOffset = trigoffset_GRINCH;
-  grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
-  grinch->fGateWidth = gatewidth_GRINCH;
-  grinch->fADCconv = ADCconv_GRINCH;
-  grinch->fADCbits = ADCbits_GRINCH;
-  grinch->fTDCconv = TDCconv_GRINCH;
-  grinch->fTDCbits = TDCbits_GRINCH; 
-  
-  bbhodo->fGain = gain_BBHODO;
-  bbhodo->fPedestal = ped_BBHODO;
-  bbhodo->fPedSigma = pedsigma_BBHODO;
-  bbhodo->fTrigOffset = trigoffset_BBHODO;
-  bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
-  bbhodo->fGateWidth = gatewidth_BBHODO;
-  bbhodo->fADCconv = ADCconv_BBHODO;
-  bbhodo->fADCbits = ADCbits_BBHODO;
-  bbhodo->fTDCconv = TDCconv_BBHODO;
-  bbhodo->fTDCbits = TDCbits_BBHODO; 
-  
-  hcal->fGain = gain_HCAL;
-  hcal->fPedestal = ped_HCAL;
-  hcal->fPedSigma = pedsigma_HCAL;
-  hcal->fTrigOffset = trigoffset_HCAL;
-  hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
-  hcal->fGateWidth = gatewidth_HCAL;
-  hcal->fADCconv = ADCconv_HCAL;
-  hcal->fADCbits = FADC_ADCbits;
-  hcal->fTDCconv = TDCconv_HCAL;
-  hcal->fTDCbits = TDCbits_HCAL; 
-  hcal->SetSamples(FADC_sampsize);
-  
-  //ordered by increasing uinque id
-  PMTdetectors.push_back(hcal);  detmap.push_back(HCAL_UNIQUE_DETID);
-  PMTdetectors.push_back(bbps);  detmap.push_back(BBPS_UNIQUE_DETID);
-  PMTdetectors.push_back(bbsh);  detmap.push_back(BBSH_UNIQUE_DETID);
-  PMTdetectors.push_back(grinch);  detmap.push_back(GRINCH_UNIQUE_DETID);
-  PMTdetectors.push_back(bbhodo);  detmap.push_back(HODO_UNIQUE_DETID);
+  //-----------------------------
+  //  Read database
+  //-----------------------------
 
-  GEMdetectors.push_back(bbgem); gemmap.push_back(BBGEM_UNIQUE_DETID);
+  ifstream in_db(db_file.c_str());
+  
+  TString currentline;
+  while( currentline.ReadLine(in_db) && !currentline.BeginsWith("endconfig")){
+    if( !currentline.BeginsWith("#") ){
+      TObjArray *tokens = currentline.Tokenize(" ");
+      int ntokens = tokens->GetEntries();
+      
+      if( ntokens >= 2 ){
+	TString skey = ( (TObjString*) (*tokens)[0] )->GetString();
+	
+	if(skey=="Rseed"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Rseed = stemp.Atoi();
+	}
+	
+	if(skey=="TriggerJitter"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TriggerJitter = stemp.Atof();
+	}
+	
+	if(skey=="detectors_list"){
+	  for(int k = 1; k<ntokens; k++){
+	    TString sdet = ( (TObjString*) (*tokens)[k] )->GetString();
+	    detectors_list.push_back(sdet);
+	  }
+	}
+	
+	//todo: finish read db for non gem detectors...
+	
+	if(skey=="NPlanes_BBGEM"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_BBGEM = stemp.Atoi();
+	  
+	  nstrips_bbgem = new Int_t[NPlanes_BBGEM];
+	  offset_bbgem = new Double_t[NPlanes_BBGEM];
+	  strip_angle_bbgem = new Double_t[NPlanes_BBGEM];
+	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
+	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
+	  commonmode_array_bbgem = new Double_t[NPlanes_BBGEM];
+	}
+	
+	if(skey=="gatewidth_BBGEM"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_BBGEM = stemp.Atof();
+	}
+	
+	if(skey=="ZsupThr_bbgem"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_bbgem = stemp.Atof();
+	}
+	
+	if(skey=="nstrips_bbgem"){
+	  if(ntokens==NPlanes_BBGEM+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_bbgem[k] = stemp.Atoi();
+	    }
+	  }
+	}
+	
+	if(skey=="offset_bbgem"){
+	  if(ntokens==NPlanes_BBGEM+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_bbgem[k] = stemp.Atof();
+	    }
+	  }
+	}
+	
+	if(skey=="strip_angle_bbgem"){
+	  if(ntokens==NPlanes_BBGEM+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      strip_angle_bbgem[k] = stemp.Atoi();
+	    }
+	  }
+	}
+	
+	if(skey=="triggeroffset_bbgem"){
+	  if(ntokens==NPlanes_BBGEM/2+1){
+	    for(int k = 1; k<ntokens/2+1; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_bbgem[k] = stemp.Atof();
+	    }
+	  }
+	}
+	
+	if(skey=="commonmode_array_bbgem"){
+	  for(int k = 1; k<ntokens+1; k++){
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    triggeroffset_bbgem[k] = stemp.Atof();
+	  }
+	}
+	
+      }//end if( ntokens >= 2 )
+    }//end if( !currentline.BeginsWith("#"))
+  }//end while
+  
+  
+  //Declare detectors
+  for(int k = 0; k<detectors_list.size(); k++){
+    if(detectors_list[k] == "bbgem"){
+      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
+      
+      GEMdetectors.push_back(bbgem);
+      gemmap.push_back(BBGEM_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+    }
+    
+    if(detectors_list[k] == "bbps"){
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_BBPS);
+
+      bbps->fGain = gain_BBPS;
+      bbps->fPedestal = ped_BBPS;
+      bbps->fPedSigma = pedsigma_BBPS;
+      bbps->fTrigOffset = trigoffset_BBPS;
+      bbps->fGateWidth = gatewidth_BBPS;
+      bbps->fADCconv = ADCconv_BBPS;
+      bbps->fADCbits = ADCbits_BBPS;
+      
+      PMTdetectors.push_back(bbps);
+      detmap.push_back(BBPS_UNIQUE_DETID);
+    }
+    
+    if(detectors_list[k] == "bbsh"){
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_BBSH);
+      
+      bbsh->fGain = gain_BBSH;
+      bbsh->fPedestal = ped_BBSH;
+      bbsh->fPedSigma = pedsigma_BBSH;
+      bbsh->fTrigOffset = trigoffset_BBSH;
+      bbsh->fGateWidth = gatewidth_BBSH;
+      bbsh->fADCconv = ADCconv_BBSH;
+      bbsh->fADCbits = ADCbits_BBSH;    
+      
+      PMTdetectors.push_back(bbsh);
+      detmap.push_back(BBSH_UNIQUE_DETID);
+    }
+    
+    if(detectors_list[k] == "grinch"){
+      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_GRINCH);
+  
+      grinch->fGain = gain_GRINCH;
+      grinch->fPedestal = ped_GRINCH;
+      grinch->fPedSigma = pedsigma_GRINCH;
+      grinch->fTrigOffset = trigoffset_GRINCH;
+      grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
+      grinch->fGateWidth = gatewidth_GRINCH;
+      grinch->fADCconv = ADCconv_GRINCH;
+      grinch->fADCbits = ADCbits_GRINCH;
+      grinch->fTDCconv = TDCconv_GRINCH;
+      grinch->fTDCbits = TDCbits_GRINCH;
+      
+      PMTdetectors.push_back(grinch);
+      detmap.push_back(GRINCH_UNIQUE_DETID);
+    }
+    
+    if(detectors_list[k] == "hodo"){
+      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
+      
+      bbhodo->fGain = gain_BBHODO;
+      bbhodo->fPedestal = ped_BBHODO;
+      bbhodo->fPedSigma = pedsigma_BBHODO;
+      bbhodo->fTrigOffset = trigoffset_BBHODO;
+      bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
+      bbhodo->fGateWidth = gatewidth_BBHODO;
+      bbhodo->fADCconv = ADCconv_BBHODO;
+      bbhodo->fADCbits = ADCbits_BBHODO;
+      bbhodo->fTDCconv = TDCconv_BBHODO;
+      bbhodo->fTDCbits = TDCbits_BBHODO; 
+      
+      PMTdetectors.push_back(bbhodo);
+      detmap.push_back(HODO_UNIQUE_DETID);
+    }
+    
+    if(detectors_list[k] == "hcal"){
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
+      
+      hcal->fGain = gain_HCAL;
+      hcal->fPedestal = ped_HCAL;
+      hcal->fPedSigma = pedsigma_HCAL;
+      hcal->fTrigOffset = trigoffset_HCAL;
+      hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
+      hcal->fGateWidth = gatewidth_HCAL;
+      hcal->fADCconv = ADCconv_HCAL;
+      hcal->fADCbits = FADC_ADCbits;
+      hcal->fTDCconv = TDCconv_HCAL;
+      hcal->fTDCbits = TDCbits_HCAL; 
+      hcal->SetSamples(FADC_sampsize);
+      
+      //ordered by increasing uinque id
+      PMTdetectors.push_back(hcal);
+      detmap.push_back(HCAL_UNIQUE_DETID);
+    }
+  }
+  
   /*  
   std::map<int, SBSDigPMTDet*> PMTdetectors;
   PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
@@ -341,6 +476,9 @@ int main(int argc, char** argv){
   GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
   */
   
+  TRandom3* R = new TRandom3(Rseed);
+  
+  // Step 1: read input files build the input chains
   // build signal chain
   ifstream sig_inputfile(inputsigfile);
   TChain *C_s = new TChain("T");
@@ -425,6 +563,17 @@ int main(int argc, char** argv){
       
       timeZero = R->Gaus(0.0, TriggerJitter);
       
+      for(int k = 0; k<PMTdetectors.size(); k++){
+	if(detmap[k]==HCAL_UNIQUE_DETID){
+	  PMTdetectors[k]->Clear(true);
+	}else{
+	  PMTdetectors[k]->Clear();
+	}
+      }
+      for(int k = 0; k<GEMdetectors.size(); k++){
+	GEMdetectors[k]->Clear();
+      }
+      /*
       bbgem->Clear();
       //for(int i = 0; i<NPlanes_BBGEM; i++){
       //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
@@ -434,6 +583,7 @@ int main(int argc, char** argv){
       grinch->Clear();
       bbhodo->Clear();
       hcal->Clear(true);
+      */
       
       has_data = false;
       
@@ -482,21 +632,19 @@ int main(int argc, char** argv){
       }//end if Nbkgd>0
       */
       
-      bbps->Digitize(T_s,R);
-      bbsh->Digitize(T_s,R);
-      grinch->Digitize(T_s,R);
-      bbhodo->Digitize(T_s,R);
-      hcal->Digitize(T_s,R);
-      gemdig->Digitize(bbgem, R);
-      //cout << " hou hou " << bbgem->GEMPlanes[4].GetADCSum(400) << endl;
-      // for(int j = 570; j<580; j++){
-      // 	cout << " * " << j << "   ";
-      // 	for(int b = 0; b<6; b++){
-      // 	  cout << " " << bbgem->GEMPlanes[30].GetADC(j, b);
-      // 	}cout << endl;
-      // }
-      gemdig->CheckOut(bbgem, R, T_s);
+      for(int k = 0; k<PMTdetectors.size(); k++){
+	PMTdetectors[k]->Digitize(T_s,R);
+	// bbps->Digitize(T_s,R);
+	// bbsh->Digitize(T_s,R);
+	// grinch->Digitize(T_s,R);
+	// bbhodo->Digitize(T_s,R);
+	// hcal->Digitize(T_s,R);
+      }
       
+      for(int k = 0; k<GEMdetectors.size(); k++){
+	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	GEMsimDig[k]->CheckOut(GEMdetectors[k], R, T_s);
+      }
       //How come this function is so taxing in time??? 
       // Answer in the function... hope we've found a workaround
       //FillDigTree(T_s, PMTdetectors, GEMdetectors);
