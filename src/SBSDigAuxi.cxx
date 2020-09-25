@@ -180,6 +180,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	//hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
 	//hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
 	hit.t = tzero+T->Earm_BBGEM_hit_t->at(k);
+	//cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
 	hit.xin = T->Earm_BBGEM_hit_xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yin = T->Earm_BBGEM_hit_yin->at(k);
 	hit.zin = T->Earm_BBGEM_hit_zin->at(k)-bbgem_z[T->Earm_BBGEM_hit_plane->at(k)-1]+0.8031825;

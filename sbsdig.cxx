@@ -116,12 +116,12 @@ int main(int argc, char** argv){
   cout << " database file " << db_file << endl;
   inputsigfile = argv[2];
   cout << " Signal input files from: " << inputsigfile << endl;
-  if(argc>3)Nentries = atoi(argv[2]);
+  if(argc>3)Nentries = atoi(argv[3]);
   cout << " Number of (signal) events to process = " << Nentries << endl;
   if(argc>5){
-    inputbkgdfile = argv[3];
+    inputbkgdfile = argv[4];
     cout << " Background histgrams from: " << inputbkgdfile << endl;
-    LumiFrac = max(0., atof(argv[4]));
+    LumiFrac = max(0., atof(argv[5]));
     cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
   }
   
@@ -201,7 +201,7 @@ int main(int argc, char** argv){
   Double_t trigoffset_BBPS = 18.2;//
   Double_t ADCconv_BBPS = 50.;
   Int_t ADCbits_BBPS = 12;
-  Double_t sigmapulse_BBPSSH = 3.0;
+  Double_t sigmapulse_BBPS = 3.0;
     
   Int_t NChan_BBSH = 189;
   Double_t gatewidth_BBSH = 100.;
@@ -266,7 +266,7 @@ int main(int argc, char** argv){
   //-----------------------------
   //  Read database
   //-----------------------------
-
+  cout << "read database: " << db_file.c_str() << endl;
   ifstream in_db(db_file.c_str());
   
   TString currentline;
@@ -295,8 +295,282 @@ int main(int argc, char** argv){
 	  }
 	}
 	
-	//todo: finish read db for non gem detectors...
+	//BBPS
+	if(skey=="NChan_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_BBPS = stemp.Atoi();
+	}
 	
+	if(skey=="gatewidth_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_BBPS = stemp.Atof();
+	}
+	
+	if(skey=="gain_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_BBPS = stemp.Atof();
+	}
+	
+	if(skey=="ped_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_BBPS = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_BBPS = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_BBPS = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_BBPS = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_BBPS = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_BBPS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_BBPS = stemp.Atof();
+	}
+	
+	//BBSH
+	if(skey=="NChan_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_BBSH = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_BBSH = stemp.Atof();
+	}
+	
+	if(skey=="gain_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_BBSH = stemp.Atof();
+	}
+	
+	if(skey=="ped_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_BBSH = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_BBSH = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_BBSH = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_BBSH = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_BBSH = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_BBSH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_BBSH = stemp.Atof();
+	}
+
+	//GRINCH
+	if(skey=="NChan_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_GRINCH = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="gain_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="ped_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="threshold_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_GRINCH = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_GRINCH = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_GRINCH = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_GRINCH = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_GRINCH = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_GRINCH"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_GRINCH = stemp.Atof();
+	}
+	
+	//BBHODO
+	if(skey=="NChan_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_BBHODO = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="gain_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="ped_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="threshold_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_BBHODO = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_BBHODO = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_BBHODO = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_BBHODO = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_BBHODO = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_BBHODO"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_BBHODO = stemp.Atof();
+	}
+	
+	//HCal
+	if(skey=="NChan_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_HCAL = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="gain_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="ped_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="threshold_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_HCAL = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_HCAL = stemp.Atof();
+	}	
+	
+	if(skey=="TDCconv_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_HCAL = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_HCAL"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_HCAL = stemp.Atoi();
+	}	
+	
+	if(skey=="FADC_ADCbits"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  FADC_ADCbits = stemp.Atoi();
+	}
+	
+	if(skey=="FADC_sampsize"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  FADC_sampsize = stemp.Atof();
+	}
+	
+	//GEMs
 	if(skey=="NPlanes_BBGEM"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NPlanes_BBGEM = stemp.Atoi();
@@ -323,7 +597,7 @@ int main(int argc, char** argv){
 	  if(ntokens==NPlanes_BBGEM+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      nstrips_bbgem[k] = stemp.Atoi();
+	      nstrips_bbgem[k-1] = stemp.Atoi();
 	    }
 	  }
 	}
@@ -332,7 +606,7 @@ int main(int argc, char** argv){
 	  if(ntokens==NPlanes_BBGEM+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      offset_bbgem[k] = stemp.Atof();
+	      offset_bbgem[k-1] = stemp.Atof();
 	    }
 	  }
 	}
@@ -341,14 +615,14 @@ int main(int argc, char** argv){
 	  if(ntokens==NPlanes_BBGEM+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      strip_angle_bbgem[k] = stemp.Atoi();
+	      strip_angle_bbgem[k-1] = stemp.Atoi();
 	    }
 	  }
 	}
 	
 	if(skey=="triggeroffset_bbgem"){
 	  if(ntokens==NPlanes_BBGEM/2+1){
-	    for(int k = 1; k<ntokens/2+1; k++){
+	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      triggeroffset_bbgem[k] = stemp.Atof();
 	    }
@@ -356,7 +630,7 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="commonmode_array_bbgem"){
-	  for(int k = 1; k<ntokens+1; k++){
+	  for(int k = 1; k<ntokens; k++){
 	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	    triggeroffset_bbgem[k] = stemp.Atof();
 	  }
@@ -366,9 +640,12 @@ int main(int argc, char** argv){
     }//end if( !currentline.BeginsWith("#"))
   }//end while
   
-  
-  //Declare detectors
+  //-----------------------------
+  //  Declare detectors
+  //-----------------------------
+  cout << " declaring detectors " << endl;
   for(int k = 0; k<detectors_list.size(); k++){
+    cout << "detector: " << detectors_list[k].Data() << endl;
     if(detectors_list[k] == "bbgem"){
       SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
       SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
@@ -379,7 +656,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_BBPS);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPS, gatewidth_BBPS);
 
       bbps->fGain = gain_BBPS;
       bbps->fPedestal = ped_BBPS;
@@ -394,7 +671,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_BBSH);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPS, gatewidth_BBSH);
       
       bbsh->fGain = gain_BBSH;
       bbsh->fPedestal = ped_BBSH;
