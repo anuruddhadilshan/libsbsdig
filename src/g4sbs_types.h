@@ -17,6 +17,7 @@
 #define spe_unit 1.0e-9 //to convert ns to s...
 #define m_e 511.e-6
 #define n_lg 1.68
+#define ROimpedance 50.0 //Ohm
 
 // List of detector unique IDs: 
 // by (proposed) convention: DetUniqueID = DetType*10+DetID

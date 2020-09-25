@@ -8,7 +8,7 @@ SBSDigGEMDet::SBSDigGEMDet()
 {
 }
 
-SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, double* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr):
+SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, int* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr):
   fUniqueID(uniqueid), fNPlanes(nplanes)
 {
   //for(uint i = 0; i<fNPlanes; i++)GEMPlanes[i] = SBSDigGEMPlane(nstrips[i], nsamp, zsup_thr);

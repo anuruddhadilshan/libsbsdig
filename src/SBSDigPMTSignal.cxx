@@ -442,7 +442,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_BBHodo_dighit_nchan++;
     T->Earm_BBHodo_dighit_chan->push_back(chan);
     T->Earm_BBHodo_dighit_adc->push_back(fADC);
-    if(fTDCs.size()>=2){
+    if(fTDCs.size()==2){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -450,11 +450,13 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
 	}else{
 	  T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[j]-1000);
 	}
+	/*
 	if(j>3 && j%2==0){
 	  T->Earm_BBHodo_dighit_nchan++;
 	  T->Earm_BBHodo_dighit_chan->push_back(chan);
 	  T->Earm_BBHodo_dighit_adc->push_back(-1000000);
 	}
+	*/
       }
     }else{
       T->Earm_BBHodo_dighit_tdc_l->push_back(-1000000);
@@ -465,7 +467,7 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
     T->Earm_GRINCH_dighit_nchan++;
     T->Earm_GRINCH_dighit_chan->push_back(chan);
     T->Earm_GRINCH_dighit_adc->push_back(fADC);
-    if(fTDCs.size()>=2){
+    if(fTDCs.size()==2){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -473,11 +475,13 @@ void PMTSignal::Digitize(int chan, int detid, gmn_tree* T, TRandom3* R, double p
 	}else{
 	  T->Earm_GRINCH_dighit_tdc_l->push_back(fTDCs[j]-1000);
 	}
+	/*
 	if(j>3 && j%2==0){
 	  T->Earm_BBHodo_dighit_nchan++;
 	  T->Earm_BBHodo_dighit_chan->push_back(chan);
 	  T->Earm_BBHodo_dighit_adc->push_back(-1000000);
 	}
+	*/
       }
     }else{
       T->Earm_GRINCH_dighit_tdc_l->push_back(-1000000);

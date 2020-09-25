@@ -1,0 +1,80 @@
+rseed 0
+
+TriggerJitter 3.0 //ns
+
+detectors_list bbps bbsh grinch bbhodo hcal bbgem
+
+NChan_BBPS 52
+gatewidth_BBPS 100 //ns
+gain_BBPS 2.e6
+ped_BBPS 600.0 // ADC channel
+pedsigma_BBPS 3.0 // ADC channel
+trigoffset_BBPS 18.2 //ns
+ADCconv_BBPS 50 //fC/ch
+ADCbits_BBPS 12 
+sigmapulse_BBPS 3.0 //ns / 1.2 of 
+
+NChan_BBSH 189
+gatewidth_BBSH 100 //ns
+gain_BBSH 7.5e5
+ped_BBSH 500.0 // ADC channel
+pedsigma_BBSH 4.5 // ADC channel
+trigoffset_BBSH 18.5 //ns
+ADCconv_BBSH 50 //fC/ch
+ADCbits_BBSH 12 
+sigmapulse_BBSH 3.0 //ns / 1.2 of 
+
+NChan_GRINCH 510 
+gatewidth_GRINCH 100 //ns
+gain_GRINCH 7.0e6
+ped_GRINCH 0.0 
+pedsigma_GRINCH 0.0
+trigoffset_GRINCH 15.3 //ns
+threshold_GRINCH 3.e-3 //V
+ADCconv_GRINCH 100 //fC/ch
+ADCbits_GRINCH 12 
+TDCconv_GRINCH 1.0 //ns/channel
+TDCbits_GRINCH 16 //ns/channel
+sigmapulse_GRINCH 3.75 //ns
+
+NChan_BBHODO 180 
+gatewidth_BBHODO 100 //ns
+gain_BBHODO 1.0e5
+ped_BBHODO 0.0 
+pedsigma_BBHODO 0.0
+trigoffset_BBHODO 18.6 //ns
+threshold_BBHODO 3.e-3 //V
+ADCconv_BBHODO 100 //fC/ch
+ADCbits_BBHODO 12 
+TDCconv_BBHODO 0.1 //ns/channel
+TDCbits_BBHODO 19 //ns/channel
+sigmapulse_BBHODO 1.6 //ns
+
+NChan_HCAL 288
+gatewidth_HCAL 80 //ns
+gain_HCAL 1.0e6
+ped_HCAL 0.0 
+pedsigma_HCAL 0.0
+trigoffset_HCAL 81.0 //ns
+threshold_HCAL 3.e-3 //V
+ADCconv_HCAL 1.0 //fC/ch //??
+TDCconv_HCAL 0.12 //ns/channel
+TDCbits_HCAL 16 //ns/channel
+FADC_ADCbits 12 
+FADC_sampsize 4.0 //ns
+
+NPlanes_BBGEM 32 // number of planes/modules/readout
+
+gatewidth_BBGEM 400 //ns
+
+nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 #number of strips for each plane/module
+					
+offset_bbgem -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. #offset in transport coordinate for each plane/module
+
+strip_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 #strip angle for all BB GEM readouts
+
+triggeroffset_bbgem 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. #trigger offsets for all planes
+
+ZsupThr_bbgem 240.
+
+commonmode_array 1500.

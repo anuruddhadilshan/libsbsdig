@@ -52,7 +52,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TF1* f1_gemnhits_[5];
   TH2D* h1_BBGEM_yVsx_[5];
   TH2D* h1_BBGEM_dyVsdx_[5];
-  TH1D* h1_BBGEM_Edep_log_[5];
+  TH1D* h1_BBGEM_Edep_[5];
   
   cout << "GEMs" << endl;
   
@@ -77,15 +77,16 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     h_dxhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionX(Form("h1_dxhitBBGEM_%d",m));
     h_dyhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionY(Form("h1_dyhitBBGEM_%d",m));
     
-    h1_BBGEM_Edep_log_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_log_%d",m));
+    h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_%d",m));
+    //h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_log_%d",m));
     
     if(m==0){
-      h_EdephitBBGEMs = h1_BBGEM_Edep_log_[m];
+      h_EdephitBBGEMs = h1_BBGEM_Edep_[m];
     }else{
-      h_EdephitBBGEMs->Add(h1_BBGEM_Edep_log_[m]);
+      h_EdephitBBGEMs->Add(h1_BBGEM_Edep_[m]);
     }
     
-    //cout << m << " " << NhitsBBGEMs[m] << endl;
+    cout << m << " " << NhitsBBGEMs[m] << endl;
   }
   
   //HCal
@@ -93,7 +94,8 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TH2D *h1_HCal_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_HCal_nhitsVsChan");
   TH1D* h1_HCal_nhits_[288];
   TF1* f1_hcalnhits_[288];
-  TH2D *h1_HCal_EdepHitVsChan_log = (TH2D*)f_bkgd->Get("h1_HCal_EdepHitVsChan_log");
+  TH2D *h1_HCal_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_HCal_EdepHitVsChan");
+  //TH2D *h1_HCal_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_HCal_EdepHitVsChan_log");
   TH2D *h1_HCal_zHitVsChan = (TH2D*)f_bkgd->Get("h1_HCal_zHitVsChan");
 
   for(int m = 0; m<288; m++){
@@ -109,7 +111,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     NhitsHCal[m] = max(1.0, f1_hcalnhits_[m]->GetParameter(1));
     //cout << m << " " << NhitsHCal[m] << endl;
   }
-  h_EdephitHCal = h1_HCal_EdepHitVsChan_log->ProjectionY("h_EdephitHCal");
+  h_EdephitHCal = h1_HCal_EdepHitVsChan->ProjectionY("h_EdephitHCal");
   h_zhitHCal = h1_HCal_zHitVsChan->ProjectionY("h_zhitHCal");
 
   //PS
@@ -117,7 +119,8 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TH2D *h1_BBPS_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_BBPS_nhitsVsChan");
   TH1D* h1_BBPS_nhits_[52];
   TF1* f1_bbpsnhits_[52];
-  TH2D *h1_BBPS_EdepHitVsChan_log = (TH2D*)f_bkgd->Get("h1_BBPS_EdepHitVsChan_log");
+  TH2D *h1_BBPS_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_BBPS_EdepHitVsChan");
+  //TH2D *h1_BBPS_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_BBPS_EdepHitVsChan_log");
   
   for(int m = 0; m<52; m++){
     h1_BBPS_nhits_[m] = h1_BBPS_nhitsVsChan->ProjectionY(Form("h1_BBPS_nhits_%d", m), m+1, m+1);
@@ -131,16 +134,17 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     }
     
     NhitsBBPS[m] = max(1.0, f1_bbpsnhits_[m]->GetParameter(1));
-    //cout << m << " " << NhitsBBPS[m] << endl;
+    cout << m << " " << NhitsBBPS[m] << endl;
   }
-  h_EdephitBBPS = h1_BBPS_EdepHitVsChan_log->ProjectionY("h_EdephitBBPS");
+  h_EdephitBBPS = h1_BBPS_EdepHitVsChan->ProjectionY("h_EdephitBBPS");
   
   //SH
   cout << "SH" << endl;
   TH2D *h1_BBSH_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_BBSH_nhitsVsChan");
   TH1D* h1_BBSH_nhits_[189];
   TF1* f1_bbshnhits_[189];
-  TH2D *h1_BBSH_EdepHitVsChan_log = (TH2D*)f_bkgd->Get("h1_BBSH_EdepHitVsChan_log");
+  TH2D *h1_BBSH_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_BBSH_EdepHitVsChan");
+  //TH2D *h1_BBSH_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_BBSH_EdepHitVsChan_log");
   
   for(int m = 0; m<189; m++){
     h1_BBSH_nhits_[m] = h1_BBSH_nhitsVsChan->ProjectionY(Form("h1_BBSH_nhits_%d", m), m+1, m+1);
@@ -155,7 +159,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     NhitsBBSH[m] = max(1.0, f1_bbshnhits_[m]->GetParameter(1));
     //cout << m << " " << NhitsBBSH[m] << endl;
   }
-  h_EdephitBBSH = h1_BBSH_EdepHitVsChan_log->ProjectionY("h_EdephitBBSH");
+  h_EdephitBBSH = h1_BBSH_EdepHitVsChan->ProjectionY("h_EdephitBBSH");
   
   //BB Hodo
   cout << "Hodo" << endl;
@@ -163,7 +167,8 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TH1D* h1_BBHodo_nhits_[90];
   TF1* f1_bbhodonhits_[90];
   
-  TH2D *h1_BBHodo_EdepHitVsSlat_log = (TH2D*)f_bkgd->Get("h1_BBHodo_EdepHitVsSlat_log");
+  TH2D *h1_BBHodo_EdepHitVsSlat = (TH2D*)f_bkgd->Get("h1_BBHodo_EdepHitVsSlat");
+  //TH2D *h1_BBHodo_EdepHitVsSlat = (TH2D*)f_bkgd->Get("h1_BBHodo_EdepHitVsSlat_log");
   TH2D *h1_BBHodo_xhitVsSlat = (TH2D*)f_bkgd->Get("h1_BBHodo_xhitVsSlat");
   
   for(int m = 0; m<90; m++){
@@ -180,7 +185,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     //cout << m << " " << NhitsBBHodo[m] << endl;
   }
   
-  h_EdephitBBHodo = h1_BBHodo_EdepHitVsSlat_log->ProjectionY("h_EdephitBBHodo");
+  h_EdephitBBHodo = h1_BBHodo_EdepHitVsSlat->ProjectionY("h_EdephitBBHodo");
   h_xhitBBHodo = h1_BBHodo_xhitVsSlat->ProjectionY("h_xhitBBHodo");
   
   //GRINCH
@@ -223,11 +228,11 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   if(idet>=0){
     for(int m = 0; m<288; m++){
       nhits = R->Poisson(NhitsHCal[m]*lumifrac);
-      //cout << m << " " << nhits << endl;
+      //cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitHCal->GetRandom();//R);
 	z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
-	cout << " " << i << " " << edep << " " << z_hit << endl;
+	//cout << " " << i << " " << edep << " " << z_hit << endl;
 	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
 	Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
 	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
@@ -244,7 +249,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   if(idet>=0){
     for(int m = 0; m<52; m++){
       nhits = R->Poisson(NhitsBBPS[m]*lumifrac);
-      //cout << m << " " << nhits << endl;
+      //cout << m << " " << NhitsBBPS[m]*lumifrac << " " << nhits << endl;
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitBBPS->GetRandom();//R);
 	
@@ -260,6 +265,8 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	  //1500. Used to be 454.: just wrong
 	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
 	  t = R->Uniform(-50.,50.);
+	  
+	  //cout << " " << i << " " << edep << " " << Npe << endl;
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);
 	}

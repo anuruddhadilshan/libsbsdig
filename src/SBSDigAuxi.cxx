@@ -93,7 +93,7 @@ bool UnfoldData(gmn_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   
   while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;  
+  //cout << " " << idet;
   if(idet>=0 && T->Earm_BBSHTF1_hit_nhits){
     for(int i = 0; i<T->Earm_BBSHTF1_hit_nhits; i++){
       // Evaluation of number of photoelectrons and time from energy deposit documented at:

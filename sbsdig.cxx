@@ -28,9 +28,9 @@
 #include "unistd.h"
 #endif
 
-#define qe 1.602e-19
-#define spe_unit 1.0e-9
-
+/*
+//Defining here the parameters for the new detectors.
+//TODO: write a list of parameters that are not "frozen" (e.g. gain, pedestal parameters, etc...) and switch them into databases...
 #define NPlanes_BBGEM 32 // modules...
 #define NChan_BBPS 52
 #define NChan_BBSH 189
@@ -38,7 +38,6 @@
 #define NChan_GRINCH 510 
 #define NChan_HCAL 288
 
-#define ROimpedance 50.0 //Ohm
 #define TriggerJitter 3.0 //ns
 #define ADCbits 12 
 #define gatewidth_PMT 100 //ns
@@ -89,7 +88,7 @@
 #define ADCconv_HCAL 1.0 //fC/ch //??
 #define TDCconv_HCAL 0.12 //ns/channel
 #define TDCbits_HCAL 16 //ns/channel
-
+*/
 
 
 
@@ -102,13 +101,14 @@ int main(int argc, char** argv){
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
   double LumiFrac = 0;
-  
+      
   if(argc<2){
     cout << "*** Not enough arguments! ***" << endl
-	 << " Arguments: list_of_sig_input_files (str, mandatory); " << endl
-	 << "           nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "          list_of_bkgd_input_files (str, def=''); " << endl
-	 << "         nb_of_bkgd_files_to_add_to_sig_evt (int, def=0); " << endl;
+	 << " Arguments: database (mandatory); " << endl
+	 << "           list_of_sig_input_files (str, mandatory); " << endl
+	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
+	 << "         list_of_bkgd_input_files (str, def=''); " << endl
+	 << "        nb_of_bkgd_files_to_add_to_sig_evt (int, def=0); " << endl;
     return(-1);
   }
   
@@ -118,7 +118,7 @@ int main(int argc, char** argv){
   cout << " Number of (signal) events to process = " << Nentries << endl;
   if(argc>4){
     inputbkgdfile = argv[3];
-    cout << " Background hsotgrams from: " << inputbkgdfile << endl;
+    cout << " Background histgrams from: " << inputbkgdfile << endl;
     LumiFrac = max(0., atof(argv[4]));
     cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
   }
@@ -147,7 +147,9 @@ int main(int argc, char** argv){
   TRandom3* R = new TRandom3(0);
   TString currentline;
   
-  //double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
+  /*
+  double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
+
   double nstrips_bbgem[NPlanes_BBGEM] = {1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1024, 1280, 1024, 1280, 1024, 
@@ -175,44 +177,125 @@ int main(int argc, char** argv){
 					   122., 122., 122., 122.5, 122.5, 122.5,  
 					   126., 126., 126., 126.};
   
+  double ZsupThr_bbgem = 240.;
+  
   double commonmode_array[1] = {1500.};
+  */
+
+  std::vector<SBSDigPMTDet*> PMTdetectors;
+  std::vector<int> detmap;
+  std::vector<SBSDigGEMDet*> GEMdetectors;
+  std::vector<int> gemmap;
+  
+  Int_t Rseed;
+  Double_t TriggerJitter;
+  
+  string* detectors_list;
+  
+  Int_t NChan_BBPS;
+  Double_t gatewidth_BBPS;
+  Double_t gain_BBPS;
+  Double_t ped_BBPS;
+  Double_t pedsigma_BBPS;
+  Double_t trigoffset_BBPS;
+  Double_t ADCconv_BBPS;
+  Int_t ADCbits_BBPS;
+  Double_t sigmapulse_BBPSSH;
     
+  Int_t NChan_BBSH;
+  Double_t gatewidth_BBSH;
+  Double_t gain_BBSH;
+  Double_t ped_BBSH;
+  Double_t pedsigma_BBSH;
+  Double_t trigoffset_BBSH;
+  Double_t ADCconv_BBSH;
+  Int_t ADCbits_BBSH;
+  Double_t sigmapulse_BBSH;
+    
+  Int_t NChan_GRINCH;
+  Double_t gatewidth_GRINCH;
+  Double_t gain_GRINCH;
+  Double_t ped_GRINCH;
+  Double_t pedsigma_GRINCH;
+  Double_t trigoffset_GRINCH;
+  Double_t threshold_GRINCH;
+  Double_t ADCconv_GRINCH;
+  Int_t ADCbits_GRINCH;
+  Double_t TDCconv_GRINCH;
+  Int_t TDCbits_GRINCH;
+  Double_t sigmapulse_GRINCH;
+ 
+  Int_t NChan_BBHODO;
+  Double_t gatewidth_BBHODO;
+  Double_t gain_BBHODO;
+  Double_t ped_BBHODO;
+  Double_t pedsigma_BBHODO;
+  Double_t trigoffset_BBHODO;
+  Double_t threshold_BBHODO;
+  Double_t ADCconv_BBHODO;
+  Int_t ADCbits_BBHODO;
+  Double_t TDCconv_BBHODO;
+  Int_t TDCbits_BBHODO;
+  Double_t sigmapulse_BBHODO;
+
+  Int_t NChan_HCAL;
+  Double_t gatewidth_HCAL;
+  Double_t gain_HCAL;
+  Double_t ped_HCAL;
+  Double_t pedsigma_HCAL;
+  Double_t trigoffset_HCAL;
+  Double_t threshold_HCAL;
+  Double_t ADCconv_HCAL;
+  Double_t TDCconv_HCAL;
+  Int_t TDCbits_HCAL;
+  Int_t FADC_ADCbits;
+  Double_t FADC_sampsize;
+ 
+  Double_t NPlanes_BBGEM;// 32 // number of planes/modules/readout
+  Double_t gatewidth_BBGEM;
+  Int_t* nstrips_bbgem;
+  Double_t* offset_bbgem;
+  Double_t* strip_angle_bbgem;
+  Double_t* triggeroffset_bbgem;
+  Double_t ZsupThr_bbgem;
+  Double_t* commonmode_array;
+  
   //double NpeChargeConv
   
   //Declaring detectors
-  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, angle_bbgem, 6, 240.);
-  SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset, 240., 1, commonmode_array);
+  SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
+  SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array);
   
-  SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_PMT);
-  SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_PMT);
-  SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_PMT);
-  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_PMT);
+  SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPSSH, gatewidth_BBPS);
+  SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPSSH, gatewidth_BBSH);
+  SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_GRINCH);
+  SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
   SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
   
   bbps->fGain = gain_BBPS;
   bbps->fPedestal = ped_BBPS;
   bbps->fPedSigma = pedsigma_BBPS;
   bbps->fTrigOffset = trigoffset_BBPS;
-  bbps->fGateWidth = gatewidth_PMT;
+  bbps->fGateWidth = gatewidth_BBPS;
   bbps->fADCconv = ADCconv_BBPS;
-  bbps->fADCbits = ADCbits;
+  bbps->fADCbits = ADCbits_BBPS;
   
   bbsh->fGain = gain_BBSH;
   bbsh->fPedestal = ped_BBSH;
   bbsh->fPedSigma = pedsigma_BBSH;
   bbsh->fTrigOffset = trigoffset_BBSH;
-  bbsh->fGateWidth = gatewidth_PMT;
+  bbsh->fGateWidth = gatewidth_BBSH;
   bbsh->fADCconv = ADCconv_BBSH;
-  bbsh->fADCbits = ADCbits;
+  bbsh->fADCbits = ADCbits_BBSH;
   
   grinch->fGain = gain_GRINCH;
   grinch->fPedestal = ped_GRINCH;
   grinch->fPedSigma = pedsigma_GRINCH;
   grinch->fTrigOffset = trigoffset_GRINCH;
   grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
-  grinch->fGateWidth = gatewidth_PMT;
+  grinch->fGateWidth = gatewidth_GRINCH;
   grinch->fADCconv = ADCconv_GRINCH;
-  grinch->fADCbits = ADCbits;
+  grinch->fADCbits = ADCbits_GRINCH;
   grinch->fTDCconv = TDCconv_GRINCH;
   grinch->fTDCbits = TDCbits_GRINCH; 
   
@@ -221,9 +304,9 @@ int main(int argc, char** argv){
   bbhodo->fPedSigma = pedsigma_BBHODO;
   bbhodo->fTrigOffset = trigoffset_BBHODO;
   bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
-  bbhodo->fGateWidth = gatewidth_PMT;
+  bbhodo->fGateWidth = gatewidth_BBHODO;
   bbhodo->fADCconv = ADCconv_BBHODO;
-  bbhodo->fADCbits = ADCbits;
+  bbhodo->fADCbits = ADCbits_BBHODO;
   bbhodo->fTDCconv = TDCconv_BBHODO;
   bbhodo->fTDCbits = TDCbits_BBHODO; 
   
@@ -232,17 +315,12 @@ int main(int argc, char** argv){
   hcal->fPedSigma = pedsigma_HCAL;
   hcal->fTrigOffset = trigoffset_HCAL;
   hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
-  hcal->fGateWidth = gatewidth_PMT-20.;
+  hcal->fGateWidth = gatewidth_HCAL;
   hcal->fADCconv = ADCconv_HCAL;
-  hcal->fADCbits = ADCbits;
+  hcal->fADCbits = FADC_ADCbits;
   hcal->fTDCconv = TDCconv_HCAL;
   hcal->fTDCbits = TDCbits_HCAL; 
   hcal->SetSamples(FADC_sampsize);
-  
-  std::vector<SBSDigPMTDet*> PMTdetectors;
-  std::vector<int> detmap;
-  std::vector<SBSDigGEMDet*> GEMdetectors;
-  std::vector<int> gemmap;
   
   //ordered by increasing uinque id
   PMTdetectors.push_back(hcal);  detmap.push_back(HCAL_UNIQUE_DETID);
@@ -323,6 +401,7 @@ int main(int argc, char** argv){
       break;
     }
     TFile f_s(chEl_s->GetTitle(), "UPDATE");
+    if(f_s.IsZombie())cout << "File " << chEl_s->GetTitle() << " cannot be found. Please check the path of your file." << endl; 
     run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
