@@ -18,6 +18,7 @@
 #include "G4SBSRunData.hh"
 #include "g4sbs_types.h"
 #include "gmn_tree.h"
+#include "g4sbs_tree.h"
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
 #include "SBSDigGEMDet.h"
@@ -794,7 +795,8 @@ int main(int argc, char** argv){
   double Theta_SBS, D_HCal;
   
   gmn_tree *T_s;//, *T_b;
-
+  g4sbs_tree *T_s_;
+  
   ULong64_t Nev_fs;//, Nev_fb;
   ULong64_t ev_s;//, ev_b;
   

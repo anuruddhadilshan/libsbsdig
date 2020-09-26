@@ -1,5 +1,6 @@
 #include "g4sbs_data.h"
 #include <TTree.h>
+#include <TBranch.h>
 #include <iostream>
 
 
@@ -49,7 +50,8 @@ namespace TSBSGeant4 {
     ret += SetupBranch(tree,prefix,"tmax", tmax);
     return (ret ==0);
   }
-
+  
+  /*
   bool ECalData_t::SetupBranches(TTree *tree, const char* prefix)
   {
     int ret = 0;
@@ -83,8 +85,8 @@ namespace TSBSGeant4 {
     return (ret==0);
     //return ECalData_t::SetupBranches(tree,prefix);
   }
-
-
+  */
+  
   bool RICHData_t::SetupBranches(TTree* tree, const char* prefix)
   {
     int ret = 0;
@@ -160,7 +162,8 @@ namespace TSBSGeant4 {
     ret += SetupBranch(tree,prefix,"zout",zout);
     return (ret==0);
   }
-
+  
+  /*
   bool TrackerData_t::SetupBranches(TTree* tree, const char *prefix)
   {
     int ret = 0;
@@ -188,5 +191,77 @@ namespace TSBSGeant4 {
     ret += SetupBranch(tree,prefix,"Ypfit",Ypfit);
     return (ret==0);
   }
+  */
+  
+  bool DigCalData_t::SetupBranches(TTree* tree, const char *prefix)
+  {
+    if(!tree)return(false);
+    int ret = 0;
+    ret+= tree->SetBranchAddress(Form("%s.nchan", prefix), &nchan, &b_nchan);
+    ret+= tree->SetBranchAddress(Form("%s.chan", prefix), &chan, &b_chan);
+    ret+= tree->SetBranchAddress(Form("%s.adc", prefix), &adc, &b_adc);
+    return (ret==0);
+  }
+  
+  bool DigTimingData_t::SetupBranches(TTree* tree, const char *prefix)
+  {
+    if(!tree)return(false);
+    int ret = 0;
+    ret+= tree->SetBranchAddress(Form("%s.nchan", prefix), &nchan, &b_nchan);
+    ret+= tree->SetBranchAddress(Form("%s.chan", prefix), &chan, &b_chan);
+    ret+= tree->SetBranchAddress(Form("%s.adc", prefix), &adc, &b_adc);
+    ret+= tree->SetBranchAddress(Form("%s.tdc_l", prefix), &tdc_l, &b_tdc_l);
+    ret+= tree->SetBranchAddress(Form("%s.tdc_t", prefix), &tdc_t, &b_tdc_t);
+    return (ret==0);
+  }
+  
+  bool DigSampCalData_t::SetupBranches(TTree* tree, const char *prefix)
+  {
+    if(!tree)return(false);
+    int ret = 0;
+    ret+= tree->SetBranchAddress(Form("%s.nchan", prefix), &nchan, &b_nchan);
+    ret+= tree->SetBranchAddress(Form("%s.chan", prefix), &chan, &b_chan);
+    ret+= tree->SetBranchAddress(Form("%s.adc_0", prefix), &adc_0, &b_adc_0);
+    ret+= tree->SetBranchAddress(Form("%s.adc_1", prefix), &adc_1, &b_adc_1);
+    ret+= tree->SetBranchAddress(Form("%s.adc_2", prefix), &adc_2, &b_adc_2);
+    ret+= tree->SetBranchAddress(Form("%s.adc_3", prefix), &adc_3, &b_adc_3);
+    ret+= tree->SetBranchAddress(Form("%s.adc_4", prefix), &adc_4, &b_adc_4);
+    ret+= tree->SetBranchAddress(Form("%s.adc_5", prefix), &adc_5, &b_adc_5);
+    ret+= tree->SetBranchAddress(Form("%s.adc_6", prefix), &adc_6, &b_adc_6);
+    ret+= tree->SetBranchAddress(Form("%s.adc_7", prefix), &adc_7, &b_adc_7);
+    ret+= tree->SetBranchAddress(Form("%s.adc_8", prefix), &adc_8, &b_adc_8);
+    ret+= tree->SetBranchAddress(Form("%s.adc_9", prefix), &adc_9, &b_adc_9);
+    ret+= tree->SetBranchAddress(Form("%s.adc_10", prefix), &adc_10, &b_adc_10);
+    ret+= tree->SetBranchAddress(Form("%s.adc_11", prefix), &adc_11, &b_adc_11);
+    ret+= tree->SetBranchAddress(Form("%s.adc_12", prefix), &adc_12, &b_adc_12);
+    ret+= tree->SetBranchAddress(Form("%s.adc_13", prefix), &adc_13, &b_adc_13);
+    ret+= tree->SetBranchAddress(Form("%s.adc_14", prefix), &adc_14, &b_adc_14);
+    ret+= tree->SetBranchAddress(Form("%s.adc_15", prefix), &adc_15, &b_adc_15);
+    ret+= tree->SetBranchAddress(Form("%s.adc_16", prefix), &adc_16, &b_adc_16);
+    ret+= tree->SetBranchAddress(Form("%s.adc_17", prefix), &adc_17, &b_adc_17);
+    ret+= tree->SetBranchAddress(Form("%s.adc_18", prefix), &adc_18, &b_adc_18);
+    ret+= tree->SetBranchAddress(Form("%s.adc_19", prefix), &adc_19, &b_adc_19);
+    ret+= tree->SetBranchAddress(Form("%s.adc_10", prefix), &adc_10, &b_adc_10);
+    ret+= tree->SetBranchAddress(Form("%s.tdc", prefix), &tdc, &b_tdc);
+    return (ret==0);
+  }
+  
+  bool DigGEMData_t::SetupBranches(TTree* tree, const char *prefix)
+  {
+    if(!tree)return(false);
+    int ret = 0;
+    ret+= tree->SetBranchAddress(Form("%s.nstrips", prefix), &nstrips, &b_nstrips);
+    ret+= tree->SetBranchAddress(Form("%s.module", prefix), &module, &b_module);
+    ret+= tree->SetBranchAddress(Form("%s.strip", prefix), &strip, &b_strip);
+    ret+= tree->SetBranchAddress(Form("%s.adc_0", prefix), &adc_0, &b_adc_0);
+    ret+= tree->SetBranchAddress(Form("%s.adc_1", prefix), &adc_1, &b_adc_1);
+    ret+= tree->SetBranchAddress(Form("%s.adc_2", prefix), &adc_2, &b_adc_2);
+    ret+= tree->SetBranchAddress(Form("%s.adc_3", prefix), &adc_3, &b_adc_3);
+    ret+= tree->SetBranchAddress(Form("%s.adc_4", prefix), &adc_4, &b_adc_4);
+    ret+= tree->SetBranchAddress(Form("%s.adc_5", prefix), &adc_5, &b_adc_5);
+    return (ret==0);
+  }
+  
+  
 }
 

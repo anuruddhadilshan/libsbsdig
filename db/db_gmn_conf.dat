@@ -31,8 +31,8 @@ sigmapulse_BBSH 3.0
 NChan_GRINCH 510 
 gatewidth_GRINCH 100 
 gain_GRINCH 7.0e6
-ped_GRINCH 0.0 
-pedsigma_GRINCH 0.0
+ped_GRINCH 500.0 
+pedsigma_GRINCH 3.0
 trigoffset_GRINCH 15.3 
 threshold_GRINCH 3.e-3 
 ADCconv_GRINCH 100 
@@ -45,8 +45,8 @@ sigmapulse_GRINCH 3.75
 NChan_BBHODO 180 
 gatewidth_BBHODO 100 
 gain_BBHODO 1.0e5
-ped_BBHODO 0.0 
-pedsigma_BBHODO 0.0
+ped_BBHODO 500.0 
+pedsigma_BBHODO 3.0
 trigoffset_BBHODO 18.6 
 threshold_BBHODO 3.e-3 
 ADCconv_BBHODO 100 
