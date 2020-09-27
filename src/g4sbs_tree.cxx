@@ -119,7 +119,7 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
      }
      if(det_list[k]=="bbhodo"){
        SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
-       SetupDetBranch(Earm_GRINCH_Dig, "Earm.BBHodo.dighit");
+       SetupDetBranch(Earm_BBHodo_Dig, "Earm.BBHodo.dighit");
      }
      if(det_list[k]=="bbgem"){
        SetupDetBranch(Earm_BBGEM, "Earm.BBGEM.hit");

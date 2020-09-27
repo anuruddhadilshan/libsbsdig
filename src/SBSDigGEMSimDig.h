@@ -27,7 +27,7 @@ class SBSDigGEMSimDig {
   
   Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R);//, gmn_tree* T);
   //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
-  void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, g4sbs_tree* T);
+  void CheckOut(SBSDigGEMDet* gemdet, std::vector<int> gemmap, TRandom3* R, g4sbs_tree* T);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
   
   struct IonPar_t {

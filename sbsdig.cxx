@@ -185,7 +185,7 @@ int main(int argc, char** argv){
   std::vector<int> detmap;
   std::vector<SBSDigGEMDet*> GEMdetectors;
   std::vector<SBSDigGEMSimDig*> GEMsimDig;
-  std::vector<int> gemmap;
+  std::vector<int> gemdetmap;
   
   // Variable parameters. 
   // Can be configured with the database, but are provided with defaults.
@@ -646,14 +646,15 @@ int main(int argc, char** argv){
   //-----------------------------
   cout << " declaring detectors " << endl;
   for(int k = 0; k<detectors_list.size(); k++){
-    cout << "detector: " << detectors_list[k].Data() << endl;
+    cout << "detector: " << detectors_list[k].Data() << "... " << endl;
     if(detectors_list[k] == "bbgem"){
       SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
       SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
       
       GEMdetectors.push_back(bbgem);
-      gemmap.push_back(BBGEM_UNIQUE_DETID);
+      gemdetmap.push_back(BBGEM_UNIQUE_DETID);
       GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
     }
     
     if(detectors_list[k] == "bbps"){
@@ -669,6 +670,7 @@ int main(int argc, char** argv){
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
+      cout << " set up! " << endl;
     }
     
     if(detectors_list[k] == "bbsh"){
@@ -684,6 +686,7 @@ int main(int argc, char** argv){
       
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
+      cout << " set up! " << endl;
     }
     
     if(detectors_list[k] == "grinch"){
@@ -702,9 +705,10 @@ int main(int argc, char** argv){
       
       PMTdetectors.push_back(grinch);
       detmap.push_back(GRINCH_UNIQUE_DETID);
+      cout << " set up! " << endl;
     }
     
-    if(detectors_list[k] == "hodo"){
+    if(detectors_list[k] == "bbhodo"){
       SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
       
       bbhodo->fGain = gain_BBHODO;
@@ -720,6 +724,7 @@ int main(int argc, char** argv){
       
       PMTdetectors.push_back(bbhodo);
       detmap.push_back(HODO_UNIQUE_DETID);
+      cout << " set up! " << endl;
     }
     
     if(detectors_list[k] == "hcal"){
@@ -740,6 +745,7 @@ int main(int argc, char** argv){
       //ordered by increasing uinque id
       PMTdetectors.push_back(hcal);
       detmap.push_back(HCAL_UNIQUE_DETID);
+      cout << " set up! " << endl;
     }
   }
   
@@ -871,12 +877,12 @@ int main(int argc, char** argv){
       T_s->GetEntry(ev_s);
       
       // unfold the thing then... but where???
-      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 0);
+      has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 0);
       if(!has_data)continue;
       
       
       if(LumiFrac>0){
-	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemmap, LumiFrac);
+	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemdetmap, LumiFrac);
       }
       /*
       // loop here for background
@@ -892,7 +898,7 @@ int main(int argc, char** argv){
 	  }
 	  timeZero = R->Uniform( -gatewidth_GEM-50., gatewidth_GEM/2.-50. );
 	  
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemmap, timeZero, 1);
+	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 1);
 	  //if(treenum)
 	}
 	
@@ -914,6 +920,7 @@ int main(int argc, char** argv){
       
       for(int k = 0; k<PMTdetectors.size(); k++){
 	PMTdetectors[k]->Digitize(T_s,R);
+	
 	// bbps->Digitize(T_s,R);
 	// bbsh->Digitize(T_s,R);
 	// grinch->Digitize(T_s,R);
@@ -923,7 +930,7 @@ int main(int argc, char** argv){
       
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
-	GEMsimDig[k]->CheckOut(GEMdetectors[k], R, T_s);
+	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap, R, T_s);
       }
       //How come this function is so taxing in time??? 
       // Answer in the function... hope we've found a workaround

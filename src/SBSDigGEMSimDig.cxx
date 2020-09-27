@@ -683,7 +683,8 @@ Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
 }
 
 
-void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet, 
+void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
+			       std::vector<int> gemmap, 
 			       TRandom3* R, 
 			       g4sbs_tree* T)
 			       //gmn_tree* T)
@@ -735,11 +736,9 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	}
 	//#ifdef 
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
-	  
-	  
 	  T->Earm_BBGEM_Dig.nstrips++;
-	  T->Earm_BBGEM_Dig.module->push_back(gemdet->GEMPlanes[i].Module());
-	  T->Earm_BBGEM_Dig.strip->push_back(strip);
+	  T->Earm_BBGEM_Dig.module->push_back(i);
+	  T->Earm_BBGEM_Dig.strip->push_back(j);
 	  T->Earm_BBGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	  T->Earm_BBGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	  T->Earm_BBGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
