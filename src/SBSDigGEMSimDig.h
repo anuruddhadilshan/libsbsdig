@@ -14,7 +14,8 @@
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
-class gmn_tree;
+//class gmn_tree;
+class g4sbs_tree;
 
 class SBSDigGEMSimDig {
  public:
@@ -25,7 +26,8 @@ class SBSDigGEMSimDig {
   void Print();
   
   Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R);//, gmn_tree* T);
-  void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
+  //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
+  void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, g4sbs_tree* T);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
   
   struct IonPar_t {

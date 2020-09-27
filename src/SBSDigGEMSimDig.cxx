@@ -1,6 +1,7 @@
 #include "SBSDigGEMSimDig.h"
 #include "SBSDigGEMDet.h"
-#include "gmn_tree.h"
+//#include "gmn_tree.h"
+#include "g4sbs_tree.h"
 
 //gas parameters
 #define fGasWion 26             // eV
@@ -684,7 +685,8 @@ Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
 
 void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet, 
 			       TRandom3* R, 
-			       gmn_tree* T)
+			       g4sbs_tree* T)
+			       //gmn_tree* T)
 {
   //int test = gemdet->GEMPlanes[4].GetADCSum(400);
   //cout << " hou hou " << test << endl;
@@ -733,13 +735,26 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	}
 	//#ifdef 
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
+	  
+	  
+	  T->Earm_BBGEM_Dig.nstrips++;
+	  T->Earm_BBGEM_Dig.module->push_back(gemdet->GEMPlanes[i].Module());
+	  T->Earm_BBGEM_Dig.strip->push_back(strip);
+	  T->Earm_BBGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	  T->Earm_BBGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	  T->Earm_BBGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	  T->Earm_BBGEM_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	  T->Earm_BBGEM_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	  T->Earm_BBGEM_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  
 	  //if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
 	  //FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
 	  //#ifdef QUENOUILLE	 
 	  //for(int k = 0; k<6; k++){
 	  //if(gemdet->GEMPlanes[i].GetADC(j, k)>4096 || gemdet->GEMPlanes[i].GetADC(j, k)<0)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
 	  //}
-	  	  
+	  
+	  /*
 	  if(gemdet->GEMPlanes[i].Module()<3){
 	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*gemdet->GEMPlanes[i].Module();
 	    if(gemdet->GEMPlanes[i].ROangle()==0){
@@ -847,12 +862,12 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	      T->Earm_BBGEM_5y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
 	    }
 	  }
+	  */
 	}//end if(...)
 	//#endif
 	//}else{
 	//FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
 	//}
-	
       }
     }
   }  

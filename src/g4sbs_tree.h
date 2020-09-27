@@ -182,9 +182,9 @@ public :
    TSBSGeant4::DigGEMData_t Harm_CEPolRear_Dig;
    
    TSBSGeant4::GEMData_t Harm_PrPolGEMBeamSide;
-   TSBSGeant4::GEMData_t Harm_PrPolGEMBeamSide_Dig;
+   TSBSGeant4::DigGEMData_t Harm_PrPolGEMBeamSide_Dig;
    TSBSGeant4::GEMData_t Harm_PrPolGEMFarSide;
-   TSBSGeant4::GEMData_t Harm_PrPolGEMFarSide_Dig;
+   TSBSGeant4::DigGEMData_t Harm_PrPolGEMFarSide_Dig;
    
    //SBS GEMs variables
    TSBSGeant4::GEMData_t Harm_SBSGEM;
@@ -289,7 +289,10 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-
+   
+   void ClearDigBranches();
+   void FillDigBranches();
+   
 protected:
    void SetupDetBranch(TSBSGeant4::VDetData_t &det, const char* prefix);
 };

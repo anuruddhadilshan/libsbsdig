@@ -28,7 +28,8 @@ SBSDigPMTDet::~SBSDigPMTDet()
   
 }
 
-void SBSDigPMTDet::Digitize(gmn_tree* T, TRandom3* R)
+//void SBSDigPMTDet::Digitize(gmn_tree* T, TRandom3* R)
+void SBSDigPMTDet::Digitize(g4sbs_tree* T, TRandom3* R)
 {
   for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits);
 }

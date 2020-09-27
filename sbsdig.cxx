@@ -794,8 +794,8 @@ int main(int argc, char** argv){
   
   double Theta_SBS, D_HCal;
   
-  gmn_tree *T_s;//, *T_b;
-  g4sbs_tree *T_s_;
+  //gmn_tree *T_s_;//, *T_b;
+  g4sbs_tree *T_s;
   
   ULong64_t Nev_fs;//, Nev_fb;
   ULong64_t ev_s;//, ev_b;
@@ -828,10 +828,11 @@ int main(int argc, char** argv){
     //cout << fs_c->ReOpen("UPDATE") << endl;
     //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
-    T_s = new gmn_tree(C_s);
+    //T_s = new gmn_tree(C_s);
+    T_s = new g4sbs_tree(C_s, detectors_list);
     
     // Expend tree here! (again, for signal only!!!)
-    T_s->AddDigBranches();
+    //T_s->AddDigBranches();
     
     Nev_fs = C_s->GetEntries();
     
