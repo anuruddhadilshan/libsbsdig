@@ -7,6 +7,7 @@
 //includes: root
 #include <TROOT.h>
 #include "TString.h"
+#include "TObjString.h"
 #include "TChain.h"
 #include "TChainElement.h"
 #include "TCut.h"
