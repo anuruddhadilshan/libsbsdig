@@ -930,7 +930,7 @@ int main(int argc, char** argv){
       
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
-	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap, R, T_s);
+	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s);
       }
       //How come this function is so taxing in time??? 
       // Answer in the function... hope we've found a workaround
