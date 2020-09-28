@@ -101,7 +101,7 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
    //fChain->SetMakeClass(1);
    
    //Setup "Event branch": can be useful
-   fChain->SetBranchAddress("ev", &ev_count, &b_ev);
+   //fChain->SetBranchAddress("ev", &ev_count, &b_ev);
    
    for(int k = 0; k<det_list.size(); k++){
      //GMN/GEN
@@ -110,10 +110,12 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
        SetupDetBranch(Earm_BBPS_Dig, "Earm.BBPS.dighit");
      }
      if(det_list[k]=="bbsh"){
+       printf(" bbsh  branches set up! \n");
        SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
        SetupDetBranch(Earm_BBSH_Dig, "Earm.BBSH.dighit");
      }
      if(det_list[k]=="grinch"){
+       printf(" grinch  branches set up! \n");
        SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
        SetupDetBranch(Earm_GRINCH_Dig, "Earm.GRINCH.dighit");
      }
@@ -191,9 +193,8 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
        SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
        SetupDetBranch(Harm_RICH_Dig,"Harm.RICH.dighit");
      }
-     
    }
-   
+
    /*
    //BigBite detector package: all expts except GEp
    if(fExpt==kGMN || fExpt==kGEN || fExpt==kGEnRP || fExpt==kSIDISExp || fExpt==kA1n){

@@ -59,7 +59,7 @@ public :
    // bool            fHcalBox;// needed to turn on/off the reading of the HCAL_box data
 
    // Declaration of leaf types
-   
+   /*
    // Event variables
    Double_t        ev_count;
    Double_t        ev_rate;
@@ -103,7 +103,7 @@ public :
    Int_t           ev_hadr;
    Int_t           ev_earmaccept;
    Int_t           ev_harmaccept;
-   
+   */
    // TODO: do some cleaning in here: I don't think we want ecal box data structures.
    // GEM variables
    // std::vector<gem_branch> GEMs;
@@ -235,6 +235,7 @@ public :
    std::vector<double>  *Primaries_phi;
    
    // List of branches
+   /*
    TBranch        *b_ev;   //!
    //TBranch        *b_gen;   //!
 
@@ -274,7 +275,7 @@ public :
    TBranch        *b_Primaries_t;   //!
    TBranch        *b_Primaries_theta;   //!
    TBranch        *b_Primaries_phi;   //!
-
+   */
 
    g4sbs_tree(TTree *tree, std::vector<TString> det_list);
    //g4sbs_tree(TTree *tree=0, Exp_t expt = kGMN, bool pythia = false);

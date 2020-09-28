@@ -33,10 +33,10 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   
   int idet = 0;
   //ordering by increasing unique det ID
-  while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;  
-  if(idet>=0 && T->Harm_HCalScint.sumedep) {
+  if(idet>=0){// && T->Harm_HCalScint.sumedep) {
     for(size_t k = 0; k < T->Harm_HCalScint.sumedep->size(); k++) {
       chan = T->Harm_HCalScint.cell->at(k);
       //T->Harm_HCalScint_hit_sumedep->at(k);
@@ -59,11 +59,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     has_data = true;
   }
   
-  while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;  
   // Process BB PS data
-  if(idet>=0 && T->Earm_BBPSTF1.nhits){
+  if(idet>=0){// && T->Earm_BBPSTF1.nhits){
     for(int i = 0; i<T->Earm_BBPSTF1.nhits; i++){
       // Evaluation of number of photoelectrons and time from energy deposit documented at:
       if(T->Earm_BBPSTF1.sumedep->at(i)<1.e-4)continue;
@@ -88,10 +88,10 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     has_data = true;
   }
   
-  while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;
-  if(idet>=0 && T->Earm_BBSHTF1.nhits){
+  if(idet>=0){// && T->Earm_BBSHTF1.nhits){
     for(int i = 0; i<T->Earm_BBSHTF1.nhits; i++){
       // Evaluation of number of photoelectrons and time from energy deposit documented at:
       // 
@@ -116,11 +116,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     has_data = true;
   }
 
-  while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;  
+  //cout << " " << idet;
   // Process GRINCH data
-  if(idet>=0 && T->Earm_GRINCH.nhits){
+  if(idet>=0){// && T->Earm_GRINCH.nhits){
     for(int i = 0; i<T->Earm_GRINCH.nhits; i++){
       chan = int(T->Earm_GRINCH.PMT->at(i)/5)-1;
       t = tzero+T->Earm_GRINCH.Time_avg->at(i)+pmtdets[idet]->fTrigOffset;
@@ -132,11 +132,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     has_data = true;
   }
   
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;
   // Process hodoscope data
-  if(idet>=0 && T->Earm_BBHodoScint.nhits){
+  if(idet>=0){// && T->Earm_BBHodoScint.nhits){
     for(int i = 0; i<T->Earm_BBHodoScint.nhits; i++){
       for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	// Evaluation of number of photoelectrons and time from energy deposit documented at:
@@ -153,11 +153,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   }
   
   idet = 0;
-  while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<gemmap.size())idet++;
+  while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
   if(idet>=gemmap.size())idet = -1;
   //cout << " gem " << idet << endl;
   // Now process the GEM data
-  if(idet>=0 && T->Earm_BBGEM.nhits){
+  if(idet>=0){// && T->Earm_BBGEM.nhits){
     for(int k = 0; k<T->Earm_BBGEM.nhits; k++){
       if(T->Earm_BBGEM.edep->at(k)>0){
 	SBSDigGEMDet::gemhit hit; 
@@ -184,42 +184,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	
 	//cout << mod << " " << hit.xin << " " << hit.xout << endl;
 	gemdets[idet]->fGEMhits.push_back(hit);
-	//gemhit->SetData(0,fSource);
-	//gemhit->SetData(1,	T->Earm_BBGEM_hit_plane->at(k);//);
-	//gemhit->SetData(2,T->Earm_BBGEM_hit_strip->at(k));
-	//gemhit->SetData(3,T->Earm_BBGEM_hit_x->at(k));
-	//gemhit->SetData(4,T->Earm_BBGEM_hit_y->at(k));
-	//gemhit->SetData(5,T->Earm_BBGEM_hit_z->at(k));
-	//gemhit->SetData(6,T->Earm_BBGEM_hit_polx->at(k));
-	//gemhit->SetData(7,T->Earm_BBGEM_hit_poly->at(k));
-	//gemhit->SetData(8,T->Earm_BBGEM_hit_polz->at(k));
-	//gemhit->SetData(9,T->Earm_BBGEM_hit_t->at(k));
-	//gemhit->SetData(10,T->Earm_BBGEM_hit_trms->at(k));
-	//gemhit->SetData(11,	T->Earm_BBGEM_hit_tmin->at(k);//);
-	//gemhit->SetData(12,	T->Earm_BBGEM_hit_tmax->at(k);//);
-	//gemhit->SetData(13,	T->Earm_BBGEM_hit_tx->at(k);//);
-	//gemhit->SetData(14,	T->Earm_BBGEM_hit_ty->at(k);//);
-	//gemhit->SetData(15,	T->Earm_BBGEM_hit_txp->at(k);//);
-	//gemhit->SetData(16,	T->Earm_BBGEM_hit_typ->at(k);//);
-	//gemhit->SetData(17,T->Earm_BBGEM_hit_xg->at(k));
-	//gemhit->SetData(18,T->Earm_BBGEM_hit_yg->at(k));
-	//gemhit->SetData(19,T->Earm_BBGEM_hit_zg->at(k));
-	//gemhit->SetData(20,	T->Earm_BBGEM_hit_trid->at(k);//);
-	//gemhit->SetData(21,	T->Earm_BBGEM_hit_mid->at(k)+1;//);
-	//gemhit->SetData(22,	T->Earm_BBGEM_hit_pid->at(k);//);
-	//gemhit->SetData(23,	T->Earm_BBGEM_hit_vx->at(k);//);
-	//gemhit->SetData(24,	T->Earm_BBGEM_hit_vy->at(k);//);
-	//gemhit->SetData(25,	T->Earm_BBGEM_hit_vz->at(k);//);
-	//gemhit->SetData(26,	T->Earm_BBGEM_hit_p->at(k);//);
-	//gemhit->SetData(27,	T->Earm_BBGEM_hit_edep->at(k)*1.0e3;//); // convert to MeV?
-	//gemhit->SetData(28,T->Earm_BBGEM_hit_beta->at(k));
-	//gemhit->SetData(29,	T->Earm_BBGEM_hit_xin->at(k);//);
-	//gemhit->SetData(30,	T->Earm_BBGEM_hit_yin->at(k);//);
-	//gemhit->SetData(31,	T->Earm_BBGEM_hit_zin->at(k);//);
-	//gemhit->SetData(32,	T->Earm_BBGEM_hit_xout->at(k);//);
-	//gemhit->SetData(33,	T->Earm_BBGEM_hit_yout->at(k);//);
-	//gemhit->SetData(34,	T->Earm_BBGEM_hit_zout->at(k);//);
-	//fg4sbsHitData.push_back(gemhit);
       }//end if(sumedep>0)
       
     }
