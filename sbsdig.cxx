@@ -263,7 +263,20 @@ int main(int argc, char** argv){
   Double_t ZsupThr_bbgem = 240.;
   Double_t* commonmode_array_bbgem;
   
-  //Add param for other detectors there...
+  // ** How to add a new subsystem **
+  // Add param for new detectors there...
+  Int_t NChan_POLSCINT_BS = 180;
+  Double_t gatewidth_POLSCINT_BS = 100.;
+  Double_t gain_POLSCINT_BS = 1.e5;
+  Double_t ped_POLSCINT_BS = 0.;
+  Double_t pedsigma_POLSCINT_BS = 0.;
+  Double_t trigoffset_POLSCINT_BS = 18.6;
+  Double_t threshold_POLSCINT_BS = 3.e3;
+  Double_t ADCconv_POLSCINT_BS = 100.;
+  Int_t ADCbits_POLSCINT_BS = 12;
+  Double_t TDCconv_POLSCINT_BS = 0.1;
+  Int_t TDCbits_POLSCINT_BS = 19;
+  Double_t sigmapulse_POLSCINT_BS = 1.6;
   
   //-----------------------------
   //  Read database
@@ -572,6 +585,70 @@ int main(int argc, char** argv){
 	  FADC_sampsize = stemp.Atof();
 	}
 	
+	// ** How to add a new subsystem **
+	// Add reading of param from other detectors there...
+	//GEn-RP Hodoscopes
+	if(skey=="NChan_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_POLSCINT_BS = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="gain_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="ped_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="threshold_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_POLSCINT_BS = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_POLSCINT_BS = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_POLSCINT_BS = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_POLSCINT_BS = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_POLSCINT_BS = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_POLSCINT_BS"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_POLSCINT_BS = stemp.Atof();
+	}
+	
+	
 	//GEMs
 	if(skey=="NPlanes_BBGEM"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
@@ -748,6 +825,27 @@ int main(int argc, char** argv){
       detmap.push_back(HCAL_UNIQUE_DETID);
       cout << " set up! " << endl;
     }
+    
+    // ** How to add a new subsystem **
+    // Add the new detector here!
+    if(detectors_list[k] == "prpolscint_bs"){
+      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_POLSCINT_BS, gain_POLSCINT_BS*qe, sigmapulse_POLSCINT_BS, gatewidth_POLSCINT_BS);
+      
+      polscint_bs->fGain = gain_POLSCINT_BS;
+      polscint_bs->fPedestal = ped_POLSCINT_BS;
+      polscint_bs->fPedSigma = pedsigma_POLSCINT_BS;
+      polscint_bs->fTrigOffset = trigoffset_POLSCINT_BS;
+      polscint_bs->fThreshold = threshold_POLSCINT_BS*spe_unit/ROimpedance;
+      polscint_bs->fGateWidth = gatewidth_POLSCINT_BS;
+      polscint_bs->fADCconv = ADCconv_POLSCINT_BS;
+      polscint_bs->fADCbits = ADCbits_POLSCINT_BS;
+      polscint_bs->fTDCconv = TDCconv_POLSCINT_BS;
+      polscint_bs->fTDCbits = TDCbits_POLSCINT_BS; 
+      
+      PMTdetectors.push_back(polscint_bs);
+      detmap.push_back(PRPOLBS_SCINT_UNIQUE_DETID);
+      cout << " set up! " << endl;
+    } 
   }
   
   /*  

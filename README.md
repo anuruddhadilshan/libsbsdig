@@ -1,10 +1,26 @@
-1libsbsdig library:
+libsbsdig library:
 
 The purpose of this library is to digitize the detectors output from G4SBS.
 To make a local copy, type: 
 ```shell
 git clone git@github.com:JeffersonLab/libsbsdig
 ```
+
+# The current version of the library under development is under branch "sbsdig_lw"
+
+##List of sources/classes:
+
+**sbsdig.cxx** main program: 
+
+**g4sbs_tree**: flexible data tree:
+
+
+A complete documentation is also available at:
+https://redmine.jlab.org/projects/sbs-software/wiki/Documentation_of_libsbsdig
+
+
+# "master" branch currently contains the contains the old digitization library.
+The documentation existing for this is copied below for the record, but is presumably of lower interest.
 
 Used in scripts such as  example/digi_all_test.C in this repo.
 NB: if using the library outside of directory example, you need to declare in your environment variable SBS_DIGI_DB zhich points to the directory db in this repo.

@@ -437,6 +437,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBPS_Dig.chan->push_back(chan);
     T->Earm_BBPS_Dig.adc->push_back(fADC);
   }
+  
   if(detid==BBSH_UNIQUE_DETID){
     // T->Earm_BBSH_dighit_nchan++;
     // T->Earm_BBSH_dighit_chan->push_back(chan);
@@ -445,6 +446,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBSH_Dig.chan->push_back(chan);
     T->Earm_BBSH_Dig.adc->push_back(fADC);
   }
+  
   if(detid==HODO_UNIQUE_DETID){
     // T->Earm_BBHodo_dighit_nchan++;
     // T->Earm_BBHodo_dighit_chan->push_back(chan);
@@ -480,6 +482,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Earm_BBHodo_Dig.tdc_t->push_back(-1000000);
     }
   }
+  
   if(detid==GRINCH_UNIQUE_DETID){
     // T->Earm_GRINCH_dighit_nchan++;
     // T->Earm_GRINCH_dighit_chan->push_back(chan);
@@ -515,6 +518,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Earm_GRINCH_Dig.tdc_t->push_back(-1000000);
     }
   }
+  
   if(detid==HCAL_UNIQUE_DETID){
     //T->Harm_HCal_dighit_nchan++;
     //T->Harm_HCal_dighit_chan->push_back(chan);
@@ -568,8 +572,47 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Harm_HCal_Dig.tdc->push_back(-1000000);
     }
   }
-
-}
+  
+  // ** How to add a new subsystem **
+  // fill the new detector output here
+  //genrp Hoda Harm_PRPolScintBeamSide
+  if(detid==PRPOLBS_SCINT_UNIQUE_DETID){
+    // T->Harm_PRPolScintBeamSide_Dighit_nchan++;
+    // T->Harm_PRPolScintBeamSide_Dighit_chan->push_back(chan);
+    // T->Harm_PRPolScintBeamSide_Dighit_adc->push_back(fADC);
+    T->Harm_PRPolScintBeamSide_Dig.nchan++;
+    T->Harm_PRPolScintBeamSide_Dig.chan->push_back(chan);
+    T->Harm_PRPolScintBeamSide_Dig.adc->push_back(fADC);
+    if(fTDCs.size()==2){
+      for(int j = 0;j<fTDCs.size(); j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  //T->Harm_PRPolScintBeamSide_Dighit_tdc_t->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  //T->Harm_PRPolScintBeamSide_Dighit_tdc_l->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	}
+	/*
+	  if(j>3 && j%2==0){
+	  // T->Harm_PRPolScintBeamSide_Dighit_nchan++;
+	  // T->Harm_PRPolScintBeamSide_Dighit_chan->push_back(chan);
+	  // T->Harm_PRPolScintBeamSide_Dighit_adc->push_back(-1000000);
+	  T->Harm_PRPolScintBeamSide_Dig.nchan++;
+	  T->Harm_PRPolScintBeamSide_Dig.chan->push_back(chan);
+	  T->Harm_PRPolScintBeamSide_Dig.adc->push_back(-1000000);
+	  }
+	*/
+      }
+    }else{
+      // T->Harm_PRPolScintBeamSide_Dighit_tdc_l->push_back(-1000000);
+      // T->Harm_PRPolScintBeamSide_Dighit_tdc_t->push_back(-1000000);
+      T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(-1000000);
+      T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(-1000000);
+    }
+  }
+  
+}//
 
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
 {

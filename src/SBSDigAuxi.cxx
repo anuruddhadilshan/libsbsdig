@@ -151,7 +151,30 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     has_data = true;
   }
-  
+
+  // ** How to add a new subsystem **
+  // Unfold here the data for the new detector
+  //genrp detectors
+  while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+  if(idet>=detmap.size())idet = -1;
+  //cout << " " << idet;
+  // Process hodoscope data
+  if(idet>=0){// && T->Harm_PRPolScintBeamSide.nhits){
+    for(int i = 0; i<T->Harm_PRPolScintBeamSide.nhits; i++){
+      for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	Npe = R->Poisson(1.0e7*T->Harm_PRPolScintBeamSide.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/1.03533)* 0.24);
+	t = tzero+T->Harm_PRPolScintBeamSide.tavg->at(i)+(0.55+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	chan = T->Harm_PRPolScintBeamSide.cell->at(i)*2+j;
+	//T->Harm_PRPolScintBeamSide_hit_sumedep->at(i);
+	//if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+      }
+    }
+    has_data = true;
+  }
+    
   idet = 0;
   while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
   if(idet>=gemmap.size())idet = -1;
