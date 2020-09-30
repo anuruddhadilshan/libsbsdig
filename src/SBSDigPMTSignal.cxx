@@ -420,6 +420,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       for(int j = 0; j<10; j++)fADCSamples[i]+=fSamples[i*10+j]*fSampSize;//renormalize the sample for the integration;
       fADCSamples[i]*=ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
+      if(fADCSamples[i]>pow(2, ADCbits))
       fADC+=fADCSamples[i];
     }
   }

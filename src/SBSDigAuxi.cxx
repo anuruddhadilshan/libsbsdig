@@ -192,6 +192,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  if(fabs(T->Earm_BBGEM.xin->at(k))>=0.768)continue;
 	  mod = (T->Earm_BBGEM.plane->at(k)-1)*3 + floor((T->Earm_BBGEM.xin->at(k)+0.768)/0.512);
 	}
+	//if(mod<2)cout << mod << " " << T->Earm_BBGEM.plane->at(k) << " " << T->Earm_BBGEM.xin->at(k) << endl;
 	hit.module = mod; 
 	hit.edep = T->Earm_BBGEM.edep->at(k)*1.0e9;//eV! not MeV!!!!
 	//hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);

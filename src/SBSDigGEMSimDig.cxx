@@ -701,9 +701,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   short strip;
   double commonmode = 0;
   if(fDoCommonMode){commonmode = fCommonModeArray[0];}
+  //cout << "commonmode " << commonmode << endl;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
-    //cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " " << commonmode << endl;
+    
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       //if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       //cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " << i << " " << j << endl;
@@ -736,7 +737,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	}
 	//#ifdef 
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
-	  
+	  //if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " " << commonmode << endl;
 	  if(uniqueid==BBGEM_UNIQUE_DETID){
 	     T->Earm_BBGEM_Dig.nstrips++;
 	     T->Earm_BBGEM_Dig.module->push_back(i);

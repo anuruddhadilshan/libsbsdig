@@ -283,6 +283,10 @@ int main(int argc, char** argv){
   //-----------------------------
   cout << "read database: " << db_file.c_str() << endl;
   ifstream in_db(db_file.c_str());
+  if(!in_db.is_open()){
+    cout << "database " << db_file.c_str() << " does not exist!!!" << endl;
+    exit(-1);
+  }
   
   TString currentline;
   while( currentline.ReadLine(in_db) && !currentline.BeginsWith("endconfig")){
@@ -659,7 +663,6 @@ int main(int argc, char** argv){
 	  strip_angle_bbgem = new Double_t[NPlanes_BBGEM];
 	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
 	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
-	  commonmode_array_bbgem = new Double_t[NPlanes_BBGEM];
 	}
 	
 	if(skey=="gatewidth_BBGEM"){
@@ -678,6 +681,11 @@ int main(int argc, char** argv){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      nstrips_bbgem[k-1] = stemp.Atoi();
 	    }
+	  }else{
+	    cout << "number of entries for nstrips_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
 	  }
 	}
 	
@@ -687,6 +695,11 @@ int main(int argc, char** argv){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      offset_bbgem[k-1] = stemp.Atof();
 	    }
+	  }else{
+	    cout << "number of entries for offset_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
 	  }
 	}
 	
@@ -696,6 +709,11 @@ int main(int argc, char** argv){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      strip_angle_bbgem[k-1] = stemp.Atoi();
 	    }
+	  }else{
+	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
 	  }
 	}
 	
@@ -703,15 +721,21 @@ int main(int argc, char** argv){
 	  if(ntokens==NPlanes_BBGEM/2+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      triggeroffset_bbgem[k] = stemp.Atof();
+	      triggeroffset_bbgem[k-1] = stemp.Atof();
 	    }
+	  }else{
+	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
 	  }
 	}
 	
 	if(skey=="commonmode_array_bbgem"){
+	  commonmode_array_bbgem = new Double_t[ntokens-1];
 	  for(int k = 1; k<ntokens; k++){
 	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	    triggeroffset_bbgem[k] = stemp.Atof();
+	    commonmode_array_bbgem[k-1] = stemp.Atof();
 	  }
 	}
 	
