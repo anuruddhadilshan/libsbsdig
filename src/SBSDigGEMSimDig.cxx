@@ -606,7 +606,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     UInt_t igem = gemdet->fGEMhits[ih].module;
     //UInt_t igem = iplane/2;
     
-    //if(igem>=16)cout << igem << endl;
+    if(igem>=16)cout << igem << endl;
     //cout<<igem<<":"<<imodule<<":"<<iplane<<endl;
     //Short_t itype = (gdata.GetParticleType(ih)==1) ? 1 : 2; // primary = 1, secondaries = 2
     // if(gdata.GetParticleType(ih)!=1){cout<<"x"<<endl;getchar();}

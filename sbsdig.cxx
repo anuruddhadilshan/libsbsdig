@@ -33,12 +33,12 @@
 /*
 //Defining here the parameters for the new detectors.
 //TODO: write a list of parameters that are not "frozen" (e.g. gain, pedestal parameters, etc...) and switch them into databases...
-#define NPlanes_BBGEM 32 // modules...
-#define NChan_BBPS 52
-#define NChan_BBSH 189
-#define NChan_BBHODO 180 
-#define NChan_GRINCH 510 
-#define NChan_HCAL 288
+#define NPlanes_bbgem 32 // modules...
+#define NChan_bbps 52
+#define NChan_bbsh 189
+#define NChan_bbhodo 180 
+#define NChan_grinch 510 
+#define NChan_hcal 288
 
 #define TriggerJitter 3.0 //ns
 #define ADCbits 12 
@@ -48,48 +48,48 @@
 #define FADC_sampsize 4.0 //ns
 
 //DB???
-#define sigmapulse_BBPSSH 3.0 //ns / 1.2 of 
-#define sigmapulse_BBHODO 1.6 //ns
-#define sigmapulse_GRINCH 3.75 //ns
+#define sigmapulse_bbpsSH 3.0 //ns / 1.2 of 
+#define sigmapulse_bbhodo 1.6 //ns
+#define sigmapulse_grinch 3.75 //ns
 
-#define gain_BBPS 2.e6
-#define ped_BBPS 600.0 // ADC channel
-#define pedsigma_BBPS 3.0 // ADC channel
-#define trigoffset_BBPS 18.2 //ns
-#define ADCconv_BBPS 50 //fC/ch
+#define gain_bbps 2.e6
+#define ped_bbps 600.0 // ADC channel
+#define pedsigma_bbps 3.0 // ADC channel
+#define trigoffset_bbps 18.2 //ns
+#define ADCconv_bbps 50 //fC/ch
 
-#define gain_BBSH 7.5e5
-#define ped_BBSH 500.0 // ADC channel
-#define pedsigma_BBSH 4.5 // ADC channel
-#define trigoffset_BBSH 18.5 //ns
-#define ADCconv_BBSH 50 //fC/ch
+#define gain_bbsh 7.5e5
+#define ped_bbsh 500.0 // ADC channel
+#define pedsigma_bbsh 4.5 // ADC channel
+#define trigoffset_bbsh 18.5 //ns
+#define ADCconv_bbsh 50 //fC/ch
 
-#define gain_GRINCH 7.0e6
-#define ped_GRINCH 0.0 
-#define pedsigma_GRINCH 0.0
-#define trigoffset_GRINCH 15.3 //ns
-#define threshold_GRINCH 3.e-3 //V
-#define ADCconv_GRINCH 100 //fC/ch
-#define TDCconv_GRINCH 1.0 //ns/channel
-#define TDCbits_GRINCH 16 //ns/channel
+#define gain_grinch 7.0e6
+#define ped_grinch 0.0 
+#define pedsigma_grinch 0.0
+#define trigoffset_grinch 15.3 //ns
+#define threshold_grinch 3.e-3 //V
+#define ADCconv_grinch 100 //fC/ch
+#define TDCconv_grinch 1.0 //ns/channel
+#define TDCbits_grinch 16 //ns/channel
 
-#define gain_BBHODO 1.0e5
-#define ped_BBHODO 0.0 
-#define pedsigma_BBHODO 0.0
-#define trigoffset_BBHODO 18.6 //ns
-#define threshold_BBHODO 3.e-3 //V
-#define ADCconv_BBHODO 100 //fC/ch
-#define TDCconv_BBHODO 0.1 //ns/channel
-#define TDCbits_BBHODO 19 //ns/channel
+#define gain_bbhodo 1.0e5
+#define ped_bbhodo 0.0 
+#define pedsigma_bbhodo 0.0
+#define trigoffset_bbhodo 18.6 //ns
+#define threshold_bbhodo 3.e-3 //V
+#define ADCconv_bbhodo 100 //fC/ch
+#define TDCconv_bbhodo 0.1 //ns/channel
+#define TDCbits_bbhodo 19 //ns/channel
 
-#define gain_HCAL 1.0e6
-#define ped_HCAL 0.0 
-#define pedsigma_HCAL 0.0
-#define trigoffset_HCAL 81.0 //ns
-#define threshold_HCAL 3.e-3 //V
-#define ADCconv_HCAL 1.0 //fC/ch //??
-#define TDCconv_HCAL 0.12 //ns/channel
-#define TDCbits_HCAL 16 //ns/channel
+#define gain_hcal 1.0e6
+#define ped_hcal 0.0 
+#define pedsigma_hcal 0.0
+#define trigoffset_hcal 81.0 //ns
+#define threshold_hcal 3.e-3 //V
+#define ADCconv_hcal 1.0 //fC/ch //??
+#define TDCconv_hcal 0.12 //ns/channel
+#define TDCbits_hcal 16 //ns/channel
 */
 
 
@@ -148,32 +148,32 @@ int main(int argc, char** argv){
   // the tree extension might have to be coded in the custom tree class
   
   /*
-  double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
+  double nstrips_bbgem[NPlanes_bbgem] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
 
-  double nstrips_bbgem[NPlanes_BBGEM] = {1280, 1024, 1280, 1024, 1280, 1024, 
+  double nstrips_bbgem[NPlanes_bbgem] = {1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1024, 1280, 1024, 1280, 1024, 
 					 1280, 1536, 1280, 1536, 
 					 1280, 1536, 1280, 1536};
-  double offset_bbgem[NPlanes_BBGEM] = {-0.512, 0., 0., 0., 0.512, 0., 
+  double offset_bbgem[NPlanes_bbgem] = {-0.512, 0., 0., 0., 0.512, 0., 
 					-0.512, 0., 0., 0., 0.512, 0., 
 					-0.512, 0., 0., 0., 0.512, 0., 
 					-0.512, 0., 0., 0., 0.512, 0., 
 					-0.768, 0., -0.256, 0., 
 					 0.256, 0.,  0.768, 0.};
-  double angle_bbgem[NPlanes_BBGEM] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+  double angle_bbgem[NPlanes_bbgem] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0, 
 				       0.0, 90.0, 0.0, 90.0};
-  for(int i = 0; i<NPlanes_BBGEM; i++){
+  for(int i = 0; i<NPlanes_bbgem; i++){
     angle_bbgem[i]*= TMath::DegToRad();
     //cout << nstrips_bbgem[i] << " ";
   }//cout << endl;
   
-  double triggeroffset[NPlanes_BBGEM/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
+  double triggeroffset[NPlanes_bbgem/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
 					   122., 122., 122., 122.5, 122.5, 122.5,  
 					   126., 126., 126., 126.};
   
@@ -195,88 +195,88 @@ int main(int argc, char** argv){
   
   std::vector<TString> detectors_list;
   
-  Int_t NChan_BBPS = 52;
-  Double_t gatewidth_BBPS = 100.;
-  Double_t gain_BBPS = 2.e6;
-  Double_t ped_BBPS = 600.;//
-  Double_t pedsigma_BBPS = 3.;//
-  Double_t trigoffset_BBPS = 18.2;//
-  Double_t ADCconv_BBPS = 50.;
-  Int_t ADCbits_BBPS = 12;
-  Double_t sigmapulse_BBPS = 3.0;
+  Int_t NChan_bbps = 52;
+  Double_t gatewidth_bbps = 100.;
+  Double_t gain_bbps = 2.e6;
+  Double_t ped_bbps = 600.;//
+  Double_t pedsigma_bbps = 3.;//
+  Double_t trigoffset_bbps = 18.2;//
+  Double_t ADCconv_bbps = 50.;
+  Int_t ADCbits_bbps = 12;
+  Double_t sigmapulse_bbps = 3.0;
     
-  Int_t NChan_BBSH = 189;
-  Double_t gatewidth_BBSH = 100.;
-  Double_t gain_BBSH = 7.5e5;
-  Double_t ped_BBSH = 500.;
-  Double_t pedsigma_BBSH = 4.5;
-  Double_t trigoffset_BBSH = 18.5;
-  Double_t ADCconv_BBSH = 50.;
-  Int_t ADCbits_BBSH = 12;
-  Double_t sigmapulse_BBSH = 3.0;
+  Int_t NChan_bbsh = 189;
+  Double_t gatewidth_bbsh = 100.;
+  Double_t gain_bbsh = 7.5e5;
+  Double_t ped_bbsh = 500.;
+  Double_t pedsigma_bbsh = 4.5;
+  Double_t trigoffset_bbsh = 18.5;
+  Double_t ADCconv_bbsh = 50.;
+  Int_t ADCbits_bbsh = 12;
+  Double_t sigmapulse_bbsh = 3.0;
     
-  Int_t NChan_GRINCH = 510;
-  Double_t gatewidth_GRINCH = 100.;
-  Double_t gain_GRINCH = 7.e6;
-  Double_t ped_GRINCH = 0.;
-  Double_t pedsigma_GRINCH = 0.;
-  Double_t trigoffset_GRINCH = 15.3;
-  Double_t threshold_GRINCH = 3.e-3;
-  Double_t ADCconv_GRINCH = 100;
-  Int_t ADCbits_GRINCH = 12;
-  Double_t TDCconv_GRINCH = 1.;
-  Int_t TDCbits_GRINCH = 16;
-  Double_t sigmapulse_GRINCH = 3.75;
+  Int_t NChan_grinch = 510;
+  Double_t gatewidth_grinch = 100.;
+  Double_t gain_grinch = 7.e6;
+  Double_t ped_grinch = 0.;
+  Double_t pedsigma_grinch = 0.;
+  Double_t trigoffset_grinch = 15.3;
+  Double_t threshold_grinch = 3.e-3;
+  Double_t ADCconv_grinch = 100;
+  Int_t ADCbits_grinch = 12;
+  Double_t TDCconv_grinch = 1.;
+  Int_t TDCbits_grinch = 16;
+  Double_t sigmapulse_grinch = 3.75;
  
-  Int_t NChan_BBHODO = 180;
-  Double_t gatewidth_BBHODO = 100.;
-  Double_t gain_BBHODO = 1.e5;
-  Double_t ped_BBHODO = 0.;
-  Double_t pedsigma_BBHODO = 0.;
-  Double_t trigoffset_BBHODO = 18.6;
-  Double_t threshold_BBHODO = 3.e3;
-  Double_t ADCconv_BBHODO = 100.;
-  Int_t ADCbits_BBHODO = 12;
-  Double_t TDCconv_BBHODO = 0.1;
-  Int_t TDCbits_BBHODO = 19;
-  Double_t sigmapulse_BBHODO = 1.6;
+  Int_t NChan_bbhodo = 180;
+  Double_t gatewidth_bbhodo = 100.;
+  Double_t gain_bbhodo = 1.e5;
+  Double_t ped_bbhodo = 0.;
+  Double_t pedsigma_bbhodo = 0.;
+  Double_t trigoffset_bbhodo = 18.6;
+  Double_t threshold_bbhodo = 3.e3;
+  Double_t ADCconv_bbhodo = 100.;
+  Int_t ADCbits_bbhodo = 12;
+  Double_t TDCconv_bbhodo = 0.1;
+  Int_t TDCbits_bbhodo = 19;
+  Double_t sigmapulse_bbhodo = 1.6;
 
-  Int_t NChan_HCAL = 288;
-  Double_t gatewidth_HCAL = 80;
-  Double_t gain_HCAL = 1.e6;
-  Double_t ped_HCAL = 0.;
-  Double_t pedsigma_HCAL = 0.;
-  Double_t trigoffset_HCAL = 81.;
-  Double_t threshold_HCAL = 3.e-3;
-  Double_t ADCconv_HCAL = 1.;
-  Double_t TDCconv_HCAL = 0.12;
-  Int_t TDCbits_HCAL = 16;
+  Int_t NChan_hcal = 288;
+  Double_t gatewidth_hcal = 80;
+  Double_t gain_hcal = 1.e6;
+  Double_t ped_hcal = 0.;
+  Double_t pedsigma_hcal = 0.;
+  Double_t trigoffset_hcal = 81.;
+  Double_t threshold_hcal = 3.e-3;
+  Double_t ADCconv_hcal = 1.;
+  Double_t TDCconv_hcal = 0.12;
+  Int_t TDCbits_hcal = 16;
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
  
-  Int_t NPlanes_BBGEM = 32;// 32 // number of planes/modules/readout
-  Double_t gatewidth_BBGEM = 400.;
+  Int_t NPlanes_bbgem = 32;// 32 // number of planes/modules/readout
+  Double_t gatewidth_bbgem = 400.;
   Int_t* nstrips_bbgem;
   Double_t* offset_bbgem;
-  Double_t* strip_angle_bbgem;
+  Double_t* RO_angle_bbgem;
   Double_t* triggeroffset_bbgem;
   Double_t ZsupThr_bbgem = 240.;
   Double_t* commonmode_array_bbgem;
   
   // ** How to add a new subsystem **
   // Add param for new detectors there...
-  Int_t NChan_POLSCINT_BS = 180;
-  Double_t gatewidth_POLSCINT_BS = 100.;
-  Double_t gain_POLSCINT_BS = 1.e5;
-  Double_t ped_POLSCINT_BS = 0.;
-  Double_t pedsigma_POLSCINT_BS = 0.;
-  Double_t trigoffset_POLSCINT_BS = 18.6;
-  Double_t threshold_POLSCINT_BS = 3.e3;
-  Double_t ADCconv_POLSCINT_BS = 100.;
-  Int_t ADCbits_POLSCINT_BS = 12;
-  Double_t TDCconv_POLSCINT_BS = 0.1;
-  Int_t TDCbits_POLSCINT_BS = 19;
-  Double_t sigmapulse_POLSCINT_BS = 1.6;
+  Int_t NChan_polscint_bs = 180;
+  Double_t gatewidth_polscint_bs = 100.;
+  Double_t gain_polscint_bs = 1.e5;
+  Double_t ped_polscint_bs = 0.;
+  Double_t pedsigma_polscint_bs = 0.;
+  Double_t trigoffset_polscint_bs = 18.6;
+  Double_t threshold_polscint_bs = 3.e3;
+  Double_t ADCconv_polscint_bs = 100.;
+  Int_t ADCbits_polscint_bs = 12;
+  Double_t TDCconv_polscint_bs = 0.1;
+  Int_t TDCbits_polscint_bs = 19;
+  Double_t sigmapulse_polscint_bs = 1.6;
   
   //-----------------------------
   //  Read database
@@ -315,268 +315,268 @@ int main(int argc, char** argv){
 	}
 	
 	//BBPS
-	if(skey=="NChan_BBPS"){
+	if(skey=="NChan_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBPS = stemp.Atoi();
+	  NChan_bbps = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBPS"){
+	if(skey=="gatewidth_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBPS = stemp.Atof();
+	  gatewidth_bbps = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBPS"){
+	if(skey=="gain_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBPS = stemp.Atof();
+	  gain_bbps = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBPS"){
+	if(skey=="ped_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBPS = stemp.Atof();
+	  ped_bbps = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBPS"){
+	if(skey=="pedsigma_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBPS = stemp.Atof();
+	  pedsigma_bbps = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBPS"){
+	if(skey=="trigoffset_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBPS = stemp.Atof();
+	  trigoffset_bbps = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBPS"){
+	if(skey=="ADCconv_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBPS = stemp.Atof();
+	  ADCconv_bbps = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBPS"){
+	if(skey=="ADCbits_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBPS = stemp.Atoi();
+	  ADCbits_bbps = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBPS"){
+	if(skey=="sigmapulse_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBPS = stemp.Atof();
+	  sigmapulse_bbps = stemp.Atof();
 	}
 	
 	//BBSH
-	if(skey=="NChan_BBSH"){
+	if(skey=="NChan_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBSH = stemp.Atoi();
+	  NChan_bbsh = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBSH"){
+	if(skey=="gatewidth_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBSH = stemp.Atof();
+	  gatewidth_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBSH"){
+	if(skey=="gain_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBSH = stemp.Atof();
+	  gain_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBSH"){
+	if(skey=="ped_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBSH = stemp.Atof();
+	  ped_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBSH"){
+	if(skey=="pedsigma_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBSH = stemp.Atof();
+	  pedsigma_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBSH"){
+	if(skey=="trigoffset_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBSH = stemp.Atof();
+	  trigoffset_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBSH"){
+	if(skey=="ADCconv_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBSH = stemp.Atof();
+	  ADCconv_bbsh = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBSH"){
+	if(skey=="ADCbits_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBSH = stemp.Atoi();
+	  ADCbits_bbsh = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBSH"){
+	if(skey=="sigmapulse_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBSH = stemp.Atof();
+	  sigmapulse_bbsh = stemp.Atof();
 	}
 
 	//GRINCH
-	if(skey=="NChan_GRINCH"){
+	if(skey=="NChan_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_GRINCH = stemp.Atoi();
+	  NChan_grinch = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_GRINCH"){
+	if(skey=="gatewidth_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_GRINCH = stemp.Atof();
+	  gatewidth_grinch = stemp.Atof();
 	}
 	
-	if(skey=="gain_GRINCH"){
+	if(skey=="gain_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_GRINCH = stemp.Atof();
+	  gain_grinch = stemp.Atof();
 	}
 	
-	if(skey=="ped_GRINCH"){
+	if(skey=="ped_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_GRINCH = stemp.Atof();
+	  ped_grinch = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_GRINCH"){
+	if(skey=="pedsigma_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_GRINCH = stemp.Atof();
+	  pedsigma_grinch = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_GRINCH"){
+	if(skey=="trigoffset_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_GRINCH = stemp.Atof();
+	  trigoffset_grinch = stemp.Atof();
 	}
 	
-	if(skey=="threshold_GRINCH"){
+	if(skey=="threshold_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_GRINCH = stemp.Atof();
+	  threshold_grinch = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_GRINCH"){
+	if(skey=="ADCconv_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_GRINCH = stemp.Atof();
+	  ADCconv_grinch = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_GRINCH"){
+	if(skey=="ADCbits_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_GRINCH = stemp.Atoi();
+	  ADCbits_grinch = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_GRINCH"){
+	if(skey=="TDCconv_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_GRINCH = stemp.Atof();
+	  TDCconv_grinch = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_GRINCH"){
+	if(skey=="TDCbits_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_GRINCH = stemp.Atoi();
+	  TDCbits_grinch = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_GRINCH"){
+	if(skey=="sigmapulse_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_GRINCH = stemp.Atof();
+	  sigmapulse_grinch = stemp.Atof();
 	}
 	
 	//BBHODO
-	if(skey=="NChan_BBHODO"){
+	if(skey=="NChan_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBHODO = stemp.Atoi();
+	  NChan_bbhodo = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBHODO"){
+	if(skey=="gatewidth_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBHODO = stemp.Atof();
+	  gatewidth_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBHODO"){
+	if(skey=="gain_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBHODO = stemp.Atof();
+	  gain_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBHODO"){
+	if(skey=="ped_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBHODO = stemp.Atof();
+	  ped_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBHODO"){
+	if(skey=="pedsigma_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBHODO = stemp.Atof();
+	  pedsigma_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBHODO"){
+	if(skey=="trigoffset_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBHODO = stemp.Atof();
+	  trigoffset_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="threshold_BBHODO"){
+	if(skey=="threshold_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_BBHODO = stemp.Atof();
+	  threshold_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBHODO"){
+	if(skey=="ADCconv_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBHODO = stemp.Atof();
+	  ADCconv_bbhodo = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBHODO"){
+	if(skey=="ADCbits_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBHODO = stemp.Atoi();
+	  ADCbits_bbhodo = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_BBHODO"){
+	if(skey=="TDCconv_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_BBHODO = stemp.Atof();
+	  TDCconv_bbhodo = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_BBHODO"){
+	if(skey=="TDCbits_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_BBHODO = stemp.Atoi();
+	  TDCbits_bbhodo = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBHODO"){
+	if(skey=="sigmapulse_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBHODO = stemp.Atof();
+	  sigmapulse_bbhodo = stemp.Atof();
 	}
 	
 	//HCal
-	if(skey=="NChan_HCAL"){
+	if(skey=="NChan_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_HCAL = stemp.Atoi();
+	  NChan_hcal = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_HCAL"){
+	if(skey=="gatewidth_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_HCAL = stemp.Atof();
+	  gatewidth_hcal = stemp.Atof();
 	}
 	
-	if(skey=="gain_HCAL"){
+	if(skey=="gain_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_HCAL = stemp.Atof();
+	  gain_hcal = stemp.Atof();
 	}
 	
-	if(skey=="ped_HCAL"){
+	if(skey=="ped_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_HCAL = stemp.Atof();
+	  ped_hcal = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_HCAL"){
+	if(skey=="pedsigma_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_HCAL = stemp.Atof();
+	  pedsigma_hcal = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_HCAL"){
+	if(skey=="trigoffset_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_HCAL = stemp.Atof();
+	  trigoffset_hcal = stemp.Atof();
 	}
 	
-	if(skey=="threshold_HCAL"){
+	if(skey=="threshold_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_HCAL = stemp.Atof();
+	  threshold_hcal = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_HCAL"){
+	if(skey=="ADCconv_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_HCAL = stemp.Atof();
+	  ADCconv_hcal = stemp.Atof();
 	}	
 	
-	if(skey=="TDCconv_HCAL"){
+	if(skey=="TDCconv_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_HCAL = stemp.Atof();
+	  TDCconv_hcal = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_HCAL"){
+	if(skey=="TDCbits_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_HCAL = stemp.Atoi();
+	  TDCbits_hcal = stemp.Atoi();
 	}	
 	
 	if(skey=="FADC_ADCbits"){
@@ -592,82 +592,81 @@ int main(int argc, char** argv){
 	// ** How to add a new subsystem **
 	// Add reading of param from other detectors there...
 	//GEn-RP Hodoscopes
-	if(skey=="NChan_POLSCINT_BS"){
+	if(skey=="NChan_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_POLSCINT_BS = stemp.Atoi();
+	  NChan_polscint_bs = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_POLSCINT_BS"){
+	if(skey=="gatewidth_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_POLSCINT_BS = stemp.Atof();
+	  gatewidth_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="gain_POLSCINT_BS"){
+	if(skey=="gain_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_POLSCINT_BS = stemp.Atof();
+	  gain_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="ped_POLSCINT_BS"){
+	if(skey=="ped_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_POLSCINT_BS = stemp.Atof();
+	  ped_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_POLSCINT_BS"){
+	if(skey=="pedsigma_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_POLSCINT_BS = stemp.Atof();
+	  pedsigma_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_POLSCINT_BS"){
+	if(skey=="trigoffset_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_POLSCINT_BS = stemp.Atof();
+	  trigoffset_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="threshold_POLSCINT_BS"){
+	if(skey=="threshold_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_POLSCINT_BS = stemp.Atof();
+	  threshold_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_POLSCINT_BS"){
+	if(skey=="ADCconv_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_POLSCINT_BS = stemp.Atof();
+	  ADCconv_polscint_bs = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_POLSCINT_BS"){
+	if(skey=="ADCbits_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_POLSCINT_BS = stemp.Atoi();
+	  ADCbits_polscint_bs = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_POLSCINT_BS"){
+	if(skey=="TDCconv_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_POLSCINT_BS = stemp.Atof();
+	  TDCconv_polscint_bs = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_POLSCINT_BS"){
+	if(skey=="TDCbits_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_POLSCINT_BS = stemp.Atoi();
+	  TDCbits_polscint_bs = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_POLSCINT_BS"){
+	if(skey=="sigmapulse_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_POLSCINT_BS = stemp.Atof();
+	  sigmapulse_polscint_bs = stemp.Atof();
 	}
 	
 	
 	//GEMs
-	if(skey=="NPlanes_BBGEM"){
+	if(skey=="NPlanes_bbgem"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NPlanes_BBGEM = stemp.Atoi();
+	  NPlanes_bbgem = stemp.Atoi();
 	  
-	  nstrips_bbgem = new Int_t[NPlanes_BBGEM];
-	  offset_bbgem = new Double_t[NPlanes_BBGEM];
-	  strip_angle_bbgem = new Double_t[NPlanes_BBGEM];
-	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
-	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
+	  nstrips_bbgem = new Int_t[NPlanes_bbgem];
+	  offset_bbgem = new Double_t[NPlanes_bbgem];
+	  RO_angle_bbgem = new Double_t[NPlanes_bbgem];
+	  triggeroffset_bbgem = new Double_t[NPlanes_bbgem/2];
 	}
 	
-	if(skey=="gatewidth_BBGEM"){
+	if(skey=="gatewidth_bbgem"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBGEM = stemp.Atof();
+	  gatewidth_bbgem = stemp.Atof();
 	}
 	
 	if(skey=="ZsupThr_bbgem"){
@@ -676,56 +675,58 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="nstrips_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      nstrips_bbgem[k-1] = stemp.Atoi();
 	    }
 	  }else{
 	    cout << "number of entries for nstrips_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
 	if(skey=="offset_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      offset_bbgem[k-1] = stemp.Atof();
 	    }
 	  }else{
 	    cout << "number of entries for offset_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
-	if(skey=="strip_angle_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	if(skey=="RO_angle_bbgem"){
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      strip_angle_bbgem[k-1] = stemp.Atoi();
+	      RO_angle_bbgem[k-1] = stemp.Atoi();
 	    }
 	  }else{
-	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "number of entries for RO_angle_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
 	if(skey=="triggeroffset_bbgem"){
-	  if(ntokens==NPlanes_BBGEM/2+1){
+	  if(ntokens==NPlanes_bbgem/2+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      triggeroffset_bbgem[k-1] = stemp.Atof();
+	      cout << k-1 << " " << NPlanes_bbgem/2 << " " << stemp << endl;
+	      triggeroffset_bbgem[k] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
 	    }
 	  }else{
-	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "number of entries for triggeroffset_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -750,8 +751,8 @@ int main(int argc, char** argv){
   for(int k = 0; k<detectors_list.size(); k++){
     cout << "detector: " << detectors_list[k].Data() << "... " << endl;
     if(detectors_list[k] == "bbgem"){
-      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
+      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
       
       GEMdetectors.push_back(bbgem);
       gemdetmap.push_back(BBGEM_UNIQUE_DETID);
@@ -760,15 +761,15 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPS, gatewidth_BBPS);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
 
-      bbps->fGain = gain_BBPS;
-      bbps->fPedestal = ped_BBPS;
-      bbps->fPedSigma = pedsigma_BBPS;
-      bbps->fTrigOffset = trigoffset_BBPS;
-      bbps->fGateWidth = gatewidth_BBPS;
-      bbps->fADCconv = ADCconv_BBPS;
-      bbps->fADCbits = ADCbits_BBPS;
+      bbps->fGain = gain_bbps;
+      bbps->fPedestal = ped_bbps;
+      bbps->fPedSigma = pedsigma_bbps;
+      bbps->fTrigOffset = trigoffset_bbps;
+      bbps->fGateWidth = gatewidth_bbps;
+      bbps->fADCconv = ADCconv_bbps;
+      bbps->fADCbits = ADCbits_bbps;
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
@@ -776,15 +777,15 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPS, gatewidth_BBSH);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
       
-      bbsh->fGain = gain_BBSH;
-      bbsh->fPedestal = ped_BBSH;
-      bbsh->fPedSigma = pedsigma_BBSH;
-      bbsh->fTrigOffset = trigoffset_BBSH;
-      bbsh->fGateWidth = gatewidth_BBSH;
-      bbsh->fADCconv = ADCconv_BBSH;
-      bbsh->fADCbits = ADCbits_BBSH;    
+      bbsh->fGain = gain_bbsh;
+      bbsh->fPedestal = ped_bbsh;
+      bbsh->fPedSigma = pedsigma_bbsh;
+      bbsh->fTrigOffset = trigoffset_bbsh;
+      bbsh->fGateWidth = gatewidth_bbsh;
+      bbsh->fADCconv = ADCconv_bbsh;
+      bbsh->fADCbits = ADCbits_bbsh;    
       
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
@@ -792,18 +793,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "grinch"){
-      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_GRINCH);
+      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_grinch, gain_grinch*qe, sigmapulse_grinch, gatewidth_grinch);
   
-      grinch->fGain = gain_GRINCH;
-      grinch->fPedestal = ped_GRINCH;
-      grinch->fPedSigma = pedsigma_GRINCH;
-      grinch->fTrigOffset = trigoffset_GRINCH;
-      grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
-      grinch->fGateWidth = gatewidth_GRINCH;
-      grinch->fADCconv = ADCconv_GRINCH;
-      grinch->fADCbits = ADCbits_GRINCH;
-      grinch->fTDCconv = TDCconv_GRINCH;
-      grinch->fTDCbits = TDCbits_GRINCH;
+      grinch->fGain = gain_grinch;
+      grinch->fPedestal = ped_grinch;
+      grinch->fPedSigma = pedsigma_grinch;
+      grinch->fTrigOffset = trigoffset_grinch;
+      grinch->fThreshold = threshold_grinch*spe_unit/ROimpedance;
+      grinch->fGateWidth = gatewidth_grinch;
+      grinch->fADCconv = ADCconv_grinch;
+      grinch->fADCbits = ADCbits_grinch;
+      grinch->fTDCconv = TDCconv_grinch;
+      grinch->fTDCbits = TDCbits_grinch;
       
       PMTdetectors.push_back(grinch);
       detmap.push_back(GRINCH_UNIQUE_DETID);
@@ -811,18 +812,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbhodo"){
-      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
+      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_bbhodo, gain_bbhodo*qe, sigmapulse_bbhodo, gatewidth_bbhodo);
       
-      bbhodo->fGain = gain_BBHODO;
-      bbhodo->fPedestal = ped_BBHODO;
-      bbhodo->fPedSigma = pedsigma_BBHODO;
-      bbhodo->fTrigOffset = trigoffset_BBHODO;
-      bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
-      bbhodo->fGateWidth = gatewidth_BBHODO;
-      bbhodo->fADCconv = ADCconv_BBHODO;
-      bbhodo->fADCbits = ADCbits_BBHODO;
-      bbhodo->fTDCconv = TDCconv_BBHODO;
-      bbhodo->fTDCbits = TDCbits_BBHODO; 
+      bbhodo->fGain = gain_bbhodo;
+      bbhodo->fPedestal = ped_bbhodo;
+      bbhodo->fPedSigma = pedsigma_bbhodo;
+      bbhodo->fTrigOffset = trigoffset_bbhodo;
+      bbhodo->fThreshold = threshold_bbhodo*spe_unit/ROimpedance;
+      bbhodo->fGateWidth = gatewidth_bbhodo;
+      bbhodo->fADCconv = ADCconv_bbhodo;
+      bbhodo->fADCbits = ADCbits_bbhodo;
+      bbhodo->fTDCconv = TDCconv_bbhodo;
+      bbhodo->fTDCbits = TDCbits_bbhodo; 
       
       PMTdetectors.push_back(bbhodo);
       detmap.push_back(HODO_UNIQUE_DETID);
@@ -830,18 +831,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal);
       
-      hcal->fGain = gain_HCAL;
-      hcal->fPedestal = ped_HCAL;
-      hcal->fPedSigma = pedsigma_HCAL;
-      hcal->fTrigOffset = trigoffset_HCAL;
-      hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
-      hcal->fGateWidth = gatewidth_HCAL;
-      hcal->fADCconv = ADCconv_HCAL;
+      hcal->fGain = gain_hcal;
+      hcal->fPedestal = ped_hcal;
+      hcal->fPedSigma = pedsigma_hcal;
+      hcal->fTrigOffset = trigoffset_hcal;
+      hcal->fThreshold = threshold_hcal*spe_unit/ROimpedance;
+      hcal->fGateWidth = gatewidth_hcal;
+      hcal->fADCconv = ADCconv_hcal;
       hcal->fADCbits = FADC_ADCbits;
-      hcal->fTDCconv = TDCconv_HCAL;
-      hcal->fTDCbits = TDCbits_HCAL; 
+      hcal->fTDCconv = TDCconv_hcal;
+      hcal->fTDCbits = TDCbits_hcal; 
       hcal->SetSamples(FADC_sampsize);
       
       //ordered by increasing uinque id
@@ -853,18 +854,18 @@ int main(int argc, char** argv){
     // ** How to add a new subsystem **
     // Add the new detector here!
     if(detectors_list[k] == "prpolscint_bs"){
-      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_POLSCINT_BS, gain_POLSCINT_BS*qe, sigmapulse_POLSCINT_BS, gatewidth_POLSCINT_BS);
+      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_polscint_bs, gain_polscint_bs*qe, sigmapulse_polscint_bs, gatewidth_polscint_bs);
       
-      polscint_bs->fGain = gain_POLSCINT_BS;
-      polscint_bs->fPedestal = ped_POLSCINT_BS;
-      polscint_bs->fPedSigma = pedsigma_POLSCINT_BS;
-      polscint_bs->fTrigOffset = trigoffset_POLSCINT_BS;
-      polscint_bs->fThreshold = threshold_POLSCINT_BS*spe_unit/ROimpedance;
-      polscint_bs->fGateWidth = gatewidth_POLSCINT_BS;
-      polscint_bs->fADCconv = ADCconv_POLSCINT_BS;
-      polscint_bs->fADCbits = ADCbits_POLSCINT_BS;
-      polscint_bs->fTDCconv = TDCconv_POLSCINT_BS;
-      polscint_bs->fTDCbits = TDCbits_POLSCINT_BS; 
+      //polscint_bs->fGain = gain_polscint_bs;
+      polscint_bs->fPedestal = ped_polscint_bs;
+      polscint_bs->fPedSigma = pedsigma_polscint_bs;
+      polscint_bs->fTrigOffset = trigoffset_polscint_bs;
+      polscint_bs->fThreshold = threshold_polscint_bs*spe_unit/ROimpedance;
+      polscint_bs->fGateWidth = gatewidth_polscint_bs;
+      polscint_bs->fADCconv = ADCconv_polscint_bs;
+      polscint_bs->fADCbits = ADCbits_polscint_bs;
+      polscint_bs->fTDCconv = TDCconv_polscint_bs;
+      polscint_bs->fTDCbits = TDCbits_polscint_bs; 
       
       PMTdetectors.push_back(polscint_bs);
       detmap.push_back(PRPOLBS_SCINT_UNIQUE_DETID);
@@ -984,7 +985,7 @@ int main(int argc, char** argv){
       }
       /*
       bbgem->Clear();
-      //for(int i = 0; i<NPlanes_BBGEM; i++){
+      //for(int i = 0; i<NPlanes_bbgem; i++){
       //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
       //}cout << endl;
       bbps->Clear();

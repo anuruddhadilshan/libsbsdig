@@ -86,7 +86,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
       h_EdephitBBGEMs->Add(h1_BBGEM_Edep_[m]);
     }
     
-    cout << m << " " << NhitsBBGEMs[m] << endl;
+    //cout << m << " " << NhitsBBGEMs[m] << endl;
   }
   
   //HCal
@@ -134,7 +134,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     }
     
     NhitsBBPS[m] = max(1.0, f1_bbpsnhits_[m]->GetParameter(1));
-    cout << m << " " << NhitsBBPS[m] << endl;
+    //cout << m << " " << NhitsBBPS[m] << endl;
   }
   h_EdephitBBPS = h1_BBPS_EdepHitVsChan->ProjectionY("h_EdephitBBPS");
   
@@ -220,12 +220,12 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   double z_hit, Npe_Edep_ratio, sigma_tgen;
   double beta, sin2thetaC;
   double x_hit, y_hit;
-  
   int idet = 0;
   //ordering by increasing unique det ID
-  while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   if(idet>=0){
+    //cout << "hcal" << endl;
     for(int m = 0; m<288; m++){
       nhits = R->Poisson(NhitsHCal[m]*lumifrac);
       //cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;
@@ -244,9 +244,10 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     }
   }
   
-  while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   if(idet>=0){
+    //cout << "ps" << endl;
     for(int m = 0; m<52; m++){
       nhits = R->Poisson(NhitsBBPS[m]*lumifrac);
       //cout << m << " " << NhitsBBPS[m]*lumifrac << " " << nhits << endl;
@@ -274,9 +275,10 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     }
   }
   
-  while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   if(idet>=0){
+    //cout << "sh" << endl;
     for(int m = 0; m<189; m++){
       nhits = R->Poisson(NhitsBBSH[m]*lumifrac);
       for(int i = 0; i<nhits; i++){
@@ -301,11 +303,10 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     }
   }
   
-  //cout << "grinch" << endl;
-  while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
- 
   if(idet>=0){
+    //cout << "grinch" << endl;
     for(int m = 0; m<510; m++){
       p = R->Uniform(0, 1);
       if(p<P2hitsGRINCH[m]*lumifrac){
@@ -321,11 +322,12 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     }
   }
   
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<detmap.size())idet++;
+  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;
   // Process hodoscope data
   if(idet>=0){
+    //cout << "hodo" << endl;
     for(int m = 0; m<90; m++){
       nhits = R->Poisson(NhitsBBHodo[m]*lumifrac);
       for(int i = 0; i<nhits; i++){
@@ -347,10 +349,11 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
   }
   
   idet = 0;
-  while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<gemmap.size())idet++;
+  while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
   if(idet>=gemmap.size())idet = -1;
   
   if(idet>=0){
+    //    cout << "bbgems" << endl;
     for(int m = 0; m<5; m++){
       nhits = R->Poisson(NhitsBBHodo[m]*lumifrac);
       for(int i = 0; i<nhits; i++){
