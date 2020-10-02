@@ -871,7 +871,7 @@ int main(int argc, char** argv){
     if(detectors_list[k] == "prpolscint_bs"){
       SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_polscint_bs, gain_polscint_bs*qe, sigmapulse_polscint_bs, gatewidth_polscint_bs);
       
-      //polscint_bs->fGain = gain_polscint_bs;
+      polscint_bs->fGain = gain_polscint_bs;
       polscint_bs->fPedestal = ped_polscint_bs;
       polscint_bs->fPedSigma = pedsigma_polscint_bs;
       polscint_bs->fTrigOffset = trigoffset_polscint_bs;
