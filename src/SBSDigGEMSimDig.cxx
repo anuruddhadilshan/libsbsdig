@@ -63,10 +63,18 @@ SBSDigGEMSimDig::SBSDigGEMSimDig()// :
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv, double* commonmode_array) : fZeroSup(zsup_thr) 
 {
-  for(int i = 0; i<nchambers; i++)fTriggerOffset.push_back(trigoffset[i]);
+  for(int i = 0; i<nchambers; i++){
+    fTriggerOffset.push_back(trigoffset[i]);
+    cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
+  }
   if(fZeroSup>0)fDoZeroSup = true;
-  if(napv)fDoCommonMode = true;
-  for(int i = 0; i<napv; i++)fCommonModeArray.push_back(commonmode_array[i]);
+  if(napv){
+    fDoCommonMode = true;
+    for(int i = 0; i<napv; i++){
+      fCommonModeArray.push_back(commonmode_array[i]);
+      cout << i << "/" << napv << ": " << fCommonModeArray[i] << endl;
+    }
+  }
   fRIon.resize((int)fMaxNIon);
 }
 
@@ -606,7 +614,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     UInt_t igem = gemdet->fGEMhits[ih].module;
     //UInt_t igem = iplane/2;
     
-    if(igem>=16)cout << igem << endl;
+    //if(igem>=16)cout << igem << endl;
     //cout<<igem<<":"<<imodule<<":"<<iplane<<endl;
     //Short_t itype = (gdata.GetParticleType(ih)==1) ? 1 : 2; // primary = 1, secondaries = 2
     // if(gdata.GetParticleType(ih)!=1){cout<<"x"<<endl;getchar();}

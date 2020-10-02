@@ -147,40 +147,7 @@ int main(int argc, char** argv){
   // I guess in order to avoid adding extra layers of code, 
   // the tree extension might have to be coded in the custom tree class
   
-  /*
-  double nstrips_bbgem[NPlanes_bbgem] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
 
-  double nstrips_bbgem[NPlanes_bbgem] = {1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1536, 1280, 1536, 
-					 1280, 1536, 1280, 1536};
-  double offset_bbgem[NPlanes_bbgem] = {-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.768, 0., -0.256, 0., 
-					 0.256, 0.,  0.768, 0.};
-  double angle_bbgem[NPlanes_bbgem] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0};
-  for(int i = 0; i<NPlanes_bbgem; i++){
-    angle_bbgem[i]*= TMath::DegToRad();
-    //cout << nstrips_bbgem[i] << " ";
-  }//cout << endl;
-  
-  double triggeroffset[NPlanes_bbgem/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
-					   122., 122., 122., 122.5, 122.5, 122.5,  
-					   126., 126., 126., 126.};
-  
-  double ZsupThr_bbgem = 240.;
-  
-  double commonmode_array[1] = {1500.};
-  */
   
   std::vector<SBSDigPMTDet*> PMTdetectors;
   std::vector<int> detmap;
@@ -254,14 +221,55 @@ int main(int argc, char** argv){
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
  
-  Int_t NPlanes_bbgem = 32;// 32 // number of planes/modules/readout
+  Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
   Double_t gatewidth_bbgem = 400.;
+  Double_t ZsupThr_bbgem = 240.;
   Int_t* nstrips_bbgem;
   Double_t* offset_bbgem;
   Double_t* RO_angle_bbgem;
   Double_t* triggeroffset_bbgem;
-  Double_t ZsupThr_bbgem = 240.;
   Double_t* commonmode_array_bbgem;
+  /*
+  Int_t nstrips_bbgem[256];
+  Double_t offset_bbgem[256];
+  Double_t RO_angle_bbgem[256];
+  Double_t triggeroffset_bbgem[256];
+  Double_t commonmode_array_bbgem[65536];
+  */
+  UShort_t nAPV = 0;
+
+  /*
+  int nstrips_bbgem[32] = {1280, 1024, 1280, 1024, 1280, 1024, 
+			   1280, 1024, 1280, 1024, 1280, 1024, 
+			   1280, 1024, 1280, 1024, 1280, 1024, 
+			   1280, 1024, 1280, 1024, 1280, 1024, 
+			   1280, 1536, 1280, 1536, 
+			   1280, 1536, 1280, 1536};
+  double offset_bbgem[32] = {-0.512, 0., 0., 0., 0.512, 0., 
+			     -0.512, 0., 0., 0., 0.512, 0., 
+			     -0.512, 0., 0., 0., 0.512, 0., 
+			     -0.512, 0., 0., 0., 0.512, 0., 
+			     -0.768, 0., -0.256, 0., 
+			     0.256, 0.,  0.768, 0.};
+  double RO_angle_bbgem[32] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
+			       0.0, 90.0, 0.0, 90.0, 
+			       0.0, 90.0, 0.0, 90.0};
+  for(int i = 0; i<NPlanes_bbgem; i++){
+    RO_angle_bbgem[i]*= TMath::DegToRad();
+    //cout << nstrips_bbgem[i] << " ";
+  }//cout << endl;
+  
+  double triggeroffset_bbgem[16] = {121., 121., 121., 121.5, 121.5, 121.5,  
+				    122., 122., 122., 122.5, 122.5, 122.5,  
+				    126., 126., 126., 126.};
+  
+  double ZsupThr_bbgem = 240.;
+  
+  double commonmode_array_bbgem[1] = {1500.};nAPV = 1;
+  */
   
   // ** How to add a new subsystem **
   // Add param for new detectors there...
@@ -652,9 +660,9 @@ int main(int argc, char** argv){
 	  sigmapulse_polscint_bs = stemp.Atof();
 	}
 	
-	
 	//GEMs
 	if(skey=="NPlanes_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NPlanes_bbgem = stemp.Atoi();
 	  
@@ -665,16 +673,19 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gatewidth_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  gatewidth_bbgem = stemp.Atof();
 	}
 	
 	if(skey=="ZsupThr_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ZsupThr_bbgem = stemp.Atof();
 	}
 	
 	if(skey=="nstrips_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
@@ -689,6 +700,7 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="offset_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
@@ -703,10 +715,11 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="RO_angle_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      RO_angle_bbgem[k-1] = stemp.Atoi();
+	      RO_angle_bbgem[k-1] = stemp.Atof()*TMath::DegToRad();
 	    }
 	  }else{
 	    cout << "number of entries for RO_angle_bbgem = " << ntokens-1 
@@ -717,11 +730,11 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="triggeroffset_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  if(ntokens==NPlanes_bbgem/2+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      cout << k-1 << " " << NPlanes_bbgem/2 << " " << stemp << endl;
-	      triggeroffset_bbgem[k] = stemp.Atof();
+	      triggeroffset_bbgem[k-1] = stemp.Atof();
 	      // if this is affected at k-1, program crashes... it should not and that's confusing...
 	    }
 	  }else{
@@ -733,8 +746,10 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="commonmode_array_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_bbgem = new Double_t[ntokens-1];
 	  for(int k = 1; k<ntokens; k++){
+	    nAPV++;
 	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	    commonmode_array_bbgem[k-1] = stemp.Atof();
 	  }
@@ -752,7 +767,7 @@ int main(int argc, char** argv){
     cout << "detector: " << detectors_list[k].Data() << "... " << endl;
     if(detectors_list[k] == "bbgem"){
       SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, nAPV, commonmode_array_bbgem);
       
       GEMdetectors.push_back(bbgem);
       gemdetmap.push_back(BBGEM_UNIQUE_DETID);
