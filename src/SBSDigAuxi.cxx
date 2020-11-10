@@ -20,7 +20,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   int Npe;
   double t;
   
-  double x_ref = d_hcal*sin(theta_sbs);
+  double x_ref = -d_hcal*sin(theta_sbs);
   double z_ref = d_hcal*cos(theta_sbs);
   
   double z_hit, Npe_Edep_ratio, sigma_tgen;
@@ -156,7 +156,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors
-    while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    /*
+    while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size()){
+      // vg: PRPOLBS_SCINT_UNIQUE_DETID seems to be responsible for an "invalid read"...
+      idet++;
+    }
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process hodoscope data
@@ -175,6 +179,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;
     }
+    */
   }//end if(!detmap.empty())
   
   //GEMs

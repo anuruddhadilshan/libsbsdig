@@ -106,6 +106,7 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
    for(int k = 0; k<det_list.size(); k++){
      //GMN/GEN
      if(det_list[k]=="bbps"){
+       printf(" bbps  branches set up! \n");
        SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
        SetupDetBranch(Earm_BBPS_Dig, "Earm.BBPS.dighit");
      }
@@ -120,14 +121,17 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
        SetupDetBranch(Earm_GRINCH_Dig, "Earm.GRINCH.dighit");
      }
      if(det_list[k]=="bbhodo"){
+       printf(" bbhodo branches set up! \n");
        SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
        SetupDetBranch(Earm_BBHodo_Dig, "Earm.BBHodo.dighit");
      }
      if(det_list[k]=="bbgem"){
+       printf(" bbgem branches set up! \n");
        SetupDetBranch(Earm_BBGEM, "Earm.BBGEM.hit");
        SetupDetBranch(Earm_BBGEM_Dig, "Earm.BBGEM.dighit");
      }
      if(det_list[k]=="hcal"){
+       printf(" hcal branches set up! \n");
        SetupDetBranch(Harm_HCalScint,"Harm.HCalScint.hit");
        SetupDetBranch(Harm_HCal_Dig, "Harm.HCal.dighit");
      }

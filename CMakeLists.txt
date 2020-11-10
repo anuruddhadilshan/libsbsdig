@@ -132,7 +132,7 @@ endif()
 ## I'll just copy it here too...
 set(SBSDIG_LINKFLAGS "")
 if(UNIX) ## Can be anything from Linux to Mac OS X
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -O -g")
   if(APPLE)
     set(MACVERS ON)
     list(APPEND SBSDIGEXTRADEF_LIST MACVERS)

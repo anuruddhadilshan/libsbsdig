@@ -299,7 +299,7 @@ int main(int argc, char** argv){
   TString currentline;
   while( currentline.ReadLine(in_db) && !currentline.BeginsWith("endconfig")){
     if( !currentline.BeginsWith("#") ){
-      TObjArray *tokens = currentline.Tokenize(" ");
+      TObjArray *tokens = currentline.Tokenize(" ");//vg: def lost => versions prior to 6.06; should be fixed! ??? 
       int ntokens = tokens->GetEntries();
       
       if( ntokens >= 2 ){
@@ -756,6 +756,7 @@ int main(int argc, char** argv){
 	}
 	
       }//end if( ntokens >= 2 )
+      tokens->~TObjArray();// ineffective... :(
     }//end if( !currentline.BeginsWith("#"))
   }//end while
   
@@ -935,12 +936,12 @@ int main(int argc, char** argv){
   //TChainElement *chEl_b=0;
   */
   
-  G4SBSRunData* run_data;
+  //G4SBSRunData* run_data;
   
   double Theta_SBS, D_HCal;
   
   //gmn_tree *T_s_;//, *T_b;
-  g4sbs_tree *T_s;
+  //g4sbs_tree *T_s;
   
   ULong64_t Nev_fs;//, Nev_fb;
   ULong64_t ev_s;//, ev_b;
@@ -964,7 +965,8 @@ int main(int argc, char** argv){
     }
     TFile f_s(chEl_s->GetTitle(), "UPDATE");
     if(f_s.IsZombie())cout << "File " << chEl_s->GetTitle() << " cannot be found. Please check the path of your file." << endl; 
-    run_data = (G4SBSRunData*)f_s.Get("run_data");
+    //run_data = (G4SBSRunData*)f_s.Get("run_data");
+    G4SBSRunData* run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
     //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
@@ -974,7 +976,9 @@ int main(int argc, char** argv){
     //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
     //T_s = new gmn_tree(C_s);
-    T_s = new g4sbs_tree(C_s, detectors_list);
+    //T_s = new g4sbs_tree(C_s, detectors_list);//vg: def lost
+    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list);
+    //g4sbs_tree T_s(C_s, detectors_list);
     
     // Expend tree here! (again, for signal only!!!)
     //T_s->AddDigBranches();
@@ -983,7 +987,7 @@ int main(int argc, char** argv){
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%1000==0)
+      if(NEventsTotal%100==0)
 	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);
@@ -1014,6 +1018,8 @@ int main(int argc, char** argv){
       
       T_s->ClearDigBranches();
       T_s->GetEntry(ev_s);
+      //T_s.ClearDigBranches();
+      //T_s.GetEntry(ev_s);
       
       // unfold the thing then... but where???
       has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 0);
@@ -1076,14 +1082,18 @@ int main(int argc, char** argv){
       //FillDigTree(T_s, PMTdetectors, GEMdetectors);
 
       T_s->FillDigBranches();
+      //T_s.FillDigBranches();
       //T_s->fChain->Fill();
     }// end loop on signal events 
     
     T_s->fChain->Write("", TObject::kOverwrite);
+    //T_s.fChain->Write("", TObject::kOverwrite);
     //fs_c.Write();
     //fs_c.Close();
     f_s.Write();
     f_s.Close();
+    //T_s->~g4sbs_tree();
+    //T_s.~g4sbs_tree();
     i_fs++;
   }// end loop on signal files
   

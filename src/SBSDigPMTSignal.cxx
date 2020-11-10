@@ -1,5 +1,6 @@
 #include "SBSDigPMTSignal.h"
 #include "TMath.h"
+#include "TFormula.h"
 #include "g4sbs_types.h"
 
 using namespace std;
@@ -15,7 +16,7 @@ SPEModel::SPEModel()
 SPEModel::SPEModel(UShort_t uniqueid, double sigma, 
 		   double t0, double tmin, double tmax)
 {
-  TF1 fFunc("fFunc", "landaun", tmin, tmax);
+  TF1 fFunc("fFunc", "landaun", tmin, tmax);// vg: def lost => root bug: need v6.18
   fFunc.SetParameters(1., t0, sigma);
   const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
   fPulseHisto = new TH1D(Form("fPulseHisto_%d", uniqueid), "", NbinsTotal, tmin, tmax);
@@ -629,7 +630,7 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
   
   memset(fSamples, 0, fNSamps*sizeof(double));
   memset(fADCSamples, 0, fNADCSamps*sizeof(double));
-  f1 = new TF1("f1", "landaun", tmin, tmax);
+  f1 = new TF1("f1", "landaun", tmin, tmax);//vg: def lost => root bug: need v6.18
 }
 
 void PMTSignal::Clear(bool dosamples)
