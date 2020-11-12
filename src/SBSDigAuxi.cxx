@@ -34,7 +34,14 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   int idet = 0;
   if(!detmap.empty()){
     //ordering by increasing unique det ID
-    while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    while(idet<(int)detmap.size()){
+      if(detmap[idet]!=HCAL_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     if(idet>=0){// && T->Harm_HCalScint.sumedep) {
@@ -60,7 +67,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
-    while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=BBPS_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     // Process BB PS data
@@ -89,7 +104,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
-    while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=BBSH_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_BBSHTF1.nhits){
@@ -117,7 +140,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
 
-    while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=GRINCH_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process GRINCH data
@@ -133,7 +164,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
-    while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=HODO_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process hodoscope data
@@ -156,11 +195,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors
-    /*
-    while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size()){
-      // vg: PRPOLBS_SCINT_UNIQUE_DETID seems to be responsible for an "invalid read"...
-      idet++;
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
     }
+    //while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size()){
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process hodoscope data
@@ -179,13 +222,20 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;
     }
-    */
   }//end if(!detmap.empty())
   
   //GEMs
   if(!gemmap.empty()){
     idet = 0;
-    while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
+    //genrp detectors
+    while(idet<(int)gemmap.size()){
+      if(gemmap[idet]!=BBGEM_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
     if(idet>=gemmap.size())idet = -1;
     //cout << " gem " << idet << endl;
     // Now process the GEM data

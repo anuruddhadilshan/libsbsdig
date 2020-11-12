@@ -299,8 +299,13 @@ int main(int argc, char** argv){
   TString currentline;
   while( currentline.ReadLine(in_db) && !currentline.BeginsWith("endconfig")){
     if( !currentline.BeginsWith("#") ){
-      TObjArray *tokens = currentline.Tokenize(" ");//vg: def lost => versions prior to 6.06; should be fixed! ??? 
-      int ntokens = tokens->GetEntries();
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      //TObjArray *tokens = currentline.Tokenize(" ");//vg: def lost => versions prior to 6.06; should be fixed! ??? 
+      //int ntokens = tokens->GetEntries();
       
       if( ntokens >= 2 ){
 	TString skey = ( (TObjString*) (*tokens)[0] )->GetString();

@@ -4,7 +4,7 @@ Rseed 0
 TriggerJitter 3.0 
 #list of detectors to digitize
 detectors_list hcal bbps bbsh grinch bbhodo bbgem 
-#detectors_list bbgem
+
 
 ## parameters for bbps
 NChan_bbps 52 
