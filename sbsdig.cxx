@@ -92,8 +92,6 @@
 #define TDCbits_hcal 16 //ns/channel
 */
 
-
-
 using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
@@ -1091,6 +1089,9 @@ int main(int argc, char** argv){
       //T_s->fChain->Fill();
     }// end loop on signal events 
     
+    for(int k = 0; k<GEMdetectors.size(); k++){
+      GEMsimDig[k]->write_histos();
+    }
     T_s->fChain->Write("", TObject::kOverwrite);
     //T_s.fChain->Write("", TObject::kOverwrite);
     //fs_c.Write();

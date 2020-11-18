@@ -264,7 +264,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.xout = T->Earm_BBGEM.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yout = T->Earm_BBGEM.yout->at(k);
 	  hit.zout = T->Earm_BBGEM.zout->at(k)-bbgem_z[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
-	  
 	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)

@@ -17,6 +17,7 @@ SPEModel::SPEModel(UShort_t uniqueid, double sigma,
 		   double t0, double tmin, double tmax)
 {
   TF1 fFunc("fFunc", "landaun", tmin, tmax);// vg: def lost => root bug: need v6.18
+  // power law x exp decay...
   fFunc.SetParameters(1., t0, sigma);
   const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
   fPulseHisto = new TH1D(Form("fPulseHisto_%d", uniqueid), "", NbinsTotal, tmin, tmax);

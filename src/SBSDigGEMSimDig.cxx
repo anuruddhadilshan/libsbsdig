@@ -76,6 +76,32 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
     }
   }
   fRIon.resize((int)fMaxNIon);
+  
+  /*
+  h1_QvsX_ion = new TH2D("h1_QvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
+  h1_QvsY_ion = new TH2D("h1_QvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
+  */
+  h1_QnormvsX_ion = new TH2D("h1_QnormvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
+  h1_QnormvsY_ion = new TH2D("h1_QnormvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
+  h1_QareavsX_ion = new TH2D("h1_QareavsX_ion", "", 750, -0.75, 0.75, 100, 0, 0.01);
+  h1_QareavsY_ion = new TH2D("h1_QareavsY_ion", "", 200, -0.2, 0.2, 100, 0, 0.01);
+  h1_QintvsX_ion = new TH2D("h1_QintvsX_ion", "", 250, -0.25, 0.25, 1000, 0, 1.e6);
+  h1_QintvsY_ion = new TH2D("h1_QintvsY_ion", "", 200, -0.2, 0.2, 1000, 0, 1.e6);
+  h1_QvsX_ava = new TH2D("h1_QvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
+  h1_QvsY_ava = new TH2D("h1_QvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
+  h1_QintYvsX_ava = new TH2D("h1_QintYvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
+  h1_QintYvsY_ava = new TH2D("h1_QintYvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
+  /*
+  h1_yGEM_preion = new TH1D("h1_yGEM_preion", "", 200, -0.2, 0.2);
+  h1_yGEM_preava = new TH1D("h1_yGEM_preava", "", 200, -0.2, 0.2);
+  h1_yGEM_inava = new TH1D("h1_yGEM_inava", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_2 = new TH1D("h1_yGEM_inava_2", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_3 = new TH1D("h1_yGEM_inava_3", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_4 = new TH1D("h1_yGEM_inava_4", "", 200, -0.2, 0.2);
+  h1_xGEMvsADC_inava_4 = new TH2D("h1_xGEMvsADC_inava_4", "", 750, -0.75, 0.75, 1000, -19, 20000-19);
+  h1_yGEMvsADC_inava_4 = new TH2D("h1_yGEMvsADC_inava_4", "", 200, -0.2, 0.2, 1000, -19, 20000-19);
+  h1_yGEM_incheckout = new TH1D("h1_yGEM_incheckout", "", 200, -0.2, 0.2);
+  */
 }
 
 
@@ -180,7 +206,12 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     cout << "fRTime0 = " << fRTime0 << endl;
     cout << "fRion size " << fRIon.size() << " " << i << endl;
 #endif
-    
+    /*
+    h1_QvsX_ion->Fill(ip.X, ip.Charge);
+    h1_QvsY_ion->Fill(ip.Y, ip.Charge);
+    h1_QvsX_ion->Fill(ip.X, ip.ggnorm);
+    h1_QvsY_ion->Fill(ip.Y, ip.ggnorm);
+    */
     fRIon[i] = ip;
   }
   return;
@@ -303,7 +334,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   if(y1>guy) y1=guy;
 
   // Loop over chamber planes
-  double roangle, dx;//, xoffset;
+  double roangle_mod, dx_mod, xoffset_mod;
   int GEMstrips;
   
   double xt_factor;
@@ -322,25 +353,28 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     
     // Compute strips affected by the avalanche
     //const SBSDigGEMPlane& pl = gemdet->GEMPlanes[ic*2+ipl];
-    roangle = gemdet->GEMPlanes[ic*2+ipl].ROangle();
-    dx = gemdet->GEMPlanes[ic*2+ipl].dX();
-    //xoffset = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
+    // strip angle = - strip angle for plane -> strip rotation purposes.
+    roangle_mod = -gemdet->GEMPlanes[ic*2+ipl].ROangle();
+    dx_mod = gemdet->GEMPlanes[ic*2+ipl].dX();
+    xoffset_mod = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
     GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
     
     // Positions in strip frame
-    Double_t xs0 = x0*cos(roangle) - y0*sin(roangle);
-    Double_t ys0 = x0*sin(roangle) + y0*cos(roangle);
-    Double_t xs1 = x1*cos(roangle) - y1*sin(roangle); 
-    Double_t ys1 = y1*sin(roangle) + y1*cos(roangle);
+    Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
+    Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
+    Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
+    Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
 #if DBG_AVA > 0
-     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
-     cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
+    cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
+    cout //<< ic << " " << ipl << " " << roangle_mod 
+      << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
+     //if(ipl==1 && ic<12)h1_yGEM_inava->Fill(xs0*1.e-3);
 
-    Int_t iL = max(0, Int_t((xs0*1.e-3+dx/2.)/fStripPitch) );
+    Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
-    Int_t iU = min(Int_t((xs1*1.e-3+dx/2.)/fStripPitch), GEMstrips);
+    Int_t iU = min(Int_t((xs1*1.e-3+dx_mod/2.)/fStripPitch), GEMstrips);
     iU = max(0, iU);
     //pl.GetStrip (xs1 * 1e-3, ys1 * 1e-3);
      
@@ -367,14 +401,16 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //
 
     // Limits in x are low edge of first strip to high edge of last
-    Double_t xl = (iL*fStripPitch-dx/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
-    Double_t xr = (iU*fStripPitch-dx/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
+    Double_t xl = (iL*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
+    Double_t xr = (iU*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
 
 #if DBG_AVA > 0
     cout << "iL gsle " << iL << " " << xl << endl;
     cout << "iU gsue " << iU << " " << xr << endl;
 #endif
     
+    //if(ipl==1 && ic<12)h1_yGEM_inava_2->Fill((xl+xr)*5.e-4);
+
     // Limits in y are y limits of track plus some reasonable margin
     // We do this in units of strip pitch for convenience (even though
     // this is the direction orthogonal to the pitch direction)
@@ -430,8 +466,8 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 #endif
     
     for (UInt_t i = 0; i < fRNIon; i++){
-      Double_t frxs = fRIon[i].X*cos(roangle) - fRIon[i].Y*sin(roangle);
-      Double_t frys = fRIon[i].X*sin(roangle) + fRIon[i].Y*cos(roangle);
+      Double_t frxs = fRIon[i].X*cos(roangle_mod) - fRIon[i].Y*sin(roangle_mod);
+      Double_t frys = fRIon[i].X*sin(roangle_mod) + fRIon[i].Y*cos(roangle_mod);
       //pl.PlaneToStrip (frxs, frys);
       //frxs *= 1e3; frys *= 1e3;
       //  cout<<"IonStrip: "<<pl.GetStrip(frxs*1e-3,frys*1e-3)<<endl;
@@ -444,6 +480,9 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
        cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
 #endif
 
+       //if(ipl==1 && ic<12)h1_yGEM_inava_3->Fill(frxs*1.e-3);
+
+    
       //
       // NL change:
       //
@@ -460,9 +499,11 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       Double_t eff_sigma = TMath::Sqrt(eff_sigma_square);
       Double_t current_ion_amplitude = fAvaGain*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma);
       
+      if(ipl==0 && ic<12)h1_QnormvsX_ion->Fill(frxs*1.e-3, current_ion_amplitude);
+      if(ipl==1 && ic<12)h1_QnormvsY_ion->Fill(frxs*1.e-3, current_ion_amplitude);
       
       // xc and yc are center of current bin
-      
+      double sumA = 0;
       // Loop over bins
       Int_t min_binNb_x = max(ix-dx,0);
       Int_t min_binNb_y = max(iy-dy,0);
@@ -493,9 +534,17 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	  if( xd2 + yd2 <= r2 ) {
 	    //cout << current_ion_amplitude << " " << xd2+yd2 << " " << eff_sigma_square << endl;
 	    fSumA[jx_base+jy] += current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
+	    sumA+= current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
 	  }
 	}//cout<<endl;
       }//cout<<"##########################################################################"<<endl<<endl;getchar();
+      
+      if(ipl==0 && ic<12){
+	h1_QintvsX_ion->Fill(frxs*1.e-3, sumA);
+      }
+      if(ipl==1 && ic<12){
+	h1_QintvsY_ion->Fill(frxs*1.e-3, sumA);
+      }      
     }
     
 #if DBG_AVA > 0
@@ -527,15 +576,33 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	for( Int_t jy = ny; jy != 0; --jy )
 	  integralY_tmp += fSumA[kx++];
 	
+	if(ipl==0 && ic<12)h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+	if(ipl==1 && ic<12)h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+	
+	/*
+	if(integralY_tmp==0){
+	  cout << " ipl " << ipl << " ny " << ny << " k " << k << " kx_0 " << (j * fXIntegralStepsPerPitch + k) * ny << " -> kx " << kx << " => " << kx -(j * fXIntegralStepsPerPitch + k) * ny  << endl;
+	}
+	*/
 	us += integralY_tmp * area;
 	//	us += IntegralY( fSumA, j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
 	//if(us>0)cout << "k " << k << ", us " << us << endl;
       }
 
+      if(ipl==0 && ic<12){
+	h1_QvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
+	h1_QareavsX_ion->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, area);
+      }
+      if(ipl==1 && ic<12){
+	h1_QvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
+	h1_QareavsY_ion->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, area);
+      }
+      
 #if DBG_AVA > 0
       cout << "strip " << iL+j << " us " << us << endl;
 #endif
-
+      //if(ipl==1 && ic<12)h1_yGEM_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2. );
+      
       // cout <<setw(6)<< (Int_t)(us/100);
       // cout<<iL+j<<" : "<<us<<endl;
       //generate the random pedestal phase and amplitude
@@ -552,12 +619,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				   0,// fADCoffset,
 				   fADCgain,
 				   fADCbits );
+	/*
 #if DBG_AVA > 0
 	if(pulse>0)
 	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
 	       << "pulse = " << pulse << ", (val - off)/gain = " 
 	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
 #endif
+	*/
 	//fDADC[b] = dadc;
 	//cout << ic*2+ipl << " " << iL+j << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) << " ==> ";
 	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
@@ -575,9 +644,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	//cout << ic*2+ipl << " " << iL+j << " " << b << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << "; " << iL+j+isLeft*fNCStripApart << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b)<< endl;
       }//cout <<"  "<<t0<< endl;
 
-      
-
- 
+      /*
+      if(ipl==0 && ic<12)h1_xGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
+      if(ipl==1 && ic<12)h1_yGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
+      */
     }//end loop on strips
         
     // if(ic*2+ipl==30){
@@ -632,6 +702,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       //getchar();
       continue;
     }
+    //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
     IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
     
     // Get Signal Start Time 'time_zero'
@@ -663,6 +734,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
 #endif
     if (fRNIon > 0) {
       //cout << "AvaModel..." << endl;
+      //if(igem<12)h1_yGEM_preava->Fill(vv1.Y()*1.e-3);
       AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       //cout << "Done!" << endl;
       //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
@@ -730,6 +802,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
       //cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
       //}
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
+	//if(i%2==1 && i<24)h1_yGEM_incheckout->Fill(j*fStripPitch-gemdet->GEMPlanes[i].dX()/2.);
 	for(int k = 0; k<6; k++){
 	  //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
 	  //int ped = TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma));
@@ -1026,6 +1099,35 @@ void SBSDigGEMSimDig::Print()
   cout << "  Pulse shaping parameters:" << endl;
   cout << "    Pulse shape tau: " << fPulseShapeTau << endl;
   //cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
+}
+
+void SBSDigGEMSimDig::write_histos()
+{
+  /*
+  h1_QvsX_ion->Write();
+  h1_QvsY_ion->Write();
+  */
+  h1_QnormvsX_ion->Write();
+  h1_QnormvsY_ion->Write();
+  h1_QareavsX_ion->Write();
+  h1_QareavsY_ion->Write();
+  h1_QintvsX_ion->Write();
+  h1_QintvsY_ion->Write();
+  h1_QvsX_ava->Write();
+  h1_QvsY_ava->Write();
+  h1_QintYvsX_ava->Write();
+  h1_QintYvsY_ava->Write();
+  /*
+  h1_yGEM_preion->Write();
+  h1_yGEM_preava->Write();
+  h1_yGEM_inava->Write();
+  h1_yGEM_inava_2->Write();
+  h1_yGEM_inava_3->Write();
+  h1_yGEM_inava_4->Write();
+  h1_xGEMvsADC_inava_4->Write();
+  h1_yGEMvsADC_inava_4->Write();
+  h1_yGEM_incheckout->Write();
+  */
 }
 
 /*

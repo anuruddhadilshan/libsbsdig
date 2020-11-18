@@ -8,6 +8,8 @@
 //#include "TArrayS.h"
 //#include "TArrayI.h"
 //#include "TArrayD.h"
+#include "TH1D.h"
+#include "TH2D.h"
 
 #include <iostream>
 #include <vector>
@@ -29,6 +31,7 @@ class SBSDigGEMSimDig {
   //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
   void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
+  void write_histos();
   
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
@@ -76,7 +79,32 @@ class SBSDigGEMSimDig {
 		      Double_t C,  // normalization factor
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
-  
+
+  /*
+  TH2D* h1_QvsX_ion;
+  TH2D* h1_QvsY_ion;
+  */
+  TH2D* h1_QnormvsX_ion;
+  TH2D* h1_QnormvsY_ion;
+  TH2D* h1_QareavsX_ion;
+  TH2D* h1_QareavsY_ion;
+  TH2D* h1_QintvsX_ion;
+  TH2D* h1_QintvsY_ion;
+  TH2D* h1_QvsX_ava;
+  TH2D* h1_QvsY_ava;
+  TH2D* h1_QintYvsX_ava;
+  TH2D* h1_QintYvsY_ava;
+  /*
+  TH1D* h1_yGEM_preion;
+  TH1D* h1_yGEM_preava;
+  TH1D* h1_yGEM_inava;
+  TH1D* h1_yGEM_inava_2;
+  TH1D* h1_yGEM_inava_3;
+  TH1D* h1_yGEM_inava_4;
+  TH2D* h1_xGEMvsADC_inava_4;
+  TH2D* h1_yGEMvsADC_inava_4;
+  TH1D* h1_yGEM_incheckout;
+  */
 };
 
 #endif
