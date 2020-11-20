@@ -83,7 +83,6 @@ class SBSDigGEMSimDig {
   /*
   TH2D* h1_QvsX_ion;
   TH2D* h1_QvsY_ion;
-  */
   TH2D* h1_QnormvsX_ion;
   TH2D* h1_QnormvsY_ion;
   TH2D* h1_QareavsX_ion;
@@ -94,7 +93,6 @@ class SBSDigGEMSimDig {
   TH2D* h1_QvsY_ava;
   TH2D* h1_QintYvsX_ava;
   TH2D* h1_QintYvsY_ava;
-  /*
   TH1D* h1_yGEM_preion;
   TH1D* h1_yGEM_preava;
   TH1D* h1_yGEM_inava;

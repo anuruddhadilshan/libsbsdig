@@ -16,10 +16,15 @@ SPEModel::SPEModel()
 SPEModel::SPEModel(UShort_t uniqueid, double sigma, 
 		   double t0, double tmin, double tmax)
 {
-  TF1 fFunc("fFunc", "landaun", tmin, tmax);// vg: def lost => root bug: need v6.18
+  //TF1 fFunc("fFunc", "landaun", tmin, tmax);//garbage (sorry)
   // power law x exp decay...
+  TF1 fFunc("fFunc", 
+	    "TMath::Max(0., [0]*((x-[1]+[2]*0.4)/([2]*[2]*0.16))*TMath::Exp(-(x-[1]+[2]*0.4)/([2]*0.4)) )", 
+	    tmin, tmax); 
+  
   fFunc.SetParameters(1., t0, sigma);
-  const int NbinsTotal = int(tmax-tmin)*10;// 10 bins/ns should do... since we will extrapolate after...
+  const int NbinsTotal = int(tmax-tmin)*20;// 20 bins/ns should do... since we will extrapolate after...
+  //let's try 20...
   fPulseHisto = new TH1D(Form("fPulseHisto_%d", uniqueid), "", NbinsTotal, tmin, tmax);
   double t_i;//, t_j;
   double ps_i;//, g_j;
@@ -123,7 +128,7 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   // find the lead and trail time for *this* pulse, not the total pulse
   bool goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   
-  //cout << t_lead << " " << t_trail << endl;
+  //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
   t_lead+=evttime;
   t_trail+=evttime;
@@ -267,6 +272,7 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   // find the lead and trail time for *this* pulse, not the total pulse
   //t_lead+=evttime;
   //t_trail+=evttime;
+  //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
   if(goodtime){
     //Filter here the lead and trail times
@@ -418,8 +424,9 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   
   if(fNSamps){
     fADC = 0;
+    Int_t Nconv = fNSamps/fNADCSamps;
     for(int i = 0; i<fNADCSamps; i++){
-      for(int j = 0; j<10; j++)fADCSamples[i]+=fSamples[i*10+j]*fSampSize;//renormalize the sample for the integration;
+      for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
       fADCSamples[i]*=ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
       if(fADCSamples[i]>pow(2, ADCbits))
@@ -569,7 +576,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Harm_HCal_Dig.adc_19->push_back(fADCSamples[19]);
     if(fTDCs.size()){
       //T->Harm_HCal_dighit_tdc->push_back(fTDCs[0]);
-      T->Harm_HCal_Dig.tdc->push_back(fTDCs[0]);
+      T->Harm_HCal_Dig.tdc->push_back(fTDCs[0]-1000);
     }else{
       //T->Harm_HCal_dighit_tdc->push_back(-1000000);
       T->Harm_HCal_Dig.tdc->push_back(-1000000);
@@ -621,7 +628,8 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
 {
   fTmin = tmin;
   fADCSampSize = sampsize;
-  fSampSize = sampsize/10;
+  //fSampSize = sampsize/10;//the bin size is too large for the tdc size 
+  fSampSize = sampsize/64;
   fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
   fADCSamples = new double[fNADCSamps];
@@ -631,7 +639,10 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
   
   memset(fSamples, 0, fNSamps*sizeof(double));
   memset(fADCSamples, 0, fNADCSamps*sizeof(double));
-  f1 = new TF1("f1", "landaun", tmin, tmax);//vg: def lost => root bug: need v6.18
+  //f1 = new TF1("f1", "landaun", tmin, tmax);
+  f1 = new TF1("fFunc", 
+	       "TMath::Max(0., [0]*((x-[1]+[2]*0.4)/([2]*[2]*0.16))*TMath::Exp(-(x-[1]+[2]*0.4)/([2]*0.4)) )", 
+	       tmin, tmax); 
 }
 
 void PMTSignal::Clear(bool dosamples)
