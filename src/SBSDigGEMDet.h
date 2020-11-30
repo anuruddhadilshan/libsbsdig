@@ -10,7 +10,7 @@
 class SBSDigGEMDet {
  public:
   SBSDigGEMDet();
-  SBSDigGEMDet(UShort_t uinqueid, UInt_t nplanes, int* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr);
+  SBSDigGEMDet(UShort_t uinqueid, UInt_t nplanes, int* layer, int* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr);
   virtual ~SBSDigGEMDet();
   void Clear();
 

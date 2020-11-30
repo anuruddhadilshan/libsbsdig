@@ -222,6 +222,7 @@ int main(int argc, char** argv){
   Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
   Double_t gatewidth_bbgem = 400.;
   Double_t ZsupThr_bbgem = 240.;
+  Int_t* layer_bbgem;
   Int_t* nstrips_bbgem;
   Double_t* offset_bbgem;
   Double_t* RO_angle_bbgem;
@@ -669,6 +670,7 @@ int main(int argc, char** argv){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NPlanes_bbgem = stemp.Atoi();
 	  
+	  layer_bbgem = new Int_t[NPlanes_bbgem];
 	  nstrips_bbgem = new Int_t[NPlanes_bbgem];
 	  offset_bbgem = new Double_t[NPlanes_bbgem];
 	  RO_angle_bbgem = new Double_t[NPlanes_bbgem];
@@ -685,6 +687,21 @@ int main(int argc, char** argv){
 	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ZsupThr_bbgem = stemp.Atof();
+	}
+	
+	if(skey=="layer_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_bbgem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
 	}
 	
 	if(skey=="nstrips_bbgem"){
@@ -770,7 +787,7 @@ int main(int argc, char** argv){
   for(int k = 0; k<detectors_list.size(); k++){
     cout << "detector: " << detectors_list[k].Data() << "... " << endl;
     if(detectors_list[k] == "bbgem"){
-      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
+      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, layer_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
       SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, nAPV, commonmode_array_bbgem);
       
       GEMdetectors.push_back(bbgem);
@@ -990,7 +1007,7 @@ int main(int argc, char** argv){
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%100==0)
+      if(NEventsTotal%1000==0)
 	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);
