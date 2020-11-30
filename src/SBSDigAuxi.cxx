@@ -226,7 +226,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
   //GEMs
   if(!gemmap.empty()){
     idet = 0;
-    //genrp detectors
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=BBGEM_UNIQUE_DETID){
 	idet++;
@@ -281,6 +280,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;  
     }
+
+    //genrp GEM detectors
+
   }//end if(!gemmap.empty())...
   
   return has_data;
