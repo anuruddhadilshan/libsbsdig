@@ -58,6 +58,11 @@ enum det_type{
 */
 
 const std::string kProj_str[2] = {"x", "y"};
+//db ???
 const double bbgem_z[5] = {0.85, 1.0, 1.15, 1.30, 2.33223544};
+const double ft_z[6] = {1.835510, 1.925510, 2.015510, 2.105510, 2.195510, 2.285510};
+const double fpp1_z[5] = {3.072760, 3.165910, 3.259060, 3.352210, 3.445360};
+const double fpp2_z[5] = {4.190460, 4.283610, 4.376760, 4.469910, 4.563060};
+
 
 #endif//__GEMC_TYPES_H

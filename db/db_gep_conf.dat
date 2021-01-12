@@ -6,7 +6,7 @@ TriggerJitter 3.0
 detectors_list hcal ecal cdet ft fpp1 fpp2
 
 ## parameters for ecal
-NChan_ecal 189
+NChan_ecal 1710
 gatewidth_ecal 100 
 gain_ecal 7.5e5
 ped_ecal 500.0 
@@ -17,7 +17,7 @@ ADCbits_ecal 12
 sigmapulse_ecal 3.0 
 
 ## parameters for cdet
-NChan_cdet 180 
+NChan_cdet 2352 
 gatewidth_cdet 100 
 gain_cdet 1.0e5
 ped_cdet 500.0 
@@ -51,13 +51,13 @@ NPlanes_ft 36
 gatewidth_ft 400 
 #number of strips for each plane/module
 layer_ft 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 6 6 6 6 6 6
-nstrips_ft 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 
+nstrips_ft 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 
 #offset in transport coordinate for each plane/module in meters
 offset_ft -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. 
 #strip angle for all BB GEM readouts in degrees
 RO_angle_ft 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
 #trigger offsets for all planes in ns
-triggeroffset_ft 125.0 125.0 125.0 125.0 125.0 125.0 125.5 125.5 125.5 125.5 125.5 125.5 126.0 126.0 126.0 126.0 126.0 126.0 126.5 126.5 126.5 126.5 126.5 126.5 127.0 127.0 127.0 127.0 127.0 127.0 127.5 127.5 127.5 127.5 127.5 127.5 
+triggeroffset_ft 125.0 125.0 125.0 125.5 125.5 125.5 126.0 126.0 126.0 126.5 126.5 126.5 127.0 127.0 127.0 127.5 127.5 127.5 
 #zero suppression threshold for GEMs in ADC channels
 ZsupThr_ft 240.
 #common mode value/array for GEMs in ADC channels
@@ -75,7 +75,7 @@ offset_fpp1 -0.768 0. -0256. 0. 0.256 0. 0.768 0. -0.768 0. -0256. 0. 0.256 0. 0
 #strip angle for all BB GEM readouts in degrees
 RO_angle_fpp1 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
 #trigger offsets for all planes in ns
-triggeroffset_fpp1 131.0 131.0 131.0 131.0 131.0 131.0 131.0 131.0 131.5 131.5 131.5 131.5 131.5 131.5 131.5 131.5 132.0 132.0 132.0 132.0 132.0 132.0 132.0 132.0 132.5 132.5 132.5 132.5 132.5 132.5 132.5 132.5 133.0 133.0 133.0 133.0 133.0 133.0 133.0 133.0 
+triggeroffset_fpp1 131.0 131.0 131.0 131.0 131.5 131.5 131.5 131.5 132.0 132.0 132.0 132.0 132.5 132.5 132.5 132.5 133.0 133.0 133.0 133.0 
 #zero suppression threshold for GEMs in ADC channels
 ZsupThr_fpp1 240.
 #common mode value/array for GEMs in ADC channels
@@ -93,7 +93,7 @@ offset_fpp2 -0.768 0. -0256. 0. 0.256 0. 0.768 0. -0.768 0. -0256. 0. 0.256 0. 0
 #strip angle for all BB GEM readouts in degrees
 RO_angle_fpp2 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
 #trigger offsets for all planes in ns
-triggeroffset_fpp2 135.0 135.0 135.0 135.0 135.0 135.0 135.0 135.0 135.5 135.5 135.5 135.5 135.5 135.5 135.5 135.5 136.0 136.0 136.0 136.0 136.0 136.0 136.0 136.0 136.5 136.5 136.5 136.5 136.5 136.5 136.5 136.5 137.0 137.0 137.0 137.0 137.0 137.0 137.0 137.0 
+triggeroffset_fpp2 135.0 135.0 135.0 135.0 135.5 135.5 135.5 135.5 136.0 136.0 136.0 136.0 136.5 136.5 136.5 136.5 137.0 137.0 137.0 137.0
 #zero suppression threshold for GEMs in ADC channels
 ZsupThr_fpp2 240.
 #common mode value/array for GEMs in ADC channels

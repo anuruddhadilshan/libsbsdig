@@ -77,13 +77,13 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
   
+  /*
   h1_nbins_X = new TH1D("h1_nbins_X", "", 100, 0, 10000);
   h1_nbins_Y = new TH1D("h1_nbins_Y", "", 100, 0, 10000);
   
   h1_fSumA_X = new TH1D("h1_fSumA_X", "", 100, 0, 1.0e6);
   h1_fSumA_Y = new TH1D("h1_fSumA_Y", "", 100, 0, 1.0e6);
 
-  /*
   h1_QvsX_ion = new TH2D("h1_QvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
   h1_QvsY_ion = new TH2D("h1_QvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
   h1_QnormvsX_ion = new TH2D("h1_QnormvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
@@ -92,12 +92,12 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   h1_QareavsY_ion = new TH2D("h1_QareavsY_ion", "", 200, -0.2, 0.2, 100, 0, 100.);
   h1_QintvsX_ion = new TH2D("h1_QintvsX_ion", "", 250, -0.25, 0.25, 1000, 0, 1.e6);
   h1_QintvsY_ion = new TH2D("h1_QintvsY_ion", "", 200, -0.2, 0.2, 1000, 0, 1.e6);
-  */
+
   h1_QvsX_ava = new TH2D("h1_QvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
   h1_QvsY_ava = new TH2D("h1_QvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
   h1_QintYvsX_ava = new TH2D("h1_QintYvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
   h1_QintYvsY_ava = new TH2D("h1_QintYvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
-  /*
+  
   h1_yGEM_preion = new TH1D("h1_yGEM_preion", "", 200, -0.2, 0.2);
   h1_yGEM_preava = new TH1D("h1_yGEM_preava", "", 200, -0.2, 0.2);
   h1_yGEM_inava = new TH1D("h1_yGEM_inava", "", 200, -0.2, 0.2);
@@ -550,7 +550,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       }//cout<<"##########################################################################"<<endl<<endl;getchar();
 
     }
-    
+    /*
     if(ipl==0 && ic==0)h1_nbins_X->Fill(sumASize);
     if(ipl==1 && ic==0)h1_nbins_Y->Fill(sumASize);
     
@@ -558,7 +558,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       if(ipl==0 && ic==0)h1_fSumA_X->Fill(fSumA[i]);
       if(ipl==1 && ic==0)h1_fSumA_Y->Fill(fSumA[i]);
     }
-    
+    */
     
 #if DBG_AVA > 0
     cout << "t0 = " << t0 << " plane " << ipl 
@@ -588,10 +588,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	int kx = (j * fXIntegralStepsPerPitch + k) * ny;
 	for( Int_t jy = ny; jy != 0; --jy )
 	  integralY_tmp += fSumA[kx++];
-	
+	/*
 	if(ipl==0 && ic==0)h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
 	if(ipl==1 && ic==0)h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
-	/**/
+	*/
 	/*
 	if(integralY_tmp==0){
 	  cout << " ipl " << ipl << " ny " << ny << " k " << k << " kx_0 " << (j * fXIntegralStepsPerPitch + k) * ny << " -> kx " << kx << " => " << kx -(j * fXIntegralStepsPerPitch + k) * ny  << endl;
@@ -601,6 +601,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	//	us += IntegralY( fSumA, j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
 	//if(us>0)cout << "k " << k << ", us " << us << endl;
       }
+      /*
       if(ipl==0 && ic==0){
 	h1_QvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
 	//h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
@@ -609,8 +610,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	h1_QvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
 	//h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
       }
-      /*
-       */
+      */
 #if DBG_AVA > 0
       cout << "strip " << iL+j << " us " << us << endl;
 #endif
@@ -1153,13 +1153,13 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+  /*
   h1_nbins_X->Write();
   h1_nbins_Y->Write();
   
   h1_fSumA_X->Write();
   h1_fSumA_Y->Write();
   
-  /*
   h1_QvsX_ion->Write();
   h1_QvsY_ion->Write();
   h1_QnormvsX_ion->Write();
@@ -1168,12 +1168,12 @@ void SBSDigGEMSimDig::write_histos()
   h1_QareavsY_ion->Write();
   h1_QintvsX_ion->Write();
   h1_QintvsY_ion->Write();
-  */
+
   h1_QvsX_ava->Write();
   h1_QvsY_ava->Write();
   h1_QintYvsX_ava->Write();
   h1_QintYvsY_ava->Write();
-  /*
+  
   h1_yGEM_preion->Write();
   h1_yGEM_preava->Write();
   h1_yGEM_inava->Write();
