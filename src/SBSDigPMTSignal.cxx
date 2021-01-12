@@ -457,6 +457,12 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBSH_Dig.adc->push_back(fADC);
   }
   
+  if(detid==ECAL_UNIQUE_DETID){
+    T->Earm_ECal_Dig.nchan++;
+    T->Earm_ECal_Dig.chan->push_back(chan);
+    T->Earm_ECal_Dig.adc->push_back(fADC);
+  }
+  
   if(detid==HODO_UNIQUE_DETID){
     // T->Earm_BBHodo_dighit_nchan++;
     // T->Earm_BBHodo_dighit_chan->push_back(chan);
@@ -490,6 +496,42 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       // T->Earm_BBHodo_dighit_tdc_t->push_back(-1000000);
       T->Earm_BBHodo_Dig.tdc_l->push_back(-1000000);
       T->Earm_BBHodo_Dig.tdc_t->push_back(-1000000);
+    }
+  }
+  
+  if(detid==CDET_UNIQUE_DETID){
+    // T->Earm_CDet_dighit_nchan++;
+    // T->Earm_CDet_dighit_chan->push_back(chan);
+    // T->Earm_CDet_dighit_adc->push_back(fADC);
+    T->CDET_Dig.nchan++;
+    T->CDET_Dig.chan->push_back(chan);
+    T->CDET_Dig.adc->push_back(fADC);
+    if(fTDCs.size()==2){
+      for(int j = 0;j<fTDCs.size(); j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  //T->CDET_dighit_tdc_t->push_back(fTDCs[j]-1000);
+	  T->CDET_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  //T->CDET_dighit_tdc_l->push_back(fTDCs[j]-1000);
+	  T->CDET_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	}
+	/*
+	if(j>3 && j%2==0){
+	  // T->CDET_dighit_nchan++;
+	  // T->CDET_dighit_chan->push_back(chan);
+	  // T->CDET_dighit_adc->push_back(-1000000);
+	  T->CDET_Dig.nchan++;
+	  T->CDET_Dig.chan->push_back(chan);
+	  T->CDET_Dig.adc->push_back(-1000000);
+	}
+	*/
+      }
+    }else{
+      // T->CDET_dighit_tdc_l->push_back(-1000000);
+      // T->CDET_dighit_tdc_t->push_back(-1000000);
+      T->CDET_Dig.tdc_l->push_back(-1000000);
+      T->CDET_Dig.tdc_t->push_back(-1000000);
     }
   }
   

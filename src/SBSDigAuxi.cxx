@@ -139,6 +139,44 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
 
+    //GEp ECAL
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=ECAL_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    if(idet>=0){// && T->Earm_ECalTF1.nhits){
+      for(int i = 0; i<T->Earm_ECalTF1.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-4)continue;
+	//check probability to generate p.e. yield
+	bool genpeyield = true;
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-2)genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*T->Earm_ECalTF1.sumedep->at(i));
+	//if we're go, let's generate
+	if(genpeyield){
+	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
+	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  //1800. Used to be 932.: just wrong
+	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  chan = T->Earm_ECalTF1.cell->at(i);
+	  //T->Earm_ECalTF1_hit_sumedep->at(i);
+		
+	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	}
+      }
+      has_data = true;
+    }
+
+    //GRINCH
     while(idet<(int)detmap.size()){
       if(idet<0)idet++;
       if(detmap[idet]!=GRINCH_UNIQUE_DETID){
@@ -191,6 +229,32 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
 
+   while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=CDET_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    // GEp Electron Arm
+    // Process CDet data
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    // Process hodoscope data
+    if(idet>=0){
+      for(int i = 0; i<T->CDET_Scint.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	// TODO: put that stuff in DB...
+	chan = T->CDET_Scint.cell->at(i);
+	Npe = R->Poisson( T->CDET_Scint.sumedep->at(i)*5.634e3 );
+	t = T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16;
+	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+      }
+      has_data = true;
+    }
+        
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors
@@ -280,7 +344,143 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;  
     }
+    
+    //GEp GEM detectors
+    while(idet<(int)gemmap.size()){
+      if(idet<0)idet++;
+      if(gemmap[idet]!=FT_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=gemmap.size())idet = -1;    
+    if(idet>=0){
+      for(int k = 0; k<T->Harm_FT.nhits; k++){
+	if(T->Harm_FT.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  //Here... that's one source of errors when we get out of the 4 INFN GEMs patter
+	  mod = 0;
+	  //cout << gemdets[idet]->fNPlanes/2 << endl;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    //cout << mod << " " << T->Harm_FT.plane->at(k) << " == ? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << " ; " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << " <= ? " << T->Harm_FT.xin->at(k) << " <= ? " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << endl;
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_FT.xin->at(k) && T->Harm_FT.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_FT.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;//cout << mod << endl;
 
+	  //if(mod<2)cout << mod << " " << T->Harm_FT.plane->at(k) << " " << T->Harm_FT.xin->at(k) << endl;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_FT.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  //hit.tmin = T->Harm_FT_hit_tmin->at(k);
+	  //hit.tmax = T->Harm_FT_hit_tmax->at(k);
+	  hit.t = tzero+T->Harm_FT.t->at(k);
+	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
+	  hit.xin = T->Harm_FT.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_FT.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = T->Harm_FT.zin->at(k)-bbgem_z[T->Harm_FT.plane->at(k)-1]+1.7886925;
+	  hit.xout = T->Harm_FT.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_FT.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = T->Harm_FT.zout->at(k)-bbgem_z[T->Harm_FT.plane->at(k)-1]+1.7886925;
+	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+
+    while(idet<(int)gemmap.size()){
+      if(idet<0)idet++;
+      if(gemmap[idet]!=FPP1_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=gemmap.size())idet = -1;    
+    if(idet>=0){
+      for(int k = 0; k<T->Harm_FPP1.nhits; k++){
+	if(T->Harm_FPP1.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  //Here... that's one source of errors when we get out of the 4 INFN GEMs patter
+	  mod = 0;
+	  //cout << gemdets[idet]->fNPlanes/2 << endl;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    //cout << mod << " " << T->Harm_FPP1.plane->at(k) << " == ? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << " ; " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << " <= ? " << T->Harm_FPP1.xin->at(k) << " <= ? " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << endl;
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_FPP1.xin->at(k) && T->Harm_FPP1.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_FPP1.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;//cout << mod << endl;
+
+	  //if(mod<2)cout << mod << " " << T->Harm_FPP1.plane->at(k) << " " << T->Harm_FPP1.xin->at(k) << endl;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_FPP1.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  //hit.tmin = T->Harm_FPP1_hit_tmin->at(k);
+	  //hit.tmax = T->Harm_FPP1_hit_tmax->at(k);
+	  hit.t = tzero+T->Harm_FPP1.t->at(k);
+	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
+	  hit.xin = T->Harm_FPP1.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_FPP1.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = T->Harm_FPP1.zin->at(k)-bbgem_z[T->Harm_FPP1.plane->at(k)-1]+1.7886925;
+	  hit.xout = T->Harm_FPP1.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_FPP1.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = T->Harm_FPP1.zout->at(k)-bbgem_z[T->Harm_FPP1.plane->at(k)-1]+1.7886925;
+	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+
+    while(idet<(int)gemmap.size()){
+      if(idet<0)idet++;
+      if(gemmap[idet]!=FPP2_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=gemmap.size())idet = -1;    
+    if(idet>=0){
+      for(int k = 0; k<T->Harm_FPP2.nhits; k++){
+	if(T->Harm_FPP2.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  //Here... that's one source of errors when we get out of the 4 INFN GEMs patter
+	  mod = 0;
+	  //cout << gemdets[idet]->fNPlanes/2 << endl;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    //cout << mod << " " << T->Harm_FPP2.plane->at(k) << " == ? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << " ; " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << " <= ? " << T->Harm_FPP2.xin->at(k) << " <= ? " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << endl;
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_FPP2.xin->at(k) && T->Harm_FPP2.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_FPP2.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;//cout << mod << endl;
+
+	  //if(mod<2)cout << mod << " " << T->Harm_FPP2.plane->at(k) << " " << T->Harm_FPP2.xin->at(k) << endl;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_FPP2.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  //hit.tmin = T->Harm_FPP2_hit_tmin->at(k);
+	  //hit.tmax = T->Harm_FPP2_hit_tmax->at(k);
+	  hit.t = tzero+T->Harm_FPP2.t->at(k);
+	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
+	  hit.xin = T->Harm_FPP2.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_FPP2.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = T->Harm_FPP2.zin->at(k)-bbgem_z[T->Harm_FPP2.plane->at(k)-1]+1.7886925;
+	  hit.xout = T->Harm_FPP2.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_FPP2.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = T->Harm_FPP2.zout->at(k)-bbgem_z[T->Harm_FPP2.plane->at(k)-1]+1.7886925;
+	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+    
     //genrp GEM detectors
 
   }//end if(!gemmap.empty())...
