@@ -796,7 +796,6 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   //cout << "commonmode " << commonmode << endl;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
-    
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       //if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       //cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " << i << " " << j << endl;

@@ -137,7 +137,7 @@ public :
    //exception: the only det that can be used on either side
    TSBSGeant4::CalData_t CDET_Scint;
    TSBSGeant4::DigTimingData_t CDET_Dig;
-  
+   
    // GEp Electromagnetic calorimeter hits
    // TSBSGeant4::CalData_t  Earm_ECAL_box;
    //TSBSGeant4::ECalData_t Earm_ECAL;

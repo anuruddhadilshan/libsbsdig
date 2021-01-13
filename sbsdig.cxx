@@ -1401,8 +1401,8 @@ int main(int argc, char** argv){
       cout << " set up! " << endl;
     }
 
-    if(detectors_list[k] == "cdet"){
-      SBSDigPMTDet* cdet = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_cdet, gain_cdet*qe, sigmapulse_cdet, gatewidth_cdet);
+    if(detectors_list[k] == "h_cdet" || detectors_list[k] == "e_cdet"){
+      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet*qe, sigmapulse_cdet, gatewidth_cdet);
       
       cdet->fGain = gain_cdet;
       cdet->fPedestal = ped_cdet;

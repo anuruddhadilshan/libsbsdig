@@ -65,9 +65,10 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;
     }
-  
+    
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBPS_UNIQUE_DETID){
 	idet++;
       }else{
@@ -103,8 +104,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBSH_UNIQUE_DETID){
 	idet++;
       }else{
@@ -140,15 +142,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //GEp ECAL
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=ECAL_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_ECalTF1.nhits){
@@ -163,9 +165,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
-	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_lg*n_lg)) );
-	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  //536.
+	  Npe = R->Poisson(536.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(3.115, 0.984)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_ECalTF1.cell->at(i);
 	  //T->Earm_ECalTF1_hit_sumedep->at(i);
 		
@@ -177,8 +179,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //GRINCH
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      // if(idet<0)idet++;
       if(detmap[idet]!=GRINCH_UNIQUE_DETID){
 	idet++;
       }else{
@@ -201,8 +204,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      // if(idet<0)idet++;
       if(detmap[idet]!=HODO_UNIQUE_DETID){
 	idet++;
       }else{
@@ -218,6 +222,12 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
 	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	  // The number of photoelectrons for each PMT is 
+	  // the product of the raw number of photoelectrons produced
+	  // (which depends on the energy deposit sumedep)
+	  // times the light attenuation
+	  // (which depends on the distance between the light production and the PMT)
+	  // => Npe = (Npe_edep_unit*sumedep)*exp(-(|x_hit-x_PMT|)/Lambda)
 	  Npe = R->Poisson(1.0e7*T->Earm_BBHodoScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Earm_BBHodoScint.xhit->at(i))/1.03533)* 0.24);
 	  t = tzero+T->Earm_BBHodoScint.tavg->at(i)+(0.55+pow(-1, j)*T->Earm_BBHodoScint.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBHodoScint.cell->at(i)*2+j;
@@ -229,8 +239,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
 
-   while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+    idet = 0;
+    while(idet<(int)detmap.size()){
+      // if(idet<0)idet++;
       if(detmap[idet]!=CDET_UNIQUE_DETID){
 	idet++;
       }else{
@@ -258,8 +269,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      // if(idet<0)idet++;
       if(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID){
 	idet++;
       }else{
@@ -346,8 +358,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
     //GEp GEM detectors
+    idet = 0;
     while(idet<(int)gemmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(gemmap[idet]!=FT_UNIQUE_DETID){
 	idet++;
       }else{
@@ -391,8 +404,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;  
     }
 
+    idet = 0;
     while(idet<(int)gemmap.size()){
-      if(idet<0)idet++;
+      // if(idet<0)idet++;
       if(gemmap[idet]!=FPP1_UNIQUE_DETID){
 	idet++;
       }else{
@@ -436,8 +450,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;  
     }
 
+    idet = 0;
     while(idet<(int)gemmap.size()){
-      if(idet<0)idet++;
+      // if(idet<0)idet++;
       if(gemmap[idet]!=FPP2_UNIQUE_DETID){
 	idet++;
       }else{
@@ -458,8 +473,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_FPP2.xin->at(k) && T->Harm_FPP2.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_FPP2.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
 	    mod++;
 	  }//that does the job, but maybe can be optimized???
+	  //cout << "module " << mod << " " << T->Harm_FPP2.plane->at(k) << " " << gemdets[idet]->GEMPlanes[mod*2].Layer() << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << " < " << T->Harm_FPP2.xin->at(k) << " < " << gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << endl;
 	  if(mod==gemdets[idet]->fNPlanes/2)continue;//cout << mod << endl;
-
+	  
 	  //if(mod<2)cout << mod << " " << T->Harm_FPP2.plane->at(k) << " " << T->Harm_FPP2.xin->at(k) << endl;
 	  hit.module = mod; 
 	  hit.edep = T->Harm_FPP2.edep->at(k)*1.0e9;//eV! not MeV!!!!
@@ -473,7 +489,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.xout = T->Harm_FPP2.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yout = T->Harm_FPP2.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_FPP2.zout->at(k)-fpp2_z[T->Harm_FPP2.plane->at(k)-1]+1.7886925;
-	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
+	  //cout << mod << " " << hit.zin << " " << hit.zout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)
 	
