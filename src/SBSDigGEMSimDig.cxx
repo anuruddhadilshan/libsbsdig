@@ -77,13 +77,32 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
   
-  /*
-  h1_nbins_X = new TH1D("h1_nbins_X", "", 100, 0, 10000);
-  h1_nbins_Y = new TH1D("h1_nbins_Y", "", 100, 0, 10000);
+  h1_nstrips_X = new TH1D*[2];
+  h1_nstrips_Y = new TH1D*[2];
   
-  h1_fSumA_X = new TH1D("h1_fSumA_X", "", 100, 0, 1.0e6);
-  h1_fSumA_Y = new TH1D("h1_fSumA_Y", "", 100, 0, 1.0e6);
+  h1_ds_X = new TH2D*[2];
+  h1_ds_Y = new TH2D*[2];
+  
+  h1_nbins_X = new TH1D*[2];
+  h1_nbins_Y = new TH1D*[2];
+  
+  h1_fSumA_X = new TH1D*[2];
+  h1_fSumA_Y = new TH1D*[2];
 
+  for(int i = 0; i<2; i++){
+    h1_nstrips_X[i] = new TH1D(Form("h1_nstrips_X_%d", i), "", 100, 0, 100);
+    h1_nstrips_Y[i] = new TH1D(Form("h1_nstrips_Y_%d", i), "", 100, 0, 100);
+    
+    h1_ds_X[i] = new TH2D(Form("h1_ds_X_%d", i), "", 100, -5.e1, 5.e1, 100, -5.e1, 5.e1);
+    h1_ds_Y[i] = new TH2D(Form("h1_ds_Y_%d", i), "", 100, -5.e1, 5.e1, 100, -5.e1, 5.e1);
+    
+    h1_nbins_X[i] = new TH1D(Form("h1_nbins_X_%d", i), "", 100, 0, 10000);
+    h1_nbins_Y[i] = new TH1D(Form("h1_nbins_Y_%d", i), "", 100, 0, 10000);
+    
+    h1_fSumA_X[i] = new TH1D(Form("h1_fSumA_X_%d", i), "", 100, 0, 1.0e6);
+    h1_fSumA_Y[i] = new TH1D(Form("h1_fSumA_Y_%d", i), "", 100, 0, 1.0e6);
+  }
+  /*
   h1_QvsX_ion = new TH2D("h1_QvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
   h1_QvsY_ion = new TH2D("h1_QvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
   h1_QnormvsX_ion = new TH2D("h1_QnormvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
@@ -376,6 +395,12 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
      //if(ipl==1 && ic<12)h1_yGEM_inava->Fill(xs0*1.e-3);
+    if(ipl==0 && ic<4){
+      h1_ds_X[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
+    }
+    if(ipl==1 && ic<4){
+      h1_ds_Y[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
+    }
 
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
@@ -444,6 +469,15 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	 << " " << nx << " " << ny << endl;
 #endif
     assert( nx > 0 && ny > 0 );
+    
+    if(ipl==0 && ic<4){
+      h1_nstrips_X[int(ic>0)]->Fill(nstrips);
+      //h1_ds_X[int(ic>0)]->Fill(yt-yb);
+    }
+    if(ipl==1 && ic<4){
+      h1_nstrips_Y[int(ic>0)]->Fill(nstrips);
+      //h1_ds_Y[int(ic>0)]->Fill(yt-yb);
+    }
 
     // define function, gaussian and sum of gaussian
 
@@ -550,15 +584,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       }//cout<<"##########################################################################"<<endl<<endl;getchar();
 
     }
-    /*
-    if(ipl==0 && ic==0)h1_nbins_X->Fill(sumASize);
-    if(ipl==1 && ic==0)h1_nbins_Y->Fill(sumASize);
+    
+    if(ipl==0 && ic<4)h1_nbins_X[int(ic>0)]->Fill(sumASize);
+    if(ipl==1 && ic<4)h1_nbins_Y[int(ic>0)]->Fill(sumASize);
     
     for(int i = 0; i< sumASize; i++){
-      if(ipl==0 && ic==0)h1_fSumA_X->Fill(fSumA[i]);
-      if(ipl==1 && ic==0)h1_fSumA_Y->Fill(fSumA[i]);
+      if(ipl==0 && ic<4)h1_fSumA_X[int(ic>0)]->Fill(fSumA[i]);
+      if(ipl==1 && ic<4)h1_fSumA_Y[int(ic>0)]->Fill(fSumA[i]);
     }
-    */
     
 #if DBG_AVA > 0
     cout << "t0 = " << t0 << " plane " << ipl 
@@ -1152,13 +1185,20 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+  for(int i = 0; i<2; i++){
+    h1_nstrips_X[i]->Write();
+    h1_nstrips_Y[i]->Write();
+    
+    h1_ds_X[i]->Write();
+    h1_ds_Y[i]->Write();
+    
+    h1_nbins_X[i]->Write();
+    h1_nbins_Y[i]->Write();
+    
+    h1_fSumA_X[i]->Write();
+    h1_fSumA_Y[i]->Write();
+  }
   /*
-  h1_nbins_X->Write();
-  h1_nbins_Y->Write();
-  
-  h1_fSumA_X->Write();
-  h1_fSumA_Y->Write();
-  
   h1_QvsX_ion->Write();
   h1_QvsY_ion->Write();
   h1_QnormvsX_ion->Write();

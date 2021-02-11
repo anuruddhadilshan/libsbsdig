@@ -107,8 +107,8 @@ int main(int argc, char** argv){
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
 	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "         list_of_bkgd_input_files (str, def=''); " << endl
-	 << "        nb_of_bkgd_files_to_add_to_sig_evt (int, def=0); " << endl;
+	 << "         bkgd_histo_input_file (str, def=''); " << endl
+	 << "        bkgd_lumi_frac (double, def=0); " << endl;
     return(-1);
   }
   
