@@ -80,7 +80,26 @@ class SBSDigGEMSimDig {
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
 
-
+  TH1D* h1_modhit_s;
+  TH1D* h1_xhit_s;
+  TH1D* h1_yhit_s;
+  TH1D* h1_zhit_s;
+  TH1D* h1_xdiff_s;
+  TH1D* h1_ydiff_s;
+  TH1D* h1_thit_s;
+  TH1D* h1_edep_s;
+  TH1D* h1_nions_s;
+  
+  TH1D* h1_modhit_b;
+  TH1D* h1_xhit_b;
+  TH1D* h1_yhit_b;
+  TH1D* h1_zhit_b;
+  TH1D* h1_xdiff_b;
+  TH1D* h1_ydiff_b;
+  TH1D* h1_thit_b;
+  TH1D* h1_edep_b;
+  TH1D* h1_nions_b;
+  
   TH1D** h1_nstrips_X;
   TH1D** h1_nstrips_Y;
 
@@ -92,7 +111,7 @@ class SBSDigGEMSimDig {
 
   TH1D** h1_fSumA_X;
   TH1D** h1_fSumA_Y;
-
+  
   /*
   TH2D* h1_QvsX_ion;
   TH2D* h1_QvsY_ion;

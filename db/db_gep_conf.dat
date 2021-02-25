@@ -50,6 +50,8 @@ NPlanes_ft 36
 # data acquisition window for ft in ns
 gatewidth_ft 400 
 #number of strips for each plane/module
+nlayers_ft 6
+ft_layer_z 1.835510 1.925510 2.015510 2.105510 2.195510 2.285510
 layer_ft 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 6 6 6 6 6 6
 nstrips_ft 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 
 #offset in transport coordinate for each plane/module in meters
@@ -68,6 +70,8 @@ NPlanes_fpp1 40
 # data acquisition window for fpp1 in ns
 gatewidth_fpp1 400 
 #number of strips for each plane/module
+nlayers_fpp1 5
+fpp1_layer_z 3.05906 3.15906 3.25906 3.35906 3.45906
 layer_fpp1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 
 nstrips_fpp1 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536
 #offset in transport coordinate for each plane/module in meters
@@ -86,6 +90,8 @@ NPlanes_fpp2 40
 # data acquisition window for fpp2 in ns
 gatewidth_fpp2 400 
 #number of strips for each plane/module
+nlayers_fpp2 5
+fpp2_layer_z 4.19731 4.29731 4.39731 4.49731 4.59731
 layer_fpp2 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 
 nstrips_fpp2 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536
 #offset in transport coordinate for each plane/module in meters

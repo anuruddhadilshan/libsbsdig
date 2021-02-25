@@ -242,6 +242,7 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
 
 void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int signal)
 {
+  bool is_background = (signal!=0);
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();

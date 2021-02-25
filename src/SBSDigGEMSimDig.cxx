@@ -77,6 +77,26 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
   
+  h1_modhit_s = new TH1D("h1_modhit_s", "", 36, 0, 36);
+  h1_xhit_s = new TH1D("h1_xhit_s", "", 205, -1.025, 1.025);
+  h1_yhit_s = new TH1D("h1_yhit_s", "", 62, -0.31, 0.31);
+  h1_zhit_s = new TH1D("h1_zhit_s", "", 100, -0.01, 0.01);
+  h1_xdiff_s = new TH1D("h1_xdiff_s", "", 100, -0.1, 0.1);
+  h1_ydiff_s = new TH1D("h1_ydiff_s", "", 100, -0.1, 0.1);
+  h1_thit_s = new TH1D("h1_thit_s", "", 1000, -500, 500);
+  h1_edep_s = new TH1D("h1_edep_s", "", 100, 0, 1000);
+  h1_nions_s = new TH1D("h1_nions_s", "", 100, 0, 1000);
+  
+  h1_modhit_b = new TH1D("h1_modhit_b", "", 36, 0, 36);
+  h1_xhit_b = new TH1D("h1_xhit_b", "", 205, -1.025, 1.025);
+  h1_yhit_b = new TH1D("h1_yhit_b", "", 62, -0.31, 0.31);
+  h1_zhit_b = new TH1D("h1_zhit_b", "", 100, -0.01, 0.01);
+  h1_xdiff_b = new TH1D("h1_xdiff_b", "", 100, -0.1, 0.1);
+  h1_ydiff_b = new TH1D("h1_ydiff_b", "", 100, -0.1, 0.1);
+  h1_thit_b = new TH1D("h1_thit_b", "", 1000, -500, 500);
+  h1_edep_b = new TH1D("h1_edep_b", "", 100, 0, 1000);
+  h1_nions_b = new TH1D("h1_nions_b", "", 100, 0, 1000);
+  
   h1_nstrips_X = new TH1D*[2];
   h1_nstrips_Y = new TH1D*[2];
   
@@ -726,7 +746,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
   // For signal data, determine the sector of the primary track
   
   for(size_t ih = 0; ih<gemdet->fGEMhits.size(); ih++){
-    is_background = (gemdet->fGEMhits[ih].source==0);
+    is_background = (gemdet->fGEMhits[ih].source!=0);
     UInt_t igem = gemdet->fGEMhits[ih].module;
     //UInt_t igem = iplane/2;
     
@@ -742,29 +762,56 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
 		 gemdet->fGEMhits[ih].yout*1.e3, 
 		 gemdet->fGEMhits[ih].zout*1.e3);
     
+    if(is_background){
+      h1_modhit_b->Fill(igem);
+      h1_xhit_b->Fill( (gemdet->fGEMhits[ih].xin+gemdet->fGEMhits[ih].xout)/2. );
+      h1_yhit_b->Fill( (gemdet->fGEMhits[ih].yin+gemdet->fGEMhits[ih].yout)/2. );
+      h1_zhit_b->Fill( (gemdet->fGEMhits[ih].zin+gemdet->fGEMhits[ih].zout)/2. );
+      h1_xdiff_b->Fill( gemdet->fGEMhits[ih].xout-gemdet->fGEMhits[ih].xin );
+      h1_ydiff_b->Fill( gemdet->fGEMhits[ih].yout-gemdet->fGEMhits[ih].yin );
+      h1_edep_b->Fill( gemdet->fGEMhits[ih].edep );
+    }else{
+      h1_modhit_s->Fill(igem);
+      h1_xhit_s->Fill( (gemdet->fGEMhits[ih].xin+gemdet->fGEMhits[ih].xout)/2. );
+      h1_yhit_s->Fill( (gemdet->fGEMhits[ih].yin+gemdet->fGEMhits[ih].yout)/2. );
+      h1_zhit_s->Fill( (gemdet->fGEMhits[ih].zin+gemdet->fGEMhits[ih].zout)/2. );
+      h1_xdiff_s->Fill( gemdet->fGEMhits[ih].xout-gemdet->fGEMhits[ih].xin );
+      h1_ydiff_s->Fill( gemdet->fGEMhits[ih].yout-gemdet->fGEMhits[ih].yin );
+      h1_edep_s->Fill( gemdet->fGEMhits[ih].edep );
+    }
+    
     if(abs(vv1.X()-vv2.X())>50 || abs(vv1.Y()-vv2.Y())>50){//in mm
       //cout<<abs(vv1.X()-vv2.X())<<endl;
       //getchar();
       continue;
     }
     //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
-    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
+    if(!is_background)
+      IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
     
     // Get Signal Start Time 'time_zero'
-    if( is_background ) {
-      // For background data, uniformly randomize event time between
-      // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-      // Not using HitTime from simulation file but randomize HitTime to cycle use background files
-      //event_time = m(-fGateWidth, 6*fEleSamplingPeriod);
-      event_time = fTimeZero;//fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
-      //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
-    } else {
-      // Signal events occur at t = 0, 
-      event_time = fTimeZero+gemdet->fGEMhits[ih].t;
-    }
+    //if( is_background ) {
+    // For background data, uniformly randomize event time between
+    // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
+    // Not using HitTime from simulation file but randomize HitTime to cycle use background files
+    //event_time = m(-fGateWidth, 6*fEleSamplingPeriod);
+    //event_time = fTimeZero;//fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
+    //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
+    //} else {
+    // Signal events occur at t = 0, 
+    event_time = fTimeZero+gemdet->fGEMhits[ih].t;
+    //}
     //  cout<<event_time<<"  "<<ih<<endl;
     // Adding drift time and trigger_jitter
     time_zero = event_time - fTriggerOffset[igem] + fRTime0*1e9 - trigger_jitter;
+    
+    if( is_background ){
+      h1_thit_b->Fill(time_zero);
+      h1_nions_b->Fill(fRNIon);
+    }else{
+      h1_thit_s->Fill(time_zero);
+      h1_nions_s->Fill(fRNIon);
+    }
     
     //cout << time_zero << " " << fTimeZero << " " << gemdet->fGEMhits[ih].t 
     //<< " " << trigger_jitter << " " << fRTime0*1e9 << endl;
@@ -780,7 +827,8 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     if (fRNIon > 0) {
       //cout << "AvaModel..." << endl;
       //if(igem<12)h1_yGEM_preava->Fill(vv1.Y()*1.e-3);
-      AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
+      if(!is_background)
+	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       //cout << "Done!" << endl;
       //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
       //CheckOut(gemdet, R, T);
@@ -911,128 +959,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	     T->Harm_FPP2_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
 	  }
 	  
-	  
-	  //if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
-	  //FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
-	  //#ifdef QUENOUILLE	 
-	  //for(int k = 0; k<6; k++){
-	  //if(gemdet->GEMPlanes[i].GetADC(j, k)>4096 || gemdet->GEMPlanes[i].GetADC(j, k)<0)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
-	  //}
-	  
-	  /*
-	  if(gemdet->GEMPlanes[i].Module()<3){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*gemdet->GEMPlanes[i].Module();
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_1x_dighit_nstrips++;
-	      T->Earm_BBGEM_1x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_1x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_1x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_1x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_1x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_1x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_1x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	      //cout << gemdet->GEMPlanes[i].GetADC(j, 2) << " " << T->Earm_BBGEM_1x_dighit_nstrips << " " << T->Earm_BBGEM_1x_dighit_adc_2->size()-1 << " " << T->Earm_BBGEM_1x_dighit_adc_2->at(T->Earm_BBGEM_1x_dighit_adc_2->size()-1) << endl;
-	    }else{
-	      T->Earm_BBGEM_1y_dighit_nstrips++;
-	      T->Earm_BBGEM_1y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_1y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_1y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_1y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_1y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_1y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_1y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<6){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-3);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_2x_dighit_nstrips++;
-	      T->Earm_BBGEM_2x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_2x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_2x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_2x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_2x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_2x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_2x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_2y_dighit_nstrips++;
-	      T->Earm_BBGEM_2y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_2y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_2y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_2y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_2y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_2y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_2y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<9){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-6);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_3x_dighit_nstrips++;
-	      T->Earm_BBGEM_3x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_3x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_3x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_3x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_3x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_3x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_3x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_3y_dighit_nstrips++;
-	      T->Earm_BBGEM_3y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_3y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_3y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_3y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_3y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_3y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_3y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<12){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-9);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_4x_dighit_nstrips++;
-	      T->Earm_BBGEM_4x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_4x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_4x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_4x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_4x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_4x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_4x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_4y_dighit_nstrips++;
-	      T->Earm_BBGEM_4y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_4y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_4y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_4y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_4y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_4y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_4y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else{
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-12);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_5x_dighit_nstrips++;
-	      T->Earm_BBGEM_5x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_5x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_5x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_5x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_5x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_5x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_5x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_5y_dighit_nstrips++;
-	      T->Earm_BBGEM_5y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_5y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_5y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_5y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_5y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_5y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_5y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }
-	  */
 	}//end if(...)
-	//#endif
-	//}else{
-	//FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
-	//}
+	
       }
     }
   }  
@@ -1185,6 +1113,26 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+  h1_modhit_s->Write();
+  h1_xhit_s->Write();
+  h1_yhit_s->Write();
+  h1_zhit_s->Write();
+  h1_xdiff_s->Write();
+  h1_ydiff_s->Write();
+  h1_thit_s->Write();
+  h1_edep_s->Write();
+  h1_nions_s->Write();
+  
+  h1_modhit_b->Write();
+  h1_xhit_b->Write();
+  h1_yhit_b->Write();
+  h1_zhit_b->Write();
+  h1_xdiff_b->Write();
+  h1_ydiff_b->Write();
+  h1_thit_b->Write();
+  h1_edep_b->Write();
+  h1_nions_b->Write();
+  
   for(int i = 0; i<2; i++){
     h1_nstrips_X[i]->Write();
     h1_nstrips_Y[i]->Write();

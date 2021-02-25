@@ -34,6 +34,8 @@ class SBSDigGEMDet {
   //private:
   UShort_t fUniqueID;
   UInt_t fNPlanes;
+  Double_t fGateWidth;
+  std::vector<Double_t> fZLayer;
   //std::map<int, SBSDigGEMPlane> GEMPlanes;
   std::vector<SBSDigGEMPlane> GEMPlanes;
 };
