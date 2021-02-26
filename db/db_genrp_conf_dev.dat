@@ -111,7 +111,7 @@ ADCbits_activeana 12
 TDCconv_activeana 0.1 
 TDCbits_activeana 19 
 sigmapulse_activeana 1.6 
-
+#thir
 ## parameters for GEMs
  # number of planes/modules/readout
  NPlanes_bbgem 32
