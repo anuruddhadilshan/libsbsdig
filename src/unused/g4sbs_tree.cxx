@@ -7,25 +7,24 @@
 
 // g4sbs_tree constructor: the tree will be the 
 // the boolean is a flag to consider(true) or ignore(false) the ECal_box and HCal_box data
-//g4sbs_tree::g4sbs_tree(TTree *tree, Exp_t expt, bool pythia)
+g4sbs_tree::g4sbs_tree(TTree *tree, exp_type expt, bool pythia)
 //, bool ecalbox, bool have_hcalbox) 
-g4sbs_tree::g4sbs_tree(TTree *tree, std::vector<TString> det_list)
   : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/volatile/halla/sbs/efuchey/gmn13.5_elastic_20200228_17/elastic_0.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("gep_spin_transport_Sx.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("/volatile/halla/sbs/efuchey/gmn13.5_elastic_20200228_17/elastic_0.root");
+         f = new TFile("gep_spin_transport_Sx.root");
       }
       f->GetObject("T",tree);
    }
-   // fExpt = expt;
-   // fPythia = pythia;
+   fExpt = expt;
+   fPythia = pythia;
    // fEcalBox = ecalbox;
    // fHcalBox = have_hcalbox;
-   Init(tree, det_list);
+   Init(tree);
 }
 
 //default destructor
@@ -62,7 +61,7 @@ Long64_t g4sbs_tree::LoadTree(Long64_t entry)
    return centry;
 }
 
-void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
+void g4sbs_tree::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -101,167 +100,84 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
    //fChain->SetMakeClass(1);
    
    //Setup "Event branch": can be useful
-   //fChain->SetBranchAddress("ev", &ev_count, &b_ev);
+   fChain->SetBranchAddress("ev", &ev_count, &b_ev);
    
-   for(int k = 0; k<det_list.size(); k++){
-     //GMN/GEN
-     if(det_list[k]=="bbps"){
-       printf(" bbps  branches set up! \n");
-       SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
-       SetupDetBranch(Earm_BBPS_Dig, "Earm.BBPS.dighit");
-     }
-     if(det_list[k]=="bbsh"){
-       printf(" bbsh  branches set up! \n");
-       SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
-       SetupDetBranch(Earm_BBSH_Dig, "Earm.BBSH.dighit");
-     }
-     if(det_list[k]=="grinch"){
-       printf(" grinch  branches set up! \n");
-       SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
-       SetupDetBranch(Earm_GRINCH_Dig, "Earm.GRINCH.dighit");
-     }
-     if(det_list[k]=="bbhodo"){
-       printf(" bbhodo branches set up! \n");
-       SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
-       SetupDetBranch(Earm_BBHodo_Dig, "Earm.BBHodo.dighit");
-     }
-     if(det_list[k]=="bbgem"){
-       printf(" bbgem branches set up! \n");
-       SetupDetBranch(Earm_BBGEM, "Earm.BBGEM.hit");
-       SetupDetBranch(Earm_BBGEM_Dig, "Earm.BBGEM.dighit");
-     }
-     if(det_list[k]=="hcal"){
-       printf(" hcal branches set up! \n");
-       SetupDetBranch(Harm_HCalScint,"Harm.HCalScint.hit");
-       SetupDetBranch(Harm_HCal_Dig, "Harm.HCal.dighit");
-     }
-     //GENRP
-     if(det_list[k]=="h_cdet"){
-       SetupDetBranch(CDET_Scint,"Harm.CDET_Scint.hit");
-       SetupDetBranch(CDET_Dig, "Harm.CDET.dighit");
-     }
-     if(det_list[k]=="activeana"){
-       SetupDetBranch(Harm_ActAnScint, "Harm.ActAnScint.hit");
-       SetupDetBranch(Harm_ActAn_Dig, "Harm.ActAn.dighit");
-     }
-     if(det_list[k]=="prpolscint_bs"){
-       SetupDetBranch(Harm_PRPolScintBeamSide, "Harm.PRPolScintBeamSide.hit");
-       SetupDetBranch(Harm_PRPolScintBeamSide_Dig, "Harm.PRPolScintBeamSide.dighit");
-     }
-     if(det_list[k]=="prpolscint_fs"){
-       SetupDetBranch(Harm_PRPolScintFarSide, "Harm.PRPolScintFarSide.hit");
-       SetupDetBranch(Harm_PRPolScintFarSide_Dig, "Harm.PRPolScintFarSide.dighit");
-     }
-     if(det_list[k]=="cepol_front"){
-       SetupDetBranch(Harm_CEPolFront, "Harm.CEPolFront.hit");
-       SetupDetBranch(Harm_CEPolFront_Dig, "Harm.CEPolFront.dighit");
-     }
-     if(det_list[k]=="cepol_rear"){
-       SetupDetBranch(Harm_CEPolRear, "Harm.CEPolRear.hit");
-       SetupDetBranch(Harm_CEPolRear_Dig, "Harm.CEPolRear.dighit");
-     }
-     if(det_list[k]=="prpolgem_bs"){
-       SetupDetBranch(Harm_PrPolGEMBeamSide, "Harm.PRPolGEMBeamSide.hit");
-       SetupDetBranch(Harm_PrPolGEMBeamSide_Dig, "Harm.PRPolGEMBeamSide.dighit");
-     }
-     if(det_list[k]=="prpolgem_fs"){
-       SetupDetBranch(Harm_PrPolGEMFarSide, "Harm.PRPolGEMFarSide.hit");
-       SetupDetBranch(Harm_PrPolGEMFarSide_Dig, "Harm.PRPolGEMFarSide.dighit");
-     }
-     //GEP
-     if(det_list[k]=="e_cdet"){
-       SetupDetBranch(CDET_Scint,"Earm.CDET_Scint.hit");
-       SetupDetBranch(CDET_Dig,"Earm.CDET.dighit");
-     }
-     if(det_list[k]=="ecal"){
-       SetupDetBranch(Earm_ECalTF1, "Earm.ECalTF1.hit");
-       SetupDetBranch(Earm_ECal_Dig,"Earm.ECal.dighit");
-     }
-     if(det_list[k]=="ft"){
-       SetupDetBranch(Harm_FT, "Harm.FT.hit");
-       SetupDetBranch(Harm_FT_Dig, "Harm.FT.dighit");
-     }
-     if(det_list[k]=="fpp1"){
-       SetupDetBranch(Harm_FPP1, "Harm.FPP1.hit");
-       SetupDetBranch(Harm_FPP1_Dig, "Harm.FPP1.dighit");
-     }
-     if(det_list[k]=="fpp2"){
-       SetupDetBranch(Harm_FPP2, "Harm.FPP2.hit");
-       SetupDetBranch(Harm_FPP2_Dig, "Harm.FPP2.dighit");
-     }
-     if(det_list[k]=="sbsgem"){
-       SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
-       SetupDetBranch(Harm_SBSGEM_Dig, "Harm.SBSGEM.dighit");
-     }
-     if(det_list[k]=="rich"){
-       SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
-       SetupDetBranch(Harm_RICH_Dig,"Harm.RICH.dighit");
-     }
-   }
-
-   /*
    //BigBite detector package: all expts except GEp
-   if(fExpt==kGMN || fExpt==kGEN || fExpt==kGEnRP || fExpt==kSIDISExp || fExpt==kA1n){
-     //gem_branch gem(BBGEM_UNIQUE_DETID,"Earm.BBGEM.hit","Earm.BBGEM.Track");
-     //GEMs.push_back(gem);
+   if(fExpt==kNeutronExp || fExpt==kGEnRP || fExpt==kSIDIS || fExpt==kA1n){
+     gem_branch gem(BBGEM_UNIQUE_DETID,"Earm.BBGEM.hit","Earm.BBGEM.Track");
+     GEMs.push_back(gem);
+     
+     SetupDetBranch(Earm_GRINCH, "Earm.GRINCH.hit");
+
      // if(fEcalBox){
      //   SetupDetBranch(Earm_ECAL_box, "Earm.BBCal.hit.nhits");
      // }else{
      // SetupDetBranch(Earm_BBPS,    "Earm.BBPS.hit");
      // SetupDetBranch(Earm_BBSH,    "Earm.BBSH.hit");
      //}
-     
+     SetupDetBranch(Earm_BBPSTF1, "Earm.BBPSTF1.hit");
+     SetupDetBranch(Earm_BBHodoScint, "Earm.BBHodoScint.hit");
+     SetupDetBranch(Earm_BBSHTF1, "Earm.BBSHTF1.hit");
    }
    
    if(fExpt==kGEp){
-     //SetupDetBranch(Earm_CDET,"Earm.CDET.hit");
+     SetupDetBranch(Earm_CDET,"Earm.CDET.hit");
+     SetupDetBranch(Earm_CDET_Scint,"Earm.CDET_Scint.hit");
      
      // if(fEcalBox){
      //   SetupDetBranch(Earm_ECAL_box, "Earm.ECAL_box.hit.nhits");
      // }else{
      //   SetupDetBranch(Earm_ECAL, "Earm.ECAL.hit");
      // }
-     
+     SetupDetBranch(Earm_ECalTF1, "Earm.ECalTF1.hit");
 
      // Focal plane polarimeters
-     
-     // gem_branch gem_ft(FT_UNIQUE_DETID,"Harm.FT.hit","Harm.FT.Track");
-     // GEMs.push_back(gem_ft);
-     // gem_branch gem_fpp1(FPP1_UNIQUE_DETID,"Harm.FPP1.hit","Harm.FPP1.Track");
-     // GEMs.push_back(gem_fpp1);
-     // gem_branch gem_fpp2(FPP2_UNIQUE_DETID,"Harm.FPP2.hit","Harm.FPP2.Track");
-     // GEMs.push_back(gem_fpp2);
+     gem_branch gem_ft(FT_UNIQUE_DETID,"Harm.FT.hit","Harm.FT.Track");
+     GEMs.push_back(gem_ft);
+     gem_branch gem_fpp1(FPP1_UNIQUE_DETID,"Harm.FPP1.hit","Harm.FPP1.Track");
+     GEMs.push_back(gem_fpp1);
+     gem_branch gem_fpp2(FPP2_UNIQUE_DETID,"Harm.FPP2.hit","Harm.FPP2.Track");
+     GEMs.push_back(gem_fpp2);
    }
-
+   
    if(fExpt==kGEnRP){
      //SetupDetBranch(Harm_CDET,"Harm.CDET.hit");
-     //TODO: Add polarimeter GEMs
-     //gem_branch gem_cefront(CEPOL_GEMFRONT_UNIQUE_DETID,"Harm.CEPolFront.hit","Harm.CEPolFront.Track");
-     //GEMs.push_back(gem_cefront);
-     //gem_branch gem_cerear(CEPOL_GEMREAR_UNIQUE_DETID,"Harm.CEPolRear.hit","Harm.CEPolRear.Track");
-     //GEMs.push_back(gem_cerear);
+     //SetupDetBranch(Harm_CDET_Scint,"Harm.CDET_Scint.hit");
      
-     //gem_branch gem_prbs(PRPOLBS_GEM_UNIQUE_DETID,"Harm.PRPolGEMBeamSide.hit","Harm.PRPolGEMBeamSide.Track");
-     //GEMs.push_back(gem_prbs);
-     //gem_branch gem_prfs(PRPOLFS_GEM_UNIQUE_DETID,"Harm.PRPolGEMFarSide.hit","Harm.PRPolGEMFarSide.Track");
-     //GEMs.push_back(gem_prfs);
+     SetupDetBranch(Harm_ActAnScint,    "Harm.ActAnScint.hit");
+     SetupDetBranch(Harm_PRPolScintBeamSide, "Harm.PRPolScintBeamSide.hit");
+     SetupDetBranch(Harm_PRPolScintFarSide, "Harm.PRPolScintFarSide.hit");
+
+     //TODO: Add polarimeter GEMs
+     gem_branch gem_cefront(CEPOL_GEMFRONT_UNIQUE_DETID,"Harm.CEPolFront.hit","Harm.CEPolFront.Track");
+     GEMs.push_back(gem_cefront);
+     gem_branch gem_cerear(CEPOL_GEMREAR_UNIQUE_DETID,"Harm.CEPolRear.hit","Harm.CEPolRear.Track");
+     GEMs.push_back(gem_cerear);
+     
+     gem_branch gem_prbs(PRPOLBS_GEM_UNIQUE_DETID,"Harm.PRPolGEMBeamSide.hit","Harm.PRPolGEMBeamSide.Track");
+     GEMs.push_back(gem_prbs);
+     gem_branch gem_prfs(PRPOLFS_GEM_UNIQUE_DETID,"Harm.PRPolGEMFarSide.hit","Harm.PRPolGEMFarSide.Track");
+     GEMs.push_back(gem_prfs);
    }
-   if(fExpt!=kTDIS && fExpt!=kNDVCS){
+     
+   if(fExpt!=kTDIS && fExpt!=kDVCS){
      // Example of simplified HCAL branch setup
      // if(fHcalBox){
      //   SetupDetBranch(hcalbox,"Harm.HCAL_box.hit");
      // }else{
      //   SetupDetBranch(hcal,"Harm.HCal.hit");
      // }
+     SetupDetBranch(hcalscint,"Harm.HCalScint.hit");
      // EPAF: for the time being, remove.
      // we might reestablish it to turn on some test mode.
      // SetupDetBranch(hcalpart,"Harm.HCal");
    }
    
-   if(fExpt==kSIDISExp || fExpt==kA1n || fExpt==kTDIS || fExpt==kNDVCS){
-     //gem_branch gem(SBSGEM_UNIQUE_DETID,"Harm.SBSGEM.hit","Harm.SBSGEM.Track");
-     //GEMs.push_back(gem);
+   if(fExpt==kSIDIS || fExpt==kA1n || fExpt==kTDIS || fExpt==kDVCS){
+     gem_branch gem(SBSGEM_UNIQUE_DETID,"Harm.SBSGEM.hit","Harm.SBSGEM.Track");
+     GEMs.push_back(gem);
      
+     SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
    }
    
    if(fPythia){
@@ -304,13 +220,12 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
    }
 
    // Now config all the GEM branches and trees
-
    for(std::vector<gem_branch>::iterator it = GEMs.begin();
        it != GEMs.end(); it++) {
      SetupDetBranch(it->tree,it->name);
      SetupDetBranch(it->Track_tree,it->Track_name);
    }
-   */
+   
    Notify();
 }
 
@@ -384,52 +299,4 @@ void g4sbs_tree::Loop()
 void g4sbs_tree::SetupDetBranch(TSBSGeant4::VDetData_t &det, const char *prefix)
 {
   det.SetupBranches(fChain,prefix);
-}
-
-void g4sbs_tree::ClearDigBranches()
-{
-  Earm_BBGEM_Dig.ClearBranches();
-  Earm_BBHodo_Dig.ClearBranches();
-  Earm_GRINCH_Dig.ClearBranches();
-  Earm_BBPS_Dig.ClearBranches();
-  Earm_BBSH_Dig.ClearBranches();
-  CDET_Dig.ClearBranches();
-  Earm_ECal_Dig.ClearBranches();
-  Harm_FPP1_Dig.ClearBranches();
-  Harm_FPP2_Dig.ClearBranches();
-  Harm_FT_Dig.ClearBranches();
-  Harm_HCal_Dig.ClearBranches();
-  Harm_ActAn_Dig.ClearBranches();
-  Harm_PRPolScintBeamSide_Dig.ClearBranches();
-  Harm_PRPolScintFarSide_Dig.ClearBranches();
-  Harm_CEPolFront_Dig.ClearBranches();
-  Harm_CEPolRear_Dig.ClearBranches();
-  Harm_PrPolGEMBeamSide_Dig.ClearBranches();
-  Harm_PrPolGEMFarSide_Dig.ClearBranches();
-  Harm_SBSGEM_Dig.ClearBranches();
-  Harm_RICH_Dig.ClearBranches();
-}
-
-void g4sbs_tree::FillDigBranches()
-{
-  Earm_BBGEM_Dig.FillBranches();
-  Earm_BBHodo_Dig.FillBranches();
-  Earm_GRINCH_Dig.FillBranches();
-  Earm_BBPS_Dig.FillBranches();
-  Earm_BBSH_Dig.FillBranches();
-  CDET_Dig.FillBranches();
-  Earm_ECal_Dig.FillBranches();
-  Harm_FPP1_Dig.FillBranches();
-  Harm_FPP2_Dig.FillBranches();
-  Harm_FT_Dig.FillBranches();
-  Harm_HCal_Dig.FillBranches();
-  Harm_ActAn_Dig.FillBranches();
-  Harm_PRPolScintBeamSide_Dig.FillBranches();
-  Harm_PRPolScintFarSide_Dig.FillBranches();
-  Harm_CEPolFront_Dig.FillBranches();
-  Harm_CEPolRear_Dig.FillBranches();
-  Harm_PrPolGEMBeamSide_Dig.FillBranches();
-  Harm_PrPolGEMFarSide_Dig.FillBranches();
-  Harm_SBSGEM_Dig.FillBranches();
-  Harm_RICH_Dig.FillBranches();
 }

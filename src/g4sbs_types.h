@@ -15,12 +15,9 @@
 
 #define qe 1.602e-19
 #define spe_unit 1.0e-9 //to convert ns to s...
-
-#define NBANKS 1
-
-// Tag numbers associated in the GEMC banks
-
-#define __GENERATED_SIZE 7
+#define m_e 511.e-6
+#define n_lg 1.68
+#define ROimpedance 50.0 //Ohm
 
 // List of detector unique IDs: 
 // by (proposed) convention: DetUniqueID = DetType*10+DetID
@@ -47,6 +44,7 @@
 #define PRPOLBS_GEM_UNIQUE_DETID 47
 #define PRPOLFS_GEM_UNIQUE_DETID 48
 
+/*
 enum exp_type{
   kNeutronExp, kGEp, kGEnRP, 
   kSIDIS, kA1n, kTDIS, kDVCS
@@ -57,7 +55,14 @@ enum det_type{
   kCher, kScint,
   kGEM
 };
+*/
 
 const std::string kProj_str[2] = {"x", "y"};
+//db ???
+const double bbgem_z[5] = {0.85, 1.0, 1.15, 1.30, 2.3582044};
+const double ft_z[6] = {1.835510, 1.925510, 2.015510, 2.105510, 2.195510, 2.285510};
+const double fpp1_z[5] = {3.05906, 3.15906, 3.25906, 3.35906, 3.45906};
+const double fpp2_z[5] = {4.19731, 4.29731, 4.39731, 4.49731, 4.59731};
+
 
 #endif//__GEMC_TYPES_H

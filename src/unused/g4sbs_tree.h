@@ -11,7 +11,6 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
-#include <TString.h>
 
 // ----------------------------
 // This class is useful to activate *all* variables from the tree 
@@ -27,12 +26,10 @@
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
-#include "sbstypes.hh"
 #include "g4sbs_data.h"
 #include "g4sbs_types.h"
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
-/*
 struct gem_branch {
    int id;
    const char* name;
@@ -44,14 +41,13 @@ struct gem_branch {
    {
    }
 };
-*/
 
 class g4sbs_tree {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
-   //Exp_t           fExpt;    // Choose experiment type: defined in "g4sbs_types.h"
-   //bool            fPythia;// needed to turn on/off the reading of the pythia variables
+   exp_type        fExpt;    // Choose experiment type: defined in "g4sbs_types.h"
+   bool            fPythia;// needed to turn on/off the reading of the pythia variables
    // EPAF: those were inherited from an attempt of "standard tree" 
    // for the "raw" analysis of g4sbs files
    // these have nothing to do with digitization
@@ -59,7 +55,7 @@ public :
    // bool            fHcalBox;// needed to turn on/off the reading of the HCAL_box data
 
    // Declaration of leaf types
-   /*
+   
    // Event variables
    Double_t        ev_count;
    Double_t        ev_rate;
@@ -103,98 +99,68 @@ public :
    Int_t           ev_hadr;
    Int_t           ev_earmaccept;
    Int_t           ev_harmaccept;
-   */
+   
    // TODO: do some cleaning in here: I don't think we want ecal box data structures.
    // GEM variables
-   // std::vector<gem_branch> GEMs;
+   std::vector<gem_branch> GEMs;
 
    //BB GEMs variables
-   TSBSGeant4::GEMData_t Earm_BBGEM;
-   TSBSGeant4::DigGEMData_t Earm_BBGEM_Dig;
+   //TSBSGeant4::GEMData_t     Earm_BBGEM;
    //TSBSGeant4::TrackerData_t Earm_BBGEM_Track;
 
    // BB timing hodoscope
-   TSBSGeant4::CalData_t Earm_BBHodoScint;
-   TSBSGeant4::DigTimingData_t Earm_BBHodo_Dig;
+   TSBSGeant4::CalData_t  Earm_BBHodoScint;
 
    // GRINCH variables
    TSBSGeant4::RICHData_t Earm_GRINCH;
-   TSBSGeant4::DigTimingData_t Earm_GRINCH_Dig;
 
    //BB ECal variables
-   //TSBSGeant4::ECalData_t Earm_BBPS;
-   TSBSGeant4::CalData_t Earm_BBPSTF1;
-   TSBSGeant4::DigCalData_t Earm_BBPS_Dig;
-   //TSBSGeant4::ECalData_t Earm_BBSH;
-   TSBSGeant4::CalData_t Earm_BBSHTF1;
-   TSBSGeant4::DigCalData_t Earm_BBSH_Dig;
+   TSBSGeant4::ECalData_t Earm_BBPS;
+   TSBSGeant4::CalData_t  Earm_BBPSTF1;
+   TSBSGeant4::ECalData_t Earm_BBSH;
+   TSBSGeant4::CalData_t  Earm_BBSHTF1;
 
    // Coordinate detector hits
-   //TSBSGeant4::ECalData_t Earm_CDET;
-   //TSBSGeant4::CalData_t  Earm_CDET_Scint;
-   //TSBSGeant4::ECalData_t Harm_CDET;
-   //TSBSGeant4::CalData_t  Harm_CDET_Scint;
-   //exception: the only det that can be used on either side
-   TSBSGeant4::CalData_t CDET_Scint;
-   TSBSGeant4::DigTimingData_t CDET_Dig;
-   
+   TSBSGeant4::ECalData_t Earm_CDET;
+   TSBSGeant4::CalData_t  Earm_CDET_Scint;
+   TSBSGeant4::ECalData_t Harm_CDET;
+   TSBSGeant4::CalData_t  Harm_CDET_Scint;
+
    // GEp Electromagnetic calorimeter hits
    // TSBSGeant4::CalData_t  Earm_ECAL_box;
-   //TSBSGeant4::ECalData_t Earm_ECAL;
-   TSBSGeant4::CalData_t Earm_ECalTF1;
-   TSBSGeant4::DigCalData_t Earm_ECal_Dig;
+   TSBSGeant4::ECalData_t Earm_ECAL;
+   TSBSGeant4::CalData_t  Earm_ECalTF1;
 
    // Focal Plane Polarimeter 1 hits
-   TSBSGeant4::GEMData_t Harm_FPP1;
-   TSBSGeant4::DigGEMData_t Harm_FPP1_Dig;
-   //TSBSGeant4::TrackerData_t Harm_FPP1_Track;
-   TSBSGeant4::GEMData_t Harm_FPP2;
-   TSBSGeant4::DigGEMData_t Harm_FPP2_Dig;
-   //TSBSGeant4::TrackerData_t Harm_FPP2_Track;
-   TSBSGeant4::GEMData_t Harm_FT;
-   TSBSGeant4::DigGEMData_t Harm_FT_Dig;
-   //TSBSGeant4::TrackerData_t Harm_FT_Track;
+   TSBSGeant4::GEMData_t     Harm_FPP1;
+   TSBSGeant4::TrackerData_t Harm_FPP1_Track;
+   TSBSGeant4::GEMData_t     Harm_FPP2;
+   TSBSGeant4::TrackerData_t Harm_FPP2_Track;
+   TSBSGeant4::GEMData_t     Harm_FT;
+   TSBSGeant4::TrackerData_t Harm_FT_Track;
    
    // Hadronic calorimeter hits
    // An example for how to simplify tree objects
    // TODO: Don't hard code detectors here, but rather read them in
    // through a database if possible
    // TSBSGeant4::CalData_t      hcalbox;
-   TSBSGeant4::CalData_t Harm_HCalScint;
-   TSBSGeant4::DigSampCalData_t Harm_HCal_Dig;
-   //TSBSGeant4::ECalData_t     hcal;
-   //TSBSGeant4::ECalPartData_t hcalpart;
+   TSBSGeant4::CalData_t      hcalscint;
+   TSBSGeant4::ECalData_t     hcal;
+   TSBSGeant4::ECalPartData_t hcalpart;
 
    // GEn-RP Active analyzer hits
-   TSBSGeant4::CalData_t Harm_ActAnScint;
-   TSBSGeant4::DigTimingData_t Harm_ActAn_Dig;
+   TSBSGeant4::CalData_t      Harm_ActAnScint;
    
    // GEn-RP PR polarimeter Scintillators hits;
-   TSBSGeant4::CalData_t Harm_PRPolScintBeamSide;
-   TSBSGeant4::DigTimingData_t Harm_PRPolScintBeamSide_Dig;
-   TSBSGeant4::CalData_t Harm_PRPolScintFarSide;
-   TSBSGeant4::DigTimingData_t Harm_PRPolScintFarSide_Dig;
-   
-   // GEn-RP PR polarimeter Scintillators hits;
-   TSBSGeant4::GEMData_t Harm_CEPolFront;
-   TSBSGeant4::DigGEMData_t Harm_CEPolFront_Dig;
-   TSBSGeant4::GEMData_t Harm_CEPolRear;
-   TSBSGeant4::DigGEMData_t Harm_CEPolRear_Dig;
-   
-   TSBSGeant4::GEMData_t Harm_PrPolGEMBeamSide;
-   TSBSGeant4::DigGEMData_t Harm_PrPolGEMBeamSide_Dig;
-   TSBSGeant4::GEMData_t Harm_PrPolGEMFarSide;
-   TSBSGeant4::DigGEMData_t Harm_PrPolGEMFarSide_Dig;
+   TSBSGeant4::CalData_t      Harm_PRPolScintBeamSide;
+   TSBSGeant4::CalData_t      Harm_PRPolScintFarSide;
    
    //SBS GEMs variables
-   TSBSGeant4::GEMData_t Harm_SBSGEM;
-   TSBSGeant4::DigGEMData_t Harm_SBSGEM_Dig;
-   
-   //TSBSGeant4::TrackerData_t Harm_SBSGEM_Track;
+   TSBSGeant4::GEMData_t     Harm_SBSGEM;
+   TSBSGeant4::TrackerData_t Harm_SBSGEM_Track;
 
    // RICH variables
    TSBSGeant4::RICHData_t Harm_RICH;
-   TSBSGeant4::DigTimingData_t Harm_RICH_Dig;
 
    //Pythia variables
    Double_t              primaries_Sigma;
@@ -235,7 +201,6 @@ public :
    std::vector<double>  *Primaries_phi;
    
    // List of branches
-   /*
    TBranch        *b_ev;   //!
    //TBranch        *b_gen;   //!
 
@@ -275,10 +240,9 @@ public :
    TBranch        *b_Primaries_t;   //!
    TBranch        *b_Primaries_theta;   //!
    TBranch        *b_Primaries_phi;   //!
-   */
 
-   g4sbs_tree(TTree *tree, std::vector<TString> det_list);
-   //g4sbs_tree(TTree *tree=0, Exp_t expt = kGMN, bool pythia = false);
+
+   g4sbs_tree(TTree *tree=0, exp_type expt = kNeutronExp, bool pythia = false);
    //, bool ecalbox = false, bool hcalbox = false);
    // EPAF: We need to clean this. 
    virtual ~g4sbs_tree();
@@ -286,14 +250,11 @@ public :
    virtual Int_t    GetEntries();
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree, std::vector<TString> det_list);
+   virtual void     Init(TTree *tree);
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   
-   void ClearDigBranches();
-   void FillDigBranches();
-   
+
 protected:
    void SetupDetBranch(TSBSGeant4::VDetData_t &det, const char* prefix);
 };
