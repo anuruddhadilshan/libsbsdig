@@ -268,11 +268,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
 }//end if(!detmap.empty())
-  
-  //GEMs
+ //GEMs
   if(!gemmap.empty()){
     idet = 0;
-    //genrp detectors
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=BBGEM_UNIQUE_DETID){
 	idet++;
@@ -289,13 +287,24 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	if(T->Earm_BBGEM.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
 	  hit.source = signal;
-	  if(T->Earm_BBGEM.plane->at(k)==5){
-	    if(fabs(T->Earm_BBGEM.xin->at(k))>=1.024)continue;
-	    mod = 12 + floor((T->Earm_BBGEM.xin->at(k)+1.024)/0.512);
-	  }else{
-	    if(fabs(T->Earm_BBGEM.xin->at(k))>=0.768)continue;
-	    mod = (T->Earm_BBGEM.plane->at(k)-1)*3 + floor((T->Earm_BBGEM.xin->at(k)+0.768)/0.512);
-	  }
+	  //Here... that's one source of errors when we get out of the 4 INFN GEMs patter
+	  mod = 0;
+	  //cout << gemdets[idet]->fNPlanes/2 << endl;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    //cout << mod << " " << T->Earm_BBGEM.plane->at(k) << " == ? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << " ; " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << " <= ? " << T->Earm_BBGEM.xin->at(k) << " <= ? " << (gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) << endl;
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Earm_BBGEM.xin->at(k) && T->Earm_BBGEM.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Earm_BBGEM.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;
+	  /*
+	    if(T->Earm_BBGEM.plane->at(k)==5){
+	      if(fabs(T->Earm_BBGEM.xin->at(k))>=1.024)continue;
+	      mod = 12 + floor((T->Earm_BBGEM.xin->at(k)+1.024)/0.512);
+	    }else{
+	      if(fabs(T->Earm_BBGEM.xin->at(k))>=0.768)continue;
+	      mod = (T->Earm_BBGEM.plane->at(k)-1)*3 + floor((T->Earm_BBGEM.xin->at(k)+0.768)/0.512);
+	    }
+	  */
 	  //if(mod<2)cout << mod << " " << T->Earm_BBGEM.plane->at(k) << " " << T->Earm_BBGEM.xin->at(k) << endl;
 	  hit.module = mod; 
 	  hit.edep = T->Earm_BBGEM.edep->at(k)*1.0e9;//eV! not MeV!!!!
@@ -304,118 +313,19 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.t = tzero+T->Earm_BBGEM.t->at(k);
 	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
 	  hit.xin = T->Earm_BBGEM.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yin = T->Earm_BBGEM.yin->at(k);
-	  hit.zin = T->Earm_BBGEM.zin->at(k)-bbgem_z[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
+	  hit.yin = T->Earm_BBGEM.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = T->Earm_BBGEM.zin->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
 	  hit.xout = T->Earm_BBGEM.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yout = T->Earm_BBGEM.yout->at(k);
-	  hit.zout = T->Earm_BBGEM.zout->at(k)-bbgem_z[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
-	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
+	  hit.yout = T->Earm_BBGEM.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = T->Earm_BBGEM.zout->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
+	  //cout << mod << " " << hit.zin << " " << hit.zout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)
 	
       }
       has_data = true;  
     }
- }//end if(!gemmap.empty())...  
-    
-//CEPolFront GEMs
-  if(!gemmap.empty()){
-    idet = 0;
-    //genrp detectors
-    while(idet<(int)gemmap.size()){
-      if(gemmap[idet]!=CEPOL_GEMFRONT_UNIQUE_DETID){
-	idet++;
-      }else{
-	break;
-      }
-    }
-    //while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
-    if(idet>=gemmap.size())idet = -1;
-    //cout << " gem " << idet << endl;
-    // Now process the GEM data
-    if(idet>=0){// && T->Earm_BBGEM.nhits){
-      for(int k = 0; k<T->Harm_CEPolFront.nhits; k++){
-	if(T->Harm_CEPolFront.edep->at(k)>0){
-	  SBSDigGEMDet::gemhit hit; 
-	  hit.source = signal;
-/*	  if(T->Harm_CEPolFront.plane->at(k)==5){
-	    if(fabs(T->Harm_CEPolFront.xin->at(k))>=1.024)continue;
-	    mod = 12 + floor((T->Harm_CEPolFront.xin->at(k)+1.024)/0.512);
-	  }else{
-	    if(fabs(T->Harm_CEPolFront.xin->at(k))>=0.768)continue;
-	    mod = (T->Harm_CEPolFront->at(k)-1)*3 + floor((T->Harm_CEPolFront.xin->at(k)+0.768)/0.512);
-	  }*/
-	  //if(mod<2)cout << mod << " " << T->Earm_BBGEM.plane->at(k) << " " << T->Earm_BBGEM.xin->at(k) << endl;
-	  hit.module = mod; 
-	  hit.edep = T->Harm_CEPolFront.edep->at(k)*1.0e9;//eV! not MeV!!!!
-	  //hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
-	  //hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
-	  hit.t = tzero+T->Harm_CEPolFront.t->at(k);
-	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
-	  hit.xin = T->Harm_CEPolFront.xin->at(k);//-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yin = T->Harm_CEPolFront.yin->at(k);
-	  hit.zin = T->Harm_CEPolFront.zin->at(k)-cepol_front_z[T->Harm_CEPolFront.plane->at(k)-1]+0.8031825;
-	  hit.xout = T->Harm_CEPolFront.xout->at(k);//-gemdets[idet]->Harm_CEPolFront[mod*2].Xoffset();
-	  hit.yout = T->Harm_CEPolFront.yout->at(k);
-	  hit.zout = T->Harm_CEPolFront.zout->at(k)-cepol_front_z[T->Harm_CEPolFront.plane->at(k)-1]+0.8031825;
-	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
-	  gemdets[idet]->fGEMhits.push_back(hit);
-	}//end if(sumedep>0)
-	
-      }
-      has_data = true;  
-    }
- }//end if(!gemmap.empty())...
-
-//CEPolRear GEMs
-  if(!gemmap.empty()){
-    idet = 0;
-    //genrp detectors
-    while(idet<(int)gemmap.size()){
-      if(gemmap[idet]!=CEPOL_GEMREAR_UNIQUE_DETID){
-	idet++;
-      }else{
-	break;
-      }
-    }
-    //while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
-    if(idet>=gemmap.size())idet = -1;
-    //cout << " gem " << idet << endl;
-    // Now process the GEM data
-    if(idet>=0){// && T->Earm_BBGEM.nhits){
-      for(int k = 0; k<T->Harm_CEPolRear.nhits; k++){
-	if(T->Harm_CEPolRear.edep->at(k)>0){
-	  SBSDigGEMDet::gemhit hit; 
-	  hit.source = signal;
-	  /*if(T->Harm_CEPolRear.plane->at(k)==5){
-	    if(fabs(T->Harm_CEPolRear.xin->at(k))>=1.024)continue;
-	    mod = 12 + floor((T->Harm_CEPolRear.xin->at(k)+1.024)/0.512);
-	  }else{
-	    if(fabs(T->Harm_CEPolRear.xin->at(k))>=0.768)continue;
-	    mod = (T->Harm_CEPolRear->at(k)-1)*3 + floor((T->Harm_CEPolRear.xin->at(k)+0.768)/0.512);
-	  }*/
-	  //if(mod<2)cout << mod << " " << T->Earm_BBGEM.plane->at(k) << " " << T->Earm_BBGEM.xin->at(k) << endl;
-	  hit.module = mod; 
-	  hit.edep = T->Harm_CEPolRear.edep->at(k)*1.0e9;//eV! not MeV!!!!
-	  //hit.tmin = T->Earm_BBGEM_hit_tmin->at(k);
-	  //hit.tmax = T->Earm_BBGEM_hit_tmax->at(k);
-	  hit.t = tzero+T->Harm_CEPolRear.t->at(k);
-	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
-	  hit.xin = T->Harm_CEPolRear.xin->at(k);//-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yin = T->Harm_CEPolRear.yin->at(k);
-	  hit.zin = T->Harm_CEPolRear.zin->at(k)-cepol_rear_z[T->Harm_CEPolRear.plane->at(k)-1]+0.8031825;
-	  hit.xout = T->Harm_CEPolRear.xout->at(k);//-gemdets[idet]->Harm_CEPolRear[mod*2].Xoffset();
-	  hit.yout = T->Harm_CEPolRear.yout->at(k);
-	  hit.zout = T->Harm_CEPolRear.zout->at(k)-cepol_rear_z[T->Harm_CEPolRear.plane->at(k)-1]+0.8031825;
-	  //cout << mod << " " << hit.xin << " " << hit.xout << endl;
-	  gemdets[idet]->fGEMhits.push_back(hit);
-	}//end if(sumedep>0)
-	
-      }
-      has_data = true;  
-    }
- 
-  }//end if(!gemmap.empty())...
+    }   
   return has_data;
 }
 

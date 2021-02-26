@@ -113,60 +113,25 @@ TDCbits_activeana 19
 sigmapulse_activeana 1.6 
 
 ## parameters for GEMs
-# number of planes/modules/readout
-NPlanes_bbgem 32 
-# data acquisition window for bbgem in ns
-gatewidth_bbgem 400 
-#number of strips for each plane/module
-nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 
-#offset in transport coordinate for each plane/module in meters
-offset_bbgem -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
-#strip angle for all BB GEM readouts in degrees
-RO_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
-#RO_angle_bbgem 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-#trigger offsets for all planes in ns
-triggeroffset_bbgem 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. 
-#zero suppression threshold for GEMs in ADC channels
-ZsupThr_bbgem 240.
-#common mode value/array for GEMs in ADC channels
-commonmode_array_bbgem 1500.
-
-## parameters for GEN-rp GEM: cepol_front
-# number of planes/modules/readout
-NPlanes_cepol_front 32 
-# data acquisition window for bbgem in ns
-gatewidth_cepol_front 400 
-#number of strips for each plane/module
-nstrips_cepol_front 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536
-#offset in transport coordinate for each plane/module in meters
-offset_cepol_front -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
-#strip angle for all BB GEM readouts in degrees
-#RO_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
-RO_angle_cepol_front 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-#trigger offsets for all planes in ns
-triggeroffset_cepol_front 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. 
-#zero suppression threshold for GEMs in ADC channels
-ZsupThr_cepol_front 240.
-#common mode value/array for GEMs in ADC channels
-commonmode_array_cepol_front 1500.
-
-## parameters for GEN-rp GEM: cepol_rear
-# number of planes/modules/readout
-NPlanes_cepol_rear 32 
-# data acquisition window for rear in ns
-gatewidth_cepol_rear 400 
-#number of strips for each plane/module
-nstrips_cepol_rear 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536 1280 1536
-#offset in transport coordinate for each plane/module in meters
-offset_cepol_rear -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
-#strip angle for all BB GEM readouts in degrees
-#RO_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
-RO_angle_cepol_rear 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-#trigger offsets for all planes in ns
-triggeroffset_cepol_rear 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5 126. 126. 126. 126. 
-#zero suppression threshold for GEMs in ADC channels
-ZsupThr_cepol_rear 240.
-#common mode value/array for GEMs in ADC channels
-commonmode_array_cepol_rear 1500.
+ # number of planes/modules/readout
+ NPlanes_bbgem 32
+ # data acquisition window for bbgem in ns
+ gatewidth_bbgem 400
+ #number of strips for each plane/module
+ nlayers_bbgem 5
+ bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
+ layer_bbgem 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 5 5
+ nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024     1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280    1536
+ #offset in transport coordinate for each plane/module in meters
+ offset_bbgem -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512    0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
+ #strip angle for all BB GEM readouts in degrees
+ RO_angle_bbgem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0  0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
+ #trigger offsets for all planes in ns
+ triggeroffset_bbgem 121. 121. 121. 121.5 121.5 121.5 122. 122. 122. 122.5 122.5 122.5   126. 126. 126. 126.
+ #zero suppression threshold for GEMs in ADC channels
+ ZsupThr_bbgem 240.
+ #common mode value/array for GEMs in ADC channels
+ commonmode_array_bbgem 1500.
+ 
 
 endconfig

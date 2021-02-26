@@ -1,5 +1,6 @@
 #!/bin/sh
 pwdd=`pwd`
+./g4_run.sh
 cd /w/halla-scifs17exp/sbs/thir/vgit4libsbsdg/buildM/
 rm -r *
 cmake -DCMAKE_INSTALL_PREFIX=/w/halla-scifs17exp/sbs/thir/vgit4libsbsdg/libsbsdig-install/ ../libsbsdig-1/ && make install
