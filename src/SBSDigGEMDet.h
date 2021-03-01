@@ -30,9 +30,7 @@ class SBSDigGEMDet {
   };
 
   std::vector<gemhit> fGEMhits;
-  Double_t fGateWidth;
-  std::vector<Double_t> fZLayer;
-
+  
   //private:
   UShort_t fUniqueID;
   UInt_t fNPlanes;
