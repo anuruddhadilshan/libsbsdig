@@ -63,7 +63,7 @@ gain_hcal 1.0e6
 ped_hcal 300.0 
 pedsigma_hcal 10.0
 trigoffset_hcal 81.0 
-threshold_hcal 3.e-3 
+threshold_hcal 22.e-3 
 ADCconv_hcal 1.0 
 TDCconv_hcal 0.12 
 TDCbits_hcal 16 

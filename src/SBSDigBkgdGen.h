@@ -7,6 +7,7 @@
 #include "gmn_tree.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TRandom3.h"
 #include "SBSDigPMTDet.h"
 #include "SBSDigGEMDet.h"
@@ -63,27 +64,24 @@ class SBSDigBkgdGen {
   TH1D** h_xhitBBGEMs_XC;
   TH1D** h_yhitBBGEMs_XC;
   TH1D* h_modBBGEMs_XC;
-  //TH1D** h_dxhitBBGEMs_XC;
-  //TH1D** h_dyhitBBGEMs_XC;
-  /*
-  TH1D* NhitsHCal_XC;
+  
+  TH2D* h_NhitsHCal_XC;
   TH1D* h_EdephitHCal_XC;
   TH1D* h_zhitHCal_XC;
   
-  TH1D* NhitsBBPS_XC;
+  TH2D* h_NhitsBBPS_XC;
   TH1D* h_EdephitBBPS_XC;
   
-  TH1D* NhitsBBSH_XC;
+  TH2D* h_NhitsBBSH_XC;
   TH1D* h_EdephitBBSH_XC;
   
-  TH1D* NhitsBBHodo_XC;
+  TH2D* h_NhitsBBHodo_XC;
   TH1D* h_EdephitBBHodo_XC;
   TH1D* h_xhitBBHodo_XC;
   
-  TH1D* P1hitGRINCH_XC;
-  TH1D* P2hitsGRINCH_XC;
+  TH2D* h_NhitsGRINCH_XC;
   TH1D* h_NpeGRINCH_XC;
-  */
+  
 };
 
 #endif // SBSDIGAUXI_H

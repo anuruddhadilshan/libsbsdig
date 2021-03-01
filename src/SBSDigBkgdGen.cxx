@@ -65,6 +65,24 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   //TH1D* h_dxhitBBGEMs_XC[5];
   //TH1D* h_dyhitBBGEMs_XC[5];
   
+  h_NhitsHCal_XC = new TH2D("h_NhitsHCal_XC", "", 288, 0, 288, 50, 0, 50);
+  h_EdephitHCal_XC = new TH1D("h_EdephitHCal_XC", "", 100, 0., 1.);
+  h_zhitHCal_XC = new TH1D("h_zhitHCal_XC", "", 100, 0., 1.);
+  
+  h_NhitsBBPS_XC = new TH2D("h_NhitsBBPS_XC", "", 52, 0, 52, 50, 0, 50);
+  h_EdephitBBPS_XC = new TH1D("h_EdephitBBPS_XC", "", 150, 0., 3.);
+  
+  h_NhitsBBSH_XC = new TH2D("h_NhitsBBSH_XC", "", 189, 0, 189, 50, 0, 50);
+  h_EdephitBBSH_XC = new TH1D("h_EdephitBBSH_XC", "", 200, 0., 4.);
+  
+  h_NhitsBBHodo_XC = new TH2D("h_NhitsBBHodo_XC", "", 90, 0, 90, 50, 0, 50);
+  h_EdephitBBHodo_XC = new TH1D("h_EdephitBBHodo_XC", "", 100, 0., 1.);
+  h_xhitBBHodo_XC = new TH1D("h_xhitBBHodo_XC", "", 60, -0.3, 0.3);
+  
+  h_NhitsGRINCH_XC = new TH2D("h_NhitsGRINCH_XC", "", 510, 0, 510, 5, 0, 5);
+  h_NpeGRINCH_XC = new TH1D("h_NpeGRINCH_XC", "", 100, 0, 100);
+ 
+  
   for(int m = 0; m<5; m++){
     //Nhits
     h1_BBGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_nhits_%d",m));
@@ -246,10 +264,14 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     //cout << "hcal" << endl;
     for(int m = 0; m<288; m++){
       nhits = R->Poisson(NhitsHCal[m]*lumifrac);
-      //cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;
+      //cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;*
+      h_NhitsHCal_XC->Fill(m, nhits);
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitHCal->GetRandom();//R);
 	z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
+	h_EdephitHCal_XC->Fill(edep);
+	h_zhitHCal_XC->Fill(z_hit);
+	
 	//cout << " " << i << " " << edep << " " << z_hit << endl;
 	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
 	Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
@@ -269,8 +291,11 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     for(int m = 0; m<52; m++){
       nhits = R->Poisson(NhitsBBPS[m]*lumifrac);
       //cout << m << " " << NhitsBBPS[m]*lumifrac << " " << nhits << endl;
+      h_NhitsBBPS_XC->Fill(m, nhits);
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitBBPS->GetRandom();//R);
+	
+	h_EdephitBBPS_XC->Fill(edep);
 	
 	if(edep<1.e-4)continue;
 	//check probability to generate p.e. yield
@@ -299,8 +324,11 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     //cout << "sh" << endl;
     for(int m = 0; m<189; m++){
       nhits = R->Poisson(NhitsBBSH[m]*lumifrac);
+      h_NhitsBBSH_XC->Fill(m, nhits);
       for(int i = 0; i<nhits; i++){
 	edep = h_EdephitBBSH->GetRandom();//R);
+	
+	h_EdephitBBSH_XC->Fill(edep);
 	
 	if(edep<1.e-4)continue;
 	//check probability to generate p.e. yield
@@ -331,11 +359,15 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	nhits = 2;
       }else if(p<P1hitGRINCH[m]*lumifrac)nhits = 1;
       
+      h_NhitsGRINCH_XC->Fill(m, nhits);
+      
       for(int i = 0; i<nhits; i++){
 	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	Npe = h_NpeGRINCH->GetRandom();
 	
 	pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	
+	h_NpeGRINCH_XC->Fill(Npe);
       }
     }
   }
@@ -348,11 +380,17 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
     //cout << "hodo" << endl;
     for(int m = 0; m<90; m++){
       nhits = R->Poisson(NhitsBBHodo[m]*lumifrac);
+      
+      h_NhitsBBHodo_XC->Fill(m, nhits);
+            
       for(int i = 0; i<nhits; i++){
 	edep =  h_EdephitBBHodo->GetRandom()*1.e6;
 	x_hit =  h_xhitBBHodo->GetRandom();
 	
-	p = R->Uniform(-50.,50.);
+	h_EdephitBBHodo_XC->Fill(edep);
+	h_xhitBBHodo_XC->Fill(x_hit);
+	
+	//p = R->Uniform(-50.,50.);
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
 	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
@@ -425,4 +463,21 @@ void SBSDigBkgdGen::WriteXCHistos()
     h_yhitBBGEMs_XC[m]->Write();
   }
   h_modBBGEMs_XC->Write();
+  
+  h_NhitsHCal_XC->Write();
+  h_EdephitHCal_XC->Write();
+  h_zhitHCal_XC->Write();
+  
+  h_NhitsBBPS_XC->Write();
+  h_EdephitBBPS_XC->Write();
+  
+  h_NhitsBBSH_XC->Write();
+  h_EdephitBBSH_XC->Write();
+  
+  h_NhitsBBHodo_XC->Write();
+  h_EdephitBBHodo_XC->Write();
+  h_xhitBBHodo_XC->Write();
+  
+  h_NhitsGRINCH_XC->Write();
+  h_NpeGRINCH_XC->Write();
 }

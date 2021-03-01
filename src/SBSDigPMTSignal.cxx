@@ -97,24 +97,24 @@ double SPEModel::GetHistoX(double y, double x1, double x2)
 // Class PMTSignal
 //
 PMTSignal::PMTSignal()
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fNADCSamps(0), fNSamps(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
   
-  f1 = 0;
+  //f1 = 0;
   //R = TRndmManager::GetInstance();
 }
 
 PMTSignal::PMTSignal(double npechargeconv)
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fNADCSamps(0), fNSamps(0)
+  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
   
-  f1 = 0;
+  //f1 = 0;
 }
 
 void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int signal)
@@ -122,11 +122,14 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
-  
+    
   //determine lead and trail times
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
-  bool goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  // the following line slows the digitization in the case of full background. 
+  // Needs improvement ASAP!
+  bool goodtime = false;
+  if(signal==0)goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   
   //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
@@ -242,22 +245,24 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
 
 void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int signal)
 {
-  bool is_background = (signal!=0);
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
   if(evttime>=fTmin+fNSamps*fSampSize)return;
   
-  f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
+  SetPulseParam(npe*fNpeChargeConv, evttime, sigmatime);
+  //f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
   //determine lead and trail times
   double t_lead, t_trail;
   bool goodtime = false;//model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
-  if(fNSamps){
-    fSamples[0]+= f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
+  // the following block slows the digitization in the case of full background. 
+  // Needs improvement ASAP!
+  if(fNSamps && signal==0){
+    fSamples[0]+= Eval(fTmin+(0.5)*fSampSize);//f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
     //Evaluate this function might be a bit of a time drain!
     for(int i = 1; i<fNSamps; i++){
-      fSamples[i]+= f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
+      fSamples[i]+= Eval(fTmin+(i+0.5)*fSampSize);//f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
       //if(i>0){
       if(fSamples[i-1]<=thr && thr<fSamples[i]){
 	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
@@ -275,7 +280,7 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   //t_trail+=evttime;
   //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
-  if(goodtime){
+  if(goodtime && signal==0){
     //Filter here the lead and trail times
     if(fLeadTimes.size()>0){
       // Check if the lead and trail times are inside an existing lead time- trail time pair
@@ -440,6 +445,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   //switch(detid){
   //case(BBPS_UNIQUE_DETID):
   //}
+  
   if(detid==BBPS_UNIQUE_DETID){
     // T->Earm_BBPS_dighit_nchan++;
     // T->Earm_BBPS_dighit_chan->push_back(chan);
@@ -686,7 +692,7 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
   fTmin = tmin;
   fADCSampSize = sampsize;
   //fSampSize = sampsize/10;//the bin size is too large for the tdc size 
-  fSampSize = sampsize/64;
+  fSampSize = sampsize/32;
   fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
   fADCSamples = new double[fNADCSamps];
@@ -697,9 +703,9 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
   memset(fSamples, 0, fNSamps*sizeof(double));
   memset(fADCSamples, 0, fNADCSamps*sizeof(double));
   //f1 = new TF1("f1", "landaun", tmin, tmax);
-  f1 = new TF1("fFunc", 
-	       "TMath::Max(0., [0]*((x-[1]+[2]*0.4)/([2]*[2]*0.16))*TMath::Exp(-(x-[1]+[2]*0.4)/([2]*0.4)) )", 
-	       tmin, tmax); 
+  //f1 = new TF1("fFunc", 
+  //"TMath::Max(0., [0]*((x-[1]+[2]*0.4)/([2]*[2]*0.16))*TMath::Exp(-(x-[1]+[2]*0.4)/([2]*0.4)) )", 
+  //tmin, tmax); 
 }
 
 void PMTSignal::Clear(bool dosamples)
