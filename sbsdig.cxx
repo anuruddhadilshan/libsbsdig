@@ -107,8 +107,8 @@ int main(int argc, char** argv){
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
 	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "         list_of_bkgd_input_files (str, def=''); " << endl
-	 << "        nb_of_bkgd_files_to_add_to_sig_evt (int, def=0); " << endl;
+	 << "         bkgd_histo_input_file (str, def=''); " << endl
+	 << "        bkgd_lumi_frac (double, def=0); " << endl;
     return(-1);
   }
   
@@ -231,44 +231,45 @@ int main(int argc, char** argv){
   Double_t* triggeroffset_bbgem;
   Double_t* commonmode_array_bbgem;
   UShort_t nAPV_bbgem = 0;
-Int_t NPlanes_ft = 36;// number of planes/modules/readout
-Double_t gatewidth_ft = 400.;
-Double_t ZsupThr_ft = 240.;
- Int_t Nlayers_ft = 6;
- std::vector<Double_t> ft_layer_z;
- Int_t* layer_ft;
- Int_t* nstrips_ft;
- Double_t* offset_ft;
- Double_t* RO_angle_ft;
- Double_t* triggeroffset_ft;
- Double_t* commonmode_array_ft;
- UShort_t nAPV_ft = 0;
- Int_t NPlanes_fpp1 = 40;// number of planes/modules/readout
-   Double_t gatewidth_fpp1 = 400.;
-   Double_t ZsupThr_fpp1 = 240.;
-   Int_t Nlayers_fpp1 = 5;
-   std::vector<Double_t> fpp1_layer_z;
-   Int_t* layer_fpp1;
-   Int_t* nstrips_fpp1;
-   Double_t* offset_fpp1;
-   Double_t* RO_angle_fpp1;
-   Double_t* triggeroffset_fpp1;
-   Double_t* commonmode_array_fpp1;
-   UShort_t nAPV_fpp1 = 0;
+  
+  Int_t NPlanes_ft = 36;// number of planes/modules/readout
+  Double_t gatewidth_ft = 400.;
+  Double_t ZsupThr_ft = 240.;
+  Int_t Nlayers_ft = 6;
+  std::vector<Double_t> ft_layer_z;
+  Int_t* layer_ft;
+  Int_t* nstrips_ft;
+  Double_t* offset_ft;
+  Double_t* RO_angle_ft;
+  Double_t* triggeroffset_ft;
+  Double_t* commonmode_array_ft;
+  UShort_t nAPV_ft = 0;
 
-Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
-   Double_t gatewidth_fpp2 = 400.;
-   Double_t ZsupThr_fpp2 = 240.;
-   Int_t Nlayers_fpp2 = 5;
-   std::vector<Double_t> fpp2_layer_z;
-   Int_t* layer_fpp2;
-   Int_t* nstrips_fpp2;
-   Double_t* offset_fpp2;
-   Double_t* RO_angle_fpp2;
-   Double_t* triggeroffset_fpp2;
-   Double_t* commonmode_array_fpp2;
-   UShort_t nAPV_fpp2 = 0;
-
+  Int_t NPlanes_fpp1 = 40;// number of planes/modules/readout
+  Double_t gatewidth_fpp1 = 400.;
+  Double_t ZsupThr_fpp1 = 240.;
+  Int_t Nlayers_fpp1 = 5;
+  std::vector<Double_t> fpp1_layer_z;
+  Int_t* layer_fpp1;
+  Int_t* nstrips_fpp1;
+  Double_t* offset_fpp1;
+  Double_t* RO_angle_fpp1;
+  Double_t* triggeroffset_fpp1;
+  Double_t* commonmode_array_fpp1;
+  UShort_t nAPV_fpp1 = 0;
+  
+  Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
+  Double_t gatewidth_fpp2 = 400.;
+  Double_t ZsupThr_fpp2 = 240.;
+  Int_t Nlayers_fpp2 = 5;
+  std::vector<Double_t> fpp2_layer_z;
+  Int_t* layer_fpp2;
+  Int_t* nstrips_fpp2;
+  Double_t* offset_fpp2;
+  Double_t* RO_angle_fpp2;
+  Double_t* triggeroffset_fpp2;
+  Double_t* commonmode_array_fpp2;
+  UShort_t nAPV_fpp2 = 0;
 
   Int_t NPlanes_cepol_front = 32;// number of planes/modules/readout
   Double_t gatewidth_cepol_front = 400.;
@@ -287,51 +288,11 @@ Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
   Double_t* RO_angle_cepol_rear;
   Double_t* triggeroffset_cepol_rear;
   Double_t* commonmode_array_cepol_rear;
-  /*
-  Int_t nstrips_bbgem[256];
-  Double_t offset_bbgem[256];
-  Double_t RO_angle_bbgem[256];
-  Double_t triggeroffset_bbgem[256];
-  Double_t commonmode_array_bbgem[65536];
-  */
   UShort_t nAPV = 0;
-
-  /*
-  int nstrips_bbgem[32] = {1280, 1024, 1280, 1024, 1280, 1024, 
-			   1280, 1024, 1280, 1024, 1280, 1024, 
-			   1280, 1024, 1280, 1024, 1280, 1024, 
-			   1280, 1024, 1280, 1024, 1280, 1024, 
-			   1280, 1536, 1280, 1536, 
-			   1280, 1536, 1280, 1536};
-  double offset_bbgem[32] = {-0.512, 0., 0., 0., 0.512, 0., 
-			     -0.512, 0., 0., 0., 0.512, 0., 
-			     -0.512, 0., 0., 0., 0.512, 0., 
-			     -0.512, 0., 0., 0., 0.512, 0., 
-			     -0.768, 0., -0.256, 0., 
-			     0.256, 0.,  0.768, 0.};
-  double RO_angle_bbgem[32] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-			       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-			       0.0, 90.0, 0.0, 90.0, 
-			       0.0, 90.0, 0.0, 90.0};
-  for(int i = 0; i<NPlanes_bbgem; i++){
-    RO_angle_bbgem[i]*= TMath::DegToRad();
-    //cout << nstrips_bbgem[i] << " ";
-  }//cout << endl;
-  
-  double triggeroffset_bbgem[16] = {121., 121., 121., 121.5, 121.5, 121.5,  
-				    122., 122., 122., 122.5, 122.5, 122.5,  
-				    126., 126., 126., 126.};
-  
-  double ZsupThr_bbgem = 240.;
-  
-  double commonmode_array_bbgem[1] = {1500.};nAPV = 1;
-  */
   
   // ** How to add a new subsystem **
   // Add param for new detectors there...
- //polscint_bs
+  //polscint_bs
   Int_t NChan_polscint_bs = 48;
   Double_t gatewidth_polscint_bs = 30.;
   Double_t gain_polscint_bs = 3.e7;
@@ -344,7 +305,8 @@ Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
   Double_t TDCconv_polscint_bs = 0.1;
   Int_t TDCbits_polscint_bs = 19;
   Double_t sigmapulse_polscint_bs = 1.6;
- //polscint_fs
+  
+  //polscint_fs
   Int_t NChan_polscint_fs = 48;
   Double_t gatewidth_polscint_fs = 30.;
   Double_t gain_polscint_fs = 3.e7;
@@ -1456,7 +1418,20 @@ Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
       cout << " set up! " << endl;
     }
     
-  
+    if(detectors_list[k] == "fpp2"){
+      SBSDigGEMDet* fpp2 = new SBSDigGEMDet(FPP2_UNIQUE_DETID, NPlanes_fpp2, layer_fpp2, nstrips_fpp2, offset_fpp2, RO_angle_fpp2, 6, ZsupThr_fpp2);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp2/2, triggeroffset_fpp2, ZsupThr_fpp2, nAPV_fpp2, commonmode_array_fpp2);
+      for(int m = 0; m<Nlayers_fpp2; m++){
+	fpp2->fZLayer.push_back(fpp2_layer_z[m]);
+      }
+      fpp2->fGateWidth = gatewidth_fpp2;
+      
+      GEMdetectors.push_back(fpp2);
+      gemdetmap.push_back(FPP2_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    
     if(detectors_list[k] == "bbps"){
       SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
 
@@ -1803,11 +1778,11 @@ Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
       //T_s.FillDigBranches();
       //T_s->fChain->Fill();
     }// end loop on signal events 
-    /*
     for(int k = 0; k<GEMdetectors.size(); k++){
       GEMsimDig[k]->write_histos();
     }
-    */
+    /**/
+    if(LumiFrac>0)BkgdGenerator->WriteXCHistos();
     T_s->fChain->Write("", TObject::kOverwrite);
     //T_s.fChain->Write("", TObject::kOverwrite);
     //fs_c.Write();
