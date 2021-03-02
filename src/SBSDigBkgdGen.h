@@ -18,7 +18,7 @@ class SBSDigBkgdGen {
 
  public:
   SBSDigBkgdGen();
-  SBSDigBkgdGen(TFile* f_bkgd);
+  SBSDigBkgdGen(TFile* f_bkgd, double timewindow);
   ~SBSDigBkgdGen();
   void Initialize(TFile* f_bkgd);
   
@@ -33,6 +33,8 @@ class SBSDigBkgdGen {
   void WriteXCHistos();
   
  private:
+  double fTimeWindow;
+  
   Double_t* NhitsBBGEMs;
   TH1D* h_EdephitBBGEMs;
   TH1D** h_xhitBBGEMs;

@@ -92,3 +92,7 @@ ZsupThr_bbgem 240.
 commonmode_array_bbgem 1500.
 
 endconfig
+
+gmn13.5_beambkgdhistos.root 80.0 1.0
+
+end_bkgdinfo

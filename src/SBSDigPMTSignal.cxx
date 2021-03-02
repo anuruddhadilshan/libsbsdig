@@ -129,7 +129,8 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   // the following line slows the digitization in the case of full background. 
   // Needs improvement ASAP!
   bool goodtime = false;
-  if(signal==0)goodtime = model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+  if(signal==0)goodtime = 
+		 model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   
   //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
@@ -692,7 +693,7 @@ void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
   fTmin = tmin;
   fADCSampSize = sampsize;
   //fSampSize = sampsize/10;//the bin size is too large for the tdc size 
-  fSampSize = sampsize/32;
+  fSampSize = sampsize/32;// bin size is similar to TDC bit size
   fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
   fADCSamples = new double[fNADCSamps];

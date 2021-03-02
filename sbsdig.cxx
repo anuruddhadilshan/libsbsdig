@@ -100,15 +100,15 @@ int main(int argc, char** argv){
   string db_file, inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
-  double LumiFrac = 0;
+  double BkgdTimeWindow = 0, LumiFrac = 0;
       
-  if(argc<3){
-    cout << "*** Not enough arguments! ***" << endl
+  if(argc<3 && argc>4){
+    cout << "*** Inadequate number of arguments! ***" << endl
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
-	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "         bkgd_histo_input_file (str, def=''); " << endl
-	 << "        bkgd_lumi_frac (double, def=0); " << endl;
+	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl;
+      //<< "         bkgd_histo_input_file (str, def=''); " << endl
+      // << "        bkgd_lumi_frac (double, def=0); " << endl;
     return(-1);
   }
   
@@ -118,33 +118,19 @@ int main(int argc, char** argv){
   cout << " Signal input files from: " << inputsigfile << endl;
   if(argc>3)Nentries = atoi(argv[3]);
   cout << " Number of (signal) events to process = " << Nentries << endl;
+  /*
   if(argc>5){
     inputbkgdfile = argv[4];
     cout << " Background histgrams from: " << inputbkgdfile << endl;
     LumiFrac = max(0., atof(argv[5]));
     cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
   }
-  
-  TFile* f_bkgd;
-  SBSDigBkgdGen* BkgdGenerator;
-  if(LumiFrac>0){
-    f_bkgd = TFile::Open(inputbkgdfile.c_str());
-    if(f_bkgd->IsZombie()){
-      LumiFrac = 0;
-    }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd);
-    }
-  }
-  //f_bkgd->Close();
+  */
   
   // ------------------- // dev notes // ------------------- //
-  // The loop on the input signal and background chains 
-  // is going to happen here in the main I guess.
-  //
   // First, we want to extend the input tree (for signal only!!!)
   // I guess in order to avoid adding extra layers of code, 
   // the tree extension might have to be coded in the custom tree class
-  
 
   
   std::vector<SBSDigPMTDet*> PMTdetectors;
@@ -1537,6 +1523,42 @@ int main(int argc, char** argv){
       cout << " set up! " << endl;
     } 
   }
+  
+  //restart reading to get background info
+  while( currentline.ReadLine(in_db) && !currentline.BeginsWith("end_bkgdinfo")){
+    if( !currentline.BeginsWith("#") ){
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      if(ntokens==3){
+	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
+	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	BkgdTimeWindow = stemp.Atof();
+	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
+	LumiFrac = stemp.Atof();
+      }
+    }
+  }
+  
+  if(LumiFrac){
+    cout << "Includes background from file: " << inputbkgdfile.c_str() 
+	 << " (integrated on " << BkgdTimeWindow << " ns time window);" 
+	 << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
+  }
+  
+  TFile* f_bkgd;
+  SBSDigBkgdGen* BkgdGenerator;
+  if(LumiFrac>0){
+    f_bkgd = TFile::Open(inputbkgdfile.c_str());
+    if(f_bkgd->IsZombie()){
+      LumiFrac = 0;
+    }else{
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
+    }
+  }
+  //f_bkgd->Close();
   
   /*  
   std::map<int, SBSDigPMTDet*> PMTdetectors;
