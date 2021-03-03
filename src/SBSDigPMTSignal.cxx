@@ -128,7 +128,8 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   // find the lead and trail time for *this* pulse, not the total pulse
   // the following line slows the digitization in the case of full background. 
   // Needs improvement ASAP!
-  bool goodtime = false;
+  bool goodtime = 
+    false;
   if(signal==0)goodtime = 
 		 model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   
@@ -259,7 +260,7 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   bool goodtime = false;//model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
   // the following block slows the digitization in the case of full background. 
   // Needs improvement ASAP!
-  if(fNSamps && signal==0){
+  if(fNSamps){// && signal==0){
     fSamples[0]+= Eval(fTmin+(0.5)*fSampSize);//f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
     //Evaluate this function might be a bit of a time drain!
     for(int i = 1; i<fNSamps; i++){

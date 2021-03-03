@@ -1524,40 +1524,7 @@ int main(int argc, char** argv){
     } 
   }
   
-  //restart reading to get background info
-  while( currentline.ReadLine(in_db) && !currentline.BeginsWith("end_bkgdinfo")){
-    if( !currentline.BeginsWith("#") ){
-      Int_t ntokens = 0;
-      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
-      if( !tokens->IsEmpty() ) {
-	ntokens = tokens->GetLast()+1;
-      }
-      if(ntokens==3){
-	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
-	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	BkgdTimeWindow = stemp.Atof();
-	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
-	LumiFrac = stemp.Atof();
-      }
-    }
-  }
-  
-  if(LumiFrac){
-    cout << "Includes background from file: " << inputbkgdfile.c_str() 
-	 << " (integrated on " << BkgdTimeWindow << " ns time window);" 
-	 << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
-  }
-  
-  TFile* f_bkgd;
-  SBSDigBkgdGen* BkgdGenerator;
-  if(LumiFrac>0){
-    f_bkgd = TFile::Open(inputbkgdfile.c_str());
-    if(f_bkgd->IsZombie()){
-      LumiFrac = 0;
-    }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
-    }
-  }
+
   //f_bkgd->Close();
   
   /*  
@@ -1585,6 +1552,38 @@ int main(int argc, char** argv){
   TObjArray *fileElements_s=C_s->GetListOfFiles();
   TIter next_s(fileElements_s);
   TChainElement *chEl_s=0;
+
+  //restart reading to get background info
+  while( currentline.ReadLine(sig_inputfile) && !currentline.BeginsWith("end_bkgdinfo")){
+    if( !currentline.BeginsWith("#") ){
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      if(ntokens==3){
+	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
+	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	BkgdTimeWindow = stemp.Atof();
+	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
+	LumiFrac = stemp.Atof();
+      }
+    }
+  }
+  
+  TFile* f_bkgd;
+  SBSDigBkgdGen* BkgdGenerator;
+  if(LumiFrac>0){
+    f_bkgd = TFile::Open(inputbkgdfile.c_str());
+    if(f_bkgd->IsZombie()){
+      LumiFrac = 0;
+    }else{
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
+      cout << "Includes background from file: " << inputbkgdfile.c_str() 
+	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
+	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
+    }
+  }
   
   /* need to change this... 
   // build background chain

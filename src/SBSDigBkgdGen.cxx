@@ -71,10 +71,10 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   h_zhitHCal_XC = new TH1D("h_zhitHCal_XC", "", 100, 0., 1.);
   
   h_NhitsBBPS_XC = new TH2D("h_NhitsBBPS_XC", "", 52, 0, 52, 150, 0, 150);
-  h_EdephitBBPS_XC = new TH1D("h_EdephitBBPS_XC", "", 250, 0., 1.5);
+  h_EdephitBBPS_XC = new TH1D("h_EdephitBBPS_XC", "", 150, 0.0+1.0e-3, 1.5+1.0e-3);
   
   h_NhitsBBSH_XC = new TH2D("h_NhitsBBSH_XC", "", 189, 0, 189, 100, 0, 100);
-  h_EdephitBBSH_XC = new TH1D("h_EdephitBBSH_XC", "", 250, 0., 1.5);
+  h_EdephitBBSH_XC = new TH1D("h_EdephitBBSH_XC", "", 150, 0.0+1.0e-3, 1.5+1.0e-3);
   
   h_NhitsBBHodo_XC = new TH2D("h_NhitsBBHodo_XC", "", 90, 0, 90, 100, 0, 100);
   h_EdephitBBHodo_XC = new TH1D("h_EdephitBBHodo_XC", "", 250, 0., 0.5);
