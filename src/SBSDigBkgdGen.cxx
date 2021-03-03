@@ -67,7 +67,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   //TH1D* h_dyhitBBGEMs_XC[5];
   
   h_NhitsHCal_XC = new TH2D("h_NhitsHCal_XC", "", 288, 0, 288, 100, 0, 100);
-  h_EdephitHCal_XC = new TH1D("h_EdephitHCal_XC", "", 100, 0., 2.);
+  h_EdephitHCal_XC = new TH1D("h_EdephitHCal_XC", "", 100, 0.0+1.0e-3, 1.0+1.0e-3);
   h_zhitHCal_XC = new TH1D("h_zhitHCal_XC", "", 100, 0., 1.);
   
   h_NhitsBBPS_XC = new TH2D("h_NhitsBBPS_XC", "", 52, 0, 52, 150, 0, 150);
@@ -280,7 +280,8 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	
 	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	
-	if(edep>1.e-3)pmtdets[idet]->PMTmap[m].Fill(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
+	//if(edep>1.e-3)
+	pmtdets[idet]->PMTmap[m].Fill(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
       }
     }
   }
@@ -313,7 +314,8 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	  
 	  //cout << " " << i << " " << edep << " " << Npe << endl;
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  if(edep>1.e-3)pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  //if(edep>1.e-3)
+	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
 	}
       }
     }
@@ -344,7 +346,8 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  if(edep>1.e-3)pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  //if(edep>1.e-3)
+	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
 	}
       }
     }
@@ -431,12 +434,15 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	mod = 0;
 	
 	while(mod<gemdets[idet]->fNPlanes/2){
-	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
-	  mod++;
+	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;	  mod++;
 	}//that does the job, but maybe can be optimized???
 	if(mod==gemdets[idet]->fNPlanes/2)continue;
 	h_modBBGEMs_XC->Fill(mod);
-
+	
+	if(fabs(y_hit)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.)continue;
+	
+	//cout << x_hit << " " << y_hit << " " << mod << endl;
+	
 	hit.module = mod; 
 	hit.edep = edep*1.0e9;
 	
@@ -445,6 +451,9 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	hit.zin = -0.0015;
 	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitBBGEMs[m]->GetRandom();
 	hit.yout = y_hit+h_dyhitBBGEMs[m]->GetRandom();
+	//if(fabs(hit.yout)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.){
+	//hit.yout *= gemdets[idet]->GEMPlanes[mod*2+1].dX()/2./hit.yout;
+	//}
 	hit.zout = 0.0015;
 	hit.t = R->Uniform(-gemdets[idet]->fGateWidth/2.-50., gemdets[idet]->fGateWidth/2.-50.);
 	

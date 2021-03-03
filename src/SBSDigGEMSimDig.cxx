@@ -786,7 +786,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       continue;
     }
     //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
-    if(!is_background)
+    //if(!is_background)
       IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
     
     // Get Signal Start Time 'time_zero'
@@ -827,7 +827,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     if (fRNIon > 0) {
       //cout << "AvaModel..." << endl;
       //if(igem<12)h1_yGEM_preava->Fill(vv1.Y()*1.e-3);
-      if(!is_background)
+      //if(!is_background)
 	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       //cout << "Done!" << endl;
       //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
