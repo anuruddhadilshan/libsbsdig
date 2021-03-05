@@ -29,6 +29,8 @@ class SBSDigBkgdGen {
 		    std::vector<int> gemmap, 
 		    double lumifrac);
   
+  void WriteXCHistos();
+  
  private:
   Double_t* NhitsBBGEMs;
   TH1D* h_EdephitBBGEMs;
@@ -55,6 +57,33 @@ class SBSDigBkgdGen {
   Double_t* P2hitsGRINCH;
   TH1D* h_NpeGRINCH;
   
+  //cross-check histos
+  TH1D** h_NhitsBBGEMs_XC;
+  TH1D* h_EdephitBBGEMs_XC;
+  TH1D** h_xhitBBGEMs_XC;
+  TH1D** h_yhitBBGEMs_XC;
+  TH1D* h_modBBGEMs_XC;
+  //TH1D** h_dxhitBBGEMs_XC;
+  //TH1D** h_dyhitBBGEMs_XC;
+  /*
+  TH1D* NhitsHCal_XC;
+  TH1D* h_EdephitHCal_XC;
+  TH1D* h_zhitHCal_XC;
+  
+  TH1D* NhitsBBPS_XC;
+  TH1D* h_EdephitBBPS_XC;
+  
+  TH1D* NhitsBBSH_XC;
+  TH1D* h_EdephitBBSH_XC;
+  
+  TH1D* NhitsBBHodo_XC;
+  TH1D* h_EdephitBBHodo_XC;
+  TH1D* h_xhitBBHodo_XC;
+  
+  TH1D* P1hitGRINCH_XC;
+  TH1D* P2hitsGRINCH_XC;
+  TH1D* h_NpeGRINCH_XC;
+  */
 };
 
 #endif // SBSDIGAUXI_H

@@ -242,6 +242,7 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
 
 void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int signal)
 {
+  bool is_background = (signal!=0);
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
@@ -470,7 +471,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBHodo_Dig.nchan++;
     T->Earm_BBHodo_Dig.chan->push_back(chan);
     T->Earm_BBHodo_Dig.adc->push_back(fADC);
-    if(fTDCs.size()==2){
+    if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -480,20 +481,23 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  //T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[j]-1000);
 	  T->Earm_BBHodo_Dig.tdc_l->push_back(fTDCs[j]-1000);
 	}
-	/*
-	if(j>3 && j%2==0){
-	  // T->Earm_BBHodo_dighit_nchan++;
-	  // T->Earm_BBHodo_dighit_chan->push_back(chan);
-	  // T->Earm_BBHodo_dighit_adc->push_back(-1000000);
-	  T->Earm_BBHodo_Dig.nchan++;
-	  T->Earm_BBHodo_Dig.chan->push_back(chan);
-	  T->Earm_BBHodo_Dig.adc->push_back(-1000000);
-	}
-	*/
       }
+      // equalize the hits:
+      int max_size = max(T->Earm_BBHodo_Dig.tdc_l->size(), T->Earm_BBHodo_Dig.tdc_t->size());
+      max_size = max(max_size, T->Earm_BBHodo_Dig.nchan);
+      while(T->Earm_BBHodo_Dig.nchan<max_size){
+	T->Earm_BBHodo_Dig.nchan++;
+	T->Earm_BBHodo_Dig.chan->push_back(chan);
+	T->Earm_BBHodo_Dig.adc->push_back(-1000000);
+      }
+      while(T->Earm_BBHodo_Dig.tdc_l->size()<max_size){
+	T->Earm_BBHodo_Dig.tdc_l->push_back(-1000000);
+      }
+      while(T->Earm_BBHodo_Dig.tdc_t->size()<max_size){
+	T->Earm_BBHodo_Dig.tdc_t->push_back(-1000000);
+      }
+      
     }else{
-      // T->Earm_BBHodo_dighit_tdc_l->push_back(-1000000);
-      // T->Earm_BBHodo_dighit_tdc_t->push_back(-1000000);
       T->Earm_BBHodo_Dig.tdc_l->push_back(-1000000);
       T->Earm_BBHodo_Dig.tdc_t->push_back(-1000000);
     }
@@ -506,7 +510,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->CDET_Dig.nchan++;
     T->CDET_Dig.chan->push_back(chan);
     T->CDET_Dig.adc->push_back(fADC);
-    if(fTDCs.size()==2){
+    if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -516,20 +520,23 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  //T->CDET_dighit_tdc_l->push_back(fTDCs[j]-1000);
 	  T->CDET_Dig.tdc_l->push_back(fTDCs[j]-1000);
 	}
-	/*
-	if(j>3 && j%2==0){
-	  // T->CDET_dighit_nchan++;
-	  // T->CDET_dighit_chan->push_back(chan);
-	  // T->CDET_dighit_adc->push_back(-1000000);
-	  T->CDET_Dig.nchan++;
-	  T->CDET_Dig.chan->push_back(chan);
-	  T->CDET_Dig.adc->push_back(-1000000);
-	}
-	*/
       }
+      // equalize the hits:
+      int max_size = max(T->CDET_Dig.tdc_l->size(), T->CDET_Dig.tdc_t->size());
+      max_size = max(max_size, T->CDET_Dig.nchan);
+      while(T->CDET_Dig.nchan<max_size){
+	T->CDET_Dig.nchan++;
+	T->CDET_Dig.chan->push_back(chan);
+	T->CDET_Dig.adc->push_back(-1000000);
+      }
+      while(T->CDET_Dig.tdc_l->size()<max_size){
+	T->CDET_Dig.tdc_l->push_back(-1000000);
+      }
+      while(T->CDET_Dig.tdc_t->size()<max_size){
+	T->CDET_Dig.tdc_t->push_back(-1000000);
+      }
+      
     }else{
-      // T->CDET_dighit_tdc_l->push_back(-1000000);
-      // T->CDET_dighit_tdc_t->push_back(-1000000);
       T->CDET_Dig.tdc_l->push_back(-1000000);
       T->CDET_Dig.tdc_t->push_back(-1000000);
     }
@@ -542,7 +549,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_GRINCH_Dig.nchan++;
     T->Earm_GRINCH_Dig.chan->push_back(chan);
     T->Earm_GRINCH_Dig.adc->push_back(fADC);
-    if(fTDCs.size()==2){
+    if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -552,50 +559,31 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  //T->Earm_GRINCH_Dig.tdc_l->push_back(fTDCs[j]-1000);
 	  T->Earm_GRINCH_Dig.tdc_l->push_back(fTDCs[j]-1000);
 	}
-	/*
-	if(j>3 && j%2==0){
-	  // T->Earm_GRINCH_dighit_nchan++;
-	  // T->Earm_GRINCH_dighit_chan->push_back(chan);
-	  // T->Earm_GRINCH_dighit_adc->push_back(-1000000);
+	// equalize the hits:
+	int max_size = max(T->Earm_GRINCH_Dig.tdc_l->size(), T->Earm_GRINCH_Dig.tdc_t->size());
+	max_size = max(max_size, T->Earm_GRINCH_Dig.nchan);
+	while(T->Earm_GRINCH_Dig.nchan<max_size){
 	  T->Earm_GRINCH_Dig.nchan++;
 	  T->Earm_GRINCH_Dig.chan->push_back(chan);
 	  T->Earm_GRINCH_Dig.adc->push_back(-1000000);
 	}
-	*/
+	while(T->Earm_GRINCH_Dig.tdc_l->size()<max_size){
+	  T->Earm_GRINCH_Dig.tdc_l->push_back(-1000000);
+	}
+	while(T->Earm_GRINCH_Dig.tdc_t->size()<max_size){
+	  T->Earm_GRINCH_Dig.tdc_t->push_back(-1000000);
+	}
+	
       }
     }else{
-      // T->Earm_GRINCH_dighit_tdc_l->push_back(-1000000);
-      // T->Earm_GRINCH_dighit_tdc_t->push_back(-1000000);
       T->Earm_GRINCH_Dig.tdc_l->push_back(-1000000);
       T->Earm_GRINCH_Dig.tdc_t->push_back(-1000000);
     }
   }
   
   if(detid==HCAL_UNIQUE_DETID){
-    //T->Harm_HCal_dighit_nchan++;
-    //T->Harm_HCal_dighit_chan->push_back(chan);
     T->Harm_HCal_Dig.nchan++;
     T->Harm_HCal_Dig.chan->push_back(chan);
-    // T->Harm_HCal_dighit_adc_0->push_back(fADCSamples[0]);
-    // T->Harm_HCal_dighit_adc_1->push_back(fADCSamples[1]);
-    // T->Harm_HCal_dighit_adc_2->push_back(fADCSamples[2]);
-    // T->Harm_HCal_dighit_adc_3->push_back(fADCSamples[3]);
-    // T->Harm_HCal_dighit_adc_4->push_back(fADCSamples[4]);
-    // T->Harm_HCal_dighit_adc_5->push_back(fADCSamples[5]);
-    // T->Harm_HCal_dighit_adc_6->push_back(fADCSamples[6]);
-    // T->Harm_HCal_dighit_adc_7->push_back(fADCSamples[7]);
-    // T->Harm_HCal_dighit_adc_8->push_back(fADCSamples[8]);
-    // T->Harm_HCal_dighit_adc_9->push_back(fADCSamples[9]);
-    // T->Harm_HCal_dighit_adc_10->push_back(fADCSamples[10]);
-    // T->Harm_HCal_dighit_adc_11->push_back(fADCSamples[11]);
-    // T->Harm_HCal_dighit_adc_12->push_back(fADCSamples[12]);
-    // T->Harm_HCal_dighit_adc_13->push_back(fADCSamples[13]);
-    // T->Harm_HCal_dighit_adc_14->push_back(fADCSamples[14]);
-    // T->Harm_HCal_dighit_adc_15->push_back(fADCSamples[15]);
-    // T->Harm_HCal_dighit_adc_16->push_back(fADCSamples[16]);
-    // T->Harm_HCal_dighit_adc_17->push_back(fADCSamples[17]);
-    // T->Harm_HCal_dighit_adc_18->push_back(fADCSamples[18]);
-    // T->Harm_HCal_dighit_adc_19->push_back(fADCSamples[19]);
     T->Harm_HCal_Dig.adc_0->push_back(fADCSamples[0]);
     T->Harm_HCal_Dig.adc_1->push_back(fADCSamples[1]);
     T->Harm_HCal_Dig.adc_2->push_back(fADCSamples[2]);
@@ -617,10 +605,34 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Harm_HCal_Dig.adc_18->push_back(fADCSamples[18]);
     T->Harm_HCal_Dig.adc_19->push_back(fADCSamples[19]);
     if(fTDCs.size()){
-      //T->Harm_HCal_dighit_tdc->push_back(fTDCs[0]);
-      T->Harm_HCal_Dig.tdc->push_back(fTDCs[0]-1000);
+      for(int j = 0;j<fTDCs.size(); j++){
+	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]-1000);
+	if(j>1){    
+	  T->Harm_HCal_Dig.nchan++;
+	  T->Harm_HCal_Dig.chan->push_back(chan);
+	  T->Harm_HCal_Dig.adc_0->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_1->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_2->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_3->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_4->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_5->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_6->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_7->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_8->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_9->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_10->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_11->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_12->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_13->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_14->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_15->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_16->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_17->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_18->push_back(-1000000);
+	  T->Harm_HCal_Dig.adc_19->push_back(-1000000);	  
+	}
+      }
     }else{
-      //T->Harm_HCal_dighit_tdc->push_back(-1000000);
       T->Harm_HCal_Dig.tdc->push_back(-1000000);
     }
   }
@@ -635,7 +647,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Harm_PRPolScintBeamSide_Dig.nchan++;
     T->Harm_PRPolScintBeamSide_Dig.chan->push_back(chan);
     T->Harm_PRPolScintBeamSide_Dig.adc->push_back(fADC);
-    if(fTDCs.size()==2){
+    if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
@@ -645,20 +657,23 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  //T->Harm_PRPolScintBeamSide_Dighit_tdc_l->push_back(fTDCs[j]-1000);
 	  T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(fTDCs[j]-1000);
 	}
-	/*
-	  if(j>3 && j%2==0){
-	  // T->Harm_PRPolScintBeamSide_Dighit_nchan++;
-	  // T->Harm_PRPolScintBeamSide_Dighit_chan->push_back(chan);
-	  // T->Harm_PRPolScintBeamSide_Dighit_adc->push_back(-1000000);
+	// equalize the hits:
+	int max_size = max(T->Harm_PRPolScintBeamSide_Dig.tdc_l->size(), T->Harm_PRPolScintBeamSide_Dig.tdc_t->size());
+	max_size = max(max_size, T->Harm_PRPolScintBeamSide_Dig.nchan);
+	while(T->Harm_PRPolScintBeamSide_Dig.nchan<max_size){
 	  T->Harm_PRPolScintBeamSide_Dig.nchan++;
 	  T->Harm_PRPolScintBeamSide_Dig.chan->push_back(chan);
 	  T->Harm_PRPolScintBeamSide_Dig.adc->push_back(-1000000);
-	  }
-	*/
+	}
+	while(T->Harm_PRPolScintBeamSide_Dig.tdc_l->size()<max_size){
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(-1000000);
+	}
+	while(T->Harm_PRPolScintBeamSide_Dig.tdc_t->size()<max_size){
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(-1000000);
+	}
+	
       }
     }else{
-      // T->Harm_PRPolScintBeamSide_Dighit_tdc_l->push_back(-1000000);
-      // T->Harm_PRPolScintBeamSide_Dighit_tdc_t->push_back(-1000000);
       T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(-1000000);
       T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(-1000000);
     }
