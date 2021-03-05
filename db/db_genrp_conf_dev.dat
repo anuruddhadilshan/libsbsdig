@@ -216,5 +216,4 @@ sigmapulse_activeana 1.6
  #common mode value/array for GEMs in ADC channels
  commonmode_array_cepol_rear 1500.
 
-
 endconfig
