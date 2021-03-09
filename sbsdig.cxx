@@ -271,10 +271,10 @@ int main(int argc, char** argv){
   Double_t* commonmode_array_fpp2;
   UShort_t nAPV_fpp2 = 0;
 
-  Int_t NPlanes_cepol_front = 32;// number of planes/modules/readout
+  Int_t NPlanes_cepol_front = 28;// number of planes/modules/readout
   Double_t gatewidth_cepol_front = 400.;
   Double_t ZsupThr_cepol_front = 240.;
-  Int_t Nlayers_cepol_front = 5;
+  Int_t Nlayers_cepol_front = 4;
   std::vector<Double_t> cepol_front_layer_z;
   Int_t* layer_cepol_front;
   Int_t* nstrips_cepol_front;
@@ -287,7 +287,7 @@ int main(int argc, char** argv){
   Int_t NPlanes_cepol_rear = 32;// number of planes/modules/readout
   Double_t gatewidth_cepol_rear = 400.;
   Double_t ZsupThr_cepol_rear = 240.;
-  Int_t Nlayers_cepol_rear = 5;
+  Int_t Nlayers_cepol_rear = 4;
   std::vector<Double_t> cepol_rear_layer_z;
   Int_t* layer_cepol_rear;
   Int_t* nstrips_cepol_rear;

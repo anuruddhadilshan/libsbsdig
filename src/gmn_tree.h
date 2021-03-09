@@ -494,7 +494,137 @@ public :
    vector<int>     *Harm_HCal_dighit_adc_19;
    vector<int>     *Harm_HCal_dighit_tdc;
    
-   
+// GEN-rp : celpol_front
+   Int_t Harm_CEPolFront_1x_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_1x_dighit_strip;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_1x_dighit_adc_5;
+   Int_t Harm_CEPolFront_1y_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_1y_dighit_strip;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_1y_dighit_adc_5;
+   Int_t Harm_CEPolFront_2x_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_2x_dighit_strip;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_2x_dighit_adc_5;
+   Int_t Harm_CEPolFront_2y_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_2y_dighit_strip;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_2y_dighit_adc_5;
+   Int_t Harm_CEPolFront_3x_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_3x_dighit_strip;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_3x_dighit_adc_5;
+   Int_t Harm_CEPolFront_3y_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_3y_dighit_strip;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_3y_dighit_adc_5;
+   Int_t Harm_CEPolFront_4x_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_4x_dighit_strip;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_4x_dighit_adc_5;
+   Int_t Harm_CEPolFront_4y_dighit_nstrips;
+   vector<int>     *Harm_CEPolFront_4y_dighit_strip;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_0;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_1;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_2;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_3;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_4;
+   vector<int>     *Harm_CEPolFront_4y_dighit_adc_5;
+// GEN-rp : celpol_rear
+   Int_t Harm_CEPolRear_1x_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_1x_dighit_strip;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_1x_dighit_adc_5;
+   Int_t Harm_CEPolRear_1y_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_1y_dighit_strip;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_1y_dighit_adc_5;
+   Int_t Harm_CEPolRear_2x_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_2x_dighit_strip;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_2x_dighit_adc_5;
+   Int_t Harm_CEPolRear_2y_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_2y_dighit_strip;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_2y_dighit_adc_5;
+   Int_t Harm_CEPolRear_3x_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_3x_dighit_strip;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_3x_dighit_adc_5;
+   Int_t Harm_CEPolRear_3y_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_3y_dighit_strip;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_3y_dighit_adc_5;
+   Int_t Harm_CEPolRear_4x_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_4x_dighit_strip;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_4x_dighit_adc_5;
+   Int_t Harm_CEPolRear_4y_dighit_nstrips;
+   vector<int>     *Harm_CEPolRear_4y_dighit_strip;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_0;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_1;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_2;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_3;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_4;
+   vector<int>     *Harm_CEPolRear_4y_dighit_adc_5;
+
    
    // List of branches
    TBranch        *b_ev;   //!
@@ -923,6 +1053,72 @@ public :
    TBranch        *b_Harm_HCal_dighit_adc_18;   //!
    TBranch        *b_Harm_HCal_dighit_adc_19;   //!
    TBranch        *b_Harm_HCal_dighit_tdc;   //!
+
+   //GEN-rp GEMs rear
+   TBranch        *b_Harm_CEPolRear_1x_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_1x_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_1y_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_2x_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_2y_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_3x_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_3y_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_4x_dighit_adc_5;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_nstrips;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_strip;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_0;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_1;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_2;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_3;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_4;   //!
+   TBranch        *b_Harm_CEPolRear_4y_dighit_adc_5;   //!
 
 
    gmn_tree(TTree *tree=0);
@@ -1744,6 +1940,73 @@ void gmn_tree::AddDigBranches()
   Harm_HCal_dighit_adc_19 = new vector<int>;
   Harm_HCal_dighit_tdc = new vector<int>;
 
+//GEn-rp GEM 
+  Harm_CEPolRear_1x_dighit_nstrips = 0;
+  Harm_CEPolRear_1x_dighit_strip = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_1x_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_nstrips = 0;
+  Harm_CEPolRear_1y_dighit_strip = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_1y_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_nstrips = 0;
+  Harm_CEPolRear_2x_dighit_strip = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_2x_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_nstrips = 0;
+  Harm_CEPolRear_2y_dighit_strip = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_2y_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_nstrips = 0;
+  Harm_CEPolRear_3x_dighit_strip = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_3x_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_nstrips = 0;
+  Harm_CEPolRear_3y_dighit_strip = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_3y_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_nstrips = 0;
+  Harm_CEPolRear_4x_dighit_strip = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_4x_dighit_adc_5 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_nstrips = 0;
+  Harm_CEPolRear_4y_dighit_strip = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_0 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_1 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_2 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_3 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_4 = new vector<int>;
+  Harm_CEPolRear_4y_dighit_adc_5 = new vector<int>;
+
+
   if(!fChain)return;
   b_Earm_BBPS_dighit_nchan = fChain->Branch("Earm.BBPS.dighit.nchan", &Earm_BBPS_dighit_nchan);
   b_Earm_BBPS_dighit_chan = fChain->Branch("Earm.BBPS.dighit.chan", &Earm_BBPS_dighit_chan);
@@ -1864,6 +2127,72 @@ void gmn_tree::AddDigBranches()
   b_Harm_HCal_dighit_adc_18 = fChain->Branch("Harm.HCal.dighit.adc_18", &Harm_HCal_dighit_adc_18);
   b_Harm_HCal_dighit_adc_19 = fChain->Branch("Harm.HCal.dighit.adc_19", &Harm_HCal_dighit_adc_19);
   b_Harm_HCal_dighit_tdc = fChain->Branch("Harm.HCal.dighit.tdc", &Harm_HCal_dighit_tdc);
+//GEN-rp CEpol rear
+  b_Harm_CEPolRear_1x_dighit_nstrips = fChain->Branch("Earm.BBGEM.1x.dighit.nstrips", &Harm_CEPolRear_1x_dighit_nstrips);
+  b_Harm_CEPolRear_1x_dighit_strip = fChain->Branch("Earm.BBGEM.1x.dighit.strip", &Harm_CEPolRear_1x_dighit_strip);
+  b_Harm_CEPolRear_1x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_0", &Harm_CEPolRear_1x_dighit_adc_0);
+  b_Harm_CEPolRear_1x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_1", &Harm_CEPolRear_1x_dighit_adc_1);
+  b_Harm_CEPolRear_1x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_2", &Harm_CEPolRear_1x_dighit_adc_2);
+  b_Harm_CEPolRear_1x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_3", &Harm_CEPolRear_1x_dighit_adc_3);
+  b_Harm_CEPolRear_1x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_4", &Harm_CEPolRear_1x_dighit_adc_4);
+  b_Harm_CEPolRear_1x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.1x.dighit.adc_5", &Harm_CEPolRear_1x_dighit_adc_5);
+  b_Harm_CEPolRear_1y_dighit_nstrips = fChain->Branch("Earm.BBGEM.1y.dighit.nstrips", &Harm_CEPolRear_1y_dighit_nstrips);
+  b_Harm_CEPolRear_1y_dighit_strip = fChain->Branch("Earm.BBGEM.1y.dighit.strip", &Harm_CEPolRear_1y_dighit_strip);
+  b_Harm_CEPolRear_1y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_0", &Harm_CEPolRear_1y_dighit_adc_0);
+  b_Harm_CEPolRear_1y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_1", &Harm_CEPolRear_1y_dighit_adc_1);
+  b_Harm_CEPolRear_1y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_2", &Harm_CEPolRear_1y_dighit_adc_2);
+  b_Harm_CEPolRear_1y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_3", &Harm_CEPolRear_1y_dighit_adc_3);
+  b_Harm_CEPolRear_1y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_4", &Harm_CEPolRear_1y_dighit_adc_4);
+  b_Harm_CEPolRear_1y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.1y.dighit.adc_5", &Harm_CEPolRear_1y_dighit_adc_5);
+  b_Harm_CEPolRear_2x_dighit_nstrips = fChain->Branch("Earm.BBGEM.2x.dighit.nstrips", &Harm_CEPolRear_2x_dighit_nstrips);
+  b_Harm_CEPolRear_2x_dighit_strip = fChain->Branch("Earm.BBGEM.2x.dighit.strip", &Harm_CEPolRear_2x_dighit_strip);
+  b_Harm_CEPolRear_2x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_0", &Harm_CEPolRear_2x_dighit_adc_0);
+  b_Harm_CEPolRear_2x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_1", &Harm_CEPolRear_2x_dighit_adc_1);
+  b_Harm_CEPolRear_2x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_2", &Harm_CEPolRear_2x_dighit_adc_2);
+  b_Harm_CEPolRear_2x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_3", &Harm_CEPolRear_2x_dighit_adc_3);
+  b_Harm_CEPolRear_2x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_4", &Harm_CEPolRear_2x_dighit_adc_4);
+  b_Harm_CEPolRear_2x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.2x.dighit.adc_5", &Harm_CEPolRear_2x_dighit_adc_5);
+  b_Harm_CEPolRear_2y_dighit_nstrips = fChain->Branch("Earm.BBGEM.2y.dighit.nstrips", &Harm_CEPolRear_2y_dighit_nstrips);
+  b_Harm_CEPolRear_2y_dighit_strip = fChain->Branch("Earm.BBGEM.2y.dighit.strip", &Harm_CEPolRear_2y_dighit_strip);
+  b_Harm_CEPolRear_2y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_0", &Harm_CEPolRear_2y_dighit_adc_0);
+  b_Harm_CEPolRear_2y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_1", &Harm_CEPolRear_2y_dighit_adc_1);
+  b_Harm_CEPolRear_2y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_2", &Harm_CEPolRear_2y_dighit_adc_2);
+  b_Harm_CEPolRear_2y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_3", &Harm_CEPolRear_2y_dighit_adc_3);
+  b_Harm_CEPolRear_2y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_4", &Harm_CEPolRear_2y_dighit_adc_4);
+  b_Harm_CEPolRear_2y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.2y.dighit.adc_5", &Harm_CEPolRear_2y_dighit_adc_5);
+  b_Harm_CEPolRear_3x_dighit_nstrips = fChain->Branch("Earm.BBGEM.3x.dighit.nstrips", &Harm_CEPolRear_3x_dighit_nstrips);
+  b_Harm_CEPolRear_3x_dighit_strip = fChain->Branch("Earm.BBGEM.3x.dighit.strip", &Harm_CEPolRear_3x_dighit_strip);
+  b_Harm_CEPolRear_3x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_0", &Harm_CEPolRear_3x_dighit_adc_0);
+  b_Harm_CEPolRear_3x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_1", &Harm_CEPolRear_3x_dighit_adc_1);
+  b_Harm_CEPolRear_3x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_2", &Harm_CEPolRear_3x_dighit_adc_2);
+  b_Harm_CEPolRear_3x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_3", &Harm_CEPolRear_3x_dighit_adc_3);
+  b_Harm_CEPolRear_3x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_4", &Harm_CEPolRear_3x_dighit_adc_4);
+  b_Harm_CEPolRear_3x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.3x.dighit.adc_5", &Harm_CEPolRear_3x_dighit_adc_5);
+  b_Harm_CEPolRear_3y_dighit_nstrips = fChain->Branch("Earm.BBGEM.3y.dighit.nstrips", &Harm_CEPolRear_3y_dighit_nstrips);
+  b_Harm_CEPolRear_3y_dighit_strip = fChain->Branch("Earm.BBGEM.3y.dighit.strip", &Harm_CEPolRear_3y_dighit_strip);
+  b_Harm_CEPolRear_3y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_0", &Harm_CEPolRear_3y_dighit_adc_0);
+  b_Harm_CEPolRear_3y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_1", &Harm_CEPolRear_3y_dighit_adc_1);
+  b_Harm_CEPolRear_3y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_2", &Harm_CEPolRear_3y_dighit_adc_2);
+  b_Harm_CEPolRear_3y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_3", &Harm_CEPolRear_3y_dighit_adc_3);
+  b_Harm_CEPolRear_3y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_4", &Harm_CEPolRear_3y_dighit_adc_4);
+  b_Harm_CEPolRear_3y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.3y.dighit.adc_5", &Harm_CEPolRear_3y_dighit_adc_5);
+  b_Harm_CEPolRear_4x_dighit_nstrips = fChain->Branch("Earm.BBGEM.4x.dighit.nstrips", &Harm_CEPolRear_4x_dighit_nstrips);
+  b_Harm_CEPolRear_4x_dighit_strip = fChain->Branch("Earm.BBGEM.4x.dighit.strip", &Harm_CEPolRear_4x_dighit_strip);
+  b_Harm_CEPolRear_4x_dighit_adc_0 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_0", &Harm_CEPolRear_4x_dighit_adc_0);
+  b_Harm_CEPolRear_4x_dighit_adc_1 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_1", &Harm_CEPolRear_4x_dighit_adc_1);
+  b_Harm_CEPolRear_4x_dighit_adc_2 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_2", &Harm_CEPolRear_4x_dighit_adc_2);
+  b_Harm_CEPolRear_4x_dighit_adc_3 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_3", &Harm_CEPolRear_4x_dighit_adc_3);
+  b_Harm_CEPolRear_4x_dighit_adc_4 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_4", &Harm_CEPolRear_4x_dighit_adc_4);
+  b_Harm_CEPolRear_4x_dighit_adc_5 = fChain->Branch("Earm.BBGEM.4x.dighit.adc_5", &Harm_CEPolRear_4x_dighit_adc_5);
+  b_Harm_CEPolRear_4y_dighit_nstrips = fChain->Branch("Earm.BBGEM.4y.dighit.nstrips", &Harm_CEPolRear_4y_dighit_nstrips);
+  b_Harm_CEPolRear_4y_dighit_strip = fChain->Branch("Earm.BBGEM.4y.dighit.strip", &Harm_CEPolRear_4y_dighit_strip);
+  b_Harm_CEPolRear_4y_dighit_adc_0 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_0", &Harm_CEPolRear_4y_dighit_adc_0);
+  b_Harm_CEPolRear_4y_dighit_adc_1 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_1", &Harm_CEPolRear_4y_dighit_adc_1);
+  b_Harm_CEPolRear_4y_dighit_adc_2 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_2", &Harm_CEPolRear_4y_dighit_adc_2);
+  b_Harm_CEPolRear_4y_dighit_adc_3 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_3", &Harm_CEPolRear_4y_dighit_adc_3);
+  b_Harm_CEPolRear_4y_dighit_adc_4 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_4", &Harm_CEPolRear_4y_dighit_adc_4);
+  b_Harm_CEPolRear_4y_dighit_adc_5 = fChain->Branch("Earm.BBGEM.4y.dighit.adc_5", &Earm_BBGEM_4y_dighit_adc_5);
+
 }
 
 void gmn_tree::ClearDigBranches()
@@ -1987,6 +2316,64 @@ void gmn_tree::ClearDigBranches()
   Harm_HCal_dighit_adc_18->clear();
   Harm_HCal_dighit_adc_19->clear();
   Harm_HCal_dighit_tdc->clear();
+//GEn-rp CEpol rear ===x
+  Harm_CEPolRear_1x_dighit_nstrips = 0;
+  Harm_CEPolRear_1x_dighit_strip->clear();
+  Harm_CEPolRear_1x_dighit_adc_0->clear();
+  Harm_CEPolRear_1x_dighit_adc_1->clear();
+  Harm_CEPolRear_1x_dighit_adc_2->clear();
+  Harm_CEPolRear_1x_dighit_adc_3->clear();
+  Harm_CEPolRear_1x_dighit_adc_4->clear();
+  Harm_CEPolRear_1x_dighit_adc_5->clear();
+  Harm_CEPolRear_1y_dighit_nstrips = 0;
+  Harm_CEPolRear_1y_dighit_strip->clear();
+  Harm_CEPolRear_1y_dighit_adc_0->clear();
+  Harm_CEPolRear_1y_dighit_adc_1->clear();
+  Harm_CEPolRear_1y_dighit_adc_2->clear();
+  Harm_CEPolRear_1y_dighit_adc_3->clear();
+  Harm_CEPolRear_1y_dighit_adc_4->clear();
+  Harm_CEPolRear_1y_dighit_adc_5->clear();
+  Harm_CEPolRear_2x_dighit_nstrips = 0;
+  Harm_CEPolRear_2x_dighit_strip->clear();
+  Harm_CEPolRear_2x_dighit_adc_0->clear();
+  Harm_CEPolRear_2x_dighit_adc_1->clear();
+  Harm_CEPolRear_2x_dighit_adc_2->clear();
+  Harm_CEPolRear_2x_dighit_adc_3->clear();
+  Harm_CEPolRear_2x_dighit_adc_4->clear();
+  Harm_CEPolRear_2x_dighit_adc_5->clear();
+  Harm_CEPolRear_2y_dighit_nstrips = 0;
+  Harm_CEPolRear_2y_dighit_strip->clear();
+  Harm_CEPolRear_2y_dighit_adc_0->clear();
+  Harm_CEPolRear_2y_dighit_adc_1->clear();
+  Harm_CEPolRear_2y_dighit_adc_2->clear();
+  Harm_CEPolRear_2y_dighit_adc_3->clear();
+  Harm_CEPolRear_2y_dighit_adc_4->clear();
+  Harm_CEPolRear_2y_dighit_adc_5->clear();
+  Harm_CEPolRear_3x_dighit_nstrips = 0;
+  Harm_CEPolRear_3x_dighit_strip->clear();
+  Harm_CEPolRear_3x_dighit_adc_0->clear();
+  Harm_CEPolRear_3x_dighit_adc_1->clear();
+  Harm_CEPolRear_3x_dighit_adc_2->clear();
+  Harm_CEPolRear_3x_dighit_adc_3->clear();
+  Harm_CEPolRear_3x_dighit_adc_4->clear();
+  Harm_CEPolRear_3x_dighit_adc_5->clear();
+  Harm_CEPolRear_3y_dighit_nstrips = 0;
+  Harm_CEPolRear_3y_dighit_strip->clear();
+  Harm_CEPolRear_3y_dighit_adc_0->clear();
+  Harm_CEPolRear_3y_dighit_adc_1->clear();
+  Harm_CEPolRear_3y_dighit_adc_2->clear();
+  Harm_CEPolRear_3y_dighit_adc_3->clear();
+  Harm_CEPolRear_3y_dighit_adc_4->clear();
+  Harm_CEPolRear_3y_dighit_adc_5->clear();
+  Harm_CEPolRear_4x_dighit_nstrips = 0;
+  Harm_CEPolRear_4x_dighit_strip->clear();
+  Harm_CEPolRear_4x_dighit_adc_0->clear();
+  Harm_CEPolRear_4x_dighit_adc_1->clear();
+  Harm_CEPolRear_4x_dighit_adc_2->clear();
+  Harm_CEPolRear_4x_dighit_adc_3->clear();
+  Harm_CEPolRear_4x_dighit_adc_4->clear();
+  Harm_CEPolRear_4x_dighit_adc_5->clear();
+
 }
 
 void gmn_tree::FillDigBranches()
@@ -2110,6 +2497,73 @@ void gmn_tree::FillDigBranches()
   b_Harm_HCal_dighit_adc_18->Fill();
   b_Harm_HCal_dighit_adc_19->Fill();
   b_Harm_HCal_dighit_tdc->Fill();
+//GEn-rp CEpol rear
+  b_Harm_CEPolRear_1x_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_1x_dighit_strip->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_1x_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_1y_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_1y_dighit_strip->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_1y_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_2x_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_2x_dighit_strip->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_2x_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_2y_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_2y_dighit_strip->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_2y_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_3x_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_3x_dighit_strip->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_3x_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_3y_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_3y_dighit_strip->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_3y_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_4x_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_4x_dighit_strip->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_4x_dighit_adc_5->Fill();
+  b_Harm_CEPolRear_4y_dighit_nstrips->Fill();
+  b_Harm_CEPolRear_4y_dighit_strip->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_0->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_1->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_2->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_3->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_4->Fill();
+  b_Harm_CEPolRear_4y_dighit_adc_5->Fill();
+
+
 }
 
 #endif // #ifdef gmn_tree_cxx
