@@ -444,7 +444,7 @@ void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal,
 	//cout << x_hit << " " << y_hit << " " << mod << endl;
 	
 	hit.module = mod; 
-	hit.edep = edep*1.0e9;
+	hit.edep = edep*1.0e6;//already in MeV for some reasons...
 	
 	hit.xin = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yin = y_hit;

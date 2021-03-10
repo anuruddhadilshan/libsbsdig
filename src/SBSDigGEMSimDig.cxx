@@ -84,7 +84,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   h1_xdiff_s = new TH1D("h1_xdiff_s", "", 100, -0.1, 0.1);
   h1_ydiff_s = new TH1D("h1_ydiff_s", "", 100, -0.1, 0.1);
   h1_thit_s = new TH1D("h1_thit_s", "", 1000, -500, 500);
-  h1_edep_s = new TH1D("h1_edep_s", "", 1000, 0, 1.e9);
+  h1_edep_s = new TH1D("h1_edep_s", "", 1000, 0, 1.e6);
   h1_nions_s = new TH1D("h1_nions_s", "", 100, 0, 1000);
   
   h1_modhit_b = new TH1D("h1_modhit_b", "", 36, 0, 36);
@@ -94,7 +94,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   h1_xdiff_b = new TH1D("h1_xdiff_b", "", 100, -0.1, 0.1);
   h1_ydiff_b = new TH1D("h1_ydiff_b", "", 100, -0.1, 0.1);
   h1_thit_b = new TH1D("h1_thit_b", "", 1000, -500, 500);
-  h1_edep_b = new TH1D("h1_edep_b", "", 1000, 0, 1.e9);
+  h1_edep_b = new TH1D("h1_edep_b", "", 1000, 0, 1.e6);
   h1_nions_b = new TH1D("h1_nions_b", "", 100, 0, 1000);
   
   h1_nstrips_X = new TH1D*[2];
@@ -786,8 +786,8 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       continue;
     }
     //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
-    if(!is_background)
-      IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
+    //if(!is_background)
+    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
     
     // Get Signal Start Time 'time_zero'
     //if( is_background ) {
@@ -827,8 +827,8 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     if (fRNIon > 0) {
       //cout << "AvaModel..." << endl;
       //if(igem<12)h1_yGEM_preava->Fill(vv1.Y()*1.e-3);
-      if(!is_background)
-	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
+      //if(!is_background)
+      AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       //cout << "Done!" << endl;
       //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
       //CheckOut(gemdet, R, T);
