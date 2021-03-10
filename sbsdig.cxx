@@ -18,7 +18,6 @@
 //includes: specific
 #include "G4SBSRunData.hh"
 #include "g4sbs_types.h"
-#include "gmn_tree.h"
 #include "g4sbs_tree.h"
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
@@ -1864,17 +1863,6 @@ int main(int argc, char** argv){
       cout << " set up! " << endl;
     } 
   }
-
-  /*  
-  std::map<int, SBSDigPMTDet*> PMTdetectors;
-  PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
-  PMTdetectors[HODO_UNIQUE_DETID] = bbhodo;
-  PMTdetectors[BBPS_UNIQUE_DETID] = bbps;
-  PMTdetectors[BBSH_UNIQUE_DETID] = bbsh;
-  PMTdetectors[GRINCH_UNIQUE_DETID] = grinch;
-  std::map<int, SBSDigGEMDet*> GEMdetectors;
-  GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
-  */
   
   TRandom3* R = new TRandom3(Rseed);
   
@@ -1923,49 +1911,17 @@ int main(int argc, char** argv){
     }
   }
   
-  /* need to change this... 
-  // build background chain
-  ifstream beam_inputfile(inputbkgdfile);
-  TChain *C_b = new TChain("T");
-  //TCut global_cut = "";
-  //TEventList *eblist = new TEventList("eblist");
-  if(Nbkgd!=0){
-    while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
-      if( !currentline.BeginsWith("#") ){
-	C_b->Add(currentline.Data());
-	//global_cut += currentline.Data();
-	//cout << currentline.Data() << endl;
-      }
-    }
-    //C_b->Draw(">>eblist",global_cut);
-  }
-  //TObjArray *fileElements_b=C_b->GetListOfFiles();
-  //TIter next_b(fileElements_b);
-  //TChainElement *chEl_b=0;
-  */
-  
-  //G4SBSRunData* run_data;
-  
   double Theta_SBS, D_HCal;
   
-  //gmn_tree *T_s_;//, *T_b;
-  //g4sbs_tree *T_s;
-  
-  ULong64_t Nev_fs;//, Nev_fb;
-  ULong64_t ev_s;//, ev_b;
+  ULong64_t Nev_fs;
+  ULong64_t ev_s;
   
   ULong64_t NEventsTotal = 0;
-  //UShort_t nbkgd = 0;
-  //int treenum = 0;
-  //int oldtreenum = 0;
   
   int i_fs = 0;
   bool has_data;
   
   double timeZero;
-  
-  //T_b = new gmn_tree(C_b);
-  //ev_b = 0;
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
@@ -1977,19 +1933,8 @@ int main(int argc, char** argv){
     G4SBSRunData* run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
-    //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
-    //f_s.Cp(Form("digitized/simdigtest_%d.root", i_fs));
-    //if(fs_c.IsOpen())cout << "copy of file is open" << endl;
-    //cout << fs_c->ReOpen("UPDATE") << endl;
-    //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
-    //T_s = new gmn_tree(C_s);
-    //T_s = new g4sbs_tree(C_s, detectors_list);//vg: def lost
     g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list);
-    //g4sbs_tree T_s(C_s, detectors_list);
-    
-    // Expend tree here! (again, for signal only!!!)
-    //T_s->AddDigBranches();
     
     Nev_fs = C_s->GetEntries();
     
@@ -2000,6 +1945,7 @@ int main(int argc, char** argv){
       
       timeZero = R->Gaus(0.0, TriggerJitter);
       
+      //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	if(detmap[k]==HCAL_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
@@ -2010,102 +1956,41 @@ int main(int argc, char** argv){
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMdetectors[k]->Clear();
       }
-      /*
-      bbgem->Clear();
-      //for(int i = 0; i<NPlanes_bbgem; i++){
-      //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
-      //}cout << endl;
-      bbps->Clear();
-      bbsh->Clear();
-      grinch->Clear();
-      bbhodo->Clear();
-      hcal->Clear(true);
-      */
       
       has_data = false;
       
       T_s->ClearDigBranches();
       T_s->GetEntry(ev_s);
-      //T_s.ClearDigBranches();
-      //T_s.GetEntry(ev_s);
       
       // unfold the thing then... but where???
       has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 0);
       if(!has_data)continue;
       
-      
+      // if we want to add background, add background
       if(LumiFrac>0){
 	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemdetmap, LumiFrac);
       }
-      /*
-      // loop here for background
-      if(Nbkgd>0){
-	nbkgd = 0;
-	while( T_b->GetEntry(ev_b++) ){
-	//while( T_b->GetEntry(eblist->GetEntry(ev_b++)) ){
-	  treenum = C_b->GetTreeNumber();
-	  if(treenum!=oldtreenum){
-	    oldtreenum = treenum;
-	    nbkgd++;
-	    if(nbkgd>=Nbkgd)break;
-	  }
-	  timeZero = R->Uniform( -gatewidth_GEM-50., gatewidth_GEM/2.-50. );
-	  
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 1);
-	  //if(treenum)
-	}
-	
-	while (( chEl_b=(TChainElement*)next_b() )) {
-	  if(nbkgd>=Nbkgd)break;
-	  cout << chEl_b->GetTitle() << endl;
-	  TFile f_b(chEl_b->GetTitle());
-	  C_b = (TChain*)f_b.Get("T");
-	  T_b = new gmn_tree(C_b);
-	  Nev_fb = C_b->GetEntries();
-	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
-	    T_b->GetEntry(ev_b);
-	    UnfoldData(T_b, Theta_SBS, D_HCal, R);
-	  }// end loop on background events
-	  nbkgd++;
-	}// end loop on background files
-      }//end if Nbkgd>0
-      */
       
+      //Digitize: PMT detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	PMTdetectors[k]->Digitize(T_s,R);
-	
-	// bbps->Digitize(T_s,R);
-	// bbsh->Digitize(T_s,R);
-	// grinch->Digitize(T_s,R);
-	// bbhodo->Digitize(T_s,R);
-	// hcal->Digitize(T_s,R);
       }
-      
+      //digitize: GEMs
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
 	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s);
       }
-      //How come this function is so taxing in time??? 
-      // Answer in the function... hope we've found a workaround
-      //FillDigTree(T_s, PMTdetectors, GEMdetectors);
-
       T_s->FillDigBranches();
-      //T_s.FillDigBranches();
-      //T_s->fChain->Fill();
     }// end loop on signal events 
+    // if there are debugging histos to write, write them...
     for(int k = 0; k<GEMdetectors.size(); k++){
       GEMsimDig[k]->write_histos();
     }
-    /**/
     if(LumiFrac>0)BkgdGenerator->WriteXCHistos();
+    //write expanded tree
     T_s->fChain->Write("", TObject::kOverwrite);
-    //T_s.fChain->Write("", TObject::kOverwrite);
-    //fs_c.Write();
-    //fs_c.Close();
     f_s.Write();
     f_s.Close();
-    //T_s->~g4sbs_tree();
-    //T_s.~g4sbs_tree();
     i_fs++;
   }// end loop on signal files
   

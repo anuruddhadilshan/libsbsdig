@@ -10,8 +10,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 		std::vector<int> detmap,
 		std::vector<SBSDigGEMDet*> gemdets, 
 		std::vector<int> gemmap,
-		//std::map<int, SBSDigPMTDet*> pmtdets, 
-		//std::map<int, SBSDigGEMDet*> gemdets, 
 		double tzero,
 		int signal)
 {

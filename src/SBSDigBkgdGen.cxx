@@ -241,8 +241,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
 
 
 
-void SBSDigBkgdGen::GenerateBkgd(//double theta_sbs, double d_hcal, 
-				 TRandom3* R, 
+void SBSDigBkgdGen::GenerateBkgd(TRandom3* R, 
 				 std::vector<SBSDigPMTDet*> pmtdets,
 				 std::vector<int> detmap, 
 				 std::vector<SBSDigGEMDet*> gemdets, 

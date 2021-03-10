@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "gmn_tree.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
@@ -22,8 +21,7 @@ class SBSDigBkgdGen {
   ~SBSDigBkgdGen();
   void Initialize(TFile* f_bkgd);
   
-  void GenerateBkgd(//double theta_sbs, double d_hcal, 
-		    TRandom3* R, 
+  void GenerateBkgd(TRandom3* R, 
 		    std::vector<SBSDigPMTDet*> pmtdets,
 		    std::vector<int> detmap, 
 		    std::vector<SBSDigGEMDet*> gemdets, 
