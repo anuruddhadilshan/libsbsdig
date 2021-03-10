@@ -684,6 +684,48 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(-1000000);
     }
   }
+
+if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
+    T->Harm_PRPolScintFarSide_Dig.nchan++;
+    T->Harm_PRPolScintFarSide_Dig.chan->push_back(chan);
+    T->Harm_PRPolScintFarSide_Dig.adc->push_back(fADC);
+
+    if(fTDCs.size()==2){
+      for(int j = 0;j<fTDCs.size(); j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  T->Harm_PRPolScintFarSide_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  T->Harm_PRPolScintFarSide_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	}
+      }
+    }else{
+      T->Harm_PRPolScintFarSide_Dig.tdc_l->push_back(-1000000);
+      T->Harm_PRPolScintFarSide_Dig.tdc_t->push_back(-1000000);
+    }
+
+  }
+
+//genrp ActiveAna
+  if(detid==ACTIVEANA_UNIQUE_DETID){
+    T->Harm_ActAn_Dig.nchan++;
+    T->Harm_ActAn_Dig.chan->push_back(chan);
+    T->Harm_ActAn_Dig.adc->push_back(fADC);
+    if(fTDCs.size()==2){
+      for(int j = 0;j<fTDCs.size(); j++){
+	if(fTDCs[j] & ( 1 << (31) )){
+	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+	  T->Harm_ActAn_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	}else{
+	  T->Harm_ActAn_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	}
+      }
+    }else{
+      T->Harm_ActAn_Dig.tdc_l->push_back(-1000000);
+      T->Harm_ActAn_Dig.tdc_t->push_back(-1000000);
+    }
+  }
+  
   
 }//
 

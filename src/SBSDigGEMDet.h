@@ -30,7 +30,7 @@ class SBSDigGEMDet {
   };
 
   std::vector<gemhit> fGEMhits;
-    
+  
   //private:
   UShort_t fUniqueID;
   UInt_t fNPlanes;
