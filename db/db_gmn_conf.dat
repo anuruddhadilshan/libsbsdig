@@ -59,7 +59,7 @@ sigmapulse_bbhodo 1.6
 NChan_hcal 288
 gatewidth_hcal 80 
 gain_hcal 1.0e6
-ped_hcal 0.0 
+ped_hcal 300.0 
 pedsigma_hcal 0.0
 trigoffset_hcal 81.0 
 threshold_hcal 22.e-3 
