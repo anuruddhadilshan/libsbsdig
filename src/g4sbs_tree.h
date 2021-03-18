@@ -111,6 +111,7 @@ public :
    //BB GEMs variables
    TSBSGeant4::GEMData_t Earm_BBGEM;
    TSBSGeant4::DigGEMData_t Earm_BBGEM_Dig;
+   TSBSGeant4::DigGEMData_t Earm_BBGEM_Dig_sig;
    //TSBSGeant4::TrackerData_t Earm_BBGEM_Track;
 
    // BB timing hodoscope
@@ -277,7 +278,7 @@ public :
    TBranch        *b_Primaries_phi;   //!
    */
 
-   g4sbs_tree(TTree *tree, std::vector<TString> det_list);
+   g4sbs_tree(TTree *tree, std::vector<TString> det_list, bool sig_br = false);
    //g4sbs_tree(TTree *tree=0, Exp_t expt = kGMN, bool pythia = false);
    //, bool ecalbox = false, bool hcalbox = false);
    // EPAF: We need to clean this. 
@@ -286,7 +287,7 @@ public :
    virtual Int_t    GetEntries();
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree, std::vector<TString> det_list);
+   virtual void     Init(TTree *tree, std::vector<TString> det_list, bool sig_br);
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);

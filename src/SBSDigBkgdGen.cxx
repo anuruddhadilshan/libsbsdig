@@ -388,6 +388,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
             
       for(int i = 0; i<nhits; i++){
 	edep =  h_EdephitBBHodo->GetRandom();//*1.e6;
+	//if(edep<0.002)continue;
 	x_hit =  h_xhitBBHodo->GetRandom();
 	
 	h_EdephitBBHodo_XC->Fill(edep);

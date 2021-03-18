@@ -29,6 +29,7 @@
 #include "unistd.h"
 #endif
 
+#include <chrono>
 /*
 //Defining here the parameters for the new detectors.
 //TODO: write a list of parameters that are not "frozen" (e.g. gain, pedestal parameters, etc...) and switch them into databases...
@@ -94,7 +95,6 @@
 using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
-  
   // Step 0: read out arguments
   string db_file, inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
@@ -1923,6 +1923,9 @@ int main(int argc, char** argv){
   
   double timeZero;
   
+  std::chrono::time_point<std::chrono::steady_clock> start = 
+    std::chrono::steady_clock::now();
+  
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
       break;
@@ -1934,13 +1937,13 @@ int main(int argc, char** argv){
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
     C_s = (TChain*)f_s.Get("T");
-    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list);
+    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list, bool(LumiFrac));
     
     Nev_fs = C_s->GetEntries();
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%1000==0)
+      if(NEventsTotal%100==0)
 	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);
@@ -1968,6 +1971,11 @@ int main(int argc, char** argv){
       
       // if we want to add background, add background
       if(LumiFrac>0){
+	//first digitize signal only...
+	//	for(int k = 0; k<GEMdetectors.size(); k++){
+	//  GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	//  GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s, bool(LumiFrac>0));
+	//}
 	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemdetmap, LumiFrac);
       }
       
@@ -1977,7 +1985,7 @@ int main(int argc, char** argv){
       }
       //digitize: GEMs
       for(int k = 0; k<GEMdetectors.size(); k++){
-	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	GEMsimDig[k]->Digitize(GEMdetectors[k], R, bool(LumiFrac>0));
 	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s);
       }
       T_s->FillDigBranches();
@@ -1985,6 +1993,7 @@ int main(int argc, char** argv){
     // if there are debugging histos to write, write them...
     for(int k = 0; k<GEMdetectors.size(); k++){
       GEMsimDig[k]->write_histos();
+      GEMsimDig[k]->print_time_execution();
     }
     if(LumiFrac>0)BkgdGenerator->WriteXCHistos();
     //write expanded tree
@@ -1994,6 +2003,11 @@ int main(int argc, char** argv){
     i_fs++;
   }// end loop on signal files
   
+  std::chrono::time_point<std::chrono::steady_clock> end = 
+    std::chrono::steady_clock::now();
+  
+  std::chrono::duration<double> diff = end-start;
+  cout << " Total time " << std::setprecision(9) << diff.count() << " s "<< endl;
   
   exit(0);
 }

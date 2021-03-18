@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
@@ -27,11 +28,12 @@ class SBSDigGEMSimDig {
   virtual ~SBSDigGEMSimDig();
   void Print();
   
-  Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R);//, gmn_tree* T);
+  Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R, bool bkgdonly = false);//, gmn_tree* T);
   //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
-  void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T);
+  void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T, bool sigonly = false);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
   void write_histos();
+  void print_time_execution();
   
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
@@ -48,12 +50,14 @@ class SBSDigGEMSimDig {
 		TRandom3* R,
 		const TVector3& xi,
 		const TVector3& xo,
-		const Double_t t0);
+		const Double_t t0,
+		bool isbkgd = false);
   
   void IonModel (TRandom3* R,
 		 const TVector3& xi,
 		 const TVector3& xo,
-		 const Double_t elost );
+		 const Double_t elost,
+		 bool isbkgd = false);
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers
@@ -137,6 +141,15 @@ class SBSDigGEMSimDig {
   TH2D* h1_yGEMvsADC_inava_4;
   TH1D* h1_yGEM_incheckout;
   */
+  
+  //std::chrono::steady_clock fClock_dbg;
+  double fTotalTime_ion;
+  double fTotalTime_ava;
+  double fTotalTime_int;
+  
+  std::chrono::time_point<std::chrono::steady_clock> fStart;
+  std::chrono::time_point<std::chrono::steady_clock> fEnd;
+  std::chrono::duration<double> fDiff;
 };
 
 #endif
