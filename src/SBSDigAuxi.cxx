@@ -312,10 +312,10 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  //cout << mod*2 << " " << gemdets[idet]->GEMPlanes[mod*2].Xoffset() << endl;
 	  hit.xin = T->Earm_BBGEM.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yin = T->Earm_BBGEM.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
-	  hit.zin = T->Earm_BBGEM.zin->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
+	  hit.zin = T->Earm_BBGEM.zin->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1];//+0.8031825;
 	  hit.xout = T->Earm_BBGEM.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yout = T->Earm_BBGEM.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
-	  hit.zout = T->Earm_BBGEM.zout->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1]+0.8031825;
+	  hit.zout = T->Earm_BBGEM.zout->at(k)-gemdets[idet]->fZLayer[T->Earm_BBGEM.plane->at(k)-1];//+0.8031825;
 	  //cout << mod << " " << hit.zin << " " << hit.zout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)

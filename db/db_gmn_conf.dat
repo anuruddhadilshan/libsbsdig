@@ -89,7 +89,8 @@ NPlanes_bbgem 32
 # data acquisition window for bbgem in ns
 gatewidth_bbgem 400 
 nlayers_bbgem 5
-bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
+#bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
+bbgem_layer_z 0.0468175 0.196817 0.346817 0.496818 1.52905
 layer_bbgem 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 5 5 
 #number of strips for each plane/module
 nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 
