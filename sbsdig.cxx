@@ -18,7 +18,6 @@
 //includes: specific
 #include "G4SBSRunData.hh"
 #include "g4sbs_types.h"
-#include "gmn_tree.h"
 #include "g4sbs_tree.h"
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
@@ -30,6 +29,7 @@
 #include "unistd.h"
 #endif
 
+#include <chrono>
 /*
 //Defining here the parameters for the new detectors.
 //TODO: write a list of parameters that are not "frozen" (e.g. gain, pedestal parameters, etc...) and switch them into databases...
@@ -95,20 +95,19 @@
 using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
-  
   // Step 0: read out arguments
   string db_file, inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
-  double LumiFrac = 0;
+  double BkgdTimeWindow = 0, LumiFrac = 0;
       
-  if(argc<3){
-    cout << "*** Not enough arguments! ***" << endl
+  if(argc<3 && argc>4){
+    cout << "*** Inadequate number of arguments! ***" << endl
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
-	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "         bkgd_histo_input_file (str, def=''); " << endl
-	 << "        bkgd_lumi_frac (double, def=0); " << endl;
+	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl;
+      //<< "         bkgd_histo_input_file (str, def=''); " << endl
+      // << "        bkgd_lumi_frac (double, def=0); " << endl;
     return(-1);
   }
   
@@ -118,33 +117,19 @@ int main(int argc, char** argv){
   cout << " Signal input files from: " << inputsigfile << endl;
   if(argc>3)Nentries = atoi(argv[3]);
   cout << " Number of (signal) events to process = " << Nentries << endl;
+  /*
   if(argc>5){
     inputbkgdfile = argv[4];
     cout << " Background histgrams from: " << inputbkgdfile << endl;
     LumiFrac = max(0., atof(argv[5]));
     cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
   }
-  
-  TFile* f_bkgd;
-  SBSDigBkgdGen* BkgdGenerator;
-  if(LumiFrac>0){
-    f_bkgd = TFile::Open(inputbkgdfile.c_str());
-    if(f_bkgd->IsZombie()){
-      LumiFrac = 0;
-    }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd);
-    }
-  }
-  //f_bkgd->Close();
+  */
   
   // ------------------- // dev notes // ------------------- //
-  // The loop on the input signal and background chains 
-  // is going to happen here in the main I guess.
-  //
   // First, we want to extend the input tree (for signal only!!!)
   // I guess in order to avoid adding extra layers of code, 
   // the tree extension might have to be coded in the custom tree class
-  
 
   
   std::vector<SBSDigPMTDet*> PMTdetectors;
@@ -1839,7 +1824,7 @@ int main(int argc, char** argv){
       detmap.push_back(PRPOLBS_SCINT_UNIQUE_DETID);
       cout << " set up! " << endl;
     } 
-  
+    
     if(detectors_list[k] == "prpolscint_fs"){
       SBSDigPMTDet* polscint_fs = new SBSDigPMTDet(PRPOLFS_SCINT_UNIQUE_DETID, NChan_polscint_fs, gain_polscint_fs*qe, sigmapulse_polscint_fs, gatewidth_polscint_fs);
       
@@ -1878,16 +1863,6 @@ int main(int argc, char** argv){
       cout << " set up! " << endl;
     } 
   }
-  /*  
-  std::map<int, SBSDigPMTDet*> PMTdetectors;
-  PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
-  PMTdetectors[HODO_UNIQUE_DETID] = bbhodo;
-  PMTdetectors[BBPS_UNIQUE_DETID] = bbps;
-  PMTdetectors[BBSH_UNIQUE_DETID] = bbsh;
-  PMTdetectors[GRINCH_UNIQUE_DETID] = grinch;
-  std::map<int, SBSDigGEMDet*> GEMdetectors;
-  GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
-  */
   
   TRandom3* R = new TRandom3(Rseed);
   
@@ -1903,50 +1878,53 @@ int main(int argc, char** argv){
   TObjArray *fileElements_s=C_s->GetListOfFiles();
   TIter next_s(fileElements_s);
   TChainElement *chEl_s=0;
-  
-  /* need to change this... 
-  // build background chain
-  ifstream beam_inputfile(inputbkgdfile);
-  TChain *C_b = new TChain("T");
-  //TCut global_cut = "";
-  //TEventList *eblist = new TEventList("eblist");
-  if(Nbkgd!=0){
-    while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
-      if( !currentline.BeginsWith("#") ){
-	C_b->Add(currentline.Data());
-	//global_cut += currentline.Data();
-	//cout << currentline.Data() << endl;
+
+  //restart reading to get background info
+  while( currentline.ReadLine(sig_inputfile) && !currentline.BeginsWith("end_bkgdinfo")){
+    if( !currentline.BeginsWith("#") ){
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      if(ntokens==3){
+	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
+	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	BkgdTimeWindow = stemp.Atof();
+	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
+	LumiFrac = stemp.Atof();
       }
     }
-    //C_b->Draw(">>eblist",global_cut);
   }
-  //TObjArray *fileElements_b=C_b->GetListOfFiles();
-  //TIter next_b(fileElements_b);
-  //TChainElement *chEl_b=0;
-  */
   
-  //G4SBSRunData* run_data;
+  TFile* f_bkgd;
+  SBSDigBkgdGen* BkgdGenerator;
+  if(LumiFrac>0){
+    f_bkgd = TFile::Open(inputbkgdfile.c_str());
+    if(f_bkgd->IsZombie()){
+      LumiFrac = 0;
+    }else{
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
+      cout << "Includes background from file: " << inputbkgdfile.c_str() 
+	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
+	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
+    }
+  }
   
   double Theta_SBS, D_HCal;
   
-  //gmn_tree *T_s_;//, *T_b;
-  //g4sbs_tree *T_s;
-  
-  ULong64_t Nev_fs;//, Nev_fb;
-  ULong64_t ev_s;//, ev_b;
+  ULong64_t Nev_fs;
+  ULong64_t ev_s;
   
   ULong64_t NEventsTotal = 0;
-  //UShort_t nbkgd = 0;
-  //int treenum = 0;
-  //int oldtreenum = 0;
   
   int i_fs = 0;
   bool has_data;
   
   double timeZero;
   
-  //T_b = new gmn_tree(C_b);
-  //ev_b = 0;
+  std::chrono::time_point<std::chrono::steady_clock> start = 
+    std::chrono::steady_clock::now();
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
@@ -1958,19 +1936,8 @@ int main(int argc, char** argv){
     G4SBSRunData* run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
-    //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
-    //f_s.Cp(Form("digitized/simdigtest_%d.root", i_fs));
-    //if(fs_c.IsOpen())cout << "copy of file is open" << endl;
-    //cout << fs_c->ReOpen("UPDATE") << endl;
-    //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
-    //T_s = new gmn_tree(C_s);
-    //T_s = new g4sbs_tree(C_s, detectors_list);//vg: def lost
-    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list);
-    //g4sbs_tree T_s(C_s, detectors_list);
-    
-    // Expend tree here! (again, for signal only!!!)
-    //T_s->AddDigBranches();
+    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list, bool(LumiFrac));
     
     Nev_fs = C_s->GetEntries();
     
@@ -1981,6 +1948,7 @@ int main(int argc, char** argv){
       
       timeZero = R->Gaus(0.0, TriggerJitter);
       
+      //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	if(detmap[k]==HCAL_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
@@ -1991,105 +1959,55 @@ int main(int argc, char** argv){
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMdetectors[k]->Clear();
       }
-      /*
-      bbgem->Clear();
-      //for(int i = 0; i<NPlanes_bbgem; i++){
-      //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
-      //}cout << endl;
-      bbps->Clear();
-      bbsh->Clear();
-      grinch->Clear();
-      bbhodo->Clear();
-      hcal->Clear(true);
-      */
       
       has_data = false;
       
       T_s->ClearDigBranches();
       T_s->GetEntry(ev_s);
-      //T_s.ClearDigBranches();
-      //T_s.GetEntry(ev_s);
       
       // unfold the thing then... but where???
       has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 0);
       if(!has_data)continue;
       
-      
+      // if we want to add background, add background
       if(LumiFrac>0){
+	//first digitize signal only...
+	//	for(int k = 0; k<GEMdetectors.size(); k++){
+	//  GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	//  GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s, bool(LumiFrac>0));
+	//}
 	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemdetmap, LumiFrac);
       }
-      /*
-      // loop here for background
-      if(Nbkgd>0){
-	nbkgd = 0;
-	while( T_b->GetEntry(ev_b++) ){
-	//while( T_b->GetEntry(eblist->GetEntry(ev_b++)) ){
-	  treenum = C_b->GetTreeNumber();
-	  if(treenum!=oldtreenum){
-	    oldtreenum = treenum;
-	    nbkgd++;
-	    if(nbkgd>=Nbkgd)break;
-	  }
-	  timeZero = R->Uniform( -gatewidth_GEM-50., gatewidth_GEM/2.-50. );
-	  
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 1);
-	  //if(treenum)
-	}
-	
-	while (( chEl_b=(TChainElement*)next_b() )) {
-	  if(nbkgd>=Nbkgd)break;
-	  cout << chEl_b->GetTitle() << endl;
-	  TFile f_b(chEl_b->GetTitle());
-	  C_b = (TChain*)f_b.Get("T");
-	  T_b = new gmn_tree(C_b);
-	  Nev_fb = C_b->GetEntries();
-	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
-	    T_b->GetEntry(ev_b);
-	    UnfoldData(T_b, Theta_SBS, D_HCal, R);
-	  }// end loop on background events
-	  nbkgd++;
-	}// end loop on background files
-      }//end if Nbkgd>0
-      */
       
+      //Digitize: PMT detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	PMTdetectors[k]->Digitize(T_s,R);
-	
-	// bbps->Digitize(T_s,R);
-	// bbsh->Digitize(T_s,R);
-	// grinch->Digitize(T_s,R);
-	// bbhodo->Digitize(T_s,R);
-	// hcal->Digitize(T_s,R);
       }
-      
+      //digitize: GEMs
       for(int k = 0; k<GEMdetectors.size(); k++){
-	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	GEMsimDig[k]->Digitize(GEMdetectors[k], R, bool(LumiFrac>0));
 	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s);
       }
-      //How come this function is so taxing in time??? 
-      // Answer in the function... hope we've found a workaround
-      //FillDigTree(T_s, PMTdetectors, GEMdetectors);
-
       T_s->FillDigBranches();
-      //T_s.FillDigBranches();
-      //T_s->fChain->Fill();
     }// end loop on signal events 
+    // if there are debugging histos to write, write them...
     for(int k = 0; k<GEMdetectors.size(); k++){
       GEMsimDig[k]->write_histos();
+      GEMsimDig[k]->print_time_execution();
     }
-    /**/
     if(LumiFrac>0)BkgdGenerator->WriteXCHistos();
+    //write expanded tree
     T_s->fChain->Write("", TObject::kOverwrite);
-    //T_s.fChain->Write("", TObject::kOverwrite);
-    //fs_c.Write();
-    //fs_c.Close();
     f_s.Write();
     f_s.Close();
-    //T_s->~g4sbs_tree();
-    //T_s.~g4sbs_tree();
     i_fs++;
   }// end loop on signal files
   
+  std::chrono::time_point<std::chrono::steady_clock> end = 
+    std::chrono::steady_clock::now();
+  
+  std::chrono::duration<double> diff = end-start;
+  cout << " Total time " << std::setprecision(9) << diff.count() << " s "<< endl;
   
   exit(0);
 }

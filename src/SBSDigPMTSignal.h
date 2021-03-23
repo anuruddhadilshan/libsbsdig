@@ -65,6 +65,16 @@ class PMTSignal {
 
   UInt_t ADCSamples(int i){return fADCSamples[i];};
   
+  double Eval(double t){
+    return( TMath::Max(0., fNorm*((t-ft0+ftau*0.4)/(ftau*ftau*0.16))*TMath::Exp(-(t-ft0+ftau*0.4)/(ftau*0.4))) );
+  }//can't be worse than TF1::Eval... can it?
+  
+  void SetPulseParam(double norm, double t0, double tau){
+    fNorm = norm;
+    ft0 = t0;
+    ftau = tau;
+  }
+  
  private:
   //summing variables for dig...
   double fSumEdep;//Not forced to use it for everything
@@ -81,7 +91,11 @@ class PMTSignal {
   //TRndmManager* fRN;
 
   //let's try something for HCal
-  TF1* f1;
+  //TF1* f1;
+  //let's try something else for HCal 11
+  double fNorm;
+  double ft0;
+  double ftau;
   int fNADCSamps;
   int fNSamps;
   double fSampSize;

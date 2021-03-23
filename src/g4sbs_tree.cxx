@@ -9,7 +9,7 @@
 // the boolean is a flag to consider(true) or ignore(false) the ECal_box and HCal_box data
 //g4sbs_tree::g4sbs_tree(TTree *tree, Exp_t expt, bool pythia)
 //, bool ecalbox, bool have_hcalbox) 
-g4sbs_tree::g4sbs_tree(TTree *tree, std::vector<TString> det_list)
+g4sbs_tree::g4sbs_tree(TTree *tree, std::vector<TString> det_list, bool sig_br)
   : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
@@ -25,7 +25,7 @@ g4sbs_tree::g4sbs_tree(TTree *tree, std::vector<TString> det_list)
    // fPythia = pythia;
    // fEcalBox = ecalbox;
    // fHcalBox = have_hcalbox;
-   Init(tree, det_list);
+   Init(tree, det_list, sig_br);
 }
 
 //default destructor
@@ -62,7 +62,7 @@ Long64_t g4sbs_tree::LoadTree(Long64_t entry)
    return centry;
 }
 
-void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
+void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -129,6 +129,7 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list)
        printf(" bbgem branches set up! \n");
        SetupDetBranch(Earm_BBGEM, "Earm.BBGEM.hit");
        SetupDetBranch(Earm_BBGEM_Dig, "Earm.BBGEM.dighit");
+       //if(sig_br)SetupDetBranch(Earm_BBGEM_Dig_sig, "Earm.BBGEM.dighit_sig");
      }
      if(det_list[k]=="hcal"){
        printf(" hcal branches set up! \n");

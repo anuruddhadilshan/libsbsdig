@@ -118,7 +118,8 @@ sigmapulse_activeana 1.6
  gatewidth_bbgem 400
  #number of strips for each plane/module
  nlayers_bbgem 5
- bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
+ #bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
+ bbgem_layer_z 0.0468175 0.196817 0.346817 0.496818 1.52905294
  layer_bbgem 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 5 5
  nstrips_bbgem 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024     1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280    1536
  #offset in transport coordinate for each plane/module in meters
@@ -141,7 +142,8 @@ sigmapulse_activeana 1.6
  nlayers_cepol_front 4
  #cepol_front_layer_z 0.2 0.3 0.4 0.5 
  #cepol_front_layer_z 1.0015 1.1015 1.2015 1.3015
- cepol_front_layer_z 1.00 1.10 1.20 1.30
+ #cepol_front_layer_z 1.00 1.10 1.20 1.30
+ cepol_front_layer_z 0.1968175 0.2968175 0.3968175 0.4968175 
  layer_cepol_front 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4
  nstrips_cepol_front 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024 1280 1024  1280 1536 1280 1536 1280 1536 1280 1536  1280 1536 1280 1536 1280 1536   1280 1536
  #offset in transport coordinate for each plane/module in meters
@@ -162,7 +164,8 @@ sigmapulse_activeana 1.6
  gatewidth_cepol_rear 400
  #number of strips for each plane/module
  nlayers_cepol_rear 4
- cepol_rear_layer_z 1.5889 1.6889 1.7889 1.8889
+ #cepol_rear_layer_z 1.5889 1.6889 1.7889 1.8889
+ cepol_rear_layer_z 0.7857175 0.8857175 0.9857175 1.0857175
  layer_cepol_rear 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 
  nstrips_cepol_rear  1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536
  #offset in transport coordinate for each plane/module in meters
