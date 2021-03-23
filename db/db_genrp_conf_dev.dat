@@ -170,7 +170,7 @@ sigmapulse_activeana 1.6
  #strip angle for all GEn-RP GEMs readouts in degrees
  RO_angle_cepol_rear 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
  #trigger offsets for all planes in ns
- triggeroffset_cepol_rear 123.69 123.69 123.69 123.69   124.02 124.02 124.02 124.02 124.35 124.35 124.35 124.35 124.68 124.68 124.68 124.68 
+ triggeroffset_cepol_rear 122.8 122.8 122.8 122.8   123.13 123.13 123.13 123.13 123.46 123.46 123.46 123.46  123.79 123.79 123.79 123.79 
  #zero suppression threshold for GEMs in ADC channels
  ZsupThr_cepol_rear 240.
  #common mode value/array for GEMs in ADC channels
