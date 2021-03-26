@@ -142,6 +142,9 @@ class SBSDigGEMSimDig {
   TH1D* h1_yGEM_incheckout;
   */
   
+  TH2D* h1_ava_yint;
+  TH1D* h1_ava_int;
+  
   //std::chrono::steady_clock fClock_dbg;
   double fTotalTime_ion;
   double fTotalTime_ava;
