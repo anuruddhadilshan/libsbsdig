@@ -345,10 +345,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   //trying something:
   int integral_steps_x = fXIntegralStepsPerPitch;
   int integral_steps_y = fYIntegralStepsPerPitch;
-  if(isbkgd){
-    integral_steps_x = 1;
-    integral_steps_y = 1;
-  }
+  //if(isbkgd){
+  //integral_steps_x = 1;
+  //integral_steps_y = 1;
+  //}
     
 #if DBG_AVA > 0
   cout << "fRSMax, nsigma " << fRSMax << " " << nsigma << endl;
