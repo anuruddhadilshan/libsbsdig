@@ -18,7 +18,6 @@
 //includes: specific
 #include "G4SBSRunData.hh"
 #include "g4sbs_types.h"
-#include "gmn_tree.h"
 #include "g4sbs_tree.h"
 #include "SBSDigAuxi.h"
 #include "SBSDigPMTDet.h"
@@ -30,15 +29,16 @@
 #include "unistd.h"
 #endif
 
+#include <chrono>
 /*
 //Defining here the parameters for the new detectors.
 //TODO: write a list of parameters that are not "frozen" (e.g. gain, pedestal parameters, etc...) and switch them into databases...
-#define NPlanes_BBGEM 32 // modules...
-#define NChan_BBPS 52
-#define NChan_BBSH 189
-#define NChan_BBHODO 180 
-#define NChan_GRINCH 510 
-#define NChan_HCAL 288
+#define NPlanes_bbgem 32 // modules...
+#define NChan_bbps 52
+#define NChan_bbsh 189
+#define NChan_bbhodo 180 
+#define NChan_grinch 510 
+#define NChan_hcal 288
 
 #define TriggerJitter 3.0 //ns
 #define ADCbits 12 
@@ -48,69 +48,66 @@
 #define FADC_sampsize 4.0 //ns
 
 //DB???
-#define sigmapulse_BBPSSH 3.0 //ns / 1.2 of 
-#define sigmapulse_BBHODO 1.6 //ns
-#define sigmapulse_GRINCH 3.75 //ns
+#define sigmapulse_bbpsSH 3.0 //ns / 1.2 of 
+#define sigmapulse_bbhodo 1.6 //ns
+#define sigmapulse_grinch 3.75 //ns
 
-#define gain_BBPS 2.e6
-#define ped_BBPS 600.0 // ADC channel
-#define pedsigma_BBPS 3.0 // ADC channel
-#define trigoffset_BBPS 18.2 //ns
-#define ADCconv_BBPS 50 //fC/ch
+#define gain_bbps 2.e6
+#define ped_bbps 600.0 // ADC channel
+#define pedsigma_bbps 3.0 // ADC channel
+#define trigoffset_bbps 18.2 //ns
+#define ADCconv_bbps 50 //fC/ch
 
-#define gain_BBSH 7.5e5
-#define ped_BBSH 500.0 // ADC channel
-#define pedsigma_BBSH 4.5 // ADC channel
-#define trigoffset_BBSH 18.5 //ns
-#define ADCconv_BBSH 50 //fC/ch
+#define gain_bbsh 7.5e5
+#define ped_bbsh 500.0 // ADC channel
+#define pedsigma_bbsh 4.5 // ADC channel
+#define trigoffset_bbsh 18.5 //ns
+#define ADCconv_bbsh 50 //fC/ch
 
-#define gain_GRINCH 7.0e6
-#define ped_GRINCH 0.0 
-#define pedsigma_GRINCH 0.0
-#define trigoffset_GRINCH 15.3 //ns
-#define threshold_GRINCH 3.e-3 //V
-#define ADCconv_GRINCH 100 //fC/ch
-#define TDCconv_GRINCH 1.0 //ns/channel
-#define TDCbits_GRINCH 16 //ns/channel
+#define gain_grinch 7.0e6
+#define ped_grinch 0.0 
+#define pedsigma_grinch 0.0
+#define trigoffset_grinch 15.3 //ns
+#define threshold_grinch 3.e-3 //V
+#define ADCconv_grinch 100 //fC/ch
+#define TDCconv_grinch 1.0 //ns/channel
+#define TDCbits_grinch 16 //ns/channel
 
-#define gain_BBHODO 1.0e5
-#define ped_BBHODO 0.0 
-#define pedsigma_BBHODO 0.0
-#define trigoffset_BBHODO 18.6 //ns
-#define threshold_BBHODO 3.e-3 //V
-#define ADCconv_BBHODO 100 //fC/ch
-#define TDCconv_BBHODO 0.1 //ns/channel
-#define TDCbits_BBHODO 19 //ns/channel
+#define gain_bbhodo 1.0e5
+#define ped_bbhodo 0.0 
+#define pedsigma_bbhodo 0.0
+#define trigoffset_bbhodo 18.6 //ns
+#define threshold_bbhodo 3.e-3 //V
+#define ADCconv_bbhodo 100 //fC/ch
+#define TDCconv_bbhodo 0.1 //ns/channel
+#define TDCbits_bbhodo 19 //ns/channel
 
-#define gain_HCAL 1.0e6
-#define ped_HCAL 0.0 
-#define pedsigma_HCAL 0.0
-#define trigoffset_HCAL 81.0 //ns
-#define threshold_HCAL 3.e-3 //V
-#define ADCconv_HCAL 1.0 //fC/ch //??
-#define TDCconv_HCAL 0.12 //ns/channel
-#define TDCbits_HCAL 16 //ns/channel
+#define gain_hcal 1.0e6
+#define ped_hcal 0.0 
+#define pedsigma_hcal 0.0
+#define trigoffset_hcal 81.0 //ns
+#define threshold_hcal 3.e-3 //V
+#define ADCconv_hcal 1.0 //fC/ch //??
+#define TDCconv_hcal 0.12 //ns/channel
+#define TDCbits_hcal 16 //ns/channel
 */
-
-
 
 using namespace std;
 //____________________________________________________
 int main(int argc, char** argv){
-  
   // Step 0: read out arguments
   string db_file, inputsigfile, inputbkgdfile = "";//sources of files
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
-  double LumiFrac = 0;
+  double BkgdTimeWindow = 0, LumiFrac = 0;
       
-  if(argc<3){
-    cout << "*** Not enough arguments! ***" << endl
+  if(argc<3 && argc>4){
+    cout << "*** Inadequate number of arguments! ***" << endl
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
-	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl
-	 << "         list_of_bkgd_input_files (str, def=''); " << endl
-	 << "        nb_of_bkgd_files_to_add_to_sig_evt (int, def=0); " << endl;
+	 << "          nb_of_sig_evts_to_process (int, def=-1); " << endl;
+      //<< "         bkgd_histo_input_file (str, def=''); " << endl
+      // << "        bkgd_lumi_frac (double, def=0); " << endl;
     return(-1);
   }
   
@@ -120,67 +117,20 @@ int main(int argc, char** argv){
   cout << " Signal input files from: " << inputsigfile << endl;
   if(argc>3)Nentries = atoi(argv[3]);
   cout << " Number of (signal) events to process = " << Nentries << endl;
+  /*
   if(argc>5){
     inputbkgdfile = argv[4];
     cout << " Background histgrams from: " << inputbkgdfile << endl;
     LumiFrac = max(0., atof(argv[5]));
     cout << " Fraction of background to superimpose to signal = " << LumiFrac << endl;
   }
-  
-  TFile* f_bkgd;
-  SBSDigBkgdGen* BkgdGenerator;
-  if(LumiFrac>0){
-    f_bkgd = TFile::Open(inputbkgdfile.c_str());
-    if(f_bkgd->IsZombie()){
-      LumiFrac = 0;
-    }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd);
-    }
-  }
-  //f_bkgd->Close();
+  */
   
   // ------------------- // dev notes // ------------------- //
-  // The loop on the input signal and background chains 
-  // is going to happen here in the main I guess.
-  //
   // First, we want to extend the input tree (for signal only!!!)
   // I guess in order to avoid adding extra layers of code, 
   // the tree extension might have to be coded in the custom tree class
-  
-  /*
-  double nstrips_bbgem[NPlanes_BBGEM] = {3840, 3072, 3840, 3072, 3840, 3072, 3840, 3072, 3840, 6144};
 
-  double nstrips_bbgem[NPlanes_BBGEM] = {1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1024, 1280, 1024, 1280, 1024, 
-					 1280, 1536, 1280, 1536, 
-					 1280, 1536, 1280, 1536};
-  double offset_bbgem[NPlanes_BBGEM] = {-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.512, 0., 0., 0., 0.512, 0., 
-					-0.768, 0., -0.256, 0., 
-					 0.256, 0.,  0.768, 0.};
-  double angle_bbgem[NPlanes_BBGEM] = {0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0, 
-				       0.0, 90.0, 0.0, 90.0};
-  for(int i = 0; i<NPlanes_BBGEM; i++){
-    angle_bbgem[i]*= TMath::DegToRad();
-    //cout << nstrips_bbgem[i] << " ";
-  }//cout << endl;
-  
-  double triggeroffset[NPlanes_BBGEM/2] = {121., 121., 121., 121.5, 121.5, 121.5,  
-					   122., 122., 122., 122.5, 122.5, 122.5,  
-					   126., 126., 126., 126.};
-  
-  double ZsupThr_bbgem = 240.;
-  
-  double commonmode_array[1] = {1500.};
-  */
   
   std::vector<SBSDigPMTDet*> PMTdetectors;
   std::vector<int> detmap;
@@ -195,89 +145,187 @@ int main(int argc, char** argv){
   
   std::vector<TString> detectors_list;
   
-  Int_t NChan_BBPS = 52;
-  Double_t gatewidth_BBPS = 100.;
-  Double_t gain_BBPS = 2.e6;
-  Double_t ped_BBPS = 600.;//
-  Double_t pedsigma_BBPS = 3.;//
-  Double_t trigoffset_BBPS = 18.2;//
-  Double_t ADCconv_BBPS = 50.;
-  Int_t ADCbits_BBPS = 12;
-  Double_t sigmapulse_BBPS = 3.0;
+  Int_t NChan_bbps = 52;
+  Double_t gatewidth_bbps = 100.;
+  Double_t gain_bbps = 2.e6;
+  Double_t ped_bbps = 600.;//
+  Double_t pedsigma_bbps = 3.;//
+  Double_t trigoffset_bbps = 18.2;//
+  Double_t ADCconv_bbps = 50.;
+  Int_t ADCbits_bbps = 12;
+  Double_t sigmapulse_bbps = 3.0;
     
-  Int_t NChan_BBSH = 189;
-  Double_t gatewidth_BBSH = 100.;
-  Double_t gain_BBSH = 7.5e5;
-  Double_t ped_BBSH = 500.;
-  Double_t pedsigma_BBSH = 4.5;
-  Double_t trigoffset_BBSH = 18.5;
-  Double_t ADCconv_BBSH = 50.;
-  Int_t ADCbits_BBSH = 12;
-  Double_t sigmapulse_BBSH = 3.0;
+  Int_t NChan_bbsh = 189;
+  Double_t gatewidth_bbsh = 100.;
+  Double_t gain_bbsh = 7.5e5;
+  Double_t ped_bbsh = 500.;
+  Double_t pedsigma_bbsh = 4.5;
+  Double_t trigoffset_bbsh = 18.5;
+  Double_t ADCconv_bbsh = 50.;
+  Int_t ADCbits_bbsh = 12;
+  Double_t sigmapulse_bbsh = 3.0;
     
-  Int_t NChan_GRINCH = 510;
-  Double_t gatewidth_GRINCH = 100.;
-  Double_t gain_GRINCH = 7.e6;
-  Double_t ped_GRINCH = 0.;
-  Double_t pedsigma_GRINCH = 0.;
-  Double_t trigoffset_GRINCH = 15.3;
-  Double_t threshold_GRINCH = 3.e-3;
-  Double_t ADCconv_GRINCH = 100;
-  Int_t ADCbits_GRINCH = 12;
-  Double_t TDCconv_GRINCH = 1.;
-  Int_t TDCbits_GRINCH = 16;
-  Double_t sigmapulse_GRINCH = 3.75;
+  Int_t NChan_grinch = 510;
+  Double_t gatewidth_grinch = 100.;
+  Double_t gain_grinch = 7.e6;
+  Double_t ped_grinch = 0.;
+  Double_t pedsigma_grinch = 0.;
+  Double_t trigoffset_grinch = 15.3;
+  Double_t threshold_grinch = 3.e-3;
+  Double_t ADCconv_grinch = 100;
+  Int_t ADCbits_grinch = 12;
+  Double_t TDCconv_grinch = 1.;
+  Int_t TDCbits_grinch = 16;
+  Double_t sigmapulse_grinch = 3.75;
  
-  Int_t NChan_BBHODO = 180;
-  Double_t gatewidth_BBHODO = 100.;
-  Double_t gain_BBHODO = 1.e5;
-  Double_t ped_BBHODO = 0.;
-  Double_t pedsigma_BBHODO = 0.;
-  Double_t trigoffset_BBHODO = 18.6;
-  Double_t threshold_BBHODO = 3.e3;
-  Double_t ADCconv_BBHODO = 100.;
-  Int_t ADCbits_BBHODO = 12;
-  Double_t TDCconv_BBHODO = 0.1;
-  Int_t TDCbits_BBHODO = 19;
-  Double_t sigmapulse_BBHODO = 1.6;
+  Int_t NChan_bbhodo = 180;
+  Double_t gatewidth_bbhodo = 100.;
+  Double_t gain_bbhodo = 1.e5;
+  Double_t ped_bbhodo = 0.;
+  Double_t pedsigma_bbhodo = 0.;
+  Double_t trigoffset_bbhodo = 18.6;
+  Double_t threshold_bbhodo = 3.e3;
+  Double_t ADCconv_bbhodo = 100.;
+  Int_t ADCbits_bbhodo = 12;
+  Double_t TDCconv_bbhodo = 0.1;
+  Int_t TDCbits_bbhodo = 19;
+  Double_t sigmapulse_bbhodo = 1.6;
 
-  Int_t NChan_HCAL = 288;
-  Double_t gatewidth_HCAL = 80;
-  Double_t gain_HCAL = 1.e6;
-  Double_t ped_HCAL = 0.;
-  Double_t pedsigma_HCAL = 0.;
-  Double_t trigoffset_HCAL = 81.;
-  Double_t threshold_HCAL = 3.e-3;
-  Double_t ADCconv_HCAL = 1.;
-  Double_t TDCconv_HCAL = 0.12;
-  Int_t TDCbits_HCAL = 16;
+  Int_t NChan_hcal = 288;
+  Double_t gatewidth_hcal = 80;
+  Double_t gain_hcal = 1.e6;
+  Double_t ped_hcal = 0.;
+  Double_t pedsigma_hcal = 0.;
+  Double_t trigoffset_hcal = 81.;
+  Double_t threshold_hcal = 3.e-3;
+  Double_t ADCconv_hcal = 1.;
+  Double_t TDCconv_hcal = 0.12;
+  Int_t TDCbits_hcal = 16;
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
  
-  Int_t NPlanes_BBGEM = 32;// 32 // number of planes/modules/readout
-  Double_t gatewidth_BBGEM = 400.;
+  Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
+  Double_t gatewidth_bbgem = 400.;
+  Double_t ZsupThr_bbgem = 240.;
+  Int_t Nlayers_bbgem = 5;
+  std::vector<Double_t> bbgem_layer_z;
+  Int_t* layer_bbgem;
   Int_t* nstrips_bbgem;
   Double_t* offset_bbgem;
-  Double_t* strip_angle_bbgem;
+  Double_t* RO_angle_bbgem;
   Double_t* triggeroffset_bbgem;
-  Double_t ZsupThr_bbgem = 240.;
   Double_t* commonmode_array_bbgem;
+  UShort_t nAPV_bbgem = 0;
+  
+  Int_t NPlanes_ft = 36;// number of planes/modules/readout
+  Double_t gatewidth_ft = 400.;
+  Double_t ZsupThr_ft = 240.;
+  Int_t Nlayers_ft = 6;
+  std::vector<Double_t> ft_layer_z;
+  Int_t* layer_ft;
+  Int_t* nstrips_ft;
+  Double_t* offset_ft;
+  Double_t* RO_angle_ft;
+  Double_t* triggeroffset_ft;
+  Double_t* commonmode_array_ft;
+  UShort_t nAPV_ft = 0;
+
+  Int_t NPlanes_fpp1 = 40;// number of planes/modules/readout
+  Double_t gatewidth_fpp1 = 400.;
+  Double_t ZsupThr_fpp1 = 240.;
+  Int_t Nlayers_fpp1 = 5;
+  std::vector<Double_t> fpp1_layer_z;
+  Int_t* layer_fpp1;
+  Int_t* nstrips_fpp1;
+  Double_t* offset_fpp1;
+  Double_t* RO_angle_fpp1;
+  Double_t* triggeroffset_fpp1;
+  Double_t* commonmode_array_fpp1;
+  UShort_t nAPV_fpp1 = 0;
+  
+  Int_t NPlanes_fpp2 = 40;// number of planes/modules/readout
+  Double_t gatewidth_fpp2 = 400.;
+  Double_t ZsupThr_fpp2 = 240.;
+  Int_t Nlayers_fpp2 = 5;
+  std::vector<Double_t> fpp2_layer_z;
+  Int_t* layer_fpp2;
+  Int_t* nstrips_fpp2;
+  Double_t* offset_fpp2;
+  Double_t* RO_angle_fpp2;
+  Double_t* triggeroffset_fpp2;
+  Double_t* commonmode_array_fpp2;
+  UShort_t nAPV_fpp2 = 0;
+
+  Int_t NPlanes_cepol_front = 28;// number of planes/modules/readout
+  Double_t gatewidth_cepol_front = 400.;
+  Double_t ZsupThr_cepol_front = 240.;
+  Int_t Nlayers_cepol_front = 4;
+  std::vector<Double_t> cepol_front_layer_z;
+  Int_t* layer_cepol_front;
+  Int_t* nstrips_cepol_front;
+  Double_t* offset_cepol_front;
+  Double_t* RO_angle_cepol_front;
+  Double_t* triggeroffset_cepol_front;
+  Double_t* commonmode_array_cepol_front;
+  UShort_t nAPV_cepol_front = 0;
+
+  Int_t NPlanes_cepol_rear = 32;// number of planes/modules/readout
+  Double_t gatewidth_cepol_rear = 400.;
+  Double_t ZsupThr_cepol_rear = 240.;
+  Int_t Nlayers_cepol_rear = 4;
+  std::vector<Double_t> cepol_rear_layer_z;
+  Int_t* layer_cepol_rear;
+  Int_t* nstrips_cepol_rear;
+  Double_t* offset_cepol_rear;
+  Double_t* RO_angle_cepol_rear;
+  Double_t* triggeroffset_cepol_rear;
+  Double_t* commonmode_array_cepol_rear;
+  UShort_t nAPV_cepol_rear = 0;
   
   // ** How to add a new subsystem **
   // Add param for new detectors there...
-  Int_t NChan_POLSCINT_BS = 180;
-  Double_t gatewidth_POLSCINT_BS = 100.;
-  Double_t gain_POLSCINT_BS = 1.e5;
-  Double_t ped_POLSCINT_BS = 0.;
-  Double_t pedsigma_POLSCINT_BS = 0.;
-  Double_t trigoffset_POLSCINT_BS = 18.6;
-  Double_t threshold_POLSCINT_BS = 3.e3;
-  Double_t ADCconv_POLSCINT_BS = 100.;
-  Int_t ADCbits_POLSCINT_BS = 12;
-  Double_t TDCconv_POLSCINT_BS = 0.1;
-  Int_t TDCbits_POLSCINT_BS = 19;
-  Double_t sigmapulse_POLSCINT_BS = 1.6;
+  //polscint_bs
+  Int_t NChan_polscint_bs = 48;
+  Double_t gatewidth_polscint_bs = 30.;
+  Double_t gain_polscint_bs = 3.e7;
+  Double_t ped_polscint_bs = 300.;
+  Double_t pedsigma_polscint_bs = 10.;
+  Double_t trigoffset_polscint_bs = 37.6;
+  Double_t threshold_polscint_bs = 3.e3;
+  Double_t ADCconv_polscint_bs = 100.;
+  Int_t ADCbits_polscint_bs = 12;
+  Double_t TDCconv_polscint_bs = 0.1;
+  Int_t TDCbits_polscint_bs = 19;
+  Double_t sigmapulse_polscint_bs = 1.6;
   
+  //polscint_fs
+  Int_t NChan_polscint_fs = 48;
+  Double_t gatewidth_polscint_fs = 30.;
+  Double_t gain_polscint_fs = 3.e7;
+  Double_t ped_polscint_fs = 300.;
+  Double_t pedsigma_polscint_fs = 3.;
+  Double_t trigoffset_polscint_fs = 37.6;
+  Double_t threshold_polscint_fs = 3.e3;
+  Double_t ADCconv_polscint_fs = 100.;
+  Int_t ADCbits_polscint_fs = 12;
+  Double_t TDCconv_polscint_fs = 0.1;
+  Int_t TDCbits_polscint_fs = 19;
+  Double_t sigmapulse_polscint_fs = 1.6;
+  
+ //activeana
+  Int_t NChan_activeana = 32;
+  Double_t gatewidth_activeana = 30.;
+  Double_t gain_activeana = 3.e7;
+  Double_t ped_activeana = 300.;
+  Double_t pedsigma_activeana = 10.0;
+  Double_t trigoffset_activeana = 37.6;
+  Double_t threshold_activeana = 3.e3;
+  Double_t ADCconv_activeana = 100.;
+  Int_t ADCbits_activeana = 19;
+  Double_t TDCconv_activeana = 0.1;
+  Int_t TDCbits_activeana = 19;
+  Double_t sigmapulse_activeana = 1.6;
+
   //-----------------------------
   //  Read database
   //-----------------------------
@@ -291,8 +339,13 @@ int main(int argc, char** argv){
   TString currentline;
   while( currentline.ReadLine(in_db) && !currentline.BeginsWith("endconfig")){
     if( !currentline.BeginsWith("#") ){
-      TObjArray *tokens = currentline.Tokenize(" ");
-      int ntokens = tokens->GetEntries();
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      //TObjArray *tokens = currentline.Tokenize(" ");//vg: def lost => versions prior to 6.06; should be fixed! ??? 
+      //int ntokens = tokens->GetEntries();
       
       if( ntokens >= 2 ){
 	TString skey = ( (TObjString*) (*tokens)[0] )->GetString();
@@ -315,268 +368,268 @@ int main(int argc, char** argv){
 	}
 	
 	//BBPS
-	if(skey=="NChan_BBPS"){
+	if(skey=="NChan_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBPS = stemp.Atoi();
+	  NChan_bbps = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBPS"){
+	if(skey=="gatewidth_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBPS = stemp.Atof();
+	  gatewidth_bbps = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBPS"){
+	if(skey=="gain_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBPS = stemp.Atof();
+	  gain_bbps = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBPS"){
+	if(skey=="ped_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBPS = stemp.Atof();
+	  ped_bbps = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBPS"){
+	if(skey=="pedsigma_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBPS = stemp.Atof();
+	  pedsigma_bbps = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBPS"){
+	if(skey=="trigoffset_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBPS = stemp.Atof();
+	  trigoffset_bbps = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBPS"){
+	if(skey=="ADCconv_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBPS = stemp.Atof();
+	  ADCconv_bbps = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBPS"){
+	if(skey=="ADCbits_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBPS = stemp.Atoi();
+	  ADCbits_bbps = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBPS"){
+	if(skey=="sigmapulse_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBPS = stemp.Atof();
+	  sigmapulse_bbps = stemp.Atof();
 	}
 	
 	//BBSH
-	if(skey=="NChan_BBSH"){
+	if(skey=="NChan_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBSH = stemp.Atoi();
+	  NChan_bbsh = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBSH"){
+	if(skey=="gatewidth_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBSH = stemp.Atof();
+	  gatewidth_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBSH"){
+	if(skey=="gain_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBSH = stemp.Atof();
+	  gain_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBSH"){
+	if(skey=="ped_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBSH = stemp.Atof();
+	  ped_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBSH"){
+	if(skey=="pedsigma_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBSH = stemp.Atof();
+	  pedsigma_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBSH"){
+	if(skey=="trigoffset_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBSH = stemp.Atof();
+	  trigoffset_bbsh = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBSH"){
+	if(skey=="ADCconv_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBSH = stemp.Atof();
+	  ADCconv_bbsh = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBSH"){
+	if(skey=="ADCbits_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBSH = stemp.Atoi();
+	  ADCbits_bbsh = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBSH"){
+	if(skey=="sigmapulse_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBSH = stemp.Atof();
+	  sigmapulse_bbsh = stemp.Atof();
 	}
 
 	//GRINCH
-	if(skey=="NChan_GRINCH"){
+	if(skey=="NChan_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_GRINCH = stemp.Atoi();
+	  NChan_grinch = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_GRINCH"){
+	if(skey=="gatewidth_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_GRINCH = stemp.Atof();
+	  gatewidth_grinch = stemp.Atof();
 	}
 	
-	if(skey=="gain_GRINCH"){
+	if(skey=="gain_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_GRINCH = stemp.Atof();
+	  gain_grinch = stemp.Atof();
 	}
 	
-	if(skey=="ped_GRINCH"){
+	if(skey=="ped_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_GRINCH = stemp.Atof();
+	  ped_grinch = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_GRINCH"){
+	if(skey=="pedsigma_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_GRINCH = stemp.Atof();
+	  pedsigma_grinch = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_GRINCH"){
+	if(skey=="trigoffset_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_GRINCH = stemp.Atof();
+	  trigoffset_grinch = stemp.Atof();
 	}
 	
-	if(skey=="threshold_GRINCH"){
+	if(skey=="threshold_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_GRINCH = stemp.Atof();
+	  threshold_grinch = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_GRINCH"){
+	if(skey=="ADCconv_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_GRINCH = stemp.Atof();
+	  ADCconv_grinch = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_GRINCH"){
+	if(skey=="ADCbits_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_GRINCH = stemp.Atoi();
+	  ADCbits_grinch = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_GRINCH"){
+	if(skey=="TDCconv_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_GRINCH = stemp.Atof();
+	  TDCconv_grinch = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_GRINCH"){
+	if(skey=="TDCbits_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_GRINCH = stemp.Atoi();
+	  TDCbits_grinch = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_GRINCH"){
+	if(skey=="sigmapulse_grinch"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_GRINCH = stemp.Atof();
+	  sigmapulse_grinch = stemp.Atof();
 	}
 	
 	//BBHODO
-	if(skey=="NChan_BBHODO"){
+	if(skey=="NChan_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_BBHODO = stemp.Atoi();
+	  NChan_bbhodo = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_BBHODO"){
+	if(skey=="gatewidth_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBHODO = stemp.Atof();
+	  gatewidth_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="gain_BBHODO"){
+	if(skey=="gain_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_BBHODO = stemp.Atof();
+	  gain_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="ped_BBHODO"){
+	if(skey=="ped_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_BBHODO = stemp.Atof();
+	  ped_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_BBHODO"){
+	if(skey=="pedsigma_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_BBHODO = stemp.Atof();
+	  pedsigma_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_BBHODO"){
+	if(skey=="trigoffset_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_BBHODO = stemp.Atof();
+	  trigoffset_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="threshold_BBHODO"){
+	if(skey=="threshold_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_BBHODO = stemp.Atof();
+	  threshold_bbhodo = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_BBHODO"){
+	if(skey=="ADCconv_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_BBHODO = stemp.Atof();
+	  ADCconv_bbhodo = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_BBHODO"){
+	if(skey=="ADCbits_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_BBHODO = stemp.Atoi();
+	  ADCbits_bbhodo = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_BBHODO"){
+	if(skey=="TDCconv_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_BBHODO = stemp.Atof();
+	  TDCconv_bbhodo = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_BBHODO"){
+	if(skey=="TDCbits_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_BBHODO = stemp.Atoi();
+	  TDCbits_bbhodo = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_BBHODO"){
+	if(skey=="sigmapulse_bbhodo"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_BBHODO = stemp.Atof();
+	  sigmapulse_bbhodo = stemp.Atof();
 	}
 	
 	//HCal
-	if(skey=="NChan_HCAL"){
+	if(skey=="NChan_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_HCAL = stemp.Atoi();
+	  NChan_hcal = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_HCAL"){
+	if(skey=="gatewidth_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_HCAL = stemp.Atof();
+	  gatewidth_hcal = stemp.Atof();
 	}
 	
-	if(skey=="gain_HCAL"){
+	if(skey=="gain_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_HCAL = stemp.Atof();
+	  gain_hcal = stemp.Atof();
 	}
 	
-	if(skey=="ped_HCAL"){
+	if(skey=="ped_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_HCAL = stemp.Atof();
+	  ped_hcal = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_HCAL"){
+	if(skey=="pedsigma_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_HCAL = stemp.Atof();
+	  pedsigma_hcal = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_HCAL"){
+	if(skey=="trigoffset_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_HCAL = stemp.Atof();
+	  trigoffset_hcal = stemp.Atof();
 	}
 	
-	if(skey=="threshold_HCAL"){
+	if(skey=="threshold_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_HCAL = stemp.Atof();
+	  threshold_hcal = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_HCAL"){
+	if(skey=="ADCconv_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_HCAL = stemp.Atof();
+	  ADCconv_hcal = stemp.Atof();
 	}	
 	
-	if(skey=="TDCconv_HCAL"){
+	if(skey=="TDCconv_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_HCAL = stemp.Atof();
+	  TDCconv_hcal = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_HCAL"){
+	if(skey=="TDCbits_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_HCAL = stemp.Atoi();
+	  TDCbits_hcal = stemp.Atoi();
 	}	
 	
 	if(skey=="FADC_ADCbits"){
@@ -591,155 +644,984 @@ int main(int argc, char** argv){
 	
 	// ** How to add a new subsystem **
 	// Add reading of param from other detectors there...
-	//GEn-RP Hodoscopes
-	if(skey=="NChan_POLSCINT_BS"){
+	//GEn-RP Hodoscopes bs
+	if(skey=="NChan_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NChan_POLSCINT_BS = stemp.Atoi();
+	  NChan_polscint_bs = stemp.Atoi();
 	}
 	
-	if(skey=="gatewidth_POLSCINT_BS"){
+	if(skey=="gatewidth_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_POLSCINT_BS = stemp.Atof();
+	  gatewidth_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="gain_POLSCINT_BS"){
+	if(skey=="gain_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_POLSCINT_BS = stemp.Atof();
+	  gain_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="ped_POLSCINT_BS"){
+	if(skey=="ped_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_POLSCINT_BS = stemp.Atof();
+	  ped_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="pedsigma_POLSCINT_BS"){
+	if(skey=="pedsigma_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_POLSCINT_BS = stemp.Atof();
+	  pedsigma_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="trigoffset_POLSCINT_BS"){
+	if(skey=="trigoffset_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  trigoffset_POLSCINT_BS = stemp.Atof();
+	  trigoffset_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="threshold_POLSCINT_BS"){
+	if(skey=="threshold_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  threshold_POLSCINT_BS = stemp.Atof();
+	  threshold_polscint_bs = stemp.Atof();
 	}
 	
-	if(skey=="ADCconv_POLSCINT_BS"){
+	if(skey=="ADCconv_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCconv_POLSCINT_BS = stemp.Atof();
+	  ADCconv_polscint_bs = stemp.Atof();
 	}	
 
-	if(skey=="ADCbits_POLSCINT_BS"){
+	if(skey=="ADCbits_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ADCbits_POLSCINT_BS = stemp.Atoi();
+	  ADCbits_polscint_bs = stemp.Atoi();
 	}	
 	
-	if(skey=="TDCconv_POLSCINT_BS"){
+	if(skey=="TDCconv_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCconv_POLSCINT_BS = stemp.Atof();
+	  TDCconv_polscint_bs = stemp.Atof();
 	}	
 	
-	if(skey=="TDCbits_POLSCINT_BS"){
+	if(skey=="TDCbits_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  TDCbits_POLSCINT_BS = stemp.Atoi();
+	  TDCbits_polscint_bs = stemp.Atoi();
 	}	
 	
-	if(skey=="sigmapulse_POLSCINT_BS"){
+	if(skey=="sigmapulse_polscint_bs"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  sigmapulse_POLSCINT_BS = stemp.Atof();
+	  sigmapulse_polscint_bs = stemp.Atof();
 	}
 	
+	//GEn-RP Hodoscopes fs
+	if(skey=="NChan_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_polscint_fs = stemp.Atoi();
+	}
 	
+	if(skey=="gatewidth_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="gain_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="ped_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="threshold_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_polscint_fs = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_polscint_fs = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_polscint_fs = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_polscint_fs = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_polscint_fs = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_polscint_fs"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_polscint_fs = stemp.Atof();
+	}
+
+	//GEn-RP activeana
+	if(skey=="NChan_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_activeana = stemp.Atoi();
+	}
+	
+	if(skey=="gatewidth_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_activeana = stemp.Atof();
+	}
+	
+	if(skey=="gain_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_activeana = stemp.Atof();
+	}
+	
+	if(skey=="ped_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_activeana = stemp.Atof();
+	}
+	
+	if(skey=="pedsigma_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_activeana = stemp.Atof();
+	}
+	
+	if(skey=="trigoffset_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_activeana = stemp.Atof();
+	}
+	
+	if(skey=="threshold_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_activeana = stemp.Atof();
+	}
+	
+	if(skey=="ADCconv_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_activeana = stemp.Atof();
+	}	
+
+	if(skey=="ADCbits_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_activeana = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_activeana = stemp.Atof();
+	}	
+	
+	if(skey=="TDCbits_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_activeana = stemp.Atoi();
+	}	
+	
+	if(skey=="sigmapulse_activeana"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_activeana = stemp.Atof();
+	}
+	
+
+
 	//GEMs
-	if(skey=="NPlanes_BBGEM"){
+	if(skey=="NPlanes_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  NPlanes_BBGEM = stemp.Atoi();
+	  NPlanes_bbgem = stemp.Atoi();
 	  
-	  nstrips_bbgem = new Int_t[NPlanes_BBGEM];
-	  offset_bbgem = new Double_t[NPlanes_BBGEM];
-	  strip_angle_bbgem = new Double_t[NPlanes_BBGEM];
-	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
-	  triggeroffset_bbgem = new Double_t[NPlanes_BBGEM];
+	  layer_bbgem = new Int_t[NPlanes_bbgem];
+	  nstrips_bbgem = new Int_t[NPlanes_bbgem];
+	  offset_bbgem = new Double_t[NPlanes_bbgem];
+	  RO_angle_bbgem = new Double_t[NPlanes_bbgem];
+	  triggeroffset_bbgem = new Double_t[NPlanes_bbgem/2];
 	}
 	
-	if(skey=="gatewidth_BBGEM"){
+	if(skey=="gatewidth_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gatewidth_BBGEM = stemp.Atof();
+	  gatewidth_bbgem = stemp.Atof();
 	}
-	
+		
 	if(skey=="ZsupThr_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ZsupThr_bbgem = stemp.Atof();
 	}
+
+	if(skey=="nlayers_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_bbgem = stemp.Atof();
+	}
+	
+	if(skey=="bbgem_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_bbgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      bbgem_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for bbgem_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_bbgem << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_bbgem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
 	
 	if(skey=="nstrips_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      nstrips_bbgem[k-1] = stemp.Atoi();
 	    }
 	  }else{
 	    cout << "number of entries for nstrips_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
 	if(skey=="offset_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      offset_bbgem[k-1] = stemp.Atof();
 	    }
 	  }else{
 	    cout << "number of entries for offset_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
-	if(skey=="strip_angle_bbgem"){
-	  if(ntokens==NPlanes_BBGEM+1){
+	if(skey=="RO_angle_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
-	      strip_angle_bbgem[k-1] = stemp.Atoi();
+	      RO_angle_bbgem[k-1] = stemp.Atof()*TMath::DegToRad();
 	    }
 	  }else{
-	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "number of entries for RO_angle_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
 	if(skey=="triggeroffset_bbgem"){
-	  if(ntokens==NPlanes_BBGEM/2+1){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem/2+1){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      triggeroffset_bbgem[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
 	    }
 	  }else{
-	    cout << "number of entries for strip_angle_bbgem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_BBGEM << endl;
+	    cout << "number of entries for triggeroffset_bbgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
 	}
 	
 	if(skey=="commonmode_array_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_bbgem = new Double_t[ntokens-1];
 	  for(int k = 1; k<ntokens; k++){
+	    nAPV_bbgem++;
 	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	    commonmode_array_bbgem[k-1] = stemp.Atof();
 	  }
 	}
+	// GEMs GEn-RP front
+	if(skey=="NPlanes_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_cepol_front = stemp.Atoi();
+	  
+	  layer_cepol_front = new Int_t[NPlanes_cepol_front];
+	  nstrips_cepol_front = new Int_t[NPlanes_cepol_front];
+	  offset_cepol_front = new Double_t[NPlanes_cepol_front];
+	  RO_angle_cepol_front = new Double_t[NPlanes_cepol_front];
+	  triggeroffset_cepol_front = new Double_t[NPlanes_cepol_front/2];
+	}
+	
+	if(skey=="gatewidth_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_cepol_front = stemp.Atof();
+	}
+		
+	if(skey=="ZsupThr_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_cepol_front = stemp.Atof();
+	}
+
+	if(skey=="nlayers_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_cepol_front = stemp.Atof();
+	}
+	
+	if(skey=="cepol_front_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_cepol_front+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      cepol_front_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for cepol_front_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_cepol_front[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_cepol_front[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_cepol_front[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_cepol_front[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_cepol_front[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_front << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_cepol_front = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_cepol_front++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_cepol_front[k-1] = stemp.Atof();
+	  }
+	}
+
+	// GEMs GEn-RP rear
+	if(skey=="NPlanes_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_cepol_rear = stemp.Atoi();
+	  
+	  layer_cepol_rear = new Int_t[NPlanes_cepol_rear];
+	  nstrips_cepol_rear = new Int_t[NPlanes_cepol_rear];
+	  offset_cepol_rear = new Double_t[NPlanes_cepol_rear];
+	  RO_angle_cepol_rear = new Double_t[NPlanes_cepol_rear];
+	  triggeroffset_cepol_rear = new Double_t[NPlanes_cepol_rear/2];
+	}
+	
+	if(skey=="gatewidth_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_cepol_rear = stemp.Atof();
+	}
+		
+	if(skey=="ZsupThr_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_cepol_rear = stemp.Atof();
+	}
+
+	if(skey=="nlayers_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_cepol_rear = stemp.Atof();
+	}
+	
+	if(skey=="cepol_rear_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_cepol_rear+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      cepol_rear_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for cepol_rear_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_cepol_rear[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_cepol_rear[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_cepol_rear[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_cepol_rear[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_cepol_rear[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_cepol_rear << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_cepol_rear = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_cepol_rear++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_cepol_rear[k-1] = stemp.Atof();
+	  }
+	}
+
+	//FT
+	if(skey=="NPlanes_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_ft = stemp.Atoi();
+	  
+	  layer_ft = new Int_t[NPlanes_ft];
+	  nstrips_ft = new Int_t[NPlanes_ft];
+	  offset_ft = new Double_t[NPlanes_ft];
+	  RO_angle_ft = new Double_t[NPlanes_ft];
+	  triggeroffset_ft = new Double_t[NPlanes_ft/2];
+	}
+	
+	if(skey=="gatewidth_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_ft = stemp.Atof();
+	}
+	
+	if(skey=="ZsupThr_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_ft = stemp.Atof();
+	}
+
+	if(skey=="nlayers_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_ft = stemp.Atof();
+	}
+	
+	if(skey=="ft_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_ft+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      ft_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for ft_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_ft << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+		
+	if(skey=="layer_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_ft[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_ft = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_ft << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_ft[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_ft = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_ft << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_ft[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_ft = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_ft << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_ft[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_ft = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_ft << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_ft[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_ft = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_ft << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_ft = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_ft++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_ft[k-1] = stemp.Atof();
+	  }
+	}
+	
+	//FPP1
+	if(skey=="NPlanes_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_fpp1 = stemp.Atoi();
+	  
+	  layer_fpp1 = new Int_t[NPlanes_fpp1];
+	  nstrips_fpp1 = new Int_t[NPlanes_fpp1];
+	  offset_fpp1 = new Double_t[NPlanes_fpp1];
+	  RO_angle_fpp1 = new Double_t[NPlanes_fpp1];
+	  triggeroffset_fpp1 = new Double_t[NPlanes_fpp1/2];
+	}
+	
+	if(skey=="gatewidth_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_fpp1 = stemp.Atof();
+	}
+	
+	if(skey=="ZsupThr_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_fpp1 = stemp.Atof();
+	}
+	
+	if(skey=="nlayers_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_fpp1 = stemp.Atof();
+	}
+	
+	if(skey=="fpp1_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_fpp1+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      fpp1_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for fpp1_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_fpp1[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_fpp1[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_fpp1[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_fpp1[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_fpp1[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_fpp1 = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_fpp1++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_fpp1[k-1] = stemp.Atof();
+	  }
+	}
+	
+	//FPP2
+	if(skey=="NPlanes_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_fpp2 = stemp.Atoi();
+	  
+	  layer_fpp2 = new Int_t[NPlanes_fpp2];
+	  nstrips_fpp2 = new Int_t[NPlanes_fpp2];
+	  offset_fpp2 = new Double_t[NPlanes_fpp2];
+	  RO_angle_fpp2 = new Double_t[NPlanes_fpp2];
+	  triggeroffset_fpp2 = new Double_t[NPlanes_fpp2/2];
+	}
+	
+	if(skey=="gatewidth_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_fpp2 = stemp.Atof();
+	}
+	
+	if(skey=="ZsupThr_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_fpp2 = stemp.Atof();
+	}
+	
+	if(skey=="nlayers_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_fpp2 = stemp.Atof();
+	}
+	
+	if(skey=="fpp2_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_fpp2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      fpp2_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for fpp2_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_fpp2[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_fpp2[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_fpp2[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_fpp2[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_fpp2[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_fpp2 = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_fpp2++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_fpp2[k-1] = stemp.Atof();
+	  }
+	}
 	
       }//end if( ntokens >= 2 )
+      tokens->~TObjArray();// ineffective... :(
     }//end if( !currentline.BeginsWith("#"))
   }//end while
   
@@ -750,25 +1632,97 @@ int main(int argc, char** argv){
   for(int k = 0; k<detectors_list.size(); k++){
     cout << "detector: " << detectors_list[k].Data() << "... " << endl;
     if(detectors_list[k] == "bbgem"){
-      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_BBGEM, nstrips_bbgem, offset_bbgem, strip_angle_bbgem, 6, ZsupThr_bbgem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_BBGEM, triggeroffset_bbgem, ZsupThr_bbgem, 1, commonmode_array_bbgem);
+      SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, layer_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, nAPV_bbgem, commonmode_array_bbgem);
+      for(int m = 0; m<Nlayers_bbgem; m++){
+	bbgem->fZLayer.push_back(bbgem_layer_z[m]);
+      }
+      bbgem->fGateWidth = gatewidth_bbgem;
       
       GEMdetectors.push_back(bbgem);
       gemdetmap.push_back(BBGEM_UNIQUE_DETID);
       GEMsimDig.push_back(gemdig);
       cout << " set up! " << endl;
     }
+    if(detectors_list[k] == "cepol_front"){
+      SBSDigGEMDet* cepol_front = new SBSDigGEMDet(CEPOL_GEMFRONT_UNIQUE_DETID, NPlanes_cepol_front, layer_cepol_front, nstrips_cepol_front, offset_cepol_front, RO_angle_cepol_front, 6, ZsupThr_cepol_front);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_front/2, triggeroffset_cepol_front, ZsupThr_cepol_front, nAPV_cepol_front, commonmode_array_cepol_front);
+      for(int m = 0; m<Nlayers_cepol_front; m++){
+	cepol_front->fZLayer.push_back(cepol_front_layer_z[m]);
+      }
+      cepol_front->fGateWidth = gatewidth_cepol_front;
+      
+      GEMdetectors.push_back(cepol_front);
+      gemdetmap.push_back(CEPOL_GEMFRONT_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    if(detectors_list[k] == "cepol_rear"){
+      SBSDigGEMDet* cepol_rear = new SBSDigGEMDet(CEPOL_GEMREAR_UNIQUE_DETID, NPlanes_cepol_rear, layer_cepol_rear, nstrips_cepol_rear, offset_cepol_rear, RO_angle_cepol_rear, 6, ZsupThr_cepol_rear);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_rear/2, triggeroffset_cepol_rear, ZsupThr_cepol_rear, nAPV_cepol_rear, commonmode_array_cepol_rear);
+      for(int m = 0; m<Nlayers_cepol_rear; m++){
+	cepol_rear->fZLayer.push_back(cepol_rear_layer_z[m]);
+      }
+      cepol_rear->fGateWidth = gatewidth_cepol_rear;
+      
+      GEMdetectors.push_back(cepol_rear);
+      gemdetmap.push_back(CEPOL_GEMREAR_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    
+    if(detectors_list[k] == "ft"){
+      SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft);
+      for(int m = 0; m<Nlayers_ft; m++){
+	ft->fZLayer.push_back(ft_layer_z[m]);
+      }
+      ft->fGateWidth = gatewidth_ft;
+      
+      GEMdetectors.push_back(ft);
+      gemdetmap.push_back(FT_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    
+    if(detectors_list[k] == "fpp1"){
+      SBSDigGEMDet* fpp1 = new SBSDigGEMDet(FPP1_UNIQUE_DETID, NPlanes_fpp1, layer_fpp1, nstrips_fpp1, offset_fpp1, RO_angle_fpp1, 6, ZsupThr_fpp1);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp1/2, triggeroffset_fpp1, ZsupThr_fpp1, nAPV_fpp1, commonmode_array_fpp1);
+      for(int m = 0; m<Nlayers_fpp1; m++){
+	fpp1->fZLayer.push_back(fpp1_layer_z[m]);
+      }
+      fpp1->fGateWidth = gatewidth_fpp1;
+      
+      GEMdetectors.push_back(fpp1);
+      gemdetmap.push_back(FPP1_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    
+    if(detectors_list[k] == "fpp2"){
+      SBSDigGEMDet* fpp2 = new SBSDigGEMDet(FPP2_UNIQUE_DETID, NPlanes_fpp2, layer_fpp2, nstrips_fpp2, offset_fpp2, RO_angle_fpp2, 6, ZsupThr_fpp2);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp2/2, triggeroffset_fpp2, ZsupThr_fpp2, nAPV_fpp2, commonmode_array_fpp2);
+      for(int m = 0; m<Nlayers_fpp2; m++){
+	fpp2->fZLayer.push_back(fpp2_layer_z[m]);
+      }
+      fpp2->fGateWidth = gatewidth_fpp2;
+      
+      GEMdetectors.push_back(fpp2);
+      gemdetmap.push_back(FPP2_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
     
     if(detectors_list[k] == "bbps"){
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_BBPS, gain_BBPS*qe, sigmapulse_BBPS, gatewidth_BBPS);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
 
-      bbps->fGain = gain_BBPS;
-      bbps->fPedestal = ped_BBPS;
-      bbps->fPedSigma = pedsigma_BBPS;
-      bbps->fTrigOffset = trigoffset_BBPS;
-      bbps->fGateWidth = gatewidth_BBPS;
-      bbps->fADCconv = ADCconv_BBPS;
-      bbps->fADCbits = ADCbits_BBPS;
+      bbps->fGain = gain_bbps;
+      bbps->fPedestal = ped_bbps;
+      bbps->fPedSigma = pedsigma_bbps;
+      bbps->fTrigOffset = trigoffset_bbps;
+      bbps->fGateWidth = gatewidth_bbps;
+      bbps->fADCconv = ADCconv_bbps;
+      bbps->fADCbits = ADCbits_bbps;
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
@@ -776,15 +1730,15 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_BBSH, gain_BBSH*qe, sigmapulse_BBPS, gatewidth_BBSH);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
       
-      bbsh->fGain = gain_BBSH;
-      bbsh->fPedestal = ped_BBSH;
-      bbsh->fPedSigma = pedsigma_BBSH;
-      bbsh->fTrigOffset = trigoffset_BBSH;
-      bbsh->fGateWidth = gatewidth_BBSH;
-      bbsh->fADCconv = ADCconv_BBSH;
-      bbsh->fADCbits = ADCbits_BBSH;    
+      bbsh->fGain = gain_bbsh;
+      bbsh->fPedestal = ped_bbsh;
+      bbsh->fPedSigma = pedsigma_bbsh;
+      bbsh->fTrigOffset = trigoffset_bbsh;
+      bbsh->fGateWidth = gatewidth_bbsh;
+      bbsh->fADCconv = ADCconv_bbsh;
+      bbsh->fADCbits = ADCbits_bbsh;    
       
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
@@ -792,18 +1746,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "grinch"){
-      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_GRINCH, gain_GRINCH*qe, sigmapulse_GRINCH, gatewidth_GRINCH);
+      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_grinch, gain_grinch*qe, sigmapulse_grinch, gatewidth_grinch);
   
-      grinch->fGain = gain_GRINCH;
-      grinch->fPedestal = ped_GRINCH;
-      grinch->fPedSigma = pedsigma_GRINCH;
-      grinch->fTrigOffset = trigoffset_GRINCH;
-      grinch->fThreshold = threshold_GRINCH*spe_unit/ROimpedance;
-      grinch->fGateWidth = gatewidth_GRINCH;
-      grinch->fADCconv = ADCconv_GRINCH;
-      grinch->fADCbits = ADCbits_GRINCH;
-      grinch->fTDCconv = TDCconv_GRINCH;
-      grinch->fTDCbits = TDCbits_GRINCH;
+      grinch->fGain = gain_grinch;
+      grinch->fPedestal = ped_grinch;
+      grinch->fPedSigma = pedsigma_grinch;
+      grinch->fTrigOffset = trigoffset_grinch;
+      grinch->fThreshold = threshold_grinch*spe_unit/ROimpedance;
+      grinch->fGateWidth = gatewidth_grinch;
+      grinch->fADCconv = ADCconv_grinch;
+      grinch->fADCbits = ADCbits_grinch;
+      grinch->fTDCconv = TDCconv_grinch;
+      grinch->fTDCbits = TDCbits_grinch;
       
       PMTdetectors.push_back(grinch);
       detmap.push_back(GRINCH_UNIQUE_DETID);
@@ -811,18 +1765,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbhodo"){
-      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_BBHODO, gain_BBHODO*qe, sigmapulse_BBHODO, gatewidth_BBHODO);
+      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_bbhodo, gain_bbhodo*qe, sigmapulse_bbhodo, gatewidth_bbhodo);
       
-      bbhodo->fGain = gain_BBHODO;
-      bbhodo->fPedestal = ped_BBHODO;
-      bbhodo->fPedSigma = pedsigma_BBHODO;
-      bbhodo->fTrigOffset = trigoffset_BBHODO;
-      bbhodo->fThreshold = threshold_BBHODO*spe_unit/ROimpedance;
-      bbhodo->fGateWidth = gatewidth_BBHODO;
-      bbhodo->fADCconv = ADCconv_BBHODO;
-      bbhodo->fADCbits = ADCbits_BBHODO;
-      bbhodo->fTDCconv = TDCconv_BBHODO;
-      bbhodo->fTDCbits = TDCbits_BBHODO; 
+      bbhodo->fGain = gain_bbhodo;
+      bbhodo->fPedestal = ped_bbhodo;
+      bbhodo->fPedSigma = pedsigma_bbhodo;
+      bbhodo->fTrigOffset = trigoffset_bbhodo;
+      bbhodo->fThreshold = threshold_bbhodo*spe_unit/ROimpedance;
+      bbhodo->fGateWidth = gatewidth_bbhodo;
+      bbhodo->fADCconv = ADCconv_bbhodo;
+      bbhodo->fADCbits = ADCbits_bbhodo;
+      bbhodo->fTDCconv = TDCconv_bbhodo;
+      bbhodo->fTDCbits = TDCbits_bbhodo; 
       
       PMTdetectors.push_back(bbhodo);
       detmap.push_back(HODO_UNIQUE_DETID);
@@ -830,18 +1784,18 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_HCAL);
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal);
       
-      hcal->fGain = gain_HCAL;
-      hcal->fPedestal = ped_HCAL;
-      hcal->fPedSigma = pedsigma_HCAL;
-      hcal->fTrigOffset = trigoffset_HCAL;
-      hcal->fThreshold = threshold_HCAL*spe_unit/ROimpedance;
-      hcal->fGateWidth = gatewidth_HCAL;
-      hcal->fADCconv = ADCconv_HCAL;
+      hcal->fGain = gain_hcal;
+      hcal->fPedestal = ped_hcal;
+      hcal->fPedSigma = pedsigma_hcal;
+      hcal->fTrigOffset = trigoffset_hcal;
+      hcal->fThreshold = threshold_hcal*spe_unit/ROimpedance;
+      hcal->fGateWidth = gatewidth_hcal;
+      hcal->fADCconv = ADCconv_hcal;
       hcal->fADCbits = FADC_ADCbits;
-      hcal->fTDCconv = TDCconv_HCAL;
-      hcal->fTDCbits = TDCbits_HCAL; 
+      hcal->fTDCconv = TDCconv_hcal;
+      hcal->fTDCbits = TDCbits_hcal; 
       hcal->SetSamples(FADC_sampsize);
       
       //ordered by increasing uinque id
@@ -853,35 +1807,62 @@ int main(int argc, char** argv){
     // ** How to add a new subsystem **
     // Add the new detector here!
     if(detectors_list[k] == "prpolscint_bs"){
-      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_POLSCINT_BS, gain_POLSCINT_BS*qe, sigmapulse_POLSCINT_BS, gatewidth_POLSCINT_BS);
+      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_polscint_bs, gain_polscint_bs*qe, sigmapulse_polscint_bs, gatewidth_polscint_bs);
       
-      polscint_bs->fGain = gain_POLSCINT_BS;
-      polscint_bs->fPedestal = ped_POLSCINT_BS;
-      polscint_bs->fPedSigma = pedsigma_POLSCINT_BS;
-      polscint_bs->fTrigOffset = trigoffset_POLSCINT_BS;
-      polscint_bs->fThreshold = threshold_POLSCINT_BS*spe_unit/ROimpedance;
-      polscint_bs->fGateWidth = gatewidth_POLSCINT_BS;
-      polscint_bs->fADCconv = ADCconv_POLSCINT_BS;
-      polscint_bs->fADCbits = ADCbits_POLSCINT_BS;
-      polscint_bs->fTDCconv = TDCconv_POLSCINT_BS;
-      polscint_bs->fTDCbits = TDCbits_POLSCINT_BS; 
+      polscint_bs->fGain = gain_polscint_bs;
+      polscint_bs->fPedestal = ped_polscint_bs;
+      polscint_bs->fPedSigma = pedsigma_polscint_bs;
+      polscint_bs->fTrigOffset = trigoffset_polscint_bs;
+      polscint_bs->fThreshold = threshold_polscint_bs*spe_unit/ROimpedance;
+      polscint_bs->fGateWidth = gatewidth_polscint_bs;
+      polscint_bs->fADCconv = ADCconv_polscint_bs;
+      polscint_bs->fADCbits = ADCbits_polscint_bs;
+      polscint_bs->fTDCconv = TDCconv_polscint_bs;
+      polscint_bs->fTDCbits = TDCbits_polscint_bs; 
       
       PMTdetectors.push_back(polscint_bs);
       detmap.push_back(PRPOLBS_SCINT_UNIQUE_DETID);
       cout << " set up! " << endl;
     } 
+    
+    if(detectors_list[k] == "prpolscint_fs"){
+      SBSDigPMTDet* polscint_fs = new SBSDigPMTDet(PRPOLFS_SCINT_UNIQUE_DETID, NChan_polscint_fs, gain_polscint_fs*qe, sigmapulse_polscint_fs, gatewidth_polscint_fs);
+      
+      polscint_fs->fGain = gain_polscint_fs;
+      polscint_fs->fPedestal = ped_polscint_fs;
+      polscint_fs->fPedSigma = pedsigma_polscint_fs;
+      polscint_fs->fTrigOffset = trigoffset_polscint_fs;
+      polscint_fs->fThreshold = threshold_polscint_fs*spe_unit/ROimpedance;
+      polscint_fs->fGateWidth = gatewidth_polscint_fs;
+      polscint_fs->fADCconv = ADCconv_polscint_fs;
+      polscint_fs->fADCbits = ADCbits_polscint_fs;
+      polscint_fs->fTDCconv = TDCconv_polscint_fs;
+      polscint_fs->fTDCbits = TDCbits_polscint_fs; 
+      
+      PMTdetectors.push_back(polscint_fs);
+      detmap.push_back(PRPOLFS_SCINT_UNIQUE_DETID);
+      cout << " set up! " << endl;
+    } 
+
+    if(detectors_list[k] == "activeana"){
+      SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe, sigmapulse_activeana, gatewidth_activeana);
+      
+      activeana->fGain = gain_activeana;
+      activeana->fPedestal = ped_activeana;
+      activeana->fPedSigma = pedsigma_activeana;
+      activeana->fTrigOffset = trigoffset_activeana;
+      activeana->fThreshold = threshold_activeana*spe_unit/ROimpedance;
+      activeana->fGateWidth = gatewidth_activeana;
+      activeana->fADCconv = ADCconv_activeana;
+      activeana->fADCbits = ADCbits_activeana;
+      activeana->fTDCconv = TDCconv_activeana;
+      activeana->fTDCbits = TDCbits_activeana; 
+      
+      PMTdetectors.push_back(activeana);
+      detmap.push_back(ACTIVEANA_UNIQUE_DETID);
+      cout << " set up! " << endl;
+    } 
   }
-  
-  /*  
-  std::map<int, SBSDigPMTDet*> PMTdetectors;
-  PMTdetectors[HCAL_UNIQUE_DETID] = hcal;
-  PMTdetectors[HODO_UNIQUE_DETID] = bbhodo;
-  PMTdetectors[BBPS_UNIQUE_DETID] = bbps;
-  PMTdetectors[BBSH_UNIQUE_DETID] = bbsh;
-  PMTdetectors[GRINCH_UNIQUE_DETID] = grinch;
-  std::map<int, SBSDigGEMDet*> GEMdetectors;
-  GEMdetectors[BBGEM_UNIQUE_DETID] = bbgem;
-  */
   
   TRandom3* R = new TRandom3(Rseed);
   
@@ -897,50 +1878,53 @@ int main(int argc, char** argv){
   TObjArray *fileElements_s=C_s->GetListOfFiles();
   TIter next_s(fileElements_s);
   TChainElement *chEl_s=0;
-  
-  /* need to change this... 
-  // build background chain
-  ifstream beam_inputfile(inputbkgdfile);
-  TChain *C_b = new TChain("T");
-  //TCut global_cut = "";
-  //TEventList *eblist = new TEventList("eblist");
-  if(Nbkgd!=0){
-    while( currentline.ReadLine(beam_inputfile) && !currentline.BeginsWith("endlist") ){
-      if( !currentline.BeginsWith("#") ){
-	C_b->Add(currentline.Data());
-	//global_cut += currentline.Data();
-	//cout << currentline.Data() << endl;
+
+  //restart reading to get background info
+  while( currentline.ReadLine(sig_inputfile) && !currentline.BeginsWith("end_bkgdinfo")){
+    if( !currentline.BeginsWith("#") ){
+      Int_t ntokens = 0;
+      std::unique_ptr<TObjArray> tokens( currentline.Tokenize(", \t") );
+      if( !tokens->IsEmpty() ) {
+	ntokens = tokens->GetLast()+1;
+      }
+      if(ntokens==3){
+	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
+	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	BkgdTimeWindow = stemp.Atof();
+	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
+	LumiFrac = stemp.Atof();
       }
     }
-    //C_b->Draw(">>eblist",global_cut);
   }
-  //TObjArray *fileElements_b=C_b->GetListOfFiles();
-  //TIter next_b(fileElements_b);
-  //TChainElement *chEl_b=0;
-  */
   
-  G4SBSRunData* run_data;
+  TFile* f_bkgd;
+  SBSDigBkgdGen* BkgdGenerator;
+  if(LumiFrac>0){
+    f_bkgd = TFile::Open(inputbkgdfile.c_str());
+    if(f_bkgd->IsZombie()){
+      LumiFrac = 0;
+    }else{
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
+      cout << "Includes background from file: " << inputbkgdfile.c_str() 
+	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
+	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
+    }
+  }
   
   double Theta_SBS, D_HCal;
   
-  //gmn_tree *T_s_;//, *T_b;
-  g4sbs_tree *T_s;
-  
-  ULong64_t Nev_fs;//, Nev_fb;
-  ULong64_t ev_s;//, ev_b;
+  ULong64_t Nev_fs;
+  ULong64_t ev_s;
   
   ULong64_t NEventsTotal = 0;
-  //UShort_t nbkgd = 0;
-  //int treenum = 0;
-  //int oldtreenum = 0;
   
   int i_fs = 0;
   bool has_data;
   
   double timeZero;
   
-  //T_b = new gmn_tree(C_b);
-  //ev_b = 0;
+  std::chrono::time_point<std::chrono::steady_clock> start = 
+    std::chrono::steady_clock::now();
   
   while (( chEl_s=(TChainElement*)next_s() )) {
     if(NEventsTotal>=Nentries){
@@ -948,30 +1932,23 @@ int main(int argc, char** argv){
     }
     TFile f_s(chEl_s->GetTitle(), "UPDATE");
     if(f_s.IsZombie())cout << "File " << chEl_s->GetTitle() << " cannot be found. Please check the path of your file." << endl; 
-    run_data = (G4SBSRunData*)f_s.Get("run_data");
+    //run_data = (G4SBSRunData*)f_s.Get("run_data");
+    G4SBSRunData* run_data = (G4SBSRunData*)f_s.Get("run_data");
     Theta_SBS = run_data->fSBStheta;
     D_HCal = run_data->fHCALdist;
-    //TFile fs_c(Form("digitized/simdigtest_%d.root", i_fs), "UPDATE");
-    //f_s.Cp(Form("digitized/simdigtest_%d.root", i_fs));
-    //if(fs_c.IsOpen())cout << "copy of file is open" << endl;
-    //cout << fs_c->ReOpen("UPDATE") << endl;
-    //C_s = (TChain*)fs_c.Get("T");
     C_s = (TChain*)f_s.Get("T");
-    //T_s = new gmn_tree(C_s);
-    T_s = new g4sbs_tree(C_s, detectors_list);
-    
-    // Expend tree here! (again, for signal only!!!)
-    //T_s->AddDigBranches();
+    g4sbs_tree *T_s = new g4sbs_tree(C_s, detectors_list, bool(LumiFrac));
     
     Nev_fs = C_s->GetEntries();
     
     for(ev_s = 0; ev_s<Nev_fs; ev_s++, NEventsTotal++){
       if(NEventsTotal>=Nentries)break;
-      if(NEventsTotal%1000==0)
+      if(NEventsTotal%100==0)
 	cout << NEventsTotal << "/" << Nentries << endl;
       
       timeZero = R->Gaus(0.0, TriggerJitter);
       
+      //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	if(detmap[k]==HCAL_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
@@ -982,17 +1959,6 @@ int main(int argc, char** argv){
       for(int k = 0; k<GEMdetectors.size(); k++){
 	GEMdetectors[k]->Clear();
       }
-      /*
-      bbgem->Clear();
-      //for(int i = 0; i<NPlanes_BBGEM; i++){
-      //cout << bbgem->GEMPlanes[i].GetNStrips() << " ";
-      //}cout << endl;
-      bbps->Clear();
-      bbsh->Clear();
-      grinch->Clear();
-      bbhodo->Clear();
-      hcal->Clear(true);
-      */
       
       has_data = false;
       
@@ -1003,74 +1969,45 @@ int main(int argc, char** argv){
       has_data = UnfoldData(T_s, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 0);
       if(!has_data)continue;
       
-      
+      // if we want to add background, add background
       if(LumiFrac>0){
+	//first digitize signal only...
+	//	for(int k = 0; k<GEMdetectors.size(); k++){
+	//  GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	//  GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s, bool(LumiFrac>0));
+	//}
 	BkgdGenerator->GenerateBkgd(R, PMTdetectors, detmap, GEMdetectors, gemdetmap, LumiFrac);
       }
-      /*
-      // loop here for background
-      if(Nbkgd>0){
-	nbkgd = 0;
-	while( T_b->GetEntry(ev_b++) ){
-	//while( T_b->GetEntry(eblist->GetEntry(ev_b++)) ){
-	  treenum = C_b->GetTreeNumber();
-	  if(treenum!=oldtreenum){
-	    oldtreenum = treenum;
-	    nbkgd++;
-	    if(nbkgd>=Nbkgd)break;
-	  }
-	  timeZero = R->Uniform( -gatewidth_GEM-50., gatewidth_GEM/2.-50. );
-	  
-	  UnfoldData(T_b, Theta_SBS, D_HCal, R, PMTdetectors, detmap, GEMdetectors, gemdetmap, timeZero, 1);
-	  //if(treenum)
-	}
-	
-	while (( chEl_b=(TChainElement*)next_b() )) {
-	  if(nbkgd>=Nbkgd)break;
-	  cout << chEl_b->GetTitle() << endl;
-	  TFile f_b(chEl_b->GetTitle());
-	  C_b = (TChain*)f_b.Get("T");
-	  T_b = new gmn_tree(C_b);
-	  Nev_fb = C_b->GetEntries();
-	  for(ev_b = 0; ev_b<Nev_fb; ev_b++){
-	    T_b->GetEntry(ev_b);
-	    UnfoldData(T_b, Theta_SBS, D_HCal, R);
-	  }// end loop on background events
-	  nbkgd++;
-	}// end loop on background files
-      }//end if Nbkgd>0
-      */
       
+      //Digitize: PMT detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
 	PMTdetectors[k]->Digitize(T_s,R);
-	
-	// bbps->Digitize(T_s,R);
-	// bbsh->Digitize(T_s,R);
-	// grinch->Digitize(T_s,R);
-	// bbhodo->Digitize(T_s,R);
-	// hcal->Digitize(T_s,R);
       }
-      
+      //digitize: GEMs
       for(int k = 0; k<GEMdetectors.size(); k++){
-	GEMsimDig[k]->Digitize(GEMdetectors[k], R);
+	GEMsimDig[k]->Digitize(GEMdetectors[k], R, bool(LumiFrac>0));
 	GEMsimDig[k]->CheckOut(GEMdetectors[k], gemdetmap[k], R, T_s);
       }
-      //How come this function is so taxing in time??? 
-      // Answer in the function... hope we've found a workaround
-      //FillDigTree(T_s, PMTdetectors, GEMdetectors);
-
       T_s->FillDigBranches();
-      //T_s->fChain->Fill();
     }// end loop on signal events 
-    
+    // if there are debugging histos to write, write them...
+    for(int k = 0; k<GEMdetectors.size(); k++){
+      GEMsimDig[k]->write_histos();
+      GEMsimDig[k]->print_time_execution();
+    }
+    if(LumiFrac>0)BkgdGenerator->WriteXCHistos();
+    //write expanded tree
     T_s->fChain->Write("", TObject::kOverwrite);
-    //fs_c.Write();
-    //fs_c.Close();
     f_s.Write();
     f_s.Close();
     i_fs++;
   }// end loop on signal files
   
+  std::chrono::time_point<std::chrono::steady_clock> end = 
+    std::chrono::steady_clock::now();
+  
+  std::chrono::duration<double> diff = end-start;
+  cout << " Total time " << std::setprecision(9) << diff.count() << " s "<< endl;
   
   exit(0);
 }

@@ -4,7 +4,7 @@
 #include "g4sbs_tree.h"
 
 //gas parameters
-#define fGasWion 26             // eV
+#define fGasWion 26.         // eV
 #define fGasDiffusion 1.e5       // mm2/s
 #define fGasDriftVelocity 5.5e7   // mm/s
 #define fAvalancheFiducialBand 10. // number of sigma defining the band around the avalanche in readout plane
@@ -12,7 +12,7 @@
 #define fGainMean 8.e3
 #define fGain0 20.
 #define fMaxNIon 1.e4               //maximum amount of ion pairs allowed in the digitization
-  
+
 #define fSNormNsigma 18.          //fSNormNsigma is an arbitrary multiplicative fact  
 #define fAvaGain 20.
 #define fLateralUncertainty 0.
@@ -63,11 +63,95 @@ SBSDigGEMSimDig::SBSDigGEMSimDig()// :
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv, double* commonmode_array) : fZeroSup(zsup_thr) 
 {
-  for(int i = 0; i<nchambers; i++)fTriggerOffset.push_back(trigoffset[i]);
+  for(int i = 0; i<nchambers; i++){
+    fTriggerOffset.push_back(trigoffset[i]);
+    cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
+  }
   if(fZeroSup>0)fDoZeroSup = true;
-  if(napv)fDoCommonMode = true;
-  for(int i = 0; i<napv; i++)fCommonModeArray.push_back(commonmode_array[i]);
+  if(napv){
+    fDoCommonMode = true;
+    for(int i = 0; i<napv; i++){
+      fCommonModeArray.push_back(commonmode_array[i]);
+      cout << i << "/" << napv << ": " << fCommonModeArray[i] << endl;
+    }
+  }
   fRIon.resize((int)fMaxNIon);
+  
+  h1_modhit_s = new TH1D("h1_modhit_s", "", 36, 0, 36);
+  h1_xhit_s = new TH1D("h1_xhit_s", "", 205, -1.025, 1.025);
+  h1_yhit_s = new TH1D("h1_yhit_s", "", 62, -0.31, 0.31);
+  h1_zhit_s = new TH1D("h1_zhit_s", "", 100, -0.01, 0.01);
+  h1_xdiff_s = new TH1D("h1_xdiff_s", "", 100, -0.1, 0.1);
+  h1_ydiff_s = new TH1D("h1_ydiff_s", "", 100, -0.1, 0.1);
+  h1_thit_s = new TH1D("h1_thit_s", "", 1000, -500, 500);
+  h1_edep_s = new TH1D("h1_edep_s", "", 1000, 0, 1.e6);
+  h1_nions_s = new TH1D("h1_nions_s", "", 100, 0, 1000);
+  
+  h1_modhit_b = new TH1D("h1_modhit_b", "", 36, 0, 36);
+  h1_xhit_b = new TH1D("h1_xhit_b", "", 205, -1.025, 1.025);
+  h1_yhit_b = new TH1D("h1_yhit_b", "", 62, -0.31, 0.31);
+  h1_zhit_b = new TH1D("h1_zhit_b", "", 100, -0.01, 0.01);
+  h1_xdiff_b = new TH1D("h1_xdiff_b", "", 100, -0.1, 0.1);
+  h1_ydiff_b = new TH1D("h1_ydiff_b", "", 100, -0.1, 0.1);
+  h1_thit_b = new TH1D("h1_thit_b", "", 1000, -500, 500);
+  h1_edep_b = new TH1D("h1_edep_b", "", 1000, 0, 1.e6);
+  h1_nions_b = new TH1D("h1_nions_b", "", 100, 0, 1000);
+  
+  h1_nstrips_X = new TH1D*[2];
+  h1_nstrips_Y = new TH1D*[2];
+  
+  h1_ds_X = new TH2D*[2];
+  h1_ds_Y = new TH2D*[2];
+  
+  h1_nbins_X = new TH1D*[2];
+  h1_nbins_Y = new TH1D*[2];
+  
+  h1_fSumA_X = new TH1D*[2];
+  h1_fSumA_Y = new TH1D*[2];
+
+  for(int i = 0; i<2; i++){
+    h1_nstrips_X[i] = new TH1D(Form("h1_nstrips_X_%d", i), "", 100, 0, 100);
+    h1_nstrips_Y[i] = new TH1D(Form("h1_nstrips_Y_%d", i), "", 100, 0, 100);
+    
+    h1_ds_X[i] = new TH2D(Form("h1_ds_X_%d", i), "", 100, -5.e1, 5.e1, 100, -5.e1, 5.e1);
+    h1_ds_Y[i] = new TH2D(Form("h1_ds_Y_%d", i), "", 100, -5.e1, 5.e1, 100, -5.e1, 5.e1);
+    
+    h1_nbins_X[i] = new TH1D(Form("h1_nbins_X_%d", i), "", 100, 0, 10000);
+    h1_nbins_Y[i] = new TH1D(Form("h1_nbins_Y_%d", i), "", 100, 0, 10000);
+    
+    h1_fSumA_X[i] = new TH1D(Form("h1_fSumA_X_%d", i), "", 100, 0, 1.0e6);
+    h1_fSumA_Y[i] = new TH1D(Form("h1_fSumA_Y_%d", i), "", 100, 0, 1.0e6);
+  }
+  /*
+  h1_QvsX_ion = new TH2D("h1_QvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
+  h1_QvsY_ion = new TH2D("h1_QvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
+  h1_QnormvsX_ion = new TH2D("h1_QnormvsX_ion", "", 250, -0.25, 0.25, 200, 0, 2.e4);
+  h1_QnormvsY_ion = new TH2D("h1_QnormvsY_ion", "", 200, -0.2, 0.2, 200, 0, 2.e4);
+  h1_QareavsX_ion = new TH2D("h1_QareavsX_ion", "", 750, -0.75, 0.75, 100, 0, 100.);
+  h1_QareavsY_ion = new TH2D("h1_QareavsY_ion", "", 200, -0.2, 0.2, 100, 0, 100.);
+  h1_QintvsX_ion = new TH2D("h1_QintvsX_ion", "", 250, -0.25, 0.25, 1000, 0, 1.e6);
+  h1_QintvsY_ion = new TH2D("h1_QintvsY_ion", "", 200, -0.2, 0.2, 1000, 0, 1.e6);
+
+  h1_QvsX_ava = new TH2D("h1_QvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
+  h1_QvsY_ava = new TH2D("h1_QvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
+  h1_QintYvsX_ava = new TH2D("h1_QintYvsX_ava", "", 750, -0.75, 0.75, 1000, 0, 1.e5);
+  h1_QintYvsY_ava = new TH2D("h1_QintYvsY_ava", "", 200, -0.2, 0.2, 1000, 0, 1.e5);
+  
+  h1_yGEM_preion = new TH1D("h1_yGEM_preion", "", 200, -0.2, 0.2);
+  h1_yGEM_preava = new TH1D("h1_yGEM_preava", "", 200, -0.2, 0.2);
+  h1_yGEM_inava = new TH1D("h1_yGEM_inava", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_2 = new TH1D("h1_yGEM_inava_2", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_3 = new TH1D("h1_yGEM_inava_3", "", 200, -0.2, 0.2);
+  h1_yGEM_inava_4 = new TH1D("h1_yGEM_inava_4", "", 200, -0.2, 0.2);
+  h1_xGEMvsADC_inava_4 = new TH2D("h1_xGEMvsADC_inava_4", "", 750, -0.75, 0.75, 1000, -19, 20000-19);
+  h1_yGEMvsADC_inava_4 = new TH2D("h1_yGEMvsADC_inava_4", "", 200, -0.2, 0.2, 1000, -19, 20000-19);
+  h1_yGEM_incheckout = new TH1D("h1_yGEM_incheckout", "", 200, -0.2, 0.2);
+  */
+  
+  fTotalTime_ion = 0;
+  fTotalTime_ava = 0;
+  fTotalTime_int = 0;
+
 }
 
 
@@ -83,14 +167,17 @@ void
 SBSDigGEMSimDig::IonModel(TRandom3* R,
 			  const TVector3& xi,
 			  const TVector3& xo,
-			  const Double_t elost ) // eV
+			  const Double_t elost,
+			  bool isbkgd) // eV
 {
 #define DBG_ION 0
 
   TVector3 vseg = xo-xi; // mm
   
   // ---- extract primary ions from Poisson
-  fRNIon = R->Poisson(elost/fGasWion);
+  double n0ions = elost/fGasWion;
+  if(isbkgd)n0ions*=0.2;
+  fRNIon = R->Poisson(n0ions);//elost/fGasWion);
 
   if (fRNIon <=0)
     return;
@@ -172,7 +259,12 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     cout << "fRTime0 = " << fRTime0 << endl;
     cout << "fRion size " << fRIon.size() << " " << i << endl;
 #endif
-    
+    /*
+    h1_QvsX_ion->Fill(ip.X, ip.Charge);
+    h1_QvsY_ion->Fill(ip.Y, ip.Charge);
+    h1_QvsX_ion->Fill(ip.X, ip.ggnorm);
+    h1_QvsY_ion->Fill(ip.Y, ip.ggnorm);
+    */
     fRIon[i] = ip;
   }
   return;
@@ -233,7 +325,8 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 			       TRandom3* R,
 			       const TVector3& xi,
 			       const TVector3& xo,
-			       const Double_t t0)
+			       const Double_t t0,
+			       bool isbkgd)
 {
 #define DBG_AVA 0
 #if DBG_AVA > 0
@@ -245,7 +338,15 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   // xi, xo are in chamber frame, in mm
 
   Double_t nsigma = fAvalancheFiducialBand; // coverage factor
-
+  
+  //trying something:
+  int integral_steps_x = fXIntegralStepsPerPitch;
+  int integral_steps_y = fYIntegralStepsPerPitch;
+  if(isbkgd){
+    integral_steps_x = 1;
+    integral_steps_y = 1;
+  }
+    
 #if DBG_AVA > 0
   cout << "fRSMax, nsigma " << fRSMax << " " << nsigma << endl;
 #endif
@@ -295,7 +396,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   if(y1>guy) y1=guy;
 
   // Loop over chamber planes
-  double roangle, dx;//, xoffset;
+  double roangle_mod, dx_mod, xoffset_mod;
   int GEMstrips;
   
   double xt_factor;
@@ -314,25 +415,34 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     
     // Compute strips affected by the avalanche
     //const SBSDigGEMPlane& pl = gemdet->GEMPlanes[ic*2+ipl];
-    roangle = gemdet->GEMPlanes[ic*2+ipl].ROangle();
-    dx = gemdet->GEMPlanes[ic*2+ipl].dX();
-    //xoffset = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
+    // strip angle = - strip angle for plane -> strip rotation purposes.
+    roangle_mod = -gemdet->GEMPlanes[ic*2+ipl].ROangle();
+    dx_mod = gemdet->GEMPlanes[ic*2+ipl].dX();
+    xoffset_mod = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
     GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
     
     // Positions in strip frame
-    Double_t xs0 = x0*cos(roangle) - y0*sin(roangle);
-    Double_t ys0 = x0*sin(roangle) + y0*cos(roangle);
-    Double_t xs1 = x1*cos(roangle) - y1*sin(roangle); 
-    Double_t ys1 = y1*sin(roangle) + y1*cos(roangle);
+    Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
+    Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
+    Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
+    Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
 #if DBG_AVA > 0
-     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
-     cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
+    cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
+    cout //<< ic << " " << ipl << " " << roangle_mod 
+      << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
+     //if(ipl==1 && ic<12)h1_yGEM_inava->Fill(xs0*1.e-3);
+    if(ipl==0 && ic<4){
+      h1_ds_X[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
+    }
+    if(ipl==1 && ic<4){
+      h1_ds_Y[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
+    }
 
-    Int_t iL = max(0, Int_t((xs0*1.e-3+dx/2.)/fStripPitch) );
+    Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
-    Int_t iU = min(Int_t((xs1*1.e-3+dx/2.)/fStripPitch), GEMstrips);
+    Int_t iU = min(Int_t((xs1*1.e-3+dx_mod/2.)/fStripPitch), GEMstrips);
     iU = max(0, iU);
     //pl.GetStrip (xs1 * 1e-3, ys1 * 1e-3);
      
@@ -359,20 +469,22 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //
 
     // Limits in x are low edge of first strip to high edge of last
-    Double_t xl = (iL*fStripPitch-dx/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
-    Double_t xr = (iU*fStripPitch-dx/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
+    Double_t xl = (iL*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
+    Double_t xr = (iU*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
 
 #if DBG_AVA > 0
     cout << "iL gsle " << iL << " " << xl << endl;
     cout << "iU gsue " << iU << " " << xr << endl;
 #endif
     
+    //if(ipl==1 && ic<12)h1_yGEM_inava_2->Fill((xl+xr)*5.e-4);
+
     // Limits in y are y limits of track plus some reasonable margin
     // We do this in units of strip pitch for convenience (even though
     // this is the direction orthogonal to the pitch direction)
 
     // Use y-integration step size of 1/10 of strip pitch (in mm)
-    Double_t yq = fStripPitch * 1000.0 / fYIntegralStepsPerPitch;
+    Double_t yq = fStripPitch * 1000.0 / integral_steps_y;//fYIntegralStepsPerPitch;
     Double_t yb = ys0, yt = ys1;
     if (yb > yt)
       swap( yb, yt );
@@ -386,7 +498,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     // to 1 will go back to the original version -- Weizhi Xiong
 
     Int_t nstrips = iU - iL + 1;
-    Int_t nx = (iU - iL + 1) * fXIntegralStepsPerPitch;
+    Int_t nx = (iU - iL + 1) * integral_steps_x;//fXIntegralStepsPerPitch;
     Int_t ny = TMath::Nint( (yt - yb)/yq );
 #if DBG_AVA > 0
     cout << "xr xl yt yb nx ny "
@@ -394,6 +506,15 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	 << " " << nx << " " << ny << endl;
 #endif
     assert( nx > 0 && ny > 0 );
+    
+    if(ipl==0 && ic<4){
+      h1_nstrips_X[int(ic>0)]->Fill(nstrips);
+      //h1_ds_X[int(ic>0)]->Fill(yt-yb);
+    }
+    if(ipl==1 && ic<4){
+      h1_nstrips_Y[int(ic>0)]->Fill(nstrips);
+      //h1_ds_Y[int(ic>0)]->Fill(yt-yb);
+    }
 
     // define function, gaussian and sum of gaussian
 
@@ -421,9 +542,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     cout << fRNIon << " " << fRIon.size() << endl;
 #endif
     
+    fStart = std::chrono::steady_clock::now();
     for (UInt_t i = 0; i < fRNIon; i++){
-      Double_t frxs = fRIon[i].X*cos(roangle) - fRIon[i].Y*sin(roangle);
-      Double_t frys = fRIon[i].X*sin(roangle) + fRIon[i].Y*cos(roangle);
+      Double_t frxs = fRIon[i].X*cos(roangle_mod) - fRIon[i].Y*sin(roangle_mod);
+      Double_t frys = fRIon[i].X*sin(roangle_mod) + fRIon[i].Y*cos(roangle_mod);
       //pl.PlaneToStrip (frxs, frys);
       //frxs *= 1e3; frys *= 1e3;
       //  cout<<"IonStrip: "<<pl.GetStrip(frxs*1e-3,frys*1e-3)<<endl;
@@ -433,9 +555,12 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       Int_t dx = fRIon[i].SNorm / xbw  + 1;
       Int_t dy = fRIon[i].SNorm / ybw  + 1;
 #if DBG_AVA > 1
-       cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
+      cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
 #endif
-
+      
+      //if(ipl==1 && ic<12)h1_yGEM_inava_3->Fill(frxs*1.e-3);
+       
+    
       //
       // NL change:
       //
@@ -451,10 +576,12 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       Double_t eff_sigma_square = r2/(fSNormNsigma*fSNormNsigma);
       Double_t eff_sigma = TMath::Sqrt(eff_sigma_square);
       Double_t current_ion_amplitude = fAvaGain*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma);
-      
+      if(isbkgd)current_ion_amplitude*=5;
+      //if(ipl==0 && ic<12)h1_QnormvsX_ion->Fill(frxs*1.e-3, current_ion_amplitude);
+      //if(ipl==1 && ic<12)h1_QnormvsY_ion->Fill(frxs*1.e-3, current_ion_amplitude);
       
       // xc and yc are center of current bin
-      
+      //double sumA = 0;
       // Loop over bins
       Int_t min_binNb_x = max(ix-dx,0);
       Int_t min_binNb_y = max(iy-dy,0);
@@ -482,12 +609,30 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	  //  else
 	  //    continue;
 	  // }
+	  /*
+	  if(ipl==0 && ic==0)h1_QareavsX_ion->Fill(frxs*1.e-3, (xd2+yd2)+eff_sigma_square);
+	  if(ipl==1 && ic==0)h1_QareavsY_ion->Fill(frxs*1.e-3, (xd2+yd2)+eff_sigma_square);
+	  */
 	  if( xd2 + yd2 <= r2 ) {
 	    //cout << current_ion_amplitude << " " << xd2+yd2 << " " << eff_sigma_square << endl;
 	    fSumA[jx_base+jy] += current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
+	    //sumA+= current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
 	  }
 	}//cout<<endl;
       }//cout<<"##########################################################################"<<endl<<endl;getchar();
+
+    }
+    fEnd = std::chrono::steady_clock::now();
+    fDiff = fEnd-fStart;
+    
+    fTotalTime_int+= fDiff.count();
+    
+    if(ipl==0 && ic<4)h1_nbins_X[int(ic>0)]->Fill(sumASize);
+    if(ipl==1 && ic<4)h1_nbins_Y[int(ic>0)]->Fill(sumASize);
+    
+    for(int i = 0; i< sumASize; i++){
+      if(ipl==0 && ic<4)h1_fSumA_X[int(ic>0)]->Fill(fSumA[i]);
+      if(ipl==1 && ic<4)h1_fSumA_Y[int(ic>0)]->Fill(fSumA[i]);
     }
     
 #if DBG_AVA > 0
@@ -513,21 +658,41 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       //  cout<<"strip: "<<iL+j<<":    ";
       //Int_t posflag = 0;
       Double_t us = 0.;
-      for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
+      //for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
+      for (UInt_t k=0; k<integral_steps_x; k++){
 	Double_t integralY_tmp = 0;
-	int kx = (j * fXIntegralStepsPerPitch + k) * ny;
+	//int kx = (j * fXIntegralStepsPerPitch + k) * ny;
+	int kx = (j * integral_steps_x + k) * ny;
 	for( Int_t jy = ny; jy != 0; --jy )
 	  integralY_tmp += fSumA[kx++];
-	
+	/*
+	if(ipl==0 && ic==0)h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+	if(ipl==1 && ic==0)h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+	*/
+	/*
+	if(integralY_tmp==0){
+	  cout << " ipl " << ipl << " ny " << ny << " k " << k << " kx_0 " << (j * fXIntegralStepsPerPitch + k) * ny << " -> kx " << kx << " => " << kx -(j * fXIntegralStepsPerPitch + k) * ny  << endl;
+	}
+	*/
 	us += integralY_tmp * area;
 	//	us += IntegralY( fSumA, j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
 	//if(us>0)cout << "k " << k << ", us " << us << endl;
       }
-
+      /*
+      if(ipl==0 && ic==0){
+	h1_QvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
+	//h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+      }
+      if(ipl==1 && ic==0){
+	h1_QvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
+	//h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
+      }
+      */
 #if DBG_AVA > 0
       cout << "strip " << iL+j << " us " << us << endl;
 #endif
-
+      //if(ipl==1 && ic<12)h1_yGEM_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2. );
+      
       // cout <<setw(6)<< (Int_t)(us/100);
       // cout<<iL+j<<" : "<<us<<endl;
       //generate the random pedestal phase and amplitude
@@ -544,12 +709,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				   0,// fADCoffset,
 				   fADCgain,
 				   fADCbits );
+	/*
 #if DBG_AVA > 0
 	if(pulse>0)
 	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
 	       << "pulse = " << pulse << ", (val - off)/gain = " 
 	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
 #endif
+	*/
 	//fDADC[b] = dadc;
 	//cout << ic*2+ipl << " " << iL+j << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) << " ==> ";
 	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
@@ -567,9 +734,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	//cout << ic*2+ipl << " " << iL+j << " " << b << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << "; " << iL+j+isLeft*fNCStripApart << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b)<< endl;
       }//cout <<"  "<<t0<< endl;
 
-      
-
- 
+      /*
+      if(ipl==0 && ic<12)h1_xGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
+      if(ipl==1 && ic<12)h1_yGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
+      */
     }//end loop on strips
         
     // if(ic*2+ipl==30){
@@ -589,7 +757,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 
 Int_t
 SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
-			   TRandom3* R)//, 
+			   TRandom3* R, bool bkgdonly)//, 
 //gmn_tree* T)
 {
   // Digitize event. Add results to any existing digitized data.
@@ -602,7 +770,9 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
   // For signal data, determine the sector of the primary track
   
   for(size_t ih = 0; ih<gemdet->fGEMhits.size(); ih++){
-    is_background = (gemdet->fGEMhits[ih].source==0);
+    is_background = (gemdet->fGEMhits[ih].source!=0);
+    //cout << (bkgdonly) << " " << (!is_background) << " " << (bkgdonly && !is_background) << endl;
+    //if(bkgdonly && !is_background)continue;
     UInt_t igem = gemdet->fGEMhits[ih].module;
     //UInt_t igem = iplane/2;
     
@@ -611,7 +781,6 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     //Short_t itype = (gdata.GetParticleType(ih)==1) ? 1 : 2; // primary = 1, secondaries = 2
     // if(gdata.GetParticleType(ih)!=1){cout<<"x"<<endl;getchar();}
 
-    // These vectors are in the spec frame, we need them in the chamber frame
     TVector3 vv1(gemdet->fGEMhits[ih].xin*1.e3,
 		 gemdet->fGEMhits[ih].yin*1.e3, 
 		 gemdet->fGEMhits[ih].zin*1.e3);
@@ -619,28 +788,60 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
 		 gemdet->fGEMhits[ih].yout*1.e3, 
 		 gemdet->fGEMhits[ih].zout*1.e3);
     
+    if(is_background){
+      h1_modhit_b->Fill(igem);
+      h1_xhit_b->Fill( (gemdet->fGEMhits[ih].xin+gemdet->fGEMhits[ih].xout)/2. );
+      h1_yhit_b->Fill( (gemdet->fGEMhits[ih].yin+gemdet->fGEMhits[ih].yout)/2. );
+      h1_zhit_b->Fill( (gemdet->fGEMhits[ih].zin+gemdet->fGEMhits[ih].zout)/2. );
+      h1_xdiff_b->Fill( gemdet->fGEMhits[ih].xout-gemdet->fGEMhits[ih].xin );
+      h1_ydiff_b->Fill( gemdet->fGEMhits[ih].yout-gemdet->fGEMhits[ih].yin );
+      h1_edep_b->Fill( gemdet->fGEMhits[ih].edep );
+    }else{
+      h1_modhit_s->Fill(igem);
+      h1_xhit_s->Fill( (gemdet->fGEMhits[ih].xin+gemdet->fGEMhits[ih].xout)/2. );
+      h1_yhit_s->Fill( (gemdet->fGEMhits[ih].yin+gemdet->fGEMhits[ih].yout)/2. );
+      h1_zhit_s->Fill( (gemdet->fGEMhits[ih].zin+gemdet->fGEMhits[ih].zout)/2. );
+      h1_xdiff_s->Fill( gemdet->fGEMhits[ih].xout-gemdet->fGEMhits[ih].xin );
+      h1_ydiff_s->Fill( gemdet->fGEMhits[ih].yout-gemdet->fGEMhits[ih].yin );
+      h1_edep_s->Fill( gemdet->fGEMhits[ih].edep );
+    }
+    
     if(abs(vv1.X()-vv2.X())>50 || abs(vv1.Y()-vv2.Y())>50){//in mm
       //cout<<abs(vv1.X()-vv2.X())<<endl;
       //getchar();
       continue;
     }
-    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep );
+    //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
+    //if(!is_background)
+    fStart = std::chrono::steady_clock::now();
+    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep, is_background );
+    fEnd = std::chrono::steady_clock::now();
+    fDiff = fEnd-fStart;
     
+    fTotalTime_ion+= fDiff.count();
     // Get Signal Start Time 'time_zero'
-    if( is_background ) {
-      // For background data, uniformly randomize event time between
-      // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-      // Not using HitTime from simulation file but randomize HitTime to cycle use background files
-      //event_time = m(-fGateWidth, 6*fEleSamplingPeriod);
-      event_time = fTimeZero;//fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
-      //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
-    } else {
-      // Signal events occur at t = 0, 
-      event_time = fTimeZero+gemdet->fGEMhits[ih].t;
-    }
+    //if( is_background ) {
+    // For background data, uniformly randomize event time between
+    // -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
+    // Not using HitTime from simulation file but randomize HitTime to cycle use background files
+    //event_time = m(-fGateWidth, 6*fEleSamplingPeriod);
+    //event_time = fTimeZero;//fTrnd.Uniform(-fGateWidth/2.-fEleSamplingPeriod, fGateWidth-fEleSamplingPeriod);
+    //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
+    //} else {
+    // Signal events occur at t = 0, 
+    event_time = fTimeZero+gemdet->fGEMhits[ih].t;
+    //}
     //  cout<<event_time<<"  "<<ih<<endl;
     // Adding drift time and trigger_jitter
     time_zero = event_time - fTriggerOffset[igem] + fRTime0*1e9 - trigger_jitter;
+    
+    if( is_background ){
+      h1_thit_b->Fill(time_zero);
+      h1_nions_b->Fill(fRNIon);
+    }else{
+      h1_thit_s->Fill(time_zero);
+      h1_nions_s->Fill(fRNIon);
+    }
     
     //cout << time_zero << " " << fTimeZero << " " << gemdet->fGEMhits[ih].t 
     //<< " " << trigger_jitter << " " << fRTime0*1e9 << endl;
@@ -655,7 +856,16 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
 #endif
     if (fRNIon > 0) {
       //cout << "AvaModel..." << endl;
-      AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
+      //if(igem<12)h1_yGEM_preava->Fill(vv1.Y()*1.e-3);
+      //if(!is_background)
+      
+      std::chrono::time_point<std::chrono::steady_clock> fStart2 = 
+	std::chrono::steady_clock::now();
+      AvaModel (igem, gemdet, R, vv1, vv2, time_zero, is_background );
+      fEnd = std::chrono::steady_clock::now();
+      fDiff = fEnd-fStart2;
+      
+      fTotalTime_ava+= fDiff.count();
       //cout << "Done!" << endl;
       //cout << " hou " << gemdet->GEMPlanes[4].GetADCSum(400) << endl;
       //CheckOut(gemdet, R, T);
@@ -686,7 +896,8 @@ Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
 void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 			       const int uniqueid, 
 			       TRandom3* R, 
-			       g4sbs_tree* T)
+			       g4sbs_tree* T, 
+			       bool sigonly)
 			       //gmn_tree* T)
 {
   //int test = gemdet->GEMPlanes[4].GetADCSum(400);
@@ -697,21 +908,19 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   //     cout << " " << gemdet->GEMPlanes[30].GetADC(j, b);
   //   }cout << endl;
   // }
-  
   short strip;
   double commonmode = 0;
   if(fDoCommonMode){commonmode = fCommonModeArray[0];}
   //cout << "commonmode " << commonmode << endl;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
-    
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       //if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       //cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " << i << " " << j << endl;
       //test = gemdet->GEMPlanes[4].GetADCSum(400);
       //}
       //cout << fDoCommonMode << endl;
-      if(fDoCommonMode){
+      if(fDoCommonMode && !sigonly){
 	//cout << " hou " << endl;
 	if(j%128==0 && apv_ctr<fCommonModeArray.size()){
 	  commonmode = fCommonModeArray[apv_ctr++];
@@ -722,154 +931,110 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
       //cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
       //}
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
-	for(int k = 0; k<6; k++){
-	  //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
-	  //int ped = TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma));
-	  //if(gemdet->GEMPlanes[i].GetADC(j, k)<0 || gemdet->GEMPlanes[i].GetADC(j, k)>4096)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << ped << " " << commonmode << " " << fPulseNoiseSigma << endl;
-	  gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma)));
-	  //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j)<< endl;
-	  //handle saturation
-	  if(gemdet->GEMPlanes[i].GetADC(j, k)>pow(2, fADCbits) ){
-	    //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
-	    gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)) );
-	    //cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
+	//if(i%2==1 && i<24)h1_yGEM_incheckout->Fill(j*fStripPitch-gemdet->GEMPlanes[i].dX()/2.);
+	if(!sigonly){
+	  for(int k = 0; k<6; k++){
+	    //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
+	    //int ped = TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma));
+	    //if(gemdet->GEMPlanes[i].GetADC(j, k)<0 || gemdet->GEMPlanes[i].GetADC(j, k)>4096)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << ped << " " << commonmode << " " << fPulseNoiseSigma << endl;
+	    gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma)));
+	    //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j)<< endl;
+	    //handle saturation
+	    if(gemdet->GEMPlanes[i].GetADC(j, k)>pow(2, fADCbits) ){
+	      //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
+	      gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)) );
+	      //cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
+	    }
 	  }
 	}
 	//#ifdef 
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
 	  //if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " " << commonmode << endl;
 	  if(uniqueid==BBGEM_UNIQUE_DETID){
-	     T->Earm_BBGEM_Dig.nstrips++;
-	     T->Earm_BBGEM_Dig.module->push_back(i);
-	     T->Earm_BBGEM_Dig.strip->push_back(j);
-	     T->Earm_BBGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	     T->Earm_BBGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	     T->Earm_BBGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	     T->Earm_BBGEM_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	     T->Earm_BBGEM_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	     T->Earm_BBGEM_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	    if(sigonly){
+	      cout << T->Earm_BBGEM_Dig_sig.nstrips << endl;
+	      T->Earm_BBGEM_Dig_sig.nstrips++;
+	      T->Earm_BBGEM_Dig_sig.module->push_back(i);
+	      T->Earm_BBGEM_Dig_sig.strip->push_back(j);
+	      T->Earm_BBGEM_Dig_sig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	      T->Earm_BBGEM_Dig_sig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	      T->Earm_BBGEM_Dig_sig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	      T->Earm_BBGEM_Dig_sig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	      T->Earm_BBGEM_Dig_sig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	      T->Earm_BBGEM_Dig_sig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	    }else{
+	      T->Earm_BBGEM_Dig.nstrips++;
+	      T->Earm_BBGEM_Dig.module->push_back(i);
+	      T->Earm_BBGEM_Dig.strip->push_back(j);
+	      T->Earm_BBGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	      T->Earm_BBGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	      T->Earm_BBGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	      T->Earm_BBGEM_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	      T->Earm_BBGEM_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	      T->Earm_BBGEM_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	    }
 	  }
-	  //if(gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup){
-	  //FillBBGEMTree(gemdet->GEMPlanes[i], T, j);
-	  //#ifdef QUENOUILLE	 
-	  //for(int k = 0; k<6; k++){
-	  //if(gemdet->GEMPlanes[i].GetADC(j, k)>4096 || gemdet->GEMPlanes[i].GetADC(j, k)<0)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
-	  //}
+	  if(uniqueid==CEPOL_GEMFRONT_UNIQUE_DETID){
+	     T->Harm_CEPolFront_Dig.nstrips++;
+	     T->Harm_CEPolFront_Dig.module->push_back(i);
+	     T->Harm_CEPolFront_Dig.strip->push_back(j);
+	     T->Harm_CEPolFront_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_CEPolFront_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_CEPolFront_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_CEPolFront_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_CEPolFront_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_CEPolFront_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  }
+	  if(uniqueid==CEPOL_GEMREAR_UNIQUE_DETID){
+	     T->Harm_CEPolRear_Dig.nstrips++;
+	     T->Harm_CEPolRear_Dig.module->push_back(i);
+	     T->Harm_CEPolRear_Dig.strip->push_back(j);
+	     T->Harm_CEPolRear_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_CEPolRear_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_CEPolRear_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_CEPolRear_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_CEPolRear_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_CEPolRear_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  }
 	  
-	  /*
-	  if(gemdet->GEMPlanes[i].Module()<3){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*gemdet->GEMPlanes[i].Module();
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_1x_dighit_nstrips++;
-	      T->Earm_BBGEM_1x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_1x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_1x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_1x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_1x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_1x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_1x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	      //cout << gemdet->GEMPlanes[i].GetADC(j, 2) << " " << T->Earm_BBGEM_1x_dighit_nstrips << " " << T->Earm_BBGEM_1x_dighit_adc_2->size()-1 << " " << T->Earm_BBGEM_1x_dighit_adc_2->at(T->Earm_BBGEM_1x_dighit_adc_2->size()-1) << endl;
-	    }else{
-	      T->Earm_BBGEM_1y_dighit_nstrips++;
-	      T->Earm_BBGEM_1y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_1y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_1y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_1y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_1y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_1y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_1y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<6){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-3);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_2x_dighit_nstrips++;
-	      T->Earm_BBGEM_2x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_2x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_2x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_2x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_2x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_2x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_2x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_2y_dighit_nstrips++;
-	      T->Earm_BBGEM_2y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_2y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_2y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_2y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_2y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_2y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_2y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<9){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-6);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_3x_dighit_nstrips++;
-	      T->Earm_BBGEM_3x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_3x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_3x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_3x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_3x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_3x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_3x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_3y_dighit_nstrips++;
-	      T->Earm_BBGEM_3y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_3y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_3y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_3y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_3y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_3y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_3y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else if(gemdet->GEMPlanes[i].Module()<12){
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-9);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_4x_dighit_nstrips++;
-	      T->Earm_BBGEM_4x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_4x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_4x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_4x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_4x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_4x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_4x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_4y_dighit_nstrips++;
-	      T->Earm_BBGEM_4y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_4y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_4y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_4y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_4y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_4y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_4y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
-	  }else{
-	    strip = j+gemdet->GEMPlanes[i].GetNStrips()*(gemdet->GEMPlanes[i].Module()-12);
-	    if(gemdet->GEMPlanes[i].ROangle()==0){
-	      T->Earm_BBGEM_5x_dighit_nstrips++;
-	      T->Earm_BBGEM_5x_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_5x_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_5x_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_5x_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_5x_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_5x_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_5x_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }else{
-	      T->Earm_BBGEM_5y_dighit_nstrips++;
-	      T->Earm_BBGEM_5y_dighit_strip->push_back(strip);
-	      T->Earm_BBGEM_5y_dighit_adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_5y_dighit_adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_5y_dighit_adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_5y_dighit_adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_5y_dighit_adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_5y_dighit_adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
+	  if(uniqueid==FT_UNIQUE_DETID){
+	     T->Harm_FT_Dig.nstrips++;
+	     T->Harm_FT_Dig.module->push_back(i);
+	     T->Harm_FT_Dig.strip->push_back(j);
+	     T->Harm_FT_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_FT_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_FT_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_FT_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_FT_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_FT_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
 	  }
-	  */
+	  
+	  if(uniqueid==FPP1_UNIQUE_DETID){
+	     T->Harm_FPP1_Dig.nstrips++;
+	     T->Harm_FPP1_Dig.module->push_back(i);
+	     T->Harm_FPP1_Dig.strip->push_back(j);
+	     T->Harm_FPP1_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_FPP1_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_FPP1_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_FPP1_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_FPP1_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_FPP1_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  }
+	  
+	  if(uniqueid==FPP2_UNIQUE_DETID){
+	     T->Harm_FPP2_Dig.nstrips++;
+	     T->Harm_FPP2_Dig.module->push_back(i);
+	     T->Harm_FPP2_Dig.strip->push_back(j);
+	     T->Harm_FPP2_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_FPP2_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_FPP2_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_FPP2_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_FPP2_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_FPP2_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  }
+	  
 	}//end if(...)
-	//#endif
-	//}else{
-	//FillBBGEMTree(gemdet->GEMPlanes[i], T, j); 
-	//}
+	
       }
     }
   }  
@@ -1018,6 +1183,75 @@ void SBSDigGEMSimDig::Print()
   cout << "  Pulse shaping parameters:" << endl;
   cout << "    Pulse shape tau: " << fPulseShapeTau << endl;
   //cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
+}
+
+void SBSDigGEMSimDig::write_histos()
+{
+  h1_modhit_s->Write();
+  h1_xhit_s->Write();
+  h1_yhit_s->Write();
+  h1_zhit_s->Write();
+  h1_xdiff_s->Write();
+  h1_ydiff_s->Write();
+  h1_thit_s->Write();
+  h1_edep_s->Write();
+  h1_nions_s->Write();
+  
+  h1_modhit_b->Write();
+  h1_xhit_b->Write();
+  h1_yhit_b->Write();
+  h1_zhit_b->Write();
+  h1_xdiff_b->Write();
+  h1_ydiff_b->Write();
+  h1_thit_b->Write();
+  h1_edep_b->Write();
+  h1_nions_b->Write();
+  
+  for(int i = 0; i<2; i++){
+    h1_nstrips_X[i]->Write();
+    h1_nstrips_Y[i]->Write();
+    
+    h1_ds_X[i]->Write();
+    h1_ds_Y[i]->Write();
+    
+    h1_nbins_X[i]->Write();
+    h1_nbins_Y[i]->Write();
+    
+    h1_fSumA_X[i]->Write();
+    h1_fSumA_Y[i]->Write();
+  }
+  /*
+  h1_QvsX_ion->Write();
+  h1_QvsY_ion->Write();
+  h1_QnormvsX_ion->Write();
+  h1_QnormvsY_ion->Write();
+  h1_QareavsX_ion->Write();
+  h1_QareavsY_ion->Write();
+  h1_QintvsX_ion->Write();
+  h1_QintvsY_ion->Write();
+
+  h1_QvsX_ava->Write();
+  h1_QvsY_ava->Write();
+  h1_QintYvsX_ava->Write();
+  h1_QintYvsY_ava->Write();
+  
+  h1_yGEM_preion->Write();
+  h1_yGEM_preava->Write();
+  h1_yGEM_inava->Write();
+  h1_yGEM_inava_2->Write();
+  h1_yGEM_inava_3->Write();
+  h1_yGEM_inava_4->Write();
+  h1_xGEMvsADC_inava_4->Write();
+  h1_yGEMvsADC_inava_4->Write();
+  h1_yGEM_incheckout->Write();
+  */
+}
+
+void SBSDigGEMSimDig::print_time_execution()
+{
+  cout << " Ionization total duration " << std::setprecision(9) << fTotalTime_ion << " s;" << endl;
+  cout << " Avalanche total duration " << std::setprecision(9) << fTotalTime_ava << " s;" << endl;
+  cout << " Integration total duration " << std::setprecision(9) << fTotalTime_int << " s;" << endl;
 }
 
 /*

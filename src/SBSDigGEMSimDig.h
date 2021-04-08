@@ -8,9 +8,12 @@
 //#include "TArrayS.h"
 //#include "TArrayI.h"
 //#include "TArrayD.h"
+#include "TH1D.h"
+#include "TH2D.h"
 
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
@@ -25,10 +28,12 @@ class SBSDigGEMSimDig {
   virtual ~SBSDigGEMSimDig();
   void Print();
   
-  Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R);//, gmn_tree* T);
+  Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R, bool bkgdonly = false);//, gmn_tree* T);
   //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
-  void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T);
+  void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T, bool sigonly = false);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
+  void write_histos();
+  void print_time_execution();
   
   struct IonPar_t {
     Double_t X;       // position of the point on the projection
@@ -45,12 +50,14 @@ class SBSDigGEMSimDig {
 		TRandom3* R,
 		const TVector3& xi,
 		const TVector3& xo,
-		const Double_t t0);
+		const Double_t t0,
+		bool isbkgd = false);
   
   void IonModel (TRandom3* R,
 		 const TVector3& xi,
 		 const TVector3& xo,
-		 const Double_t elost );
+		 const Double_t elost,
+		 bool isbkgd = false);
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers
@@ -76,7 +83,73 @@ class SBSDigGEMSimDig {
 		      Double_t C,  // normalization factor
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
+
+  TH1D* h1_modhit_s;
+  TH1D* h1_xhit_s;
+  TH1D* h1_yhit_s;
+  TH1D* h1_zhit_s;
+  TH1D* h1_xdiff_s;
+  TH1D* h1_ydiff_s;
+  TH1D* h1_thit_s;
+  TH1D* h1_edep_s;
+  TH1D* h1_nions_s;
   
+  TH1D* h1_modhit_b;
+  TH1D* h1_xhit_b;
+  TH1D* h1_yhit_b;
+  TH1D* h1_zhit_b;
+  TH1D* h1_xdiff_b;
+  TH1D* h1_ydiff_b;
+  TH1D* h1_thit_b;
+  TH1D* h1_edep_b;
+  TH1D* h1_nions_b;
+  
+  TH1D** h1_nstrips_X;
+  TH1D** h1_nstrips_Y;
+
+  TH2D** h1_ds_X;
+  TH2D** h1_ds_Y;
+
+  TH1D** h1_nbins_X;
+  TH1D** h1_nbins_Y;
+
+  TH1D** h1_fSumA_X;
+  TH1D** h1_fSumA_Y;
+  
+  /*
+  TH2D* h1_QvsX_ion;
+  TH2D* h1_QvsY_ion;
+  TH2D* h1_QnormvsX_ion;
+  TH2D* h1_QnormvsY_ion;
+  TH2D* h1_QareavsX_ion;
+  TH2D* h1_QareavsY_ion;
+  TH2D* h1_QintvsX_ion;
+  TH2D* h1_QintvsY_ion;
+
+  TH2D* h1_QvsX_ava;
+  TH2D* h1_QvsY_ava;
+  TH2D* h1_QintYvsX_ava;
+  TH2D* h1_QintYvsY_ava;
+  
+  TH1D* h1_yGEM_preion;
+  TH1D* h1_yGEM_preava;
+  TH1D* h1_yGEM_inava;
+  TH1D* h1_yGEM_inava_2;
+  TH1D* h1_yGEM_inava_3;
+  TH1D* h1_yGEM_inava_4;
+  TH2D* h1_xGEMvsADC_inava_4;
+  TH2D* h1_yGEMvsADC_inava_4;
+  TH1D* h1_yGEM_incheckout;
+  */
+  
+  //std::chrono::steady_clock fClock_dbg;
+  double fTotalTime_ion;
+  double fTotalTime_ava;
+  double fTotalTime_int;
+  
+  std::chrono::time_point<std::chrono::steady_clock> fStart;
+  std::chrono::time_point<std::chrono::steady_clock> fEnd;
+  std::chrono::duration<double> fDiff;
 };
 
 #endif

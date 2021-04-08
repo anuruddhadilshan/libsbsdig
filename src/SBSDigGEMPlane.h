@@ -11,12 +11,13 @@
 class SBSDigGEMPlane {
  public:
   SBSDigGEMPlane();
-  SBSDigGEMPlane(short mod, int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
+  SBSDigGEMPlane(short layer, short mod, int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
   virtual ~SBSDigGEMPlane();
   void Clear();
   
   //void SetStripThreshold(double thr){Striphr = ;};
 
+  Short_t Layer(){return fLayer;};
   Short_t Module(){return fModule;};
   Double_t dX(){return fdX;};
   Double_t Xoffset(){return fXoffset;};
@@ -25,16 +26,23 @@ class SBSDigGEMPlane {
   Short_t GetADC(int strip, int samp){return fStripADC[strip*fNSamples+samp];};
   Int_t GetADCSum(int strip){return fStripADCsum[strip];};
   void SetADC(int strip, int samp, int adc){
-    fStripADCsum[strip]+= adc-fStripADC[strip*fNSamples+samp];
-    fStripADC[strip*fNSamples+samp] = adc;
+    if(strip<fNStrips){
+      fStripADCsum[strip]+= adc-fStripADC[strip*fNSamples+samp];
+      fStripADC[strip*fNSamples+samp] = adc;
+    }
   };
   void AddADC(int strip, int samp, int adc){
-    fStripADC[strip*fNSamples+samp]+=adc;
-    fStripADCsum[strip]+=adc;
+    if(strip<fNStrips){
+      fStripADC[strip*fNSamples+samp]+=adc;
+      fStripADCsum[strip]+=adc;
+    }//else{
+    //printf("strip = %d / %d, sample %d /%d \n", strip, fNStrips, samp, fNSamples);
+    //}
   };
   
  private:
   // ADC sampled value of strip array of each axis
+  Short_t fLayer;
   Short_t fModule;
   Int_t fNStrips;
   Int_t fNSamples;

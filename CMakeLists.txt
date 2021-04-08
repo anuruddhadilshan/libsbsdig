@@ -30,6 +30,7 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_LIBDIR}")
 # which point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+SET(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 # the RPATH to be used when installing, but only if it's not a system directory
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_FULL_LIBDIR}" isSystemDir)
@@ -132,7 +133,7 @@ endif()
 ## I'll just copy it here too...
 set(SBSDIG_LINKFLAGS "")
 if(UNIX) ## Can be anything from Linux to Mac OS X
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -O -g")
   if(APPLE)
     set(MACVERS ON)
     list(APPEND SBSDIGEXTRADEF_LIST MACVERS)

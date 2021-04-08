@@ -7,14 +7,14 @@ using namespace std;
 // Class SBSDigGEMPlane
 //
 SBSDigGEMPlane::SBSDigGEMPlane() :
-  fNStrips(3840), fNSamples(6), fStripThr(100), fXoffset(0), fROangle(0)
+  fLayer(0), fNStrips(3840), fNSamples(6), fStripThr(100), fXoffset(0), fROangle(0)
 {
 }
 
-SBSDigGEMPlane::SBSDigGEMPlane(short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
-  fNStrips(nstrips), fNSamples(nsamples), fStripThr(thr), fXoffset(offset), fROangle(roangle)
+SBSDigGEMPlane::SBSDigGEMPlane(short layer, short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
+  fLayer(layer), fModule(mod), fNStrips(nstrips), fNSamples(nsamples), fStripThr(thr), fXoffset(offset), fROangle(roangle)
 {
-  fModule = mod;
+  //fModule = mod;
   fdX = fNStrips*4.e-4;
   
   fStripADCsum = new Int_t[fNStrips];
