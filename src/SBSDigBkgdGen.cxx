@@ -311,9 +311,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  
 	  //cout << " " << i << " " << edep << " " << Npe << endl;
@@ -345,9 +345,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  //if(edep>1.e-3)
