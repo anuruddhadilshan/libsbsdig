@@ -100,6 +100,7 @@ int main(int argc, char** argv){
   ULong64_t Nentries = -1;//number of events to process
   //UShort_t Nbkgd = 0;//number of background files to add to each event
   double BkgdTimeWindow = 0, LumiFrac = 0;
+  bool pmtbkgddig = false;
       
   if(argc<3 && argc>4){
     cout << "*** Inadequate number of arguments! ***" << endl
@@ -1887,13 +1888,18 @@ int main(int argc, char** argv){
       if( !tokens->IsEmpty() ) {
 	ntokens = tokens->GetLast()+1;
       }
-      if(ntokens==3){
+      if(ntokens>=3){
 	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
 	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	BkgdTimeWindow = stemp.Atof();
 	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
 	LumiFrac = stemp.Atof();
+	if(ntokens==4){
+	  stemp = ( (TObjString*) (*tokens)[3] )->GetString();
+	  pmtbkgddig = stemp.Atoi();
+	}
       }
+      
     }
   }
   
@@ -1904,7 +1910,7 @@ int main(int argc, char** argv){
     if(f_bkgd->IsZombie()){
       LumiFrac = 0;
     }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow);
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow, pmtbkgddig);
       cout << "Includes background from file: " << inputbkgdfile.c_str() 
 	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
 	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;

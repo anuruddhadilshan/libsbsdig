@@ -22,7 +22,7 @@ SBSDigBkgdGen::SBSDigBkgdGen()
   P2hitsGRINCH = new Double_t[510];
 }
 
-SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow)
+SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig)
 {
   fTimeWindow = timewindow;
   NhitsBBGEMs = new Double_t[5];
@@ -36,6 +36,8 @@ SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow)
   NhitsBBHodo = new Double_t[90];
   P1hitGRINCH = new Double_t[510];
   P2hitsGRINCH = new Double_t[510];
+  
+  fPMTBkgdDig = pmtbkgddig;
   
   Initialize(f_bkgd);
 }
@@ -257,6 +259,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   double beta, sin2thetaC;
   double x_hit, y_hit;
   int idet = 0;
+  
+  if(fPMTBkgdDig){//
+  
   //ordering by increasing unique det ID
   while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
@@ -407,6 +412,8 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
       }
     }
   }
+  
+  }//end if(fDetailedDig) 
   
   idet = 0;
   while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;

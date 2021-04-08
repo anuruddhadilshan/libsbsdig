@@ -17,7 +17,7 @@ class SBSDigBkgdGen {
 
  public:
   SBSDigBkgdGen();
-  SBSDigBkgdGen(TFile* f_bkgd, double timewindow);
+  SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig);
   ~SBSDigBkgdGen();
   void Initialize(TFile* f_bkgd);
   
@@ -81,6 +81,8 @@ class SBSDigBkgdGen {
   
   TH2D* h_NhitsGRINCH_XC;
   TH1D* h_NpeGRINCH_XC;
+  
+  bool fPMTBkgdDig;
   
 };
 

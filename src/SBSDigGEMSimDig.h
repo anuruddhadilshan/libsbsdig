@@ -53,6 +53,16 @@ class SBSDigGEMSimDig {
 		const Double_t t0,
 		bool isbkgd = false);
   
+  void Integration_accurate(double roangle, 
+			    double xl, double xr, double yb, double yt, 
+			    int nx, double xbw);
+  
+  void Integration_fast(TRandom3* R, double roangle, 
+			double xc_hit, double yc_hit,
+			double dx2_hit, double dy2_hit,
+			double xl, double xr, double yb, double yt, 
+			int nx, double xbw, int ny, double ybw);
+  
   void IonModel (TRandom3* R,
 		 const TVector3& xi,
 		 const TVector3& xo,
@@ -83,7 +93,18 @@ class SBSDigGEMSimDig {
 		      Double_t C,  // normalization factor
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
+  
+  /*
+  TH1D* h1_SigmaEff;
+  TH1D* h1_NionsPix;
+  TH1D* h1_Sumweights;
+ 
+  TH1D** h1_nbins_X;
+  TH1D** h1_nbins_Y;
 
+  TH1D** h1_binw_X;
+  TH1D** h1_binw_Y;
+  
   TH1D* h1_modhit_s;
   TH1D* h1_xhit_s;
   TH1D* h1_yhit_s;
@@ -116,7 +137,6 @@ class SBSDigGEMSimDig {
   TH1D** h1_fSumA_X;
   TH1D** h1_fSumA_Y;
   
-  /*
   TH2D* h1_QvsX_ion;
   TH2D* h1_QvsY_ion;
   TH2D* h1_QnormvsX_ion;
@@ -140,10 +160,10 @@ class SBSDigGEMSimDig {
   TH2D* h1_xGEMvsADC_inava_4;
   TH2D* h1_yGEMvsADC_inava_4;
   TH1D* h1_yGEM_incheckout;
-  */
   
   TH2D* h1_ava_yint;
   TH1D* h1_ava_int;
+  */
   
   //std::chrono::steady_clock fClock_dbg;
   double fTotalTime_ion;
