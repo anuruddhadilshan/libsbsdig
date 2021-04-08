@@ -53,6 +53,8 @@
 #define fNROPlanes 2
 #define fStripPitch 4.e-4
 
+#include <iomanip>
+
 using namespace std;
 
 //stupid but: let's do the defautl constructor:
