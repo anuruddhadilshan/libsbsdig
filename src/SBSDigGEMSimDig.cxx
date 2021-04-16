@@ -487,7 +487,7 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
     Int_t jy = min_binNb_y;
     Double_t yc = yb + (jy+0.5) * ybw;
     
-    double b_smear = R->Poisson(NionsPix);//dummy for the moment...
+    //double b_smear = R->Poisson(NionsPix);//dummy for the moment...
 
     for (; jy < max_binNb_y; ++jy, yc += ybw){
       Double_t yd2 = frys-yc; yd2 *= yd2;
