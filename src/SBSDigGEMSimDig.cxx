@@ -80,10 +80,22 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
   
+  h2D_edepVdr = new TH2D("h2D_edepVdr", ";sqrt(dx2_hit+dy2_hit);edep;", 100, 0., 50., 100, 0., 1.e5);
+
+  h1_AvaSizeYvsX_SemiAna = new TH2D("h1_AvaSizeYvsX_SemiAna", "", 100, 0.0, 100, 100, 0.0, 100);
+  h1_AvaSizeYvsX_FastAppx = new TH2D("h1_AvaSizeYvsX_FastAppx", "", 100, 0.0, 100, 100, 0.0, 100);
+  
+  h1_SumweightsSemiAna = new TH1D("h1_SumweightsSemiAna", "", 100, 0., 100);
+  h2D_SumweightsFastAppx = new TH2D("h2D_SumweightsFastAppx", "", 100, 0., 50., 750, 0., 750);
+  
+  h1_GammaEffSemiAna = new TH1D("h1_GammaEffSemiAna", "", 100, 0.1, 0.2);
+  h2D_GammaEffFastAppx = new TH2D("h2D_GammaEffFastAppx", "", 100, 0., 50., 100, 0.0, 10.0);
+  
+  h1_NormSemiAna = new TH1D("h1_NormSemiAna", "", 1000, 0, 1.e5);
+  h1_NormFastAppx = new TH1D("h1_NormFastAppx", "", 1000, 0, 1.e5);
   /*
   h1_SigmaEff = new TH1D("h1_SigmaEff", "", 150, 0., 0.30);
   h1_NionsPix = new TH1D("h1_NionsPix", "", 100, 0., 1000.0);
-  h1_Sumweights = new TH1D("h1_Sumweights", "", 100, 0., 1.0e4);
   h1_nbins_X = new TH1D*[2];
   h1_nbins_Y = new TH1D*[2];
   h1_binw_X = new TH1D*[2];
@@ -187,8 +199,7 @@ void
 SBSDigGEMSimDig::IonModel(TRandom3* R,
 			  const TVector3& xi,
 			  const TVector3& xo,
-			  const Double_t elost,
-			  bool isbkgd) // eV
+			  const Double_t elost) // eV
 {
 #define DBG_ION 0
 
@@ -196,7 +207,7 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
   
   // ---- extract primary ions from Poisson
   double n0ions = elost/fGasWion;
-  if(isbkgd)n0ions*=0.2;
+  //if(isbkgd)n0ions*=0.2;
   fRNIon = R->Poisson(n0ions);//elost/fGasWion);
 
   if (fRNIon <=0)
@@ -340,11 +351,13 @@ SBSDigGEMSimDig::PulseShape(Double_t t,
 //
 // integration methods
 //
-void SBSDigGEMSimDig::Integration_accurate(double roangle, 
+void SBSDigGEMSimDig::Integration_semiana(double roangle, 
 					   double xl, double xr, 
 					   double yb, double yt, 
 					   int nx, double xbw)
 {
+  double amplitude_sum = 0;
+    
   for (UInt_t i = 0; i < fRNIon; i++){
     Double_t frxs = fRIon[i].X*cos(roangle) - fRIon[i].Y*sin(roangle);
     Double_t frys = fRIon[i].X*sin(roangle) + fRIon[i].Y*cos(roangle);
@@ -371,6 +384,8 @@ void SBSDigGEMSimDig::Integration_accurate(double roangle,
     Double_t eff_sigma = TMath::Sqrt(eff_sigma_square);
     Double_t current_ion_amplitude = fAvaGain*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma);
     
+    amplitude_sum+= current_ion_amplitude;
+    
     double inte4 = 0.;
     double ceff, yinte;
     
@@ -392,12 +407,16 @@ void SBSDigGEMSimDig::Integration_accurate(double roangle,
       
       ceff = sqrt(xd2 + eff_sigma_square);
       yinte = 1./ceff *(atan((yt-frys)/ceff) - atan((yb-frys)/ceff));
+      inte4+= yinte*xbw;
       fSumA[jx] += (yinte*xbw)*current_ion_amplitude;
     }
+    h1_SumweightsSemiAna->Fill(inte4);
+    h1_GammaEffSemiAna->Fill(eff_sigma);
   }
+  h1_NormSemiAna->Fill(amplitude_sum);
 }
 
-void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle, 
+void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle, 
 				       double xc_hit, double yc_hit,
 				       double dx2_hit, double dy2_hit,
 				       double xl, double xr, 
@@ -405,6 +424,7 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
 				       int nx, double xbw, 
 				       int ny, double ybw)
 {
+  //cout << " integration_fastappx " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
   //so we do the numerical stuff, but only on the average hit... and then what?
   Double_t frxs = xc_hit*cos(roangle) - yc_hit*sin(roangle);
   Double_t frys = xc_hit*sin(roangle) + yc_hit*cos(roangle);
@@ -437,7 +457,7 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
   // distribution; the sigma for this distribution is eff_sigma, which is the actual avalance sigma. 
   //
   Double_t Charge = R->Gaus(fGainMean, fGainMean/TMath::Sqrt(fGain0));
-  Double_t r2 = SNorm*SNorm;
+  Double_t r2 = SNorm*SNorm+dx2_hit+dy2_hit;// ?
   Double_t ggnorm = Charge * TMath::InvPi() / r2;
   Double_t eff_sigma_square = r2/(fSNormNsigma*fSNormNsigma);
   Double_t eff_sigma = TMath::Sqrt(eff_sigma_square);
@@ -445,6 +465,7 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
 
   double NionsPix = Ld_ion*eff_sigma*R->Gaus(4., 1.);//
   
+  h1_NormFastAppx->Fill(Amplitude);
   //h1_SigmaEff->Fill(eff_sigma);
   //h1_NionsPix->Fill(NionsPix);
   
@@ -457,6 +478,7 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
   Int_t jx = min_binNb_x;
   Double_t xc = xl + (jx+0.5) * xbw;
   double sumweights = 0;
+  //double sumweights_reg = 0;
   double weight;
   for (; jx < max_binNb_x; ++jx, xc += xbw){
     Double_t xd2 = frxs-xc; xd2 *= xd2;
@@ -464,8 +486,57 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
     Int_t jx_base = jx * ny;
     Int_t jy = min_binNb_y;
     Double_t yc = yb + (jy+0.5) * ybw;
-	
+    
+    double b_smear = R->Poisson(NionsPix);//dummy for the moment...
+
     for (; jy < max_binNb_y; ++jy, yc += ybw){
+      Double_t yd2 = frys-yc; yd2 *= yd2;
+      
+      if( xd2 + yd2 <= r2 ) {
+	weight = 1. / 
+	  (eff_sigma_square + xd2/(1+dx2_hit) +yd2/(1+dy2_hit) );
+	//(eff_sigma_square + xd2 +yd2 );
+	fSumA[jx_base+jy] += weight*Amplitude;
+	sumweights+= weight;
+	//sumweights_reg+= 1. / (eff_sigma_square + xd2 +yd2 );
+	//current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
+      }
+    }
+  }
+  /**/
+  //cout << sumweights << " " << NionsPix << endl;
+  h2D_SumweightsFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sumweights*xbw*ybw);
+  h2D_GammaEffFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sqrt(eff_sigma_square*(1+dx2_hit)*(1+dy2_hit)));
+  //reloop to normalize the individual weights.
+  /*
+  jx = min_binNb_x;
+  for (; jx < max_binNb_x; ++jx){
+    Int_t jx_base = jx * ny;
+    Int_t jy = min_binNb_y;
+    for (; jy < max_binNb_y; ++jy){
+      //fSumA[jx_base+jy]*=fAvaGain*Charge;
+      fSumA[jx_base+jy]*= sumweights_reg/sumweights;
+    }
+  }
+  */
+  //}
+  /*
+  //Loop on strips instead of bins...
+  double strippitch_mm = fStripPitch*1.e3;
+  int nstrips_x = (xr-xl)/strippitch_mm;
+  int nstrips_y = (yt-yb)/strippitch_mm;
+  fSumA.resize(nstrips_x*nstrips_y);
+  Double_t xc = xl + fStripPitch/2.0;
+  double sumweights = 0;
+  cout << nstrips_x << " " << nstrips_y << endl;
+  double weight;
+  for(int ix = 0; ix<nstrips_x; xc+= strippitch_mm, ix++){
+    Double_t yc = yb + fStripPitch/2.0;
+    Double_t xd2 = frxs-xc; xd2 *= xd2;
+    
+    Int_t jx_base = ix * nstrips_y;
+    
+    for(int jy = 0; jy<nstrips_y; yc+= strippitch_mm, jy++){
       Double_t yd2 = frys-yc; yd2 *= yd2;
       
       if( xd2 + yd2 <= r2 ) {
@@ -476,24 +547,12 @@ void SBSDigGEMSimDig::Integration_fast(TRandom3* R, double roangle,
 	sumweights+= weight;
 	//current_ion_amplitude / ((xd2+yd2)+eff_sigma_square);
       }
+      
     }
   }
-  //cout << sumweights << " " << NionsPix << endl;
-  //h1_Sumweights->Fill(sumweights);
-
-  //reloop to normalize the individual weights.
-  /*
-  jx = min_binNb_x;
-  for (; jx < max_binNb_x; ++jx){
-    Int_t jx_base = jx * ny;
-    Int_t jy = min_binNb_y;
-    for (; jy < max_binNb_y; ++jy){
-      //fSumA[jx_base+jy]*=fAvaGain*Charge;
-      fSumA[jx_base+jy]/=sumweights;
-    }
-  }
+  h1_Sumweights->Fill(dx2_hit+dy2_hit, sumweights*fStripPitch*fStripPitch);
   */
-  //} 
+  
 }
 
 
@@ -504,8 +563,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 			       TRandom3* R,
 			       const TVector3& xi,
 			       const TVector3& xo,
-			       const Double_t t0,
-			       bool isbkgd)
+			       const Double_t t0)
 {
 #if DBG_AVA > 0
   cout << "Chamber " << ic << "----------------------------------" << endl;
@@ -520,22 +578,11 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   //trying something:
   int integral_steps_x = fXIntegralStepsPerPitch;
   int integral_steps_y = fYIntegralStepsPerPitch;
-  if(isbkgd){
-    integral_steps_x = 1;
-    integral_steps_y = 1;
-  }
-    
+  
 #if DBG_AVA > 0
   cout << "fRSMax, nsigma " << fRSMax << " " << nsigma << endl;
 #endif
   
-  double xc_hit = (xi.X()+xo.X())/2.;
-  double yc_hit = (xi.Y()+xo.Y())/2.;
-  double dx2_hit = (xo.X()-xi.X())/(xo.Z()-xi.Z());
-  double dy2_hit = (xo.Y()-xi.Y())/(xo.Z()-xi.Z());
-  dx2_hit*= dx2_hit;
-  dy2_hit*= dy2_hit;
-
   Double_t x0,y0,x1,y1; // lower and upper corners of avalanche diffusion area
   
   if (xi.X()<xo.X()) {
@@ -553,6 +600,8 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     y1 = xi.Y()+nsigma*fRSMax;
     y0 = xo.Y()-nsigma*fRSMax;
   }
+  
+  h1_AvaSizeYvsX_SemiAna->Fill(x1-x0, y1-y0);
   
   // Check if any part of the avalanche region is in the active area of the sector.
   // Here, "active area" means the chamber's *bounding box*, which is
@@ -675,7 +724,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       swap( yb, yt );
     yb = yq * TMath::Floor (yb / yq);
     yt = yq * TMath::Ceil  (yt / yq);
-
+    
     // We should also allow x to have variable bin size based on the db
     // the new avalanche model (Cauchy-Lorentz) has a very sharp full width
     // half maximum, so if the bin size is too large, it can introduce
@@ -709,10 +758,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     cout << "xbw ybw " << xbw << " " << ybw << endl;
 #endif
     
-    Int_t sumASize = nx;// * ny;
-    if(isbkgd){
-      sumASize*= ny;
-    }
+    Int_t sumASize = nx;
 #if DBG_AVA > 0
     cout<<nx<<" : "<<ny<< ", nx*ny " << sumASize <<" Nstrips: "<<nstrips<<endl;
 #endif
@@ -732,16 +778,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     /*
     h1_nbins_X[ipl]->Fill(nx);
     h1_nbins_Y[ipl]->Fill(ny);
-        
+    
     h1_binw_X[ipl]->Fill(xbw);
     h1_binw_Y[ipl]->Fill(ybw);
     */
     fStart = std::chrono::steady_clock::now();
-    if(isbkgd){
-      Integration_fast(R, roangle_mod, xc_hit, yc_hit, dx2_hit, dy2_hit, xl, xr, yb, yt, nx, xbw, ny, ybw);
-    }else{
-      Integration_accurate(roangle_mod, xl, xr, yb, yt, nx, xbw);
-    }
+    
+    Integration_semiana(roangle_mod, xl, xr, yb, yt, nx, xbw);
+    
     /*
     for (UInt_t i = 0; i < fRNIon; i++){
       Double_t frxs = fRIon[i].X*cos(roangle_mod) - fRIon[i].Y*sin(roangle_mod);
@@ -854,32 +898,17 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     
     fTotalTime_int+= fDiff.count();
     
-    //if(ipl==0 && ic<4)h1_nbins_X[int(ic>0)]->Fill(sumASize);
-    //if(ipl==1 && ic<4)h1_nbins_Y[int(ic>0)]->Fill(sumASize);
-    
-    //for(int i = 0; i< sumASize; i++){
-    //if(ipl==0 && ic<4)h1_fSumA_X[int(ic>0)]->Fill(fSumA[i]);
-    //if(ipl==1 && ic<4)h1_fSumA_Y[int(ic>0)]->Fill(fSumA[i]);
-    //}
-    
 #if DBG_AVA > 0
     cout << "t0 = " << t0 << " plane " << ipl 
 	 << endl;
 #endif
 
-    //virs[ipl] = new TGEMSBSGEMHit(nx,fEleSamplingPoints);
-    //virs[ipl]->SetTime(t0);
-    //virs[ipl]->SetHitCharge(fRTotalCharge);
-    
     //Int_t ai=0;
-    Double_t area = xbw * ybw;
+    //Double_t area = xbw * ybw;
 
-//when we integrate in order to get the signal pulse, we want all charge
+    //when we integrate in order to get the signal pulse, we want all charge
     //deposition on the area of a single strip -- Weizhi
     
-    //cout << "number of strips: " << nstrips << ", number of samples " << fEleSamplingPoints << " area: " << area << endl;
-    
-    // if(nstrips>0){cout<<"nstrips: "<<nstrips<<" Nion: "<<fRNIon<<endl;}
     
     for (Int_t j = 0; j < nstrips; j++){
       //  cout<<"strip: "<<iL+j<<":    ";
@@ -887,48 +916,224 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
       Double_t us = 0.;
       //for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
       for (UInt_t k=0; k<integral_steps_x; k++){
-	//
-	//int kx = (j * fXIntegralStepsPerPitch + k) * ny;
 	int kx = (j * integral_steps_x + k);// * ny;
-	if(isbkgd){
-	  kx*= ny;
-	  Double_t integralY_tmp = 0;
-	  for( Int_t jy = ny; jy != 0; --jy ){
-	    //if(ipl==0 && ic==0)h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
-	    //if(ipl==1 && ic==0)h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
-	    //if(integralY_tmp==0){
-	    //cout << " ipl " << ipl << " ny " << ny << " k " << k << " kx_0 " << (j * fXIntegralStepsPerPitch + k) * ny << " -> kx " << kx << " => " << kx -(j * fXIntegralStepsPerPitch + k) * ny  << endl;
-	    //}
-	    integralY_tmp += fSumA[kx++];
-	  }
-	  us += integralY_tmp * area;
-	}else{
-	  us += fSumA[kx++];
-	}
-	//us += integralY_tmp * area;
-	//	us += IntegralY( fSumA, j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
-	//if(us>0)cout << "k " << k << ", us " << us << endl;
+	us += fSumA[kx++];
       }
-      /*
-      if(ipl==0 && ic==0){
-	h1_QvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
-	//h1_QintYvsX_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
-      }
-      if(ipl==1 && ic==0){
-	h1_QvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, us);
-	//h1_QintYvsY_ava->Fill((iL+j)*fStripPitch-dx_mod/2.+xoffset_mod, integralY_tmp);
-      }
-      */
+      
 #if DBG_AVA > 0
       cout << "strip " << iL+j << " us " << us << endl;
 #endif
-      //if(ipl==1 && ic<12)h1_yGEM_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2. );
       
-      // cout <<setw(6)<< (Int_t)(us/100);
-      // cout<<iL+j<<" : "<<us<<endl;
-      //generate the random pedestal phase and amplitude
-      // Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
-      // Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
+
+      for (Int_t b = 0; b < fEleSamplingPoints; b++){
+	Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0,
+				     us,
+				     fPulseShapeTau);
+	//fPulseShapeTau0, fPulseShapeTau1 );
+	
+	Short_t dadc = ADCConvert( pulse,
+				   0,// fADCoffset,
+				   fADCgain,
+				   fADCbits );
+
+#if DBG_AVA > 0
+	if(pulse>0)
+	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
+	       << "pulse = " << pulse << ", (val - off)/gain = " 
+	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
+#endif
+
+	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
+	
+	//cross talk here
+	if(xt_factor>0){
+	  if(iL+j+isLeft*fNCStripApart>=0 && iL+j+isLeft*fNCStripApart<GEMstrips){
+	    gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j+isLeft*fNCStripApart, b, TMath::Nint(dadc*xt_factor));
+	  }
+	}
+      }
+      
+    }//end loop on strips
+    
+  }//end loop on planes
+}
+
+
+//TGEMSBSGEMHit **
+void SBSDigGEMSimDig::AvaModel_2(const int ic,
+				 SBSDigGEMDet* gemdet, 
+				 TRandom3* R,
+				 const TVector3& xi,
+				 const TVector3& xo,
+				 const Double_t t0)
+{
+  // xi, xo are in chamber frame, in mm
+  
+  //cout << " avamodel_2 " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+  
+  Double_t nsigma = fAvalancheFiducialBand; // coverage factor
+  
+  //trying something:
+  int integral_steps_x = 1;
+  int integral_steps_y = 1;
+  
+  double xc_hit = (xi.X()+xo.X())/2.;
+  double yc_hit = (xi.Y()+xo.Y())/2.;
+  double dx2_hit = (xo.X()-xi.X())/3.0;//(xo.Z()-xi.Z());
+  double dy2_hit = (xo.Y()-xi.Y())/3.0;//(xo.Z()-xi.Z());
+  dx2_hit*= dx2_hit;
+  dy2_hit*= dy2_hit;
+  
+  double rsmax = fRSMax*sqrt(1.0+dx2_hit+dy2_hit);//?
+  
+  Double_t x0,y0,x1,y1; // lower and upper corners of avalanche diffusion area
+  
+  if (xi.X()<xo.X()) {
+    x0 = xi.X()-nsigma*rsmax;//*fRSMax;
+    x1 = xo.X()+nsigma*rsmax;//*fRSMax;
+  } else {
+    x1 = xi.X()+nsigma*rsmax;//*fRSMax;
+    x0 = xo.X()-nsigma*rsmax;//*fRSMax;
+  }
+
+  if (xi.Y()< xo.Y()) {
+    y0 = xi.Y()-nsigma*rsmax;//*fRSMax;
+    y1 = xo.Y()+nsigma*rsmax;//*fRSMax;
+  } else {
+    y1 = xi.Y()+nsigma*rsmax;//*fRSMax;
+    y0 = xo.Y()-nsigma*rsmax;//*fRSMax;
+  }
+  
+  h1_AvaSizeYvsX_FastAppx->Fill(x1-x0, y1-y0);
+
+  // Check if any part of the avalanche region is in the active area of the sector.
+  // Here, "active area" means the chamber's *bounding box*, which is
+  // larger than the wedge's active area (section of a ring)
+  
+  Double_t glx = (-gemdet->GEMPlanes[ic*2].dX())/2.*1.e3;
+  Double_t gly = (-gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;
+  Double_t gux = (gemdet->GEMPlanes[ic*2].dX())/2.*1.e3;
+  Double_t guy = (gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;
+  
+  if(x0<glx) x0=glx;
+  if(y0<gly) y0=gly;
+  if(x1>gux) x1=gux;
+  if(y1>guy) y1=guy;
+
+  // Loop over chamber planes
+  double roangle_mod, dx_mod, xoffset_mod;
+  int GEMstrips;
+  
+  double xt_factor;
+  int isLeft;
+  for (UInt_t ipl = 0; ipl < fNROPlanes; ++ipl){
+    
+    xt_factor = R->Gaus(fCrossFactor, fCrossSigma);
+    isLeft = R->Uniform(1.) < 0.5 ? -1 : 1;
+    
+    roangle_mod = -gemdet->GEMPlanes[ic*2+ipl].ROangle();
+    dx_mod = gemdet->GEMPlanes[ic*2+ipl].dX();
+    xoffset_mod = gemdet->GEMPlanes[ic*2+ipl].Xoffset();
+    GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
+    
+    // Positions in strip frame
+    Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
+    Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
+    Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
+    Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
+    
+    Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
+    iL = min(iL, GEMstrips);
+    Int_t iU = min(Int_t((xs1*1.e-3+dx_mod/2.)/fStripPitch), GEMstrips);
+    iU = max(0, iU);
+    
+    if(iL==iU){//nothing to do
+      return;
+    }
+
+    if(iU<iL)swap(iU, iL);
+
+
+    //
+    // Bounds of rectangular avalanche region, in strip frame
+    //
+
+    // Limits in x are low edge of first strip to high edge of last
+    Double_t xl = (iL*fStripPitch-dx_mod/2.)*1.e3;
+    Double_t xr = ((iU+1)*fStripPitch-dx_mod/2.)*1.e3;
+
+#if DBG_AVA > 0
+    cout << "iL gsle " << iL << " " << xl << endl;
+    cout << "iU gsue " << iU << " " << xr << endl;
+#endif
+    
+
+    // Limits in y are y limits of track plus some reasonable margin
+    // We do this in units of strip pitch for convenience (even though
+    // this is the direction orthogonal to the pitch direction)
+
+    // Use y-integration step size of 1/10 of strip pitch (in mm)
+    Double_t yq = fStripPitch * 1000.0 / integral_steps_y;//fYIntegralStepsPerPitch;
+    Double_t yb = ys0, yt = ys1;
+    if (yb > yt)
+      swap( yb, yt );
+    yb = yq * TMath::Floor (yb / yq);
+    yt = yq * TMath::Ceil  (yt / yq);
+    
+    // We should also allow x to have variable bin size based on the db
+    // the new avalanche model (Cauchy-Lorentz) has a very sharp full width
+    // half maximum, so if the bin size is too large, it can introduce
+    // fairly large error on the charge deposition. Setting fXIntegralStepsPerPitch
+    // to 1 will go back to the original version -- Weizhi Xiong
+
+    Int_t nstrips = iU - iL + 1;
+    Int_t nx = (iU - iL + 1) * integral_steps_x;//fXIntegralStepsPerPitch;
+    Int_t ny = TMath::Nint( (yt - yb)/yq );
+    
+    // define function, gaussian and sum of gaussian
+
+    Double_t xbw = (xr - xl) / nx;
+    Double_t ybw = (yt - yb) / ny;
+    
+    Int_t sumASize = nx * ny;
+    
+    fSumA.resize(sumASize);
+    memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
+    
+    fStart = std::chrono::steady_clock::now();
+    
+    //TEST
+    //double ph = R->Uniform(-TMath::Pi(), TMath::Pi());
+    //double r_ = R->Gaus(0.55, 0.1);
+    //dx2_hit = r_*cos(ph);dx2_hit*= dx2_hit;
+    //dy2_hit = r_*sin(ph);dy2_hit*= dy2_hit;
+    //if(sqrt(dx2_hit+dy2_hit)<1.0){
+    Integration_fastappx(R, roangle_mod, xc_hit, yc_hit, dx2_hit, dy2_hit, xl, xr, yb, yt, nx, xbw, ny, ybw);
+    //}
+    
+    fEnd = std::chrono::steady_clock::now();
+    fDiff = fEnd-fStart;
+    
+    fTotalTime_int+= fDiff.count();
+    
+    
+    Double_t area = xbw * ybw;
+
+    //when we integrate in order to get the signal pulse, we want all charge
+    //deposition on the area of a single strip -- Weizhi
+    
+    for (Int_t j = 0; j < nstrips; j++){
+      Double_t us = 0.;
+      for (UInt_t k=0; k<integral_steps_x; k++){
+	int kx = (j * integral_steps_x + k);// * ny;
+	
+	kx*= ny;
+	Double_t integralY_tmp = 0;
+	for( Int_t jy = ny; jy != 0; --jy ){
+	  integralY_tmp += fSumA[kx++];
+	}
+	us += integralY_tmp * area;
+      }
       
       for (Int_t b = 0; b < fEleSamplingPoints; b++){
 	Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0,
@@ -940,45 +1145,19 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				   0,// fADCoffset,
 				   fADCgain,
 				   fADCbits );
-	/*
-#if DBG_AVA > 0
-	if(pulse>0)
-	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
-	       << "pulse = " << pulse << ", (val - off)/gain = " 
-	       << (pulse-fADCoffset)/fADCgain << ", dadc = " << dadc << endl;
-#endif
-	*/
-	//fDADC[b] = dadc;
-	//cout << ic*2+ipl << " " << iL+j << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) << " ==> ";
+
 	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
-	//if(gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b)<0 || gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b)>4096)cout << " hou  " << iL+j << " " << b << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << endl;
-	//posflag += dadc;
-	//if(dadc>0)cout << t0 << " " << pulse << " " << dadc << endl;
-	//cross talk here ?
+	
 	if(xt_factor>0){
 	  if(iL+j+isLeft*fNCStripApart>=0 && iL+j+isLeft*fNCStripApart<GEMstrips){
-	    //cout << "induced: " << iL+j+isLeft*fNCStripApart << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j+isLeft*fNCStripApart) << " ==> ";
+	    
 	    gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j+isLeft*fNCStripApart, b, TMath::Nint(dadc*xt_factor));
-	    //cout << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b) << " " << gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j+isLeft*fNCStripApart) << endl;
+	    
 	  }
 	}
-	//cout << ic*2+ipl << " " << iL+j << " " << b << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j, b) << "; " << iL+j+isLeft*fNCStripApart << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(iL+j+isLeft*fNCStripApart, b)<< endl;
-      }//cout <<"  "<<t0<< endl;
+      }
 
-      /*
-      if(ipl==0 && ic<12)h1_xGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
-      if(ipl==1 && ic<12)h1_yGEMvsADC_inava_4->Fill( (iL+j)*fStripPitch-dx_mod/2.+xoffset_mod , gemdet->GEMPlanes[ic*2+ipl].GetADCSum(iL+j) );
-      */
     }//end loop on strips
-        
-    // if(ic*2+ipl==30){
-    //   for(int j = 570; j<580; j++){
-    // 	cout << j << "   ";
-    // 	for(int b = 0; b<6; b++){
-    // 	  cout << " " << gemdet->GEMPlanes[ic*2+ipl].GetADC(j, b);
-    // 	}cout << endl;
-    //   }
-    // }
     
   }//end loop on planes
   
@@ -1044,11 +1223,25 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       continue;
     }
     //if(igem<12)h1_yGEM_preion->Fill(vv1.Y()*1.e-3);
-    //if(!is_background)
+
+    //test
+    double dx2_hit = (vv2.X()-vv1.X())/3.0;dx2_hit*= dx2_hit;
+    double dy2_hit = (vv2.Y()-vv1.Y())/3.0;dx2_hit*= dy2_hit;
+    h2D_edepVdr->Fill(sqrt(dx2_hit+dy2_hit), gemdet->fGEMhits[ih].edep);
+    
     fStart = std::chrono::steady_clock::now();
-    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep, is_background );
+    // if(!is_background){
+    //fRNIon = R->Poisson(gemdet->fGEMhits[ih].edep/fGasWion);
+    //fRSMax = TMath::Sqrt(2.*fGasDiffusion*TMath::Abs(fRoutZ-fEntranceRef)/fGasDriftVelocity);//maximum avalanche spread =  maximum time = maximum distance
+    //fRTime0 = TMath::Abs(fRoutZ-fExitRef)/fGasDriftVelocity;//minimum time = minimum distance
+    //cout << " Digitize " << gemdet->fGEMhits[ih].edep << " " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+    // }else{
+    IonModel (R, vv1, vv2, gemdet->fGEMhits[ih].edep);
+    //cout << " Digitize " << gemdet->fGEMhits[ih].edep << " " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+    // }
     fEnd = std::chrono::steady_clock::now();
     fDiff = fEnd-fStart;
+    
     
     fTotalTime_ion+= fDiff.count();
     // Get Signal Start Time 'time_zero'
@@ -1093,7 +1286,11 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       
       std::chrono::time_point<std::chrono::steady_clock> fStart2 = 
 	std::chrono::steady_clock::now();
-      AvaModel (igem, gemdet, R, vv1, vv2, time_zero, is_background );
+      if(is_background){
+	AvaModel_2 (igem, gemdet, R, vv1, vv2, time_zero);
+      }else{
+	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
+      }
       fEnd = std::chrono::steady_clock::now();
       fDiff = fEnd-fStart2;
       
@@ -1305,10 +1502,23 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+  h2D_edepVdr->Write();
+
+  h1_AvaSizeYvsX_SemiAna->Write();
+  h1_AvaSizeYvsX_FastAppx->Write();
+  
+  h1_SumweightsSemiAna->Write();
+  h2D_SumweightsFastAppx->Write();
+  
+  h1_GammaEffSemiAna->Write();
+  h2D_GammaEffFastAppx->Write();
+  
+  h1_NormSemiAna->Write();
+  h1_NormFastAppx->Write();
+  
   /*
   h1_SigmaEff->Write();
   h1_NionsPix->Write();
-  h1_Sumweights->Write();
   
   for(int i = 0; i<2; i++){
     h1_nbins_X[i]->Write();

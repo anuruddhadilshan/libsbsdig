@@ -50,24 +50,29 @@ class SBSDigGEMSimDig {
 		TRandom3* R,
 		const TVector3& xi,
 		const TVector3& xo,
-		const Double_t t0,
-		bool isbkgd = false);
+		const Double_t t0);
   
-  void Integration_accurate(double roangle, 
+  void AvaModel_2(const int ic, //module number
+		  SBSDigGEMDet* gemdet,
+		  TRandom3* R,
+		  const TVector3& xi,
+		  const TVector3& xo,
+		  const Double_t t0);
+  
+  void Integration_semiana(double roangle, 
 			    double xl, double xr, double yb, double yt, 
 			    int nx, double xbw);
   
-  void Integration_fast(TRandom3* R, double roangle, 
-			double xc_hit, double yc_hit,
-			double dx2_hit, double dy2_hit,
-			double xl, double xr, double yb, double yt, 
-			int nx, double xbw, int ny, double ybw);
+  void Integration_fastappx(TRandom3* R, double roangle, 
+			    double xc_hit, double yc_hit,
+			    double dx2_hit, double dy2_hit,
+			    double xl, double xr, double yb, double yt, 
+			    int nx, double xbw, int ny, double ybw);
   
   void IonModel (TRandom3* R,
 		 const TVector3& xi,
 		 const TVector3& xo,
-		 const Double_t elost,
-		 bool isbkgd = false);
+		 const Double_t elost);
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers
@@ -94,10 +99,22 @@ class SBSDigGEMSimDig {
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
   
+  TH2D* h2D_edepVdr;
+  
+  TH2D* h1_AvaSizeYvsX_SemiAna;
+  TH2D* h1_AvaSizeYvsX_FastAppx;
+  
+  TH1D* h1_SumweightsSemiAna;
+  TH2D* h2D_SumweightsFastAppx;
+
+  TH1D* h1_GammaEffSemiAna;
+  TH2D* h2D_GammaEffFastAppx;
+  
+  TH1D* h1_NormSemiAna;
+  TH1D* h1_NormFastAppx;
   /*
   TH1D* h1_SigmaEff;
   TH1D* h1_NionsPix;
-  TH1D* h1_Sumweights;
  
   TH1D** h1_nbins_X;
   TH1D** h1_nbins_Y;
