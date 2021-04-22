@@ -22,7 +22,7 @@ SBSDigBkgdGen::SBSDigBkgdGen()
   P2hitsGRINCH = new Double_t[510];
 }
 
-SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow)
+SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig)
 {
   fTimeWindow = timewindow;
   NhitsBBGEMs = new Double_t[5];
@@ -36,6 +36,8 @@ SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow)
   NhitsBBHodo = new Double_t[90];
   P1hitGRINCH = new Double_t[510];
   P2hitsGRINCH = new Double_t[510];
+  
+  fPMTBkgdDig = pmtbkgddig;
   
   Initialize(f_bkgd);
 }
@@ -257,6 +259,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   double beta, sin2thetaC;
   double x_hit, y_hit;
   int idet = 0;
+  
+  if(fPMTBkgdDig){//
+  
   //ordering by increasing unique det ID
   while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
@@ -306,9 +311,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  
 	  //cout << " " << i << " " << edep << " " << Npe << endl;
@@ -340,9 +345,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  //if(edep>1.e-3)
@@ -407,6 +412,8 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
       }
     }
   }
+  
+  }//end if(fDetailedDig) 
   
   idet = 0;
   while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;

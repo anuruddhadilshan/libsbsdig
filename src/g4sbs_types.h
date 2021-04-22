@@ -13,36 +13,37 @@
 //  interface, but I think that makes it more complicated
 //  and breakable
 
-#define qe 1.602e-19
-#define spe_unit 1.0e-9 //to convert ns to s...
-#define m_e 511.e-6
-#define n_lg 1.68
-#define ROimpedance 50.0 //Ohm
+//Replacing these C-style #define statements with C++ const global variable declarations
+const double qe = 1.602e-19;
+const double spe_unit = 1.0e-9; //to convert ns to s...
+const double m_e = 511.e-6; //mass electron in GeV
+const double n_leadglass  = 1.68;    //lead glass refraction index...
+const double ROimpedance = 50.0; //Ohm
 
 // List of detector unique IDs: 
 // by (proposed) convention: DetUniqueID = DetType*10+DetID
 // DetType of type det_type defined in g4sbs_types: kHCal(0), kECal(1), kCher(2), kScint(3), kGEM(4);
 // TODO: also put those in the detector DB, and have DB manager ensure no detector share and indentical unique ID
-#define HCAL_UNIQUE_DETID 0
-#define BBPS_UNIQUE_DETID 10
-#define BBSH_UNIQUE_DETID 11
-#define ECAL_UNIQUE_DETID 12
-#define GRINCH_UNIQUE_DETID 20
-#define RICH_UNIQUE_DETID 21
-#define HODO_UNIQUE_DETID 30
-#define CDET_UNIQUE_DETID 31
-#define ACTIVEANA_UNIQUE_DETID 32
-#define PRPOLBS_SCINT_UNIQUE_DETID 33
-#define PRPOLFS_SCINT_UNIQUE_DETID 34
-#define BBGEM_UNIQUE_DETID 40
-#define SBSGEM_UNIQUE_DETID 41
-#define FT_UNIQUE_DETID 42
-#define FPP1_UNIQUE_DETID 43
-#define FPP2_UNIQUE_DETID 44
-#define CEPOL_GEMFRONT_UNIQUE_DETID 45
-#define CEPOL_GEMREAR_UNIQUE_DETID 46
-#define PRPOLBS_GEM_UNIQUE_DETID 47
-#define PRPOLFS_GEM_UNIQUE_DETID 48
+const int  HCAL_UNIQUE_DETID = 0;
+const int  BBPS_UNIQUE_DETID = 10;
+const int  BBSH_UNIQUE_DETID = 11;
+const int  ECAL_UNIQUE_DETID = 12;
+const int  GRINCH_UNIQUE_DETID = 20;
+const int  RICH_UNIQUE_DETID = 21;
+const int  HODO_UNIQUE_DETID = 30;
+const int  CDET_UNIQUE_DETID = 31;
+const int  ACTIVEANA_UNIQUE_DETID = 32;
+const int  PRPOLBS_SCINT_UNIQUE_DETID = 33;
+const int  PRPOLFS_SCINT_UNIQUE_DETID = 34;
+const int  BBGEM_UNIQUE_DETID = 40;
+const int  SBSGEM_UNIQUE_DETID = 41;
+const int  FT_UNIQUE_DETID = 42;
+const int  FPP1_UNIQUE_DETID = 43;
+const int  FPP2_UNIQUE_DETID = 44;
+const int  CEPOL_GEMFRONT_UNIQUE_DETID = 45;
+const int  CEPOL_GEMREAR_UNIQUE_DETID = 46;
+const int  PRPOLBS_GEM_UNIQUE_DETID = 47;
+const int  PRPOLFS_GEM_UNIQUE_DETID = 48;
 
 /*
 enum exp_type{
