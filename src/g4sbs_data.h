@@ -210,19 +210,35 @@ namespace TSBSGeant4 {
     Int_t              nchan;
     std::vector<Int_t> *chan;
     std::vector<Int_t> *adc;
-    /* std::vector<Int_t> *tdc; */
-    /* std::vector<Int_t> *amp; */
-    /* std::vector<Int_t> *ped; */
     
     TBranch *b_nchan;   //!
     TBranch *b_chan;   //!
     TBranch *b_adc;   //!
-    /* TBranch *b_tdc;   //! */
-    /* TBranch *b_amp;   //! */
-    /* TBranch *b_ped;   //! */
     
   DigCalData_t() : nchan(0), chan(0), adc(0), b_nchan(0), b_chan(0), b_adc(0){};
     virtual ~DigCalData_t(){};
+    virtual bool SetupBranches(TTree *t, const char *prefix);
+    void ClearBranches();
+    void FillBranches();
+  };
+
+  struct DigCalFADC7Data_t : public VDetData_t {
+    Int_t              nchan;
+    std::vector<Int_t> *chan;
+    std::vector<Int_t> *adc;
+    std::vector<Int_t> *tdc;
+    std::vector<Int_t> *amp;
+    std::vector<Int_t> *ped;
+    
+    TBranch *b_nchan;   //!
+    TBranch *b_chan;   //!
+    TBranch *b_adc;   //!
+    TBranch *b_tdc;   //!
+    TBranch *b_amp;   //!
+    TBranch *b_ped;   //!
+    
+  DigCalFADC7Data_t() : nchan(0), chan(0), adc(0), tdc(0), amp(0), ped(0), b_nchan(0), b_chan(0), b_adc(0), b_tdc(0), b_amp(0), b_ped(0){};
+    virtual ~DigCalFADC7Data_t(){};
     virtual bool SetupBranches(TTree *t, const char *prefix);
     void ClearBranches();
     void FillBranches();

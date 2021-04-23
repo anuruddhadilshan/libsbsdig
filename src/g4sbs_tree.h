@@ -126,10 +126,12 @@ public :
    //TSBSGeant4::ECalData_t Earm_BBPS;
    TSBSGeant4::CalData_t Earm_BBPSTF1;
    TSBSGeant4::DigCalData_t Earm_BBPS_Dig;
+   //TSBSGeant4::DigCalFADC7Data_t Earm_BBPS_Dig;
    //TSBSGeant4::ECalData_t Earm_BBSH;
    TSBSGeant4::CalData_t Earm_BBSHTF1;
    TSBSGeant4::DigCalData_t Earm_BBSH_Dig;
-
+   //TSBSGeant4::DigCalFADC7Data_t Earm_BBSH_Dig;
+   
    // Coordinate detector hits
    //TSBSGeant4::ECalData_t Earm_CDET;
    //TSBSGeant4::CalData_t  Earm_CDET_Scint;
