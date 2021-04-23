@@ -496,7 +496,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_CEPolFront.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_CEPolFront.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_CEPolFront.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //  cout<<" Harm_CEPolFront  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_CEPolFront.plane->at(k)<<endl;
+//	    cout<<" Harm_CEPolFront  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_CEPolFront.plane->at(k)<<endl;
 	}//end if(sumedep>0)
 	
       }
@@ -534,7 +534,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_CEPolRear.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_CEPolRear.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_CEPolRear.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //     cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
+	       //cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
 
 	}//end if(sumedep>0)
 	
