@@ -201,6 +201,9 @@ namespace TSBSGeant4 {
     b_nchan = tree->Branch(Form("%s.nchan", prefix), &nchan);
     b_chan = tree->Branch(Form("%s.chan", prefix), &chan);
     b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    // b_tdc = tree->Branch(Form("%s.tdc", prefix), &tdc);
+    // b_amp = tree->Branch(Form("%s.amp", prefix), &amp);
+    // b_ped = tree->Branch(Form("%s.ped", prefix), &ped);
     return true;
   }
   
@@ -210,6 +213,9 @@ namespace TSBSGeant4 {
       nchan = 0;
       chan->clear();
       adc->clear();
+      // tdc->clear();
+      // amp->clear();
+      // ped->clear();
     }
   }
   
@@ -219,6 +225,9 @@ namespace TSBSGeant4 {
       b_nchan->Fill();
       b_chan->Fill();
       b_adc->Fill();
+      // b_tdc->Fill();
+      // b_amp->Fill();
+      // b_ped->Fill();
     }
   }
   

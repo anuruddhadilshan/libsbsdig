@@ -210,10 +210,16 @@ namespace TSBSGeant4 {
     Int_t              nchan;
     std::vector<Int_t> *chan;
     std::vector<Int_t> *adc;
+    /* std::vector<Int_t> *tdc; */
+    /* std::vector<Int_t> *amp; */
+    /* std::vector<Int_t> *ped; */
     
     TBranch *b_nchan;   //!
     TBranch *b_chan;   //!
     TBranch *b_adc;   //!
+    /* TBranch *b_tdc;   //! */
+    /* TBranch *b_amp;   //! */
+    /* TBranch *b_ped;   //! */
     
   DigCalData_t() : nchan(0), chan(0), adc(0), b_nchan(0), b_chan(0), b_adc(0){};
     virtual ~DigCalData_t(){};

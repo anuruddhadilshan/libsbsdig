@@ -23,9 +23,13 @@ class SPEModel {
   double Eval(double t){return fPulseHisto->Interpolate(t);};
   bool   PulseOverThr(double charge, double thr);
   bool   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
+  bool   FindPeakTimeAmp(double charge, double thr, double &amp_peak, double &t_peak);
   
  private:
   TH1D *fPulseHisto;//At least we'll have to setup and use one per detector
+  // Eric: I start to suspect that even thoough we only initialize them once a run, 
+  // using histograms slow us down... will have to investigate better.
+  // NB: it is better than functions, but still...
   double GetHistoX(double y, double x1, double x2);
   
   //ClassDef(SPEModel,1);//it actually doesn't like classdef... (not sure why...)
@@ -37,7 +41,8 @@ class PMTSignal {
   PMTSignal();
   PMTSignal(double npechargeconv);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
-  void Fill(int npe, double thr, double evttime, double sigmatime, int signal);
+  void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal);
+  void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal);
   void Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T, 
 		TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits);
   void Clear(bool dosamples = false);
@@ -89,6 +94,8 @@ class PMTSignal {
   std::vector<Int_t> fTDCs;
   //SimEncoder::tdc_data fTDCData;
   //TRndmManager* fRN;
+  std::vector<double> fPeakAmps;
+  //std::vector<Int_t> fAmps;
 
   //let's try something for HCal
   //TF1* f1;

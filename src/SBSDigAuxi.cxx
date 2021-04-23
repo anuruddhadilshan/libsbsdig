@@ -59,7 +59,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
 	//Generate here,...
 	//cout << " HCal : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_HCalScint.tavg->at(k) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
-	pmtdets[idet]->PMTmap[chan].Fill(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, signal);
+	pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, signal);
       }
       has_data = true;
     }

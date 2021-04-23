@@ -79,6 +79,25 @@ bool SPEModel::FindLeadTrailTime(double charge, double thr, double &t_lead, doub
   }
 }
 
+bool SPEModel::FindPeakTimeAmp(double charge, double thr, double &amp_peak, double &t_peak)
+{
+  if(!PulseOverThr(charge, thr)){
+    t_peak = 1.0e38;
+    amp_peak = 1.0e38;
+    return false;
+  }else{
+    amp_peak = fPulseHisto->GetMaximum();
+    int binmax = fPulseHisto->GetMaximumBin();
+    t_peak = fPulseHisto->GetBinCenter(binmax-1)*fPulseHisto->GetBinContent(binmax-1)+
+      amp_peak*fPulseHisto->GetBinCenter(binmax)+
+      fPulseHisto->GetBinCenter(binmax+1)*fPulseHisto->GetBinContent(binmax+1);
+    t_peak/= (fPulseHisto->GetBinContent(binmax-1)+
+	      amp_peak+
+	      fPulseHisto->GetBinContent(binmax+1));
+    //
+  }
+}
+
 double SPEModel::GetHistoX(double y, double x1, double x2)
 {
   double splineslope;
@@ -102,7 +121,8 @@ PMTSignal::PMTSignal()
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
-  
+
+  fPeakAmps.clear();
   //f1 = 0;
   //R = TRndmManager::GetInstance();
 }
@@ -243,7 +263,7 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   }//end if(t_lead && t_trail<30)
 }
 
-void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int signal)
+void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal)
 {
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
@@ -387,6 +407,19 @@ void PMTSignal::Fill(int npe, double thr, double evttime, double sigmatime, int 
   }//end if(t_lead && t_trail<30)
 }
 
+void PMTSignal::Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal)
+{
+  if(signal==0)fEventTime = evttime;
+  fNpe+= npe;
+  
+  //Mode7 (?): pedestal, amplitude, integral, peak time (I assume there is a threshold?) 
+  double amp_peak, t_peak;
+  
+  if(model->FindPeakTimeAmp(npe*fNpeChargeConv, thr, amp_peak, t_peak)){
+    fLeadTimes.push_back(t_peak);
+    fPeakAmps.push_back(amp_peak);
+  }
+}
 
 
 void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T, 
@@ -402,6 +435,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   if( fADC>UInt_t(TMath::Nint( TMath::Power(2, ADCbits) )) ){
     fADC = TMath::Nint( TMath::Power(2, ADCbits) );
   }
+  
+  //if(fPeakAmps.size()){
+  //for(int i = 0; i<fPeakAmps.size(); i++){
+  //}
+  //}
   
   Int_t tdc_value;
   if(fLeadTimes.size()){
@@ -453,6 +491,21 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBPS_Dig.nchan++;
     T->Earm_BBPS_Dig.chan->push_back(chan);
     T->Earm_BBPS_Dig.adc->push_back(fADC);
+    /*
+    if(fPeakAmps.size()){
+      double ped_amp;
+      for(int i = 0; i<fPeakAmps.size(); i++){
+	if(i>0){
+	  T->Earm_BBPS_Dig.nchan++;
+	  T->Earm_BBPS_Dig.chan->push_back(chan);
+	  T->Earm_BBPS_Dig.adc->push_back(-1000000);
+	}
+	ped_amp = R->Gaus(ped, ped_noise);
+	T->Earm_BBPS_Dig.->push(Int_t(ped_amp));
+	T->Earm_BBPS_Dig.->push(Int_t(ped_amp+fPeakAmps[i]*ADCconv));
+      }
+    }
+    */
   }
   
   if(detid==BBSH_UNIQUE_DETID){
@@ -462,6 +515,21 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBSH_Dig.nchan++;
     T->Earm_BBSH_Dig.chan->push_back(chan);
     T->Earm_BBSH_Dig.adc->push_back(fADC);
+    /*
+    if(fPeakAmps.size()){
+      double ped_amp;
+      for(int i = 0; i<fPeakAmps.size(); i++){
+	if(i>0){
+	  T->Earm_BBSH_Dig.nchan++;
+	  T->Earm_BBSH_Dig.chan->push_back(chan);
+	  T->Earm_BBSH_Dig.adc->push_back(-1000000);
+	}
+	ped_amp = R->Gaus(ped, ped_noise);
+	T->Earm_BBSH_Dig.->push(Int_t(ped_amp));
+	T->Earm_BBSH_Dig.->push(Int_t(ped_amp+fPeakAmps[i]*ADCconv));
+      }
+    }
+    */
   }
   
   if(detid==ECAL_UNIQUE_DETID){
@@ -762,6 +830,8 @@ void PMTSignal::Clear(bool dosamples)
   fLeadTimes.clear();
   fTrailTimes.clear();
   fTDCs.clear();
+  
+  fPeakAmps.clear();
   
   if(dosamples){
     memset(fSamples, 0, fNSamps*sizeof(double));
