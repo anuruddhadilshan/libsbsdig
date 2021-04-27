@@ -152,8 +152,11 @@ int main(int argc, char** argv){
   Double_t ped_bbps = 600.;//
   Double_t pedsigma_bbps = 3.;//
   Double_t trigoffset_bbps = 18.2;//
+  Double_t threshold_bbps = 3.e-3;
   Double_t ADCconv_bbps = 50.;
   Int_t ADCbits_bbps = 12;
+  Double_t TDCconv_bbps = 1.;
+  Int_t TDCbits_bbps = 12;
   Double_t sigmapulse_bbps = 3.0;
     
   Int_t NChan_bbsh = 189;
@@ -162,8 +165,11 @@ int main(int argc, char** argv){
   Double_t ped_bbsh = 500.;
   Double_t pedsigma_bbsh = 4.5;
   Double_t trigoffset_bbsh = 18.5;
+  Double_t threshold_bbsh = 3.e-3;
   Double_t ADCconv_bbsh = 50.;
   Int_t ADCbits_bbsh = 12;
+  Double_t TDCconv_bbsh = 1.;
+  Int_t TDCbits_bbsh = 12;
   Double_t sigmapulse_bbsh = 3.0;
     
   Int_t NChan_grinch = 510;
@@ -394,6 +400,11 @@ int main(int argc, char** argv){
 	  pedsigma_bbps = stemp.Atof();
 	}
 	
+	if(skey=="threshold_bbps"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_bbps = stemp.Atof();
+	}
+	
 	if(skey=="trigoffset_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  trigoffset_bbps = stemp.Atof();
@@ -407,6 +418,16 @@ int main(int argc, char** argv){
 	if(skey=="ADCbits_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ADCbits_bbps = stemp.Atoi();
+	}	
+	
+	if(skey=="TDCconv_bbps"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_bbps = stemp.Atof();
+	}	
+
+	if(skey=="TDCbits_bbps"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_bbps = stemp.Atoi();
 	}	
 	
 	if(skey=="sigmapulse_bbps"){
@@ -445,6 +466,11 @@ int main(int argc, char** argv){
 	  trigoffset_bbsh = stemp.Atof();
 	}
 	
+	if(skey=="threshold_bbsh"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_bbsh = stemp.Atof();
+	}
+	
 	if(skey=="ADCconv_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ADCconv_bbsh = stemp.Atof();
@@ -454,6 +480,16 @@ int main(int argc, char** argv){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  ADCbits_bbsh = stemp.Atoi();
 	}	
+	
+	if(skey=="TDCconv_bbsh"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_bbsh = stemp.Atof();
+	}	
+
+	if(skey=="TDCbits_bbsh"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_bbsh = stemp.Atoi();
+	}
 	
 	if(skey=="sigmapulse_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
@@ -1721,9 +1757,12 @@ int main(int argc, char** argv){
       bbps->fPedestal = ped_bbps;
       bbps->fPedSigma = pedsigma_bbps;
       bbps->fTrigOffset = trigoffset_bbps;
+      bbps->fThreshold = threshold_bbps*spe_unit/ROimpedance;
       bbps->fGateWidth = gatewidth_bbps;
       bbps->fADCconv = ADCconv_bbps;
       bbps->fADCbits = ADCbits_bbps;
+      bbps->fTDCconv = TDCconv_bbps;
+      bbps->fTDCbits = TDCbits_bbps;
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
@@ -1737,9 +1776,12 @@ int main(int argc, char** argv){
       bbsh->fPedestal = ped_bbsh;
       bbsh->fPedSigma = pedsigma_bbsh;
       bbsh->fTrigOffset = trigoffset_bbsh;
+      bbsh->fThreshold = threshold_bbsh*spe_unit/ROimpedance;
       bbsh->fGateWidth = gatewidth_bbsh;
       bbsh->fADCconv = ADCconv_bbsh;
       bbsh->fADCbits = ADCbits_bbsh;    
+      bbsh->fTDCconv = TDCconv_bbsh;
+      bbsh->fTDCbits = TDCbits_bbsh;
       
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
