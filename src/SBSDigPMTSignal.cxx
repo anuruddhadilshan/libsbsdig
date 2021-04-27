@@ -509,11 +509,14 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  T->Earm_BBPS_Dig.adc->push_back(-1000000);
 	}
 	T->Earm_BBPS_Dig.tdc->push_back(fTDCs[i]-1000);
-	//T->Earm_BBPS_Dig.ped->push_back(i-1000);
 	ped_amp = R->Gaus(ped, ped_noise);
 	T->Earm_BBPS_Dig.ped->push_back(TMath::Nint(ped_amp));
 	T->Earm_BBPS_Dig.amp->push_back(TMath::Nint(ped_amp+fPeakAmps[i]*1.0e15/ADCconv));
       }
+    }else{
+      T->Earm_BBPS_Dig.tdc->push_back(-1000000);
+      T->Earm_BBPS_Dig.ped->push_back(-1000000);
+      T->Earm_BBPS_Dig.amp->push_back(-1000000);
     }
   }
   
@@ -541,6 +544,10 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	T->Earm_BBSH_Dig.amp->push_back(TMath::Nint(ped_amp+fPeakAmps[i]*1.0e15/ADCconv));
 	
       }
+    }else{
+      T->Earm_BBSH_Dig.tdc->push_back(-1000000);
+      T->Earm_BBSH_Dig.ped->push_back(-1000000);
+      T->Earm_BBSH_Dig.amp->push_back(-1000000);
     }
   }
   
