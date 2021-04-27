@@ -13,8 +13,12 @@ gain_bbps 2.e6
 ped_bbps 600.0 
 pedsigma_bbps 3.0 
 trigoffset_bbps 18.2 
+#TODO: Update the 5 parameters below 
+threshold_bbps 3.e-3 
 ADCconv_bbps 50 
 ADCbits_bbps 12 
+TDCconv_bbps 1.0 
+TDCbits_bbps 12 
 sigmapulse_bbps 3.0 
 
 ## parameters for bbsh
@@ -24,8 +28,12 @@ gain_bbsh 7.5e5
 ped_bbsh 500.0 
 pedsigma_bbsh 4.5 
 trigoffset_bbsh 18.5 
+#TODO: Update the 5 parameters below 
+threshold_bbsh 3.e-3 
 ADCconv_bbsh 50 
 ADCbits_bbsh 12 
+TDCconv_bbsh 1.0 
+TDCbits_bbsh 12 
 sigmapulse_bbsh 3.0 
 
 ## parameters for grinch
