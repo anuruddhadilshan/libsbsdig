@@ -536,13 +536,52 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_CEPolRear.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_CEPolRear.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_CEPolRear.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	       //cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
+	      //cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
 
 	}//end if(sumedep>0)
 	
       }
       has_data = true;  
     }
+    //GEn-rp GEMs: prpolbs_gem
+    idet = 0;
+    while(idet<(int)gemmap.size()){
+      if(gemmap[idet]!=PRPOLBS_GEM_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=gemmap.size())idet = -1;
+    if(idet>=0){// && T->Earm_BBGEM.nhits){
+      for(int k = 0; k<T->Harm_PrPolGEMBeamSide.nhits; k++){
+	if(T->Harm_PrPolGEMBeamSide.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  mod = 0;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_PrPolGEMBeamSide.xin->at(k) && T->Harm_PrPolGEMBeamSide.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_PrPolGEMBeamSide.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_PrPolGEMBeamSide.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  hit.t = tzero+T->Harm_PrPolGEMBeamSide.t->at(k);
+	  hit.xin = T->Harm_PrPolGEMBeamSide.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_PrPolGEMBeamSide.yin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = T->Harm_PrPolGEMBeamSide.zin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
+	  hit.xout = T->Harm_PrPolGEMBeamSide.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_PrPolGEMBeamSide.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = T->Harm_PrPolGEMBeamSide.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+	       cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
+
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+
 
     }   
   return has_data;
