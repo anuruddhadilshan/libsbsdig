@@ -21,6 +21,7 @@ class SPEModel {
   SPEModel(UShort_t uniqueid, double sigma, double t0 = 0, double tmin = -50, double tmax = +50);
   virtual ~SPEModel();
   double Eval(double t){return fPulseHisto->Interpolate(t);};
+  double Integral(int binmin, int binmax);
   bool   PulseOverThr(double charge, double thr);
   bool   FindLeadTrailTime(double charge, double thr, double &t_lead, double &t_trail);
   bool   FindPeakTimeAmp(double charge, double thr, double &amp_peak, double &t_peak);
@@ -44,7 +45,7 @@ class PMTSignal {
   void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal);
   void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal);
   void Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T, 
-		TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits);
+		TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits, int thr_adc);
   void Clear(bool dosamples = false);
   ~PMTSignal(){Clear();};
   

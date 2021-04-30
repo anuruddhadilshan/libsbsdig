@@ -155,8 +155,8 @@ int main(int argc, char** argv){
   Double_t threshold_bbps = 3.e-3;
   Double_t ADCconv_bbps = 50.;
   Int_t ADCbits_bbps = 12;
-  Double_t TDCconv_bbps = 1.;
-  Int_t TDCbits_bbps = 12;
+  Double_t TDCconv_bbps = 0.0625;
+  Int_t TDCbits_bbps = 15;
   Double_t sigmapulse_bbps = 3.0;
     
   Int_t NChan_bbsh = 189;
@@ -168,8 +168,8 @@ int main(int argc, char** argv){
   Double_t threshold_bbsh = 3.e-3;
   Double_t ADCconv_bbsh = 50.;
   Int_t ADCbits_bbsh = 12;
-  Double_t TDCconv_bbsh = 1.;
-  Int_t TDCbits_bbsh = 12;
+  Double_t TDCconv_bbsh = 0.0625;
+  Int_t TDCbits_bbsh = 15;
   Double_t sigmapulse_bbsh = 3.0;
     
   Int_t NChan_grinch = 510;
@@ -1922,6 +1922,7 @@ int main(int argc, char** argv){
       bbps->fADCbits = ADCbits_bbps;
       bbps->fTDCconv = TDCconv_bbps;
       bbps->fTDCbits = TDCbits_bbps;
+      bbps->SetSamples(FADC_sampsize);
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
@@ -1941,7 +1942,8 @@ int main(int argc, char** argv){
       bbsh->fADCbits = ADCbits_bbsh;    
       bbsh->fTDCconv = TDCconv_bbsh;
       bbsh->fTDCbits = TDCbits_bbsh;
-      
+      bbsh->SetSamples(FADC_sampsize);
+            
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
       cout << " set up! " << endl;
@@ -2157,7 +2159,7 @@ int main(int argc, char** argv){
       
       //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
-	if(detmap[k]==HCAL_UNIQUE_DETID){
+	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
 	}else{
 	  PMTdetectors[k]->Clear();
