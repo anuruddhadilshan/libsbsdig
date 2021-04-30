@@ -27,10 +27,10 @@ gatewidth_bbsh 100
 gain_bbsh 7.5e5
 ped_bbsh 600.0 
 pedsigma_bbsh 4.5 
-trigoffset_bbsh 18.5
+trigoffset_bbsh 18.5 
 #TODO: Update the 5 parameters below 
 #threshold in ADC, not in V...
-threshold_bbsh 650
+threshold_bbsh 650 
 ADCconv_bbsh 40 
 ADCbits_bbsh 20 
 TDCconv_bbsh 0.0625 
@@ -78,20 +78,6 @@ TDCconv_hcal 0.12
 TDCbits_hcal 16 
 FADC_ADCbits 12 
 FADC_sampsize 4.0 
-
-## parameters for HODO prpolscint_bs
-NChan_polscint_bs 180 
-gatewidth_polscint_bs 100 
-gain_polscint_bs 1.0e5
-ped_polscint_bs 500.0 
-pedsigma_polscint_bs 3.0
-trigoffset_polscint_bs 18.6 
-threshold_polscint_bs 3.e-3 
-ADCconv_polscint_bs 100 
-ADCbits_polscint_bs 12 
-TDCconv_polscint_bs 0.1 
-TDCbits_polscint_bs 19 
-sigmapulse_polscint_bs 1.6 
 
 ## parameters for GEMs
 # number of planes/modules/readout
