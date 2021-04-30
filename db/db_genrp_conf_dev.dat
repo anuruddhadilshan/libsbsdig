@@ -14,10 +14,10 @@ pedsigma_bbps 3.0
 trigoffset_bbps 18.2 
 #TODO: Update the 5 parameters below 
 threshold_bbps 3.e-3 
-ADCconv_bbps 50 
-ADCbits_bbps 12 
-TDCconv_bbps 1.0 
-TDCbits_bbps 12 
+ADCconv_bbps 40 
+ADCbits_bbps 20 
+TDCconv_bbps 0.0625 
+TDCbits_bbps 15 
 sigmapulse_bbps 3.0 
 
 ## parameters for bbsh
@@ -29,10 +29,10 @@ pedsigma_bbsh 4.5
 trigoffset_bbsh 18.5 
 #TODO: Update the 5 parameters below 
 threshold_bbsh 3.e-3 
-ADCconv_bbsh 50 
-ADCbits_bbsh 12 
-TDCconv_bbsh 1.0 
-TDCbits_bbsh 12 
+ADCconv_bbsh 40 
+ADCbits_bbsh 20 
+TDCconv_bbsh 0.0625 
+TDCbits_bbsh 15 
 sigmapulse_bbsh 3.0 
 
 ## parameters for grinch
@@ -71,7 +71,7 @@ ped_hcal 0.0
 pedsigma_hcal 0.0
 trigoffset_hcal 81.0 
 threshold_hcal 3.e-3 
-ADCconv_hcal 1.0 
+ADCconv_hcal 40.0 
 TDCconv_hcal 0.12 
 TDCbits_hcal 16 
 FADC_ADCbits 12 
