@@ -186,7 +186,7 @@ sigmapulse_activeana 1.6
  gatewidth_prpolbs_gem 400
  #number of strips for each plane/module
  nlayers_prpolbs_gem 2
- prpolbs_gem_layer_z 1.44 1.54
+ prpolbs_gem_layer_z 0 0
  layer_prpolbs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
  nstrips_prpolbs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
  #offset in transport coordinate for each plane/module in meters
