@@ -64,6 +64,7 @@ class SBSDigGEMSimDig {
 			    int nx, double xbw);
   
   void Integration_fastappx(TRandom3* R, double roangle, 
+			    double nions_strip,
 			    double xc_hit, double yc_hit,
 			    double dx2_hit, double dy2_hit,
 			    double xl, double xr, double yb, double yt, 
@@ -103,6 +104,8 @@ class SBSDigGEMSimDig {
   
   TH2D* h1_AvaSizeYvsX_SemiAna;
   TH2D* h1_AvaSizeYvsX_FastAppx;
+  TH2D* h1_AvaSizeVsZion_SemiAna;
+  TH2D* h1_AvaSizeVsTTime_SemiAna;
   
   TH1D* h1_SumweightsSemiAna;
   TH2D* h2D_SumweightsFastAppx;

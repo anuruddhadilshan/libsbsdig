@@ -285,7 +285,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	
 	//if(edep>1.e-3)
-	pmtdets[idet]->PMTmap[m].Fill(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
+	pmtdets[idet]->PMTmap[m].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
       }
     }
   }

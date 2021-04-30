@@ -201,6 +201,9 @@ namespace TSBSGeant4 {
     b_nchan = tree->Branch(Form("%s.nchan", prefix), &nchan);
     b_chan = tree->Branch(Form("%s.chan", prefix), &chan);
     b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    // b_tdc = tree->Branch(Form("%s.tdc", prefix), &tdc);
+    // b_amp = tree->Branch(Form("%s.amp", prefix), &amp);
+    // b_ped = tree->Branch(Form("%s.ped", prefix), &ped);
     return true;
   }
   
@@ -210,6 +213,9 @@ namespace TSBSGeant4 {
       nchan = 0;
       chan->clear();
       adc->clear();
+      // tdc->clear();
+      // amp->clear();
+      // ped->clear();
     }
   }
   
@@ -219,6 +225,50 @@ namespace TSBSGeant4 {
       b_nchan->Fill();
       b_chan->Fill();
       b_adc->Fill();
+      // b_tdc->Fill();
+      // b_amp->Fill();
+      // b_ped->Fill();
+    }
+  }
+  
+  bool DigCalFADC7Data_t::SetupBranches(TTree* tree, const char *prefix)
+  {
+    if(!tree)return(false);
+    chan = new std::vector<int>;
+    adc = new std::vector<int>;
+    tdc = new std::vector<int>;
+    amp = new std::vector<int>;
+    ped = new std::vector<int>;
+    b_nchan = tree->Branch(Form("%s.nchan", prefix), &nchan);
+    b_chan = tree->Branch(Form("%s.chan", prefix), &chan);
+    b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    b_tdc = tree->Branch(Form("%s.tdc", prefix), &tdc);
+    b_amp = tree->Branch(Form("%s.amp", prefix), &amp);
+    b_ped = tree->Branch(Form("%s.ped", prefix), &ped);
+    return true;
+  }
+  
+  void DigCalFADC7Data_t::ClearBranches()
+  {
+    if(chan){//if one var is defined they all are
+      nchan = 0;
+      chan->clear();
+      adc->clear();
+      tdc->clear();
+      amp->clear();
+      ped->clear();
+    }
+  }
+  
+  void DigCalFADC7Data_t::FillBranches()
+  {
+    if(b_nchan){//if one branch is defined they all are
+      b_nchan->Fill();
+      b_chan->Fill();
+      b_adc->Fill();
+      b_tdc->Fill();
+      b_amp->Fill();
+      b_ped->Fill();
     }
   }
   

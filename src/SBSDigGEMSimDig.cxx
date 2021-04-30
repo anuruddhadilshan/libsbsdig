@@ -84,6 +84,8 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
 
   h1_AvaSizeYvsX_SemiAna = new TH2D("h1_AvaSizeYvsX_SemiAna", "", 100, 0.0, 100, 100, 0.0, 100);
   h1_AvaSizeYvsX_FastAppx = new TH2D("h1_AvaSizeYvsX_FastAppx", "", 100, 0.0, 100, 100, 0.0, 100);
+  h1_AvaSizeVsZion_SemiAna = new TH2D("h1_AvaSizeVsZion_SemiAna", "", 100, -2.0, 2.0, 100, 0.1, 0.2);
+  h1_AvaSizeVsTTime_SemiAna = new TH2D("h1_AvaSizeVsTTime_SemiAna", "", 150, 0., 300, 100, 0.1, 0.2);
   
   h1_SumweightsSemiAna = new TH1D("h1_SumweightsSemiAna", "", 100, 0., 100);
   h2D_SumweightsFastAppx = new TH2D("h2D_SumweightsFastAppx", "", 100, 0., 50., 750, 0., 750);
@@ -206,9 +208,7 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
   TVector3 vseg = xo-xi; // mm
   
   // ---- extract primary ions from Poisson
-  double n0ions = elost/fGasWion;
-  //if(isbkgd)n0ions*=0.2;
-  fRNIon = R->Poisson(n0ions);//elost/fGasWion);
+  fRNIon = R->Poisson(elost/fGasWion);
 
   if (fRNIon <=0)
     return;
@@ -272,6 +272,9 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     else
       ip.Charge = 0;
 
+    h1_AvaSizeVsZion_SemiAna->Fill(xi.Z()+vseg.Z()*lion, ip.SNorm);
+    h1_AvaSizeVsTTime_SemiAna->Fill(ttime*1.e9, ip.SNorm);
+    
     fRSMax = TMath::Max(ip.SNorm, fRSMax);
 
     // Derived quantities needed by the numerical integration in AvaModel
@@ -417,12 +420,13 @@ void SBSDigGEMSimDig::Integration_semiana(double roangle,
 }
 
 void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle, 
-				       double xc_hit, double yc_hit,
-				       double dx2_hit, double dy2_hit,
-				       double xl, double xr, 
-				       double yb, double yt, 
-				       int nx, double xbw, 
-				       int ny, double ybw)
+					   double nions_strip,
+					   double xc_hit, double yc_hit,
+					   double dx2_hit, double dy2_hit,
+					   double xl, double xr, 
+					   double yb, double yt, 
+					   int nx, double xbw, 
+					   int ny, double ybw)
 {
   //cout << " integration_fastappx " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
   //so we do the numerical stuff, but only on the average hit... and then what?
@@ -445,7 +449,8 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
   cout << "ix dx iy dy " << ix << " " << dx << " " << iy << " " << dy << endl;
 #endif
   
-  double Ld_ion = fRNIon/sqrt(dx2_hit+dy2_hit);
+  //double NionsStrip = fRNIon/sqrt(dx2_hit);
+  //double Ld_ion = fRNIon/sqrt(dx2_hit+dy2_hit);
   //
   // NL change:
   //
@@ -463,7 +468,7 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
   Double_t eff_sigma = TMath::Sqrt(eff_sigma_square);
   Double_t Amplitude = fAvaGain*fRNIon*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma);
 
-  double NionsPix = Ld_ion*eff_sigma*R->Gaus(4., 1.);//
+  //double NionsStrip = Ld_ion*eff_sigma*R->Gaus(4., 1.);//
   
   h1_NormFastAppx->Fill(Amplitude);
   //h1_SigmaEff->Fill(eff_sigma);
@@ -487,13 +492,13 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
     Int_t jy = min_binNb_y;
     Double_t yc = yb + (jy+0.5) * ybw;
     
-    //double b_smear = R->Poisson(NionsPix);//dummy for the moment...
+    //double b_smear = R->Poisson(nions_strip)/nions_strip;//should fluctuate around 1.
 
     for (; jy < max_binNb_y; ++jy, yc += ybw){
       Double_t yd2 = frys-yc; yd2 *= yd2;
       
       if( xd2 + yd2 <= r2 ) {
-	weight = 1. / 
+	weight = 1./ // b_smear / 
 	  (eff_sigma_square + xd2/(1+dx2_hit) +yd2/(1+dy2_hit) );
 	//(eff_sigma_square + xd2 +yd2 );
 	fSumA[jx_base+jy] += weight*Amplitude;
@@ -981,6 +986,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
   double yc_hit = (xi.Y()+xo.Y())/2.;
   double dx2_hit = (xo.X()-xi.X())/3.0;//(xo.Z()-xi.Z());
   double dy2_hit = (xo.Y()-xi.Y())/3.0;//(xo.Z()-xi.Z());
+  double NionsStrip[2] = {fRNIon*fabs(xo.X()-xi.X()), fRNIon*fabs(xo.Y()-xi.Y())};
   dx2_hit*= dx2_hit;
   dy2_hit*= dy2_hit;
   
@@ -1107,8 +1113,9 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
     //double r_ = R->Gaus(0.55, 0.1);
     //dx2_hit = r_*cos(ph);dx2_hit*= dx2_hit;
     //dy2_hit = r_*sin(ph);dy2_hit*= dy2_hit;
+    
     //if(sqrt(dx2_hit+dy2_hit)<1.0){
-    Integration_fastappx(R, roangle_mod, xc_hit, yc_hit, dx2_hit, dy2_hit, xl, xr, yb, yt, nx, xbw, ny, ybw);
+    Integration_fastappx(R, roangle_mod, NionsStrip[ipl], xc_hit, yc_hit, dx2_hit, dy2_hit, xl, xr, yb, yt, nx, xbw, ny, ybw);
     //}
     
     fEnd = std::chrono::steady_clock::now();
@@ -1287,9 +1294,9 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
       std::chrono::time_point<std::chrono::steady_clock> fStart2 = 
 	std::chrono::steady_clock::now();
       if(is_background){
-	AvaModel_2 (igem, gemdet, R, vv1, vv2, time_zero);
+       	AvaModel_2 (igem, gemdet, R, vv1, vv2, time_zero);
       }else{
-	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
+       	AvaModel (igem, gemdet, R, vv1, vv2, time_zero);
       }
       fEnd = std::chrono::steady_clock::now();
       fDiff = fEnd-fStart2;
@@ -1518,6 +1525,8 @@ void SBSDigGEMSimDig::write_histos()
 
   h1_AvaSizeYvsX_SemiAna->Write();
   h1_AvaSizeYvsX_FastAppx->Write();
+  h1_AvaSizeVsZion_SemiAna->Write();
+  h1_AvaSizeVsTTime_SemiAna->Write();
   
   h1_SumweightsSemiAna->Write();
   h2D_SumweightsFastAppx->Write();
