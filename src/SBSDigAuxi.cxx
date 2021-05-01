@@ -580,7 +580,8 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	       cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
 
-	}//end if(sumedep>0)
+ //cout<<"  lando "<<" puti   "<<endl;
+    }//end if(sumedep>0)
 	
       }
       has_data = true;  
