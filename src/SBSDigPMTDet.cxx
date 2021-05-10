@@ -8,11 +8,11 @@ SBSDigPMTDet::SBSDigPMTDet()
 {
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal());
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv));
 }
 
 SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):

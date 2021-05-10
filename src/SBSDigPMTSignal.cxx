@@ -286,6 +286,9 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   //cout << "fillfadcmode1 " << sigmatime << endl;
   
   SetPulseParam(npe*fNpeChargeConv, evttime, sigmatime);
+  
+  //cout << npe*fNpeChargeConv << " " << evttime << " " << sigmatime << endl;
+  
   //f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
   //determine lead and trail times
   double t_lead, t_trail;
@@ -505,27 +508,25 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     Int_t Nconv = fNSamps/fNADCSamps;
     for(int i = 0; i<fNADCSamps; i++){
       for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
-      fADCSamples[i]/=ADCconv;
+      fADCSamples[i]*=1.0e15/ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
       
       if(fADCSamples[i]>4095)fADCSamples[i] = 4095;
       
       fADC+=fADCSamples[i];
-
+      /*
       if(i_tc<0 && fADCSamples[i]>thr_adc)i_tc = i;
       if(fADCSamples[i]>vpeak){
 	vpeak = fADCSamples[i];
 	i_max = i;
       }
       if(i<4)vmin+= fADCSamples[i]/4;
+      */
     }
   }
   //fSumEdep*=1.0e9;// store in eV.
   
   //Fill in directly (hoping it takes less time...)
-  //switch(detid){
-  //case(BBPS_UNIQUE_DETID):
-  //}
   
   if(detid==BBPS_UNIQUE_DETID){
     // T->Earm_BBPS_dighit_nchan++;
@@ -533,7 +534,28 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     // T->Earm_BBPS_dighit_adc->push_back(fADC);
     T->Earm_BBPS_Dig.nchan++;
     T->Earm_BBPS_Dig.chan->push_back(chan);
-        
+    
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBPS_Dig.adc->push_back(fADCSamples[i]);
+      T->Earm_BBPS_Dig.samp->push_back(i);
+    }
+    /*
+    if(fTDCs.size()){
+      for(int j = 0;j<fTDCs.size(); j++){
+	T->Earm_BBPS_Dig.tdc->push_back(fTDCs[j]-1000);
+	if(j>1){ 
+	  T->Earm_BBPS_Dig.nchan++;
+	  T->Earm_BBPS_Dig.chan->push_back(chan);
+	  T->Earm_BBPS_Dig.adc->push_back(-1000000);
+	  T->Earm_BBPS_Dig.samp->push_back(-1000000);
+	}
+      }
+    }else{
+    */
+    T->Earm_BBPS_Dig.tdc->push_back(-1000000);
+    //}
+    
+    /*
     double vmid = (vpeak+vmin)/2;
     double integral = 0;
     double tf;
@@ -550,7 +572,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBPS_Dig.ped->push_back(TMath::Nint(vmin));
     T->Earm_BBPS_Dig.amp->push_back(TMath::Nint(vpeak));
     T->Earm_BBPS_Dig.tdc->push_back(tf*TDCconv);
-    
+    */
     /*
     T->Earm_BBPS_Dig.adc->push_back(fADC);
     //if(fPeakAmps.size()!=fTDCs.size()){
@@ -583,7 +605,28 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     // T->Earm_BBSH_dighit_adc->push_back(fADC);
     T->Earm_BBSH_Dig.nchan++;
     T->Earm_BBSH_Dig.chan->push_back(chan);
-        
+    
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBSH_Dig.adc->push_back(fADCSamples[i]);
+      T->Earm_BBSH_Dig.samp->push_back(i);
+    }
+    /*
+    if(fTDCs.size()){
+      for(int j = 0;j<fTDCs.size(); j++){
+	T->Earm_BBSH_Dig.tdc->push_back(fTDCs[j]-1000);
+	if(j>1){ 
+	  T->Earm_BBSH_Dig.nchan++;
+	  T->Earm_BBSH_Dig.chan->push_back(chan);
+	  T->Earm_BBSH_Dig.adc->push_back(-1000000);
+	  T->Earm_BBSH_Dig.samp->push_back(-1000000);
+	}
+      }
+    }else{
+    */
+    T->Earm_BBSH_Dig.tdc->push_back(-1000000);
+    //}
+    
+    /*
     double vmid = (vpeak+vmin)/2;
     double integral = 0;
     double tf;
@@ -600,7 +643,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Earm_BBSH_Dig.ped->push_back(TMath::Nint(vmin));
     T->Earm_BBSH_Dig.amp->push_back(TMath::Nint(vpeak));
     T->Earm_BBSH_Dig.tdc->push_back(tf*TDCconv);
-    
+    */
     /*
     T->Earm_BBSH_Dig.adc->push_back(fADC);
     //if(fPeakAmps.size()!=fTDCs.size()){

@@ -1916,7 +1916,8 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
+      //SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe);
 
       bbps->fGain = gain_bbps;
       bbps->fPedestal = ped_bbps;
@@ -1925,9 +1926,11 @@ int main(int argc, char** argv){
       bbps->fThreshold = threshold_bbps*spe_unit/ROimpedance;
       bbps->fGateWidth = gatewidth_bbps;
       bbps->fADCconv = ADCconv_bbps;
-      bbps->fADCbits = ADCbits_bbps;
+      //bbps->fADCbits = ADCbits_bbps;
+      bbps->fADCbits = FADC_ADCbits;
       bbps->fTDCconv = TDCconv_bbps;
       bbps->fTDCbits = TDCbits_bbps;
+      bbps->fSigmaPulse = sigmapulse_bbps;
       bbps->SetSamples(FADC_sampsize);
       
       PMTdetectors.push_back(bbps);
@@ -1936,7 +1939,8 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
+      //SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe);
       
       bbsh->fGain = gain_bbsh;
       bbsh->fPedestal = ped_bbsh;
@@ -1948,6 +1952,7 @@ int main(int argc, char** argv){
       bbsh->fADCbits = ADCbits_bbsh;    
       bbsh->fTDCconv = TDCconv_bbsh;
       bbsh->fTDCbits = TDCbits_bbsh;
+      bbsh->fSigmaPulse = sigmapulse_bbsh;
       bbsh->SetSamples(FADC_sampsize);
             
       PMTdetectors.push_back(bbsh);
@@ -1994,7 +1999,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal);
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal, gain_hcal*qe);
       
       hcal->fGain = gain_hcal;
       hcal->fPedestal = ped_hcal;

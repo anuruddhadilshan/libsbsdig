@@ -59,7 +59,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	sigma_tgen = pmtdets[idet]->fSigmaPulse*(0.4244+11380/pow(Npe+153.4, 2));
 	//cout << sigma_tgen << endl;
 	//Generate here,...
-	//cout << " HCal : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_HCalScint.tavg->at(k) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;	
+	//cout << " HCal : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_HCalScint.tavg->at(k) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
 	pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, signal);
       }
       has_data = true;
@@ -97,8 +97,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
-	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << " BBPS : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBPSTF1.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
 	}
       }
       has_data = true;
@@ -132,11 +133,12 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  t = tzero+T->Earm_BBSHTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1.zhit->at(i)-7.469*pow(T->Earm_BBSHTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBSHTF1.cell->at(i);
 	  //T->Earm_BBSHTF1_hit_sumedep->at(i);
-		
+	  
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
-	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << " BBSH : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBSHTF1.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
 	}
       }
       has_data = true;
