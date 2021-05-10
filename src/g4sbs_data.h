@@ -267,6 +267,7 @@ namespace TSBSGeant4 {
   struct DigSampCalData_t : public VDetData_t {
     Int_t              nchan;
     std::vector<Int_t> *chan;
+    /*
     std::vector<Int_t> *adc_0;
     std::vector<Int_t> *adc_1;
     std::vector<Int_t> *adc_2;
@@ -287,10 +288,14 @@ namespace TSBSGeant4 {
     std::vector<Int_t> *adc_17;
     std::vector<Int_t> *adc_18;
     std::vector<Int_t> *adc_19;
+    */
+    std::vector<Int_t> *adc;
+    std::vector<Int_t> *samp;
     std::vector<Int_t> *tdc;
     
     TBranch *b_nchan;   //!
     TBranch *b_chan;   //!
+    /*
     TBranch *b_adc_0;   //!
     TBranch *b_adc_1;   //!
     TBranch *b_adc_2;   //!
@@ -311,9 +316,13 @@ namespace TSBSGeant4 {
     TBranch *b_adc_17;   //!
     TBranch *b_adc_18;   //!
     TBranch *b_adc_19;   //!
+    */
+    TBranch *b_adc;   //!
+    TBranch *b_samp;   //!
     TBranch *b_tdc;   //!
 
-  DigSampCalData_t() : nchan(0), chan(0), adc_0(0), adc_1(0), adc_2(0), adc_3(0), adc_4(0), adc_5(0), adc_6(0), adc_7(0), adc_8(0), adc_9(0), adc_10(0), adc_11(0), adc_12(0), adc_13(0), adc_14(0), adc_15(0), adc_16(0), adc_17(0), adc_18(0), adc_19(0), tdc(0), b_nchan(0), b_chan(0), b_adc_0(0), b_adc_1(0), b_adc_2(0), b_adc_3(0), b_adc_4(0), b_adc_5(0), b_adc_6(0), b_adc_7(0), b_adc_8(0), b_adc_9(0), b_adc_10(0), b_adc_11(0), b_adc_12(0), b_adc_13(0), b_adc_14(0), b_adc_15(0), b_adc_16(0), b_adc_17(0), b_adc_18(0), b_adc_19(0), b_tdc(0) {};
+  DigSampCalData_t() : nchan(0), chan(0), adc(0), samp(0), //adc_0(0), adc_1(0), adc_2(0), adc_3(0), adc_4(0), adc_5(0), adc_6(0), adc_7(0), adc_8(0), adc_9(0), adc_10(0), adc_11(0), adc_12(0), adc_13(0), adc_14(0), adc_15(0), adc_16(0), adc_17(0), adc_18(0), adc_19(0), tdc(0), b_nchan(0), b_chan(0), b_adc_0(0), b_adc_1(0), b_adc_2(0), b_adc_3(0), b_adc_4(0), b_adc_5(0), b_adc_6(0), b_adc_7(0), b_adc_8(0), b_adc_9(0), b_adc_10(0), b_adc_11(0), b_adc_12(0), b_adc_13(0), b_adc_14(0), b_adc_15(0), b_adc_16(0), b_adc_17(0), b_adc_18(0), b_adc_19(0), 
+      b_nchan(0), b_chan(0), b_adc(0), b_samp(0), b_tdc(0) {};
     virtual ~DigSampCalData_t(){};
     virtual bool SetupBranches(TTree *t, const char *prefix);
     void ClearBranches();

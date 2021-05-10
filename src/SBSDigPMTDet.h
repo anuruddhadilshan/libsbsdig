@@ -35,6 +35,7 @@ class SBSDigPMTDet {
   double fADCbits;
   double fTDCconv;
   double fTDCbits;
+  double fSigmaPulse;
 };
 
 #endif

@@ -210,7 +210,8 @@ int main(int argc, char** argv){
   Int_t TDCbits_hcal = 16;
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
- 
+  Double_t sigmapulse_hcal = 20.0;
+  
   Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
   Double_t gatewidth_bbgem = 400.;
   Double_t ZsupThr_bbgem = 240.;
@@ -691,6 +692,11 @@ int main(int argc, char** argv){
 	if(skey=="FADC_sampsize"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  FADC_sampsize = stemp.Atof();
+	}
+	
+	if(skey=="sigmapulse_hcal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_hcal = stemp.Atof();
 	}
 	
 	// ** How to add a new subsystem **
@@ -2000,6 +2006,7 @@ int main(int argc, char** argv){
       hcal->fADCbits = FADC_ADCbits;
       hcal->fTDCconv = TDCconv_hcal;
       hcal->fTDCbits = TDCbits_hcal; 
+      hcal->fSigmaPulse = sigmapulse_hcal; 
       hcal->SetSamples(FADC_sampsize);
       
       //ordered by increasing uinque id

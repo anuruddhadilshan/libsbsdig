@@ -72,6 +72,7 @@ class PMTSignal {
   UInt_t ADCSamples(int i){return fADCSamples[i];};
   
   double Eval(double t){
+    //printf("tau = %f, result = %f \n", ftau, TMath::Max(0., fNorm*((t-ft0+ftau*0.4)/(ftau*ftau*0.16))*TMath::Exp(-(t-ft0+ftau*0.4)/(ftau*0.4))) );
     return( TMath::Max(0., fNorm*((t-ft0+ftau*0.4)/(ftau*ftau*0.16))*TMath::Exp(-(t-ft0+ftau*0.4)/(ftau*0.4))) );
   }//can't be worse than TF1::Eval... can it?
   

@@ -279,7 +279,11 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
+  //cout << evttime << " <? " << fTmin << "+" << fNSamps << "*" << fSampSize << " = " << fTmin+fNSamps*fSampSize << endl;
+
   if(evttime>=fTmin+fNSamps*fSampSize)return;
+  
+  //cout << "fillfadcmode1 " << sigmatime << endl;
   
   SetPulseParam(npe*fNpeChargeConv, evttime, sigmatime);
   //f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
@@ -290,10 +294,12 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   // Needs improvement ASAP!
   if(fNSamps){
     fSamples[0]+= Eval(fTmin+(0.5)*fSampSize);//f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
+    //cout << Eval(fTmin+(0.5)*fSampSize) << endl;
     //Evaluate this function might be a bit of a time drain!
     for(int i = 1; i<fNSamps; i++){
       fSamples[i]+= Eval(fTmin+(i+0.5)*fSampSize);//f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
       //if(i>0){
+      //cout << Eval(fTmin+(i+0.5)*fSampSize) << endl;
       if(fSamples[i-1]<=thr && thr<fSamples[i]){
 	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
 	goodtime = true;
@@ -499,9 +505,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     Int_t Nconv = fNSamps/fNADCSamps;
     for(int i = 0; i<fNADCSamps; i++){
       for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
-      fADCSamples[i]*=ADCconv;
+      fADCSamples[i]/=ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
-
+      
+      if(fADCSamples[i]>4095)fADCSamples[i] = 4095;
+      
       fADC+=fADCSamples[i];
 
       if(i_tc<0 && fADCSamples[i]>thr_adc)i_tc = i;
@@ -746,6 +754,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   if(detid==HCAL_UNIQUE_DETID){
     T->Harm_HCal_Dig.nchan++;
     T->Harm_HCal_Dig.chan->push_back(chan);
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Harm_HCal_Dig.adc->push_back(fADCSamples[i]);
+      T->Harm_HCal_Dig.samp->push_back(i);
+    }
+    /*
     T->Harm_HCal_Dig.adc_0->push_back(fADCSamples[0]);
     T->Harm_HCal_Dig.adc_1->push_back(fADCSamples[1]);
     T->Harm_HCal_Dig.adc_2->push_back(fADCSamples[2]);
@@ -766,12 +779,16 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Harm_HCal_Dig.adc_17->push_back(fADCSamples[17]);
     T->Harm_HCal_Dig.adc_18->push_back(fADCSamples[18]);
     T->Harm_HCal_Dig.adc_19->push_back(fADCSamples[19]);
+    */
     if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]-1000);
-	if(j>1){    
+	if(j>1){ 
 	  T->Harm_HCal_Dig.nchan++;
 	  T->Harm_HCal_Dig.chan->push_back(chan);
+	  T->Harm_HCal_Dig.adc->push_back(-1000000);
+	  T->Harm_HCal_Dig.samp->push_back(-1000000);
+	  /*
 	  T->Harm_HCal_Dig.adc_0->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_1->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_2->push_back(-1000000);
@@ -792,6 +809,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  T->Harm_HCal_Dig.adc_17->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_18->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_19->push_back(-1000000);	  
+	  */
 	}
       }
     }else{
