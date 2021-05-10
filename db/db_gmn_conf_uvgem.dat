@@ -5,36 +5,33 @@ TriggerJitter 3.0
 #list of detectors to digitize
 detectors_list hcal bbps bbsh grinch bbhodo bbgem 
 
-
 ## parameters for bbps
 NChan_bbps 52 
 gatewidth_bbps 100 
 gain_bbps 2.e6
-ped_bbps 600.0 
+ped_bbps 300.0 
 pedsigma_bbps 3.0 
 trigoffset_bbps 18.2 
-#TODO: Update the 5 parameters below 
-threshold_bbps 3.e-3 
+threshold_bbps 22.0e-3 
 ADCconv_bbps 40 
-ADCbits_bbps 20 
-TDCconv_bbps 0.0625 
-TDCbits_bbps 15 
-sigmapulse_bbps 3.0 
+ADCbits_bbps 12 
+TDCconv_bbps 0.12
+TDCbits_bbps 12 
+sigmapulse_bbps 10.0 
 
 ## parameters for bbsh
 NChan_bbsh 189
 gatewidth_bbsh 100 
 gain_bbsh 7.5e5
-ped_bbsh 500.0 
+ped_bbsh 300.0 
 pedsigma_bbsh 4.5 
 trigoffset_bbsh 18.5 
-#TODO: Update the 5 parameters below 
-threshold_bbsh 3.e-3 
+threshold_bbsh 22.e-3 
 ADCconv_bbsh 40 
-ADCbits_bbsh 20 
-TDCconv_bbsh 0.0625 
-TDCbits_bbsh 15 
-sigmapulse_bbsh 3.0 
+ADCbits_bbsh 12 
+TDCconv_bbsh 0.12 
+TDCbits_bbsh 12 
+sigmapulse_bbsh 10.0 
 
 ## parameters for grinch
 NChan_grinch 510 
@@ -77,6 +74,7 @@ TDCconv_hcal 0.12
 TDCbits_hcal 16 
 FADC_ADCbits 12 
 FADC_sampsize 4.0 
+sigmapulse_hcal 20.0 
 
 ## parameters for GEMs
 # number of planes/modules/readout
@@ -85,7 +83,8 @@ NPlanes_bbgem 24
 gatewidth_bbgem 400 
 nlayers_bbgem 5
 #bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
-bbgem_layer_z 0.0468175 0.1968175 0.3468175 0.4968175 1.52905294
+bbgem_layer_z 0.0468175 0.1968175 0.3468175 0.4968175 1.5550219
+#1.52905294
 #number of strips for each plane/module
 layer_bbgem 1 1 2 2 2 2 2 2 3 3 4 4 4 4 4 4 5 5 5 5 5 5 5 5 
 nstrips_bbgem 3325 3325 1280 1024 1280 1024 1280 1024 3325 3325 1280 1024 1280 1024 1280 1024 1280 1536 1280 1536 1280 1536 1280 1536 
