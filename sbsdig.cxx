@@ -290,10 +290,10 @@ int main(int argc, char** argv){
   Double_t* commonmode_array_cepol_rear;
   UShort_t nAPV_cepol_rear = 0;
   
-  Int_t NPlanes_prpolbs_gem = 32;// number of planes/modules/readout
+  Int_t NPlanes_prpolbs_gem = 16;// number of planes/modules/readout
   Double_t gatewidth_prpolbs_gem = 400.;
   Double_t ZsupThr_prpolbs_gem = 240.;
-  Int_t Nlayers_prpolbs_gem = 4;
+  Int_t Nlayers_prpolbs_gem = 2;
   std::vector<Double_t> prpolbs_gem_layer_z;
   Int_t* layer_prpolbs_gem;
   Int_t* nstrips_prpolbs_gem;

@@ -1433,6 +1433,18 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	     T->Harm_CEPolRear_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
 	  }
 	  
+	  if(uniqueid==PRPOLBS_GEM_UNIQUE_DETID){
+	     T->Harm_PrPolGEMBeamSide_Dig.nstrips++;
+	     T->Harm_PrPolGEMBeamSide_Dig.module->push_back(i);
+	     T->Harm_PrPolGEMBeamSide_Dig.strip->push_back(j);
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	     T->Harm_PrPolGEMBeamSide_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	  }
+	  
 	  if(uniqueid==FT_UNIQUE_DETID){
 	     T->Harm_FT_Dig.nstrips++;
 	     T->Harm_FT_Dig.module->push_back(i);
