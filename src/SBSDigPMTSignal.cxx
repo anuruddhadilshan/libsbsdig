@@ -532,12 +532,12 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     // T->Earm_BBPS_dighit_nchan++;
     // T->Earm_BBPS_dighit_chan->push_back(chan);
     // T->Earm_BBPS_dighit_adc->push_back(fADC);
-    T->Earm_BBPS_Dig.nchan++;
-    T->Earm_BBPS_Dig.chan->push_back(chan);
-    
     for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBPS_Dig.nchan++;
+      T->Earm_BBPS_Dig.chan->push_back(chan);
       T->Earm_BBPS_Dig.adc->push_back(fADCSamples[i]);
       T->Earm_BBPS_Dig.samp->push_back(i);
+      T->Earm_BBPS_Dig.tdc->push_back(-1000000);
     }
     /*
     if(fTDCs.size()){
@@ -552,7 +552,6 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       }
     }else{
     */
-    T->Earm_BBPS_Dig.tdc->push_back(-1000000);
     //}
     
     /*
@@ -603,12 +602,12 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     // T->Earm_BBSH_dighit_nchan++;
     // T->Earm_BBSH_dighit_chan->push_back(chan);
     // T->Earm_BBSH_dighit_adc->push_back(fADC);
-    T->Earm_BBSH_Dig.nchan++;
-    T->Earm_BBSH_Dig.chan->push_back(chan);
-    
     for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBSH_Dig.nchan++;
+      T->Earm_BBSH_Dig.chan->push_back(chan);
       T->Earm_BBSH_Dig.adc->push_back(fADCSamples[i]);
       T->Earm_BBSH_Dig.samp->push_back(i);
+      T->Earm_BBSH_Dig.tdc->push_back(-1000000);
     }
     /*
     if(fTDCs.size()){
@@ -623,7 +622,6 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       }
     }else{
     */
-    T->Earm_BBSH_Dig.tdc->push_back(-1000000);
     //}
     
     /*
@@ -795,11 +793,12 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   }
   
   if(detid==HCAL_UNIQUE_DETID){
-    T->Harm_HCal_Dig.nchan++;
-    T->Harm_HCal_Dig.chan->push_back(chan);
     for(int i = 0; i<fNADCSamps; i++){
+      T->Harm_HCal_Dig.nchan++;
+      T->Harm_HCal_Dig.chan->push_back(chan);
       T->Harm_HCal_Dig.adc->push_back(fADCSamples[i]);
       T->Harm_HCal_Dig.samp->push_back(i);
+      T->Harm_HCal_Dig.tdc->push_back(-1000000);
     }
     /*
     T->Harm_HCal_Dig.adc_0->push_back(fADCSamples[0]);
@@ -826,11 +825,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]-1000);
-	if(j>1){ 
-	  T->Harm_HCal_Dig.nchan++;
-	  T->Harm_HCal_Dig.chan->push_back(chan);
-	  T->Harm_HCal_Dig.adc->push_back(-1000000);
-	  T->Harm_HCal_Dig.samp->push_back(-1000000);
+	//if(j>1){ 
+	T->Harm_HCal_Dig.nchan++;
+	T->Harm_HCal_Dig.chan->push_back(chan);
+	T->Harm_HCal_Dig.adc->push_back(-1000000);
+	T->Harm_HCal_Dig.samp->push_back(-1000000);
 	  /*
 	  T->Harm_HCal_Dig.adc_0->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_1->push_back(-1000000);
@@ -853,11 +852,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  T->Harm_HCal_Dig.adc_18->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_19->push_back(-1000000);	  
 	  */
-	}
+	//}
       }
-    }else{
-      T->Harm_HCal_Dig.tdc->push_back(-1000000);
-    }
+    }//else{
+    //T->Harm_HCal_Dig.tdc->push_back(-1000000);
+    //}
   }
   
   // ** How to add a new subsystem **
