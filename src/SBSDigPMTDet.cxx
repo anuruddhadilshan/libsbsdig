@@ -35,7 +35,7 @@ void SBSDigPMTDet::Digitize(g4sbs_tree* T, TRandom3* R)
   
 void SBSDigPMTDet::SetSamples(double sampsize)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2, fGateWidth/2, sampsize);
+  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2+30.0, fGateWidth/2+30.0, sampsize);
 }
 
 void SBSDigPMTDet::Clear(bool dosamples)
