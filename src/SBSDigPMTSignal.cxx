@@ -42,6 +42,12 @@ SPEModel::~SPEModel()
   fPulseHisto->Delete();
 }
 
+double SPEModel::Integral(int binmin, int binmax)
+{
+  binmax = max(binmax, 0);
+  return fPulseHisto->Integral(binmin, binmax, "width");
+}
+
 bool SPEModel::PulseOverThr(double charge, double thr)
 {
   if(fPulseHisto->GetMaximum()<thr/charge){
@@ -273,9 +279,16 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
   
+  //cout << evttime << " <? " << fTmin << "+" << fNSamps << "*" << fSampSize << " = " << fTmin+fNSamps*fSampSize << endl;
+
   if(evttime>=fTmin+fNSamps*fSampSize)return;
   
+  //cout << "fillfadcmode1 " << sigmatime << endl;
+  
   SetPulseParam(npe*fNpeChargeConv, evttime, sigmatime);
+  
+  //cout << npe*fNpeChargeConv << " " << evttime << " " << sigmatime << endl;
+  
   //f1->SetParameters(npe*fNpeChargeConv, evttime, sigmatime);
   //determine lead and trail times
   double t_lead, t_trail;
@@ -284,10 +297,12 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   // Needs improvement ASAP!
   if(fNSamps){
     fSamples[0]+= Eval(fTmin+(0.5)*fSampSize);//f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
+    //cout << Eval(fTmin+(0.5)*fSampSize) << endl;
     //Evaluate this function might be a bit of a time drain!
     for(int i = 1; i<fNSamps; i++){
       fSamples[i]+= Eval(fTmin+(i+0.5)*fSampSize);//f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
       //if(i>0){
+      //cout << Eval(fTmin+(i+0.5)*fSampSize) << endl;
       if(fSamples[i-1]<=thr && thr<fSamples[i]){
 	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
 	goodtime = true;
@@ -417,17 +432,28 @@ void PMTSignal::Fill_FADCmode7(SPEModel *model, int npe, double thr, double evtt
   fNpe+= npe;
   
   //Mode7 (?): pedestal, amplitude, integral, peak time (I assume there is a threshold?) 
+  int evttime_offset = int(evttime/80.);
+  for(int k = 0; k<fNADCSamps; k++){
+    //if evttime = 0, no offset
+    // fPulseHisto bears 20 bins/ns, each FADC sample is 4ns 
+    // => 1 fADC sample = 80 ns
+    fADCSamples[k] = 0;//model->Integral(evttime_offset+k*80, evttime_offset+(k+1)*80-1);//fPulseHisto->Integral(evttime_offset+k*80, evttime_offset+(k+1)*80, "width");
+    
+  }
+    
+  /*
   double amp_peak, t_peak;
   
   if(model->FindPeakTimeAmp(npe*fNpeChargeConv, thr, amp_peak, t_peak)){
     fLeadTimes.push_back(t_peak+evttime);
     fPeakAmps.push_back(amp_peak);
   }
+  */
 }
 
 
 void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T, 
-			 TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits)
+			 TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits, int thr_adc)
 {
   if(fNpe<=0){
     //fADC = R->Gaus(ped, ped_noise);
@@ -472,30 +498,81 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   }
   //cout << "detid " << detid << " TDC size " << fTDCs.size() << endl;
   
+  int i_tc = -1;
+  int i_max = -1;
+  double vpeak = thr_adc;//to ensure we only look for the max if the threshold is crossed
+  double vmin = 0;
+  
   if(fNSamps){
     fADC = 0;
     Int_t Nconv = fNSamps/fNADCSamps;
     for(int i = 0; i<fNADCSamps; i++){
       for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
-      fADCSamples[i]*=ADCconv;
+      fADCSamples[i]*=1.0e15/ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
-
+      
+      if(fADCSamples[i]>4095)fADCSamples[i] = 4095;
+      
       fADC+=fADCSamples[i];
+      /*
+      if(i_tc<0 && fADCSamples[i]>thr_adc)i_tc = i;
+      if(fADCSamples[i]>vpeak){
+	vpeak = fADCSamples[i];
+	i_max = i;
+      }
+      if(i<4)vmin+= fADCSamples[i]/4;
+      */
     }
   }
   //fSumEdep*=1.0e9;// store in eV.
   
   //Fill in directly (hoping it takes less time...)
-  //switch(detid){
-  //case(BBPS_UNIQUE_DETID):
-  //}
   
   if(detid==BBPS_UNIQUE_DETID){
     // T->Earm_BBPS_dighit_nchan++;
     // T->Earm_BBPS_dighit_chan->push_back(chan);
     // T->Earm_BBPS_dighit_adc->push_back(fADC);
-    T->Earm_BBPS_Dig.nchan++;
-    T->Earm_BBPS_Dig.chan->push_back(chan);
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBPS_Dig.nchan++;
+      T->Earm_BBPS_Dig.chan->push_back(chan);
+      T->Earm_BBPS_Dig.adc->push_back(fADCSamples[i]);
+      T->Earm_BBPS_Dig.samp->push_back(i);
+      T->Earm_BBPS_Dig.tdc->push_back(-1000000);
+    }
+    /*
+    if(fTDCs.size()){
+      for(int j = 0;j<fTDCs.size(); j++){
+	T->Earm_BBPS_Dig.tdc->push_back(fTDCs[j]-1000);
+	if(j>1){ 
+	  T->Earm_BBPS_Dig.nchan++;
+	  T->Earm_BBPS_Dig.chan->push_back(chan);
+	  T->Earm_BBPS_Dig.adc->push_back(-1000000);
+	  T->Earm_BBPS_Dig.samp->push_back(-1000000);
+	}
+      }
+    }else{
+    */
+    //}
+    
+    /*
+    double vmid = (vpeak+vmin)/2;
+    double integral = 0;
+    double tf;
+    int n1 = -1;
+    int imin = max(i_tc-3, 0);
+    int imax = min(i_tc+12, fNADCSamps-1);
+    for(int i = imin; i<imax; i++){
+      integral+= fADCSamples[i];
+      if(n1==-1 && i<imax-1 && fADCSamples[i]<vmid && vmid<fADCSamples[i+1])n1 = i;
+    }
+    if(n1>=0)tf = 64*(vmid-fADCSamples[n1])/(fADCSamples[n1+1]-fADCSamples[n1]);
+    
+    T->Earm_BBPS_Dig.adc->push_back(integral);
+    T->Earm_BBPS_Dig.ped->push_back(TMath::Nint(vmin));
+    T->Earm_BBPS_Dig.amp->push_back(TMath::Nint(vpeak));
+    T->Earm_BBPS_Dig.tdc->push_back(tf*TDCconv);
+    */
+    /*
     T->Earm_BBPS_Dig.adc->push_back(fADC);
     //if(fPeakAmps.size()!=fTDCs.size()){
     //cout << fPeakAmps.size() << " " << fTDCs.size() << endl;
@@ -518,14 +595,54 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Earm_BBPS_Dig.ped->push_back(-1000000);
       T->Earm_BBPS_Dig.amp->push_back(-1000000);
     }
+    */
   }
   
   if(detid==BBSH_UNIQUE_DETID){
     // T->Earm_BBSH_dighit_nchan++;
     // T->Earm_BBSH_dighit_chan->push_back(chan);
     // T->Earm_BBSH_dighit_adc->push_back(fADC);
-    T->Earm_BBSH_Dig.nchan++;
-    T->Earm_BBSH_Dig.chan->push_back(chan);
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_BBSH_Dig.nchan++;
+      T->Earm_BBSH_Dig.chan->push_back(chan);
+      T->Earm_BBSH_Dig.adc->push_back(fADCSamples[i]);
+      T->Earm_BBSH_Dig.samp->push_back(i);
+      T->Earm_BBSH_Dig.tdc->push_back(-1000000);
+    }
+    /*
+    if(fTDCs.size()){
+      for(int j = 0;j<fTDCs.size(); j++){
+	T->Earm_BBSH_Dig.tdc->push_back(fTDCs[j]-1000);
+	if(j>1){ 
+	  T->Earm_BBSH_Dig.nchan++;
+	  T->Earm_BBSH_Dig.chan->push_back(chan);
+	  T->Earm_BBSH_Dig.adc->push_back(-1000000);
+	  T->Earm_BBSH_Dig.samp->push_back(-1000000);
+	}
+      }
+    }else{
+    */
+    //}
+    
+    /*
+    double vmid = (vpeak+vmin)/2;
+    double integral = 0;
+    double tf;
+    int n1 = -1;
+    int imin = max(i_tc-3, 0);
+    int imax = min(i_tc+12, fNADCSamps-1);
+    for(int i = imin; i<imax; i++){
+      integral+= fADCSamples[i];
+      if(n1==-1 && i<imax-1 && fADCSamples[i]<vmid && vmid<fADCSamples[i+1])n1 = i;
+    }
+    if(n1>=0)tf = 64*(vmid-fADCSamples[n1])/(fADCSamples[n1+1]-fADCSamples[n1]);
+    
+    T->Earm_BBSH_Dig.adc->push_back(integral);
+    T->Earm_BBSH_Dig.ped->push_back(TMath::Nint(vmin));
+    T->Earm_BBSH_Dig.amp->push_back(TMath::Nint(vpeak));
+    T->Earm_BBSH_Dig.tdc->push_back(tf*TDCconv);
+    */
+    /*
     T->Earm_BBSH_Dig.adc->push_back(fADC);
     //if(fPeakAmps.size()!=fTDCs.size()){
     //cout << fPeakAmps.size() << " " << fTDCs.size() << endl;
@@ -549,6 +666,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       T->Earm_BBSH_Dig.ped->push_back(-1000000);
       T->Earm_BBSH_Dig.amp->push_back(-1000000);
     }
+    */
   }
   
   if(detid==ECAL_UNIQUE_DETID){
@@ -675,8 +793,14 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   }
   
   if(detid==HCAL_UNIQUE_DETID){
-    T->Harm_HCal_Dig.nchan++;
-    T->Harm_HCal_Dig.chan->push_back(chan);
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Harm_HCal_Dig.nchan++;
+      T->Harm_HCal_Dig.chan->push_back(chan);
+      T->Harm_HCal_Dig.adc->push_back(fADCSamples[i]);
+      T->Harm_HCal_Dig.samp->push_back(i);
+      T->Harm_HCal_Dig.tdc->push_back(-1000000);
+    }
+    /*
     T->Harm_HCal_Dig.adc_0->push_back(fADCSamples[0]);
     T->Harm_HCal_Dig.adc_1->push_back(fADCSamples[1]);
     T->Harm_HCal_Dig.adc_2->push_back(fADCSamples[2]);
@@ -697,12 +821,16 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     T->Harm_HCal_Dig.adc_17->push_back(fADCSamples[17]);
     T->Harm_HCal_Dig.adc_18->push_back(fADCSamples[18]);
     T->Harm_HCal_Dig.adc_19->push_back(fADCSamples[19]);
+    */
     if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
 	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]-1000);
-	if(j>1){    
-	  T->Harm_HCal_Dig.nchan++;
-	  T->Harm_HCal_Dig.chan->push_back(chan);
+	//if(j>1){ 
+	T->Harm_HCal_Dig.nchan++;
+	T->Harm_HCal_Dig.chan->push_back(chan);
+	T->Harm_HCal_Dig.adc->push_back(-1000000);
+	T->Harm_HCal_Dig.samp->push_back(-1000000);
+	  /*
 	  T->Harm_HCal_Dig.adc_0->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_1->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_2->push_back(-1000000);
@@ -723,11 +851,12 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	  T->Harm_HCal_Dig.adc_17->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_18->push_back(-1000000);
 	  T->Harm_HCal_Dig.adc_19->push_back(-1000000);	  
-	}
+	  */
+	//}
       }
-    }else{
-      T->Harm_HCal_Dig.tdc->push_back(-1000000);
-    }
+    }//else{
+    //T->Harm_HCal_Dig.tdc->push_back(-1000000);
+    //}
   }
   
   // ** How to add a new subsystem **

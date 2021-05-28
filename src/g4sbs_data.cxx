@@ -314,6 +314,7 @@ namespace TSBSGeant4 {
   {
     if(!tree)return(false);
     chan = new std::vector<int>;
+    /*
     adc_0 = new std::vector<int>;
     adc_1 = new std::vector<int>;
     adc_2 = new std::vector<int>;
@@ -334,10 +335,14 @@ namespace TSBSGeant4 {
     adc_17 = new std::vector<int>;
     adc_18 = new std::vector<int>;
     adc_19 = new std::vector<int>;
+    */
+    adc = new std::vector<int>;
+    samp = new std::vector<int>;
     tdc = new std::vector<int>;
     
     b_nchan = tree->Branch(Form("%s.nchan", prefix), &nchan);
     b_chan = tree->Branch(Form("%s.chan", prefix), &chan);
+    /*
     b_adc_0 = tree->Branch(Form("%s.adc_0", prefix), &adc_0);
     b_adc_1 = tree->Branch(Form("%s.adc_1", prefix), &adc_1);
     b_adc_2 = tree->Branch(Form("%s.adc_2", prefix), &adc_2);
@@ -358,6 +363,9 @@ namespace TSBSGeant4 {
     b_adc_17 = tree->Branch(Form("%s.adc_17", prefix), &adc_17);
     b_adc_18 = tree->Branch(Form("%s.adc_18", prefix), &adc_18);
     b_adc_19 = tree->Branch(Form("%s.adc_19", prefix), &adc_19);
+    */
+    b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    b_samp = tree->Branch(Form("%s.samp", prefix), &samp);
     b_tdc = tree->Branch(Form("%s.tdc", prefix), &tdc);
     return true;
   }
@@ -367,6 +375,7 @@ namespace TSBSGeant4 {
     if(chan){
       nchan = 0;
       chan->clear();
+      /*
       adc_0->clear();
       adc_1->clear();
       adc_2->clear();
@@ -387,6 +396,9 @@ namespace TSBSGeant4 {
       adc_17->clear();
       adc_18->clear();
       adc_19->clear();
+      */
+      adc->clear();
+      samp->clear();
       tdc->clear();
     }
   }
@@ -396,6 +408,7 @@ namespace TSBSGeant4 {
     if(b_nchan){
       b_nchan->Fill();
       b_chan->Fill();
+      /*
       b_adc_0->Fill();
       b_adc_1->Fill();
       b_adc_2->Fill();
@@ -416,6 +429,9 @@ namespace TSBSGeant4 {
       b_adc_17->Fill();
       b_adc_18->Fill();
       b_adc_19->Fill();
+      */
+      b_adc->Fill();
+      b_samp->Fill();
       b_tdc->Fill();
     }
   }

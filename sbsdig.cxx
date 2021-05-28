@@ -155,8 +155,8 @@ int main(int argc, char** argv){
   Double_t threshold_bbps = 3.e-3;
   Double_t ADCconv_bbps = 50.;
   Int_t ADCbits_bbps = 12;
-  Double_t TDCconv_bbps = 1.;
-  Int_t TDCbits_bbps = 12;
+  Double_t TDCconv_bbps = 0.0625;
+  Int_t TDCbits_bbps = 15;
   Double_t sigmapulse_bbps = 3.0;
     
   Int_t NChan_bbsh = 189;
@@ -168,8 +168,8 @@ int main(int argc, char** argv){
   Double_t threshold_bbsh = 3.e-3;
   Double_t ADCconv_bbsh = 50.;
   Int_t ADCbits_bbsh = 12;
-  Double_t TDCconv_bbsh = 1.;
-  Int_t TDCbits_bbsh = 12;
+  Double_t TDCconv_bbsh = 0.0625;
+  Int_t TDCbits_bbsh = 15;
   Double_t sigmapulse_bbsh = 3.0;
     
   Int_t NChan_grinch = 510;
@@ -210,7 +210,8 @@ int main(int argc, char** argv){
   Int_t TDCbits_hcal = 16;
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
- 
+  Double_t sigmapulse_hcal = 20.0;
+  
   Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
   Double_t gatewidth_bbgem = 400.;
   Double_t ZsupThr_bbgem = 240.;
@@ -691,6 +692,11 @@ int main(int argc, char** argv){
 	if(skey=="FADC_sampsize"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  FADC_sampsize = stemp.Atof();
+	}
+	
+	if(skey=="sigmapulse_hcal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_hcal = stemp.Atof();
 	}
 	
 	// ** How to add a new subsystem **
@@ -1909,7 +1915,8 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
+      //SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe);
 
       bbps->fGain = gain_bbps;
       bbps->fPedestal = ped_bbps;
@@ -1918,9 +1925,12 @@ int main(int argc, char** argv){
       bbps->fThreshold = threshold_bbps*spe_unit/ROimpedance;
       bbps->fGateWidth = gatewidth_bbps;
       bbps->fADCconv = ADCconv_bbps;
-      bbps->fADCbits = ADCbits_bbps;
+      //bbps->fADCbits = ADCbits_bbps;
+      bbps->fADCbits = FADC_ADCbits;
       bbps->fTDCconv = TDCconv_bbps;
       bbps->fTDCbits = TDCbits_bbps;
+      bbps->fSigmaPulse = sigmapulse_bbps;
+      bbps->SetSamples(FADC_sampsize);
       
       PMTdetectors.push_back(bbps);
       detmap.push_back(BBPS_UNIQUE_DETID);
@@ -1928,7 +1938,8 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
+      //SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe);
       
       bbsh->fGain = gain_bbsh;
       bbsh->fPedestal = ped_bbsh;
@@ -1940,7 +1951,9 @@ int main(int argc, char** argv){
       bbsh->fADCbits = ADCbits_bbsh;    
       bbsh->fTDCconv = TDCconv_bbsh;
       bbsh->fTDCbits = TDCbits_bbsh;
-      
+      bbsh->fSigmaPulse = sigmapulse_bbsh;
+      bbsh->SetSamples(FADC_sampsize);
+            
       PMTdetectors.push_back(bbsh);
       detmap.push_back(BBSH_UNIQUE_DETID);
       cout << " set up! " << endl;
@@ -1985,7 +1998,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal);
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal, gain_hcal*qe);
       
       hcal->fGain = gain_hcal;
       hcal->fPedestal = ped_hcal;
@@ -1997,6 +2010,7 @@ int main(int argc, char** argv){
       hcal->fADCbits = FADC_ADCbits;
       hcal->fTDCconv = TDCconv_hcal;
       hcal->fTDCbits = TDCbits_hcal; 
+      hcal->fSigmaPulse = sigmapulse_hcal; 
       hcal->SetSamples(FADC_sampsize);
       
       //ordered by increasing uinque id
@@ -2156,7 +2170,7 @@ int main(int argc, char** argv){
       
       //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
-	if(detmap[k]==HCAL_UNIQUE_DETID){
+	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
 	}else{
 	  PMTdetectors[k]->Clear();

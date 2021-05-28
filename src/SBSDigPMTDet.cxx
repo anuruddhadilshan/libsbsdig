@@ -8,11 +8,11 @@ SBSDigPMTDet::SBSDigPMTDet()
 {
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal());
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv));
 }
 
 SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):
@@ -30,12 +30,12 @@ SBSDigPMTDet::~SBSDigPMTDet()
 
 void SBSDigPMTDet::Digitize(g4sbs_tree* T, TRandom3* R)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits);
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits, int(fThreshold));
 }
   
 void SBSDigPMTDet::SetSamples(double sampsize)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2, fGateWidth/2, sampsize);
+  for(int i = 0; i<fNChan; i++)PMTmap[i].SetSamples(-fGateWidth/2+30.0, fGateWidth/2+30.0, sampsize);
 }
 
 void SBSDigPMTDet::Clear(bool dosamples)
