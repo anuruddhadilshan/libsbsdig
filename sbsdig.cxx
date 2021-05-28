@@ -1854,7 +1854,7 @@ int main(int argc, char** argv){
       cout << " set up! " << endl;
     }
     if(detectors_list[k] == "prpolbs_gem"){
-      SBSDigGEMDet* prpolbs_gem = new SBSDigGEMDet(PRPOLBS_GEM_UNIQUE_DETID, NPlanes_prpolbs_gem, layer_prpolbs_gem, nstrips_prpolbs_gem, offset_prpolbs_gem, RO_angle_prpolbs_gem, 6, ZsupThr_prpolbs_gem);
+     SBSDigGEMDet* prpolbs_gem = new SBSDigGEMDet(PRPOLBS_GEM_UNIQUE_DETID, NPlanes_prpolbs_gem, layer_prpolbs_gem, nstrips_prpolbs_gem, offset_prpolbs_gem, RO_angle_prpolbs_gem, 6, ZsupThr_prpolbs_gem);
       SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolbs_gem/2, triggeroffset_prpolbs_gem, ZsupThr_prpolbs_gem, nAPV_prpolbs_gem, commonmode_array_prpolbs_gem);
       for(int m = 0; m<Nlayers_prpolbs_gem; m++){
 	prpolbs_gem->fZLayer.push_back(prpolbs_gem_layer_z[m]);
@@ -1864,7 +1864,6 @@ int main(int argc, char** argv){
       GEMdetectors.push_back(prpolbs_gem);
       gemdetmap.push_back(PRPOLBS_GEM_UNIQUE_DETID);
       GEMsimDig.push_back(gemdig);
-      cout << " set up! " << endl;
     }
     
     if(detectors_list[k] == "ft"){

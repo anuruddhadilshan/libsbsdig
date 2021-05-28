@@ -617,7 +617,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   Double_t gly = (-gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;
   Double_t gux = (gemdet->GEMPlanes[ic*2].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;//(chamber.GetPlane(0).GetStripUpperEdge(chamber.GetPlane(0).GetNStrips()-1) -chamber.GetPlane(0).GetSPitch()/2.0) * 1000.0;
   Double_t guy = (gemdet->GEMPlanes[ic*2+1].dX())/2.*1.e3;//+fStripPitch)/2.0*1000.;//(chamber.GetPlane(1).GetStripUpperEdge(chamber.GetPlane(1).GetNStrips()-1) -chamber.GetPlane(1).GetSPitch()/2.0) * 1000.0;
-  
+ /* 
   if (x1<glx || x0>gux ||
       y1<gly || y0>guy) { // out of the sector's bounding box
     cerr << __FILE__ << " " << __FUNCTION__ << ": out of sector, "
@@ -627,7 +627,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	 << "(y1 " << y1 << ">gly " << gly << ") (y0 " << y0 << "<guy " << guy << ")" << endl;
     //return 0;
   }
-  
+  */
   //bool bb_clipped = (x0<glx||y0<gly||x1>gux||y1>guy);
   if(x0<glx) x0=glx;
   if(y0<gly) y0=gly;

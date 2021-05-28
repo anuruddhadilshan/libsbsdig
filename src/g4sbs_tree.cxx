@@ -154,18 +154,22 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
        SetupDetBranch(Harm_PRPolScintFarSide_Dig, "Harm.PRPolScintFarSide.dighit");
      }
      if(det_list[k]=="cepol_front"){
+       printf("cepol_front branches set up! \n");
        SetupDetBranch(Harm_CEPolFront, "Harm.CEPolFront.hit");
        SetupDetBranch(Harm_CEPolFront_Dig, "Harm.CEPolFront.dighit");
      }
      if(det_list[k]=="cepol_rear"){
+       printf("cepol_rear branches set up! \n");
        SetupDetBranch(Harm_CEPolRear, "Harm.CEPolRear.hit");
        SetupDetBranch(Harm_CEPolRear_Dig, "Harm.CEPolRear.dighit");
      }
-     if(det_list[k]=="prpolgem_bs"){
+     if(det_list[k]=="prpolbs_gem"){
+       printf(" prpolgem_bs branches set up! \n");
        SetupDetBranch(Harm_PrPolGEMBeamSide, "Harm.PRPolGEMBeamSide.hit");
        SetupDetBranch(Harm_PrPolGEMBeamSide_Dig, "Harm.PRPolGEMBeamSide.dighit");
      }
      if(det_list[k]=="prpolgem_fs"){
+       printf(" prpolgem_fs branches set up! \n");
        SetupDetBranch(Harm_PrPolGEMFarSide, "Harm.PRPolGEMFarSide.hit");
        SetupDetBranch(Harm_PrPolGEMFarSide_Dig, "Harm.PRPolGEMFarSide.dighit");
      }
