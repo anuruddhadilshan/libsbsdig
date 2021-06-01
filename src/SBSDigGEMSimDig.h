@@ -100,6 +100,7 @@ class SBSDigGEMSimDig {
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
   
+  /*
   TH2D* h2D_edepVdr;
   
   TH2D* h1_AvaSizeYvsX_SemiAna;
@@ -115,7 +116,7 @@ class SBSDigGEMSimDig {
   
   TH1D* h1_NormSemiAna;
   TH1D* h1_NormFastAppx;
-  /*
+
   TH1D* h1_SigmaEff;
   TH1D* h1_NionsPix;
  
