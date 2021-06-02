@@ -145,7 +145,41 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //ECal
-    
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=ECAL_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    if(idet>=0){// && T->Earm_ECalTF1.nhits){
+      for(int i = 0; i<T->Earm_ECalTF1.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-4)continue;
+	//check probability to generate p.e. yield
+	bool genpeyield = true;
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-2)genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*T->Earm_ECalTF1.sumedep->at(i));
+	//if we're go, let's generate
+	if(genpeyield){
+	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	  //1800. Used to be 932.: just wrong
+	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  chan = T->Earm_ECalTF1.cell->at(i);
+	  //T->Earm_ECalTF1_hit_sumedep->at(i);
+	  
+	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	}
+      }
+      has_data = true;
+    }
     
     while(idet<(int)detmap.size()){
       if(idet<0)idet++;
@@ -200,8 +234,29 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
     //CDet
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=CDET_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=detmap.size())idet = -1;
     
-    
+    if(idet>=0){
+      for(int i = 0; i<T->CDET_Scint.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	chan = T->CDET_Scint.cell->at(i);
+	Npe = R->Poisson( T->CDET_Scint.sumedep->at(i)*5.634e3 );
+	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16;
+	
+	
+	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+      }
+      has_data = true;
+    }
     
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
@@ -587,7 +642,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_PrPolGEMBeamSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_PrPolGEMBeamSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMBeamSide.plane->at(k)<<endl;
+	  //cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMBeamSide.plane->at(k)<<endl;
 	  
 	}//end if(sumedep>0)
 	

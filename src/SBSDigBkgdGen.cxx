@@ -565,6 +565,39 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     }
   }
   
+  while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+  if(idet>=detmap.size())idet = -1;
+  if(idet>=0){
+    //cout << "sh" << endl;
+    for(int m = 0; m<189; m++){
+      nhits = R->Poisson(NhitsECal[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      //h_NhitsECal_XC->Fill(m, nhits);
+      for(int i = 0; i<nhits; i++){
+	edep = h_EdephitECal->GetRandom();//R);
+	
+	//h_EdephitECal_XC->Fill(edep);
+	
+	if(edep<1.e-4)continue;
+	//check probability to generate p.e. yield
+	bool genpeyield = true;
+	if(edep<1.e-2)
+	  genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
+	//if we're go, let's generate
+	if(genpeyield){
+	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	  //1500. Used to be 454.: just wrong
+	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	  //if(edep>1.e-3)
+	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	}
+      }
+    }
+  }
+    
+  
   while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   if(idet>=0){
@@ -621,6 +654,26 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     }
   }
   
+  while(detmap[idet]!=CDET_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+  if(idet>=detmap.size())idet = -1;
+  // Process hodoscope data
+  if(idet>=0){
+    //cout << "hodo" << endl;
+    for(int m = 0; m<2352; m++){
+      nhits = R->Poisson(NhitsCDet[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      for(int i = 0; i<nhits; i++){
+	edep =  h_EdephitCDet->GetRandom();//*1.e6;
+	//if(edep<0.002)continue;
+	x_hit =  h_xhitCDet->GetRandom();
+	
+	Npe = R->Poisson( edep*5.634e3 );
+	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	
+	pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	
+      }
+    }
+  }
   
   
   }//end if(fDetailedDig) 
