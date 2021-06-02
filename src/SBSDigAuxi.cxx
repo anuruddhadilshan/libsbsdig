@@ -587,7 +587,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_PrPolGEMBeamSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_PrPolGEMBeamSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMBeamSide.plane->at(k)<<endl;
+	  cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMBeamSide.plane->at(k)<<endl;
 	  
 	}//end if(sumedep>0)
 	
