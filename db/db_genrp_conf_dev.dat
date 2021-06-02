@@ -3,7 +3,7 @@ Rseed 0
 #global trigger jitter for all detectors in ns
 TriggerJitter 3.0 
 #list of detectors to digitize
-detectors_list hcal bbps bbsh grinch bbhodo bbgem  prpolscint_bs prpolscint_fs activeana cepol_front cepol_rear prpolbs_gem
+detectors_list hcal bbps bbsh grinch bbhodo bbgem  prpolscint_bs prpolscint_fs activeana cepol_front cepol_rear prpolbs_gem prpolfs_gem
 ## parameters for bbps
 NChan_bbps 52 
 gatewidth_bbps 200 
@@ -207,6 +207,27 @@ commonmode_array_bbgem 1500.
  ZsupThr_prpolbs_gem 240.
  #common mode value/array for GEMs in ADC channels
  commonmode_array_prpolbs_gem 1500.
+ 
+ ## parameters for prpolfs_gem 
+ # number of planes/modules/readout
+ NPlanes_prpolfs_gem 16
+ # data acquisition window for prpolbs_gem in ns
+ gatewidth_prpolfs_gem 400
+ #number of strips for each plane/module
+ nlayers_prpolfs_gem 2
+ prpolfs_gem_layer_z -0.5331825 -0.6031625
+ layer_prpolbfs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
+ nstrips_prpolfs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
+ #offset in transport coordinate for each plane/module in meters
+ offset_prpolfs_gem -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
+ #strip angle for all GEn-RP GEMs readouts in degrees
+ RO_angle_prpolfs_gem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
+ #trigger offsets for all planes in ns
+ triggeroffset_prpolfs_gem 126.53 126.53 126.53 126.53 126.85 126.85 126.85 126.85  
+ #zero suppression threshold for GEMs in ADC channels
+ ZsupThr_prpolfs_gem 240.
+ #common mode value/array for GEMs in ADC channels
+ commonmode_array_prpolfs_gem 1500.
  
  
 
