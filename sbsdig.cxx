@@ -2369,7 +2369,7 @@ int main(int argc, char** argv){
     }// end loop on signal events 
     // if there are debugging histos to write, write them...
     for(int k = 0; k<GEMdetectors.size(); k++){
-   //   cout << "GEM det ID: " << GEMdetectors.fUniqueID << endl;
+      cout << "GEM det ID: " << GEMdetectors[k]->fUniqueID << endl;
       GEMsimDig[k]->write_histos();
       GEMsimDig[k]->print_time_execution();
     }

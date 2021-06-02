@@ -58,6 +58,35 @@ class SBSDigBkgdGen {
   Double_t* P2hitsGRINCH;
   TH1D* h_NpeGRINCH;
   
+  Double_t* NhitsECal;
+  TH1D* h_EdephitECal;
+  
+  Double_t* NhitsCDet;
+  TH1D* h_EdephitCDet;
+  TH1D* h_xhitCDet;
+  
+  Double_t* NhitsFT;
+  TH1D* h_EdephitFT;
+  TH1D** h_xhitFT;
+  TH1D** h_yhitFT;
+  TH1D** h_dxhitFT;
+  TH1D** h_dyhitFT;
+  
+  Double_t* NhitsFPP1;
+  TH1D* h_EdephitFPP1;
+  TH1D** h_xhitFPP1;
+  TH1D** h_yhitFPP1;
+  TH1D** h_dxhitFPP1;
+  TH1D** h_dyhitFPP1;
+  
+  Double_t* NhitsFPP2;
+  TH1D* h_EdephitFPP2;
+  TH1D** h_xhitFPP2;
+  TH1D** h_yhitFPP2;
+  TH1D** h_dxhitFPP2;
+  TH1D** h_dyhitFPP2;
+  
+  /*  
   //cross-check histos
   TH1D** h_NhitsBBGEMs_XC;
   TH1D* h_EdephitBBGEMs_XC;
@@ -81,6 +110,7 @@ class SBSDigBkgdGen {
   
   TH2D* h_NhitsGRINCH_XC;
   TH1D* h_NpeGRINCH_XC;
+  */
   
   bool fPMTBkgdDig;
   
