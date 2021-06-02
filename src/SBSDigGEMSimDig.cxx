@@ -80,6 +80,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
   
+  /*
   h2D_edepVdr = new TH2D("h2D_edepVdr", ";sqrt(dx2_hit+dy2_hit);edep;", 100, 0., 50., 100, 0., 1.e5);
 
   h1_AvaSizeYvsX_SemiAna = new TH2D("h1_AvaSizeYvsX_SemiAna", "", 100, 0.0, 100, 100, 0.0, 100);
@@ -95,7 +96,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   
   h1_NormSemiAna = new TH1D("h1_NormSemiAna", "", 1000, 0, 1.e5);
   h1_NormFastAppx = new TH1D("h1_NormFastAppx", "", 1000, 0, 1.e5);
-  /*
+
   h1_SigmaEff = new TH1D("h1_SigmaEff", "", 150, 0., 0.30);
   h1_NionsPix = new TH1D("h1_NionsPix", "", 100, 0., 1000.0);
   h1_nbins_X = new TH1D*[2];
@@ -272,8 +273,8 @@ SBSDigGEMSimDig::IonModel(TRandom3* R,
     else
       ip.Charge = 0;
 
-    h1_AvaSizeVsZion_SemiAna->Fill(xi.Z()+vseg.Z()*lion, ip.SNorm);
-    h1_AvaSizeVsTTime_SemiAna->Fill(ttime*1.e9, ip.SNorm);
+    //h1_AvaSizeVsZion_SemiAna->Fill(xi.Z()+vseg.Z()*lion, ip.SNorm);
+    //h1_AvaSizeVsTTime_SemiAna->Fill(ttime*1.e9, ip.SNorm);
     
     fRSMax = TMath::Max(ip.SNorm, fRSMax);
 
@@ -413,10 +414,10 @@ void SBSDigGEMSimDig::Integration_semiana(double roangle,
       inte4+= yinte*xbw;
       fSumA[jx] += (yinte*xbw)*current_ion_amplitude;
     }
-    h1_SumweightsSemiAna->Fill(inte4);
-    h1_GammaEffSemiAna->Fill(eff_sigma);
+    //h1_SumweightsSemiAna->Fill(inte4);
+    //h1_GammaEffSemiAna->Fill(eff_sigma);
   }
-  h1_NormSemiAna->Fill(amplitude_sum);
+  //h1_NormSemiAna->Fill(amplitude_sum);
 }
 
 void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle, 
@@ -470,7 +471,7 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
 
   //double NionsStrip = Ld_ion*eff_sigma*R->Gaus(4., 1.);//
   
-  h1_NormFastAppx->Fill(Amplitude);
+  //h1_NormFastAppx->Fill(Amplitude);
   //h1_SigmaEff->Fill(eff_sigma);
   //h1_NionsPix->Fill(NionsPix);
   
@@ -510,8 +511,8 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
   }
   /**/
   //cout << sumweights << " " << NionsPix << endl;
-  h2D_SumweightsFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sumweights*xbw*ybw);
-  h2D_GammaEffFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sqrt(eff_sigma_square*(1+dx2_hit)*(1+dy2_hit)));
+  //h2D_SumweightsFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sumweights*xbw*ybw);
+  //h2D_GammaEffFastAppx->Fill(sqrt(dx2_hit+dy2_hit), sqrt(eff_sigma_square*(1+dx2_hit)*(1+dy2_hit)));
   //reloop to normalize the individual weights.
   /*
   jx = min_binNb_x;
@@ -606,7 +607,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     y0 = xo.Y()-nsigma*fRSMax;
   }
   
-  h1_AvaSizeYvsX_SemiAna->Fill(x1-x0, y1-y0);
+  //h1_AvaSizeYvsX_SemiAna->Fill(x1-x0, y1-y0);
   
   // Check if any part of the avalanche region is in the active area of the sector.
   // Here, "active area" means the chamber's *bounding box*, which is
@@ -1010,7 +1011,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
     y0 = xo.Y()-nsigma*rsmax;//*fRSMax;
   }
   
-  h1_AvaSizeYvsX_FastAppx->Fill(x1-x0, y1-y0);
+  //h1_AvaSizeYvsX_FastAppx->Fill(x1-x0, y1-y0);
 
   // Check if any part of the avalanche region is in the active area of the sector.
   // Here, "active area" means the chamber's *bounding box*, which is
@@ -1234,7 +1235,7 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     //test
     double dx2_hit = (vv2.X()-vv1.X())/3.0;dx2_hit*= dx2_hit;
     double dy2_hit = (vv2.Y()-vv1.Y())/3.0;dx2_hit*= dy2_hit;
-    h2D_edepVdr->Fill(sqrt(dx2_hit+dy2_hit), gemdet->fGEMhits[ih].edep);
+    //h2D_edepVdr->Fill(sqrt(dx2_hit+dy2_hit), gemdet->fGEMhits[ih].edep);
     
     fStart = std::chrono::steady_clock::now();
     // if(!is_background){
@@ -1521,6 +1522,7 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+  /*
   h2D_edepVdr->Write();
 
   h1_AvaSizeYvsX_SemiAna->Write();
@@ -1537,7 +1539,6 @@ void SBSDigGEMSimDig::write_histos()
   h1_NormSemiAna->Write();
   h1_NormFastAppx->Write();
   
-  /*
   h1_SigmaEff->Write();
   h1_NionsPix->Write();
   

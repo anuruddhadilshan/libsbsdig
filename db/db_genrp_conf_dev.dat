@@ -194,7 +194,10 @@ commonmode_array_bbgem 1500.
  gatewidth_prpolbs_gem 400
  #number of strips for each plane/module
  nlayers_prpolbs_gem 2
+<<<<<<< HEAD
 # prpolbs_gem_layer_z 0.3 0.5031825
+=======
+>>>>>>> fdc4045113c98cb4aa4455b6b6a27f3b0efcaa4c
  prpolbs_gem_layer_z 0.6031825 0.5031825
  layer_prpolbs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
  nstrips_prpolbs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
