@@ -88,6 +88,9 @@ class SBSDigGEMSimDig {
   std::vector<Double_t> fSumA;
   //std::vector<Short_t>  fDADC;
 
+  Double_t fAvaGain;
+  Int_t fNSamples;
+  
   //zero suppression and common mode
   Bool_t fDoZeroSup;
   Double_t fZeroSup;

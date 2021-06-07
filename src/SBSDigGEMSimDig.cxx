@@ -14,7 +14,7 @@
 #define fMaxNIon 1.e4               //maximum amount of ion pairs allowed in the digitization
 
 #define fSNormNsigma 18.          //fSNormNsigma is an arbitrary multiplicative fact  
-#define fAvaGain 20.
+//#define fAvaGain 20.
 #define fLateralUncertainty 0.
 
 //electronics parameters
@@ -62,10 +62,16 @@ using namespace std;
 SBSDigGEMSimDig::SBSDigGEMSimDig()// :
   //fGasWion(), fGasDiffusion(), fGasDriftVelocity(), fAvalancheFiducialBand(), fAvalancheChargeStatistics(), fGainMean(), fGain0(), fMaxNIon(), fSNormNsigma(), fAvaGain(), fAPVTimeJitter() 
 {
+  fAvaGain = 20.0;
+  fNSamples = 6;
 }
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv, double* commonmode_array) : fZeroSup(zsup_thr) 
 {
+  //TODO: pass as parameters.
+  fAvaGain = 20.0;
+  fNSamples = 6;
+  
   for(int i = 0; i<nchambers; i++){
     fTriggerOffset.push_back(trigoffset[i]);
     cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
@@ -1370,7 +1376,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
 	//if(i%2==1 && i<24)h1_yGEM_incheckout->Fill(j*fStripPitch-gemdet->GEMPlanes[i].dX()/2.);
 	if(!sigonly){
-	  for(int k = 0; k<6; k++){
+	  for(int k = 0; k<fNSamples; k++){
 	    //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
 	    //int ped = TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma));
 	    //if(gemdet->GEMPlanes[i].GetADC(j, k)<0 || gemdet->GEMPlanes[i].GetADC(j, k)>4096)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << ped << " " << commonmode << " " << fPulseNoiseSigma << endl;
@@ -1388,98 +1394,148 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) || !fDoZeroSup) {
 	  //if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " " << commonmode << endl;
 	  if(uniqueid==BBGEM_UNIQUE_DETID){
+	    /*
 	    if(sigonly){
 	      cout << T->Earm_BBGEM_Dig_sig.nstrips << endl;
-	      T->Earm_BBGEM_Dig_sig.nstrips++;
-	      T->Earm_BBGEM_Dig_sig.module->push_back(i);
-	      T->Earm_BBGEM_Dig_sig.strip->push_back(j);
-	      T->Earm_BBGEM_Dig_sig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
-	      T->Earm_BBGEM_Dig_sig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
-	      T->Earm_BBGEM_Dig_sig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
-	      T->Earm_BBGEM_Dig_sig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
-	      T->Earm_BBGEM_Dig_sig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
-	      T->Earm_BBGEM_Dig_sig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	      for(int k = 0; k<fNSamples; k++){
+		T->Earm_BBGEM_Dig_sig.nstrips++;
+		T->Earm_BBGEM_Dig_sig.module->push_back(i);
+		T->Earm_BBGEM_Dig_sig.strip->push_back(j);
+	      
+	      //T->Earm_BBGEM_Dig_sig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	      //T->Earm_BBGEM_Dig_sig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	      //T->Earm_BBGEM_Dig_sig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	      //T->Earm_BBGEM_Dig_sig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	      //T->Earm_BBGEM_Dig_sig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	      //T->Earm_BBGEM_Dig_sig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+		T->Earm_BBGEM_Dig_sig.samp->push_back(k);
+		T->Earm_BBGEM_Dig_sig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	      }
+
 	    }else{
-	      T->Earm_BBGEM_Dig.nstrips++;
-	      T->Earm_BBGEM_Dig.module->push_back(i);
-	      T->Earm_BBGEM_Dig.strip->push_back(j);
+	      */
+	      for(int k = 0; k<fNSamples; k++){
+		T->Earm_BBGEM_Dig.nstrips++;
+		T->Earm_BBGEM_Dig.module->push_back(i);
+		T->Earm_BBGEM_Dig.strip->push_back(j);
+	      /*
 	      T->Earm_BBGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	      T->Earm_BBGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	      T->Earm_BBGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	      T->Earm_BBGEM_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	      T->Earm_BBGEM_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	      T->Earm_BBGEM_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
-	    }
+	      */
+		T->Earm_BBGEM_Dig.samp->push_back(k);
+		T->Earm_BBGEM_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	      }
+	      //}
 	  }
 	  if(uniqueid==CEPOL_GEMFRONT_UNIQUE_DETID){
-	     T->Harm_CEPolFront_Dig.nstrips++;
-	     T->Harm_CEPolFront_Dig.module->push_back(i);
-	     T->Harm_CEPolFront_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_CEPolFront_Dig.nstrips++;
+	       T->Harm_CEPolFront_Dig.module->push_back(i);
+	       T->Harm_CEPolFront_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_CEPolFront_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_CEPolFront_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_CEPolFront_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_CEPolFront_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_CEPolFront_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_CEPolFront_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_CEPolFront_Dig.samp->push_back(k);
+	       T->Harm_CEPolFront_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  if(uniqueid==CEPOL_GEMREAR_UNIQUE_DETID){
-	     T->Harm_CEPolRear_Dig.nstrips++;
-	     T->Harm_CEPolRear_Dig.module->push_back(i);
-	     T->Harm_CEPolRear_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_CEPolRear_Dig.nstrips++;
+	       T->Harm_CEPolRear_Dig.module->push_back(i);
+	       T->Harm_CEPolRear_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_CEPolRear_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_CEPolRear_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_CEPolRear_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_CEPolRear_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_CEPolRear_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_CEPolRear_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_CEPolRear_Dig.samp->push_back(k);
+	       T->Harm_CEPolRear_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  
 	  if(uniqueid==PRPOLBS_GEM_UNIQUE_DETID){
-	     T->Harm_PrPolGEMBeamSide_Dig.nstrips++;
-	     T->Harm_PrPolGEMBeamSide_Dig.module->push_back(i);
-	     T->Harm_PrPolGEMBeamSide_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_PrPolGEMBeamSide_Dig.nstrips++;
+	       T->Harm_PrPolGEMBeamSide_Dig.module->push_back(i);
+	       T->Harm_PrPolGEMBeamSide_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_PrPolGEMBeamSide_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_PrPolGEMBeamSide_Dig.samp->push_back(k);
+	       T->Harm_PrPolGEMBeamSide_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  
 	  if(uniqueid==FT_UNIQUE_DETID){
-	     T->Harm_FT_Dig.nstrips++;
-	     T->Harm_FT_Dig.module->push_back(i);
-	     T->Harm_FT_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_FT_Dig.nstrips++;
+	       T->Harm_FT_Dig.module->push_back(i);
+	       T->Harm_FT_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_FT_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_FT_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_FT_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_FT_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_FT_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_FT_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_FT_Dig.samp->push_back(k);
+	       T->Harm_FT_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  
 	  if(uniqueid==FPP1_UNIQUE_DETID){
-	     T->Harm_FPP1_Dig.nstrips++;
-	     T->Harm_FPP1_Dig.module->push_back(i);
-	     T->Harm_FPP1_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_FPP1_Dig.nstrips++;
+	       T->Harm_FPP1_Dig.module->push_back(i);
+	       T->Harm_FPP1_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_FPP1_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_FPP1_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_FPP1_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_FPP1_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_FPP1_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_FPP1_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_FPP1_Dig.samp->push_back(k);
+	       T->Harm_FPP1_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  
 	  if(uniqueid==FPP2_UNIQUE_DETID){
-	     T->Harm_FPP2_Dig.nstrips++;
-	     T->Harm_FPP2_Dig.module->push_back(i);
-	     T->Harm_FPP2_Dig.strip->push_back(j);
+	     for(int k = 0; k<fNSamples; k++){
+	       T->Harm_FPP2_Dig.nstrips++;
+	       T->Harm_FPP2_Dig.module->push_back(i);
+	       T->Harm_FPP2_Dig.strip->push_back(j);
+	     /*
 	     T->Harm_FPP2_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
 	     T->Harm_FPP2_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
 	     T->Harm_FPP2_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
 	     T->Harm_FPP2_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
 	     T->Harm_FPP2_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
 	     T->Harm_FPP2_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	     */
+	       T->Harm_FPP2_Dig.samp->push_back(k);
+	       T->Harm_FPP2_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	     }
 	  }
 	  
 	}//end if(...)
