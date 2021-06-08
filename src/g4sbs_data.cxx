@@ -475,8 +475,8 @@ namespace TSBSGeant4 {
       adc_4->clear();
       adc_5->clear();
       */
-      b_adc->Fill();
-      b_samp->Fill();
+      adc->clear();
+      samp->clear();
     }
   }
   
