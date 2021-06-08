@@ -303,6 +303,19 @@ int main(int argc, char** argv){
   Double_t* commonmode_array_prpolbs_gem;
   UShort_t nAPV_prpolbs_gem = 0;
   
+  Int_t NPlanes_prpolfs_gem = 16;// number of planes/modules/readout
+  Double_t gatewidth_prpolfs_gem = 400.;
+  Double_t ZsupThr_prpolfs_gem = 240.;
+  Int_t Nlayers_prpolfs_gem = 2;
+  std::vector<Double_t> prpolfs_gem_layer_z;
+  Int_t* layer_prpolfs_gem;
+  Int_t* nstrips_prpolfs_gem;
+  Double_t* offset_prpolfs_gem;
+  Double_t* RO_angle_prpolfs_gem;
+  Double_t* triggeroffset_prpolfs_gem;
+  Double_t* commonmode_array_prpolfs_gem;
+  UShort_t nAPV_prpolfs_gem = 0;
+  
 
   // ** How to add a new subsystem **
   // Add param for new detectors there...
@@ -1412,6 +1425,137 @@ int main(int argc, char** argv){
 	    commonmode_array_prpolbs_gem[k-1] = stemp.Atof();
 	  }
 	}
+	// GEMs prpolfs_gem
+	if(skey=="NPlanes_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_prpolfs_gem = stemp.Atoi();
+	  
+	  layer_prpolfs_gem = new Int_t[NPlanes_prpolfs_gem];
+	  nstrips_prpolfs_gem = new Int_t[NPlanes_prpolfs_gem];
+	  offset_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem];
+	  RO_angle_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem];
+	  triggeroffset_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem/2];
+	}
+	
+	if(skey=="gatewidth_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_prpolfs_gem = stemp.Atof();
+	}
+		
+	if(skey=="ZsupThr_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_prpolfs_gem = stemp.Atof();
+	}
+
+	if(skey=="nlayers_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_prpolfs_gem = stemp.Atof();
+	}
+	
+	if(skey=="prpolfs_gem_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_prpolfs_gem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      prpolfs_gem_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for prpolfs_gem_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_prpolfs_gem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_prpolfs_gem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_prpolfs_gem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_prpolfs_gem[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_prpolfs_gem[k-1] = stemp.Atof();
+	      // if this is affected at k-1, program crashes... it should not and that's confusing...
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="commonmode_array_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_prpolfs_gem = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_prpolfs_gem++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_prpolfs_gem[k-1] = stemp.Atof();
+	  }
+	}
 
 	//FT
 	if(skey=="NPlanes_ft"){
@@ -1869,6 +2013,19 @@ int main(int argc, char** argv){
       
       GEMdetectors.push_back(prpolbs_gem);
       gemdetmap.push_back(PRPOLBS_GEM_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+    }
+    
+    if(detectors_list[k] == "prpolfs_gem"){
+     SBSDigGEMDet* prpolfs_gem = new SBSDigGEMDet(PRPOLFS_GEM_UNIQUE_DETID, NPlanes_prpolfs_gem, layer_prpolfs_gem, nstrips_prpolfs_gem, offset_prpolfs_gem, RO_angle_prpolfs_gem, 6, ZsupThr_prpolfs_gem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolfs_gem/2, triggeroffset_prpolfs_gem, ZsupThr_prpolfs_gem, nAPV_prpolfs_gem, commonmode_array_prpolfs_gem);
+      for(int m = 0; m<Nlayers_prpolfs_gem; m++){
+	prpolfs_gem->fZLayer.push_back(prpolfs_gem_layer_z[m]);
+      }
+      prpolfs_gem->fGateWidth = gatewidth_prpolfs_gem;
+      
+      GEMdetectors.push_back(prpolfs_gem);
+      gemdetmap.push_back(PRPOLFS_GEM_UNIQUE_DETID);
       GEMsimDig.push_back(gemdig);
     }
     
