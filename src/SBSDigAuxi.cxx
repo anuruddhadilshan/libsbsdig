@@ -659,14 +659,16 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
-        for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){
-  cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMFarSide.nhits<<endl;
+      //cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMFarSide.nhits<<endl;
+      for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){
 	if(T->Harm_PrPolGEMFarSide.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
 	  hit.source = signal;
 	  mod = 0;
 	  while(mod<gemdets[idet]->fNPlanes/2){
 	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_PrPolGEMFarSide.xin->at(k) && T->Harm_PrPolGEMFarSide.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_PrPolGEMFarSide.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    //cout << gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << " <? " << T->Harm_PrPolGEMFarSide.xin->at(k) << " <? " << gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << endl;
+	    //cout << T->Harm_PrPolGEMFarSide.plane->at(k) << " =? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << endl;
 	    mod++;
 	  }//that does the job, but maybe can be optimized???
 	  if(mod==gemdets[idet]->fNPlanes/2)continue;
@@ -680,7 +682,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMFarSide.plane->at(k)<<endl;
+	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMFarSide.plane->at(k)<<endl;
 	}//end if(sumedep>0)
 	
       }
