@@ -477,7 +477,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       //cout << "detid " << detid << " fLeadTimes.at(" << i << ") " << fLeadTimes.at(i) << " fTrailTimes.at(" << i << ") " << fTrailTimes.at(i) << endl;
       // trim "all" bits that are above the number of TDC bits - a couple to speed it up
       // (since TDC have a revolving clock, as far as I understand)
-      // let's use an arbitrary reference time offset of 1us before the trigger
+      // let's use an arbitrary reference time offset of 1000 (?) TDC chans before the trigger
       tdc_value = TMath::Nint((fLeadTimes.at(i))/TDCconv)+1000;
       for(int j = 30; j>=TDCbits; j--){
 	tdc_value ^= ( -0 ^ tdc_value) & ( 1 << (j) );
@@ -687,10 +687,10 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
 	  //T->Earm_BBHodo_dighit_tdc_t->push_back(fTDCs[j]-1000);
-	  T->Earm_BBHodo_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->Earm_BBHodo_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
 	  //T->Earm_BBHodo_dighit_tdc_l->push_back(fTDCs[j]-1000);
-	  T->Earm_BBHodo_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->Earm_BBHodo_Dig.tdc_l->push_back(fTDCs[j]);
 	}
       }
       // equalize the hits:
@@ -726,10 +726,10 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
 	  //T->CDET_dighit_tdc_t->push_back(fTDCs[j]-1000);
-	  T->CDET_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->CDET_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
 	  //T->CDET_dighit_tdc_l->push_back(fTDCs[j]-1000);
-	  T->CDET_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->CDET_Dig.tdc_l->push_back(fTDCs[j]);
 	}
       }
       // equalize the hits:
@@ -765,10 +765,10 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
 	  //T->Earm_GRINCH_dighit_tdc_t->push_back(fTDCs[j]-1000);
-	  T->Earm_GRINCH_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->Earm_GRINCH_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
 	  //T->Earm_GRINCH_Dig.tdc_l->push_back(fTDCs[j]-1000);
-	  T->Earm_GRINCH_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->Earm_GRINCH_Dig.tdc_l->push_back(fTDCs[j]);
 	}
 	// equalize the hits:
 	int max_size = max(T->Earm_GRINCH_Dig.tdc_l->size(), T->Earm_GRINCH_Dig.tdc_t->size());
@@ -824,7 +824,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     */
     if(fTDCs.size()){
       for(int j = 0;j<fTDCs.size(); j++){
-	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]-1000);
+	T->Harm_HCal_Dig.tdc->push_back(fTDCs[j]);
 	//if(j>1){ 
 	T->Harm_HCal_Dig.nchan++;
 	T->Harm_HCal_Dig.chan->push_back(chan);
@@ -874,10 +874,10 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
 	  //T->Harm_PRPolScintBeamSide_Dighit_tdc_t->push_back(fTDCs[j]-1000);
-	  T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
 	  //T->Harm_PRPolScintBeamSide_Dighit_tdc_l->push_back(fTDCs[j]-1000);
-	  T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintBeamSide_Dig.tdc_l->push_back(fTDCs[j]);
 	}
 	// equalize the hits:
 	int max_size = max(T->Harm_PRPolScintBeamSide_Dig.tdc_l->size(), T->Harm_PRPolScintBeamSide_Dig.tdc_t->size());
@@ -910,9 +910,9 @@ if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
-	  T->Harm_PRPolScintFarSide_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintFarSide_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
-	  T->Harm_PRPolScintFarSide_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->Harm_PRPolScintFarSide_Dig.tdc_l->push_back(fTDCs[j]);
 	}
       }
     }else{
@@ -931,9 +931,9 @@ if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
-	  T->Harm_ActAn_Dig.tdc_t->push_back(fTDCs[j]-1000);
+	  T->Harm_ActAn_Dig.tdc_t->push_back(fTDCs[j]);
 	}else{
-	  T->Harm_ActAn_Dig.tdc_l->push_back(fTDCs[j]-1000);
+	  T->Harm_ActAn_Dig.tdc_l->push_back(fTDCs[j]);
 	}
       }
     }else{
