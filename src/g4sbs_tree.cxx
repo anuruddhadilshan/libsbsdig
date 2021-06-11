@@ -168,8 +168,8 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
        SetupDetBranch(Harm_PrPolGEMBeamSide, "Harm.PRPolGEMBeamSide.hit");
        SetupDetBranch(Harm_PrPolGEMBeamSide_Dig, "Harm.PRPolGEMBeamSide.dighit");
      }
-     if(det_list[k]=="prpolgem_fs"){
-       printf(" prpolgem_fs branches set up! \n");
+     if(det_list[k]=="prpolfs_gem"){
+       printf("prpolfs_gem branches set up! \n");
        SetupDetBranch(Harm_PrPolGEMFarSide, "Harm.PRPolGEMFarSide.hit");
        SetupDetBranch(Harm_PrPolGEMFarSide_Dig, "Harm.PRPolGEMFarSide.dighit");
      }

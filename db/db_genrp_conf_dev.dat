@@ -215,8 +215,10 @@ commonmode_array_bbgem 1500.
  gatewidth_prpolfs_gem 400
  #number of strips for each plane/module
  nlayers_prpolfs_gem 2
- prpolfs_gem_layer_z -0.601825 -0.5031625
- layer_prpolbfs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
+ prpolfs_gem_layer_z -0.6031825 -0.5031825
+ #prpolfs_gem_layer_z -0.615 -0.5
+ #prpolfs_gem_layer_z -0.5 -0.6
+ layer_prpolfs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
  nstrips_prpolfs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
  #offset in transport coordinate for each plane/module in meters
  offset_prpolfs_gem -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
