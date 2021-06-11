@@ -439,15 +439,25 @@ namespace TSBSGeant4 {
   bool DigGEMData_t::SetupBranches(TTree* tree, const char *prefix)
   {
     if(!tree)return(false);
+    
+    module = new std::vector<int>;
+    strip = new std::vector<int>;
+    adc = new std::vector<int>;
+    samp = new std::vector<int>;
+    
     b_nstrips = tree->Branch(Form("%s.nstrips", prefix), &nstrips);
     b_module = tree->Branch(Form("%s.module", prefix), &module);
     b_strip = tree->Branch(Form("%s.strip", prefix), &strip);
+    /*
     b_adc_0 = tree->Branch(Form("%s.adc_0", prefix), &adc_0);
     b_adc_1 = tree->Branch(Form("%s.adc_1", prefix), &adc_1);
     b_adc_2 = tree->Branch(Form("%s.adc_2", prefix), &adc_2);
     b_adc_3 = tree->Branch(Form("%s.adc_3", prefix), &adc_3);
     b_adc_4 = tree->Branch(Form("%s.adc_4", prefix), &adc_4);
     b_adc_5 = tree->Branch(Form("%s.adc_5", prefix), &adc_5);
+    */
+    b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    b_samp = tree->Branch(Form("%s.samp", prefix), &samp);
     return true;
   }
   
@@ -457,12 +467,16 @@ namespace TSBSGeant4 {
       nstrips = 0;
       strip->clear();
       module->clear();
+      /*
       adc_0->clear();
       adc_1->clear();
       adc_2->clear();
       adc_3->clear();
       adc_4->clear();
       adc_5->clear();
+      */
+      adc->clear();
+      samp->clear();
     }
   }
   
@@ -472,12 +486,16 @@ namespace TSBSGeant4 {
       b_nstrips->Fill();
       b_module->Fill();
       b_strip->Fill();
+      /*
       b_adc_0->Fill();
       b_adc_1->Fill();
       b_adc_2->Fill();
       b_adc_3->Fill();
       b_adc_4->Fill();
       b_adc_5->Fill();
+      */
+      b_adc->Fill();
+      b_samp->Fill();
     }
   } 
 

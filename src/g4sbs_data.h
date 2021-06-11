@@ -334,24 +334,34 @@ namespace TSBSGeant4 {
     //std::vector<Int_t> *planeID;
     std::vector<Int_t> *module;
     std::vector<Int_t> *strip;
+    /*
     std::vector<Int_t> *adc_0;
     std::vector<Int_t> *adc_1;
     std::vector<Int_t> *adc_2;
     std::vector<Int_t> *adc_3;
     std::vector<Int_t> *adc_4;
     std::vector<Int_t> *adc_5;
+    */
+    std::vector<Int_t> *adc;
+    std::vector<Int_t> *samp;
     
     TBranch *b_nstrips;   //!
     TBranch *b_module;   //!
     TBranch *b_strip;   //!
+    /*
     TBranch *b_adc_0;   //!
     TBranch *b_adc_1;   //!
     TBranch *b_adc_2;   //!
     TBranch *b_adc_3;   //!
     TBranch *b_adc_4;   //!
     TBranch *b_adc_5;   //!
+    */
+    TBranch *b_adc;   //!
+    TBranch *b_samp;   //!
     
-  DigGEMData_t() : nstrips(0), module(0), strip(0), adc_0(0), adc_1(0), adc_2(0), adc_3(0), adc_4(0), adc_5(0), b_nstrips(0), b_module(0), b_strip(0), b_adc_0(0), b_adc_1(0), b_adc_2(0), b_adc_3(0), b_adc_4(0), b_adc_5(0){};
+  DigGEMData_t() : nstrips(0), module(0), strip(0), //adc_0(0), adc_1(0), adc_2(0), adc_3(0), adc_4(0), adc_5(0), b_nstrips(0), b_module(0), b_strip(0), b_adc_0(0), b_adc_1(0), b_adc_2(0), b_adc_3(0), b_adc_4(0), b_adc_5(0)
+      adc(0), samp(0), b_nstrips(0), b_module(0), b_strip(0), b_adc(0), b_samp(0){};
+      
     virtual ~DigGEMData_t(){};
     virtual bool SetupBranches(TTree *t, const char *prefix);
     void ClearBranches();
