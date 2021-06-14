@@ -577,12 +577,14 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=CEPOL_GEMREAR_UNIQUE_DETID){
 	idet++;
+
       }else{
 	break;
       }
     }
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
+
       for(int k = 0; k<T->Harm_CEPolRear.nhits; k++){
 	if(T->Harm_CEPolRear.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
@@ -622,7 +624,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
         for(int k = 0; k<T->Harm_PrPolGEMBeamSide.nhits; k++){
- // cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMBeamSide.nhits<<endl;
+  //cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMBeamSide.nhits<<endl;
 	if(T->Harm_PrPolGEMBeamSide.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
 	  hit.source = signal;
@@ -653,13 +655,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=PRPOLFS_GEM_UNIQUE_DETID){
 	idet++;
+
       }else{
 	break;
       }
     }
+
+
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
-      //cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMFarSide.nhits<<endl;
       for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){
 	if(T->Harm_PrPolGEMFarSide.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
@@ -682,7 +686,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMFarSide.plane->at(k)<<endl;
+	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<"  zout   "<<T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<endl;
 	}//end if(sumedep>0)
 	
       }
