@@ -14,7 +14,10 @@
 
 //________________________________
 class SBSDigBkgdGen {
-
+  // --------------------------------
+  // this class generates beam induced background hits from sampling histograms of hit energy deposit and position distributions.
+  // the hit multipicity histograms are not sampled, but are fitted with a gaussian distribution.
+  // the number obtained from this fit is scaled by the detector time window size divided by the equivalent time window size of the sample (provided by the input file).
  public:
   SBSDigBkgdGen();
   SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig);
@@ -32,17 +35,25 @@ class SBSDigBkgdGen {
   
  private:
   double fTimeWindow;
+  // necessary histograms for GEMs detectors: 
+  // * hit multiplicity
+  // * hit energy deposit
+  // * hit position (x and y): one per GEM layer
+  // * hit spread (x and y): one per GEM layer
+  Double_t* NhitsBBGEMs;// one number per GEM layer
+  TH1D* h_EdephitBBGEMs;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitBBGEMs;// one hisogram per GEM layer
+  TH1D** h_yhitBBGEMs;// one hisogram per GEM layer
+  TH1D** h_dxhitBBGEMs;// one hisogram per GEM layer
+  TH1D** h_dyhitBBGEMs;// one hisogram per GEM layer
   
-  Double_t* NhitsBBGEMs;
-  TH1D* h_EdephitBBGEMs;
-  TH1D** h_xhitBBGEMs;
-  TH1D** h_yhitBBGEMs;
-  TH1D** h_dxhitBBGEMs;
-  TH1D** h_dyhitBBGEMs;
-  
-  Double_t* NhitsHCal;
-  TH1D* h_EdephitHCal;
-  TH1D* h_zhitHCal;
+  // necessary histograms for calorimeter/scintillator type detectors:
+  // * hit multiplicity
+  // * hit energy deposit
+  // * optional hit position (x or y or z)
+  Double_t* NhitsHCal;// one number per block
+  TH1D* h_EdephitHCal;// distribution is assumed to be the same for all blocks
+  TH1D* h_zhitHCal;// distribution is assumed to be the same for all blocks
   
   Double_t* NhitsBBPS;
   TH1D* h_EdephitBBPS;
@@ -54,9 +65,13 @@ class SBSDigBkgdGen {
   TH1D* h_EdephitBBHodo;
   TH1D* h_xhitBBHodo;
   
-  Double_t* P1hitGRINCH;
-  Double_t* P2hitsGRINCH;
-  TH1D* h_NpeGRINCH;
+  // necessary histograms for cherenkov type detectors:
+  // * probability for 1 hit
+  // * probability for 2 hits (presumably more that 2 hits is very unlikely)
+  // * number of photoelectrons
+  Double_t* P1hitGRINCH;// one number per PMT
+  Double_t* P2hitsGRINCH;// one number per PMT
+  TH1D* h_NpeGRINCH;// distribution is assumed to be the same for all PMTs
   
   Double_t* NhitsECal;
   TH1D* h_EdephitECal;

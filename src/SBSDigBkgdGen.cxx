@@ -9,6 +9,7 @@ using namespace std;
 
 SBSDigBkgdGen::SBSDigBkgdGen()
 {
+  //Initialization of arrays and histograms
   NhitsBBGEMs = new Double_t[5];
   h_xhitBBGEMs = new TH1D*[5];
   h_yhitBBGEMs = new TH1D*[5];
@@ -41,6 +42,7 @@ SBSDigBkgdGen::SBSDigBkgdGen()
 
 SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig)
 {
+  //Initialization of arrays and histograms
   fTimeWindow = timewindow;
   NhitsBBGEMs = new Double_t[5];
   h_xhitBBGEMs = new TH1D*[5];
@@ -84,7 +86,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
 {
   double mu, sigma;
   
-  // GEMs
+  // BB GEMs
   TH1D* h1_BBGEM_nhits_[5];
   TF1* f1_bbgemnhits_[5];
   TH2D* h1_BBGEM_yVsx_[5];
@@ -121,8 +123,11 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   h_NpeGRINCH_XC = new TH1D("h_NpeGRINCH_XC", "", 100, 0, 100);
   */
   
+  // Initialization of BBGEM histograms:
+  // most histograms are 1D projections the 2D histograms stored in the input file.
+  // for the energy deposit, the input file histograms (one per plane) are consolidated into one
   for(int m = 0; m<5; m++){
-    //Nhits
+    // fit of the hits mulitplicity distribution.
     h1_BBGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_nhits_%d",m));
     f1_bbgemnhits_[m] = new TF1(Form("f1_bbgemnhits_%d", m), "gaus", 0., 400.);
     h1_BBGEM_nhits_[m]->Fit(f1_bbgemnhits_[m], "QRN");
@@ -134,10 +139,12 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     }
     NhitsBBGEMs[m] = max(1.0, f1_bbgemnhits_[m]->GetParameter(1));
     
+    // copy of 2D position histograms, then projection to obtain 1D histograms
     h1_BBGEM_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_BBGEM_yVsx_%d",m));
     h_xhitBBGEMs[m] = h1_BBGEM_yVsx_[m]->ProjectionX(Form("h1_xhitBBGEM_%d",m));
     h_yhitBBGEMs[m] = h1_BBGEM_yVsx_[m]->ProjectionY(Form("h1_yhitBBGEM_%d",m));
     
+    // copy of 2D position histograms, then projection to obtain 1D histograms
     h1_BBGEM_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_BBGEM_dyVsdx_%d",m));
     h_dxhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionX(Form("h1_dxhitBBGEM_%d",m));
     h_dyhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionY(Form("h1_dyhitBBGEM_%d",m));
@@ -164,7 +171,8 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     //cout << m << " " << NhitsBBGEMs[m] << endl;
   }
   
-  //HCal
+  // Initialization of HCal histograms:
+  // most histograms are 1D projections the 2D histograms stored in the input file.
   cout << "HCal" << endl;
   TH2D *h1_HCal_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_HCal_nhitsVsChan");
   TH1D* h1_HCal_nhits_[288];
@@ -174,6 +182,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
   TH2D *h1_HCal_zHitVsChan = (TH2D*)f_bkgd->Get("h1_HCal_zHitVsChan");
 
   for(int m = 0; m<288; m++){
+    // fit of the hits mulitplicity distribution.
     h1_HCal_nhits_[m] = h1_HCal_nhitsVsChan->ProjectionY(Form("h1_HCal_nhits_%d", m), m+1, m+1);
     f1_hcalnhits_[m] = new TF1(Form("f1_hcalnhits_%d", m), "gaus", 0, 50);
     h1_HCal_nhits_[m]->Fit(f1_hcalnhits_[m], "QR0");
@@ -186,6 +195,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
     NhitsHCal[m] = max(1.0, f1_hcalnhits_[m]->GetParameter(1));
     //cout << m << " " << NhitsHCal[m] << endl;
   }
+  // copy of 2D position histograms, then projection to obtain 1D histograms
   h_EdephitHCal = h1_HCal_EdepHitVsChan->ProjectionY("h_EdephitHCal");
   h_zhitHCal = h1_HCal_zHitVsChan->ProjectionY("h_zhitHCal");
 
