@@ -24,6 +24,7 @@ class SBSDigBkgdGen {
   ~SBSDigBkgdGen();
   void Initialize(TFile* f_bkgd);
   
+  // this function performs basically the same action as SBSDigAuxi::UnfoldData, except that instead of taking hits from an input tree, it generates hits from the histograms
   void GenerateBkgd(TRandom3* R, 
 		    std::vector<SBSDigPMTDet*> pmtdets,
 		    std::vector<int> detmap, 

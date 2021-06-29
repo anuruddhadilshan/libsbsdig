@@ -460,7 +460,6 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd)
 }
 
 
-
 void SBSDigBkgdGen::GenerateBkgd(TRandom3* R, 
 				 std::vector<SBSDigPMTDet*> pmtdets,
 				 std::vector<int> detmap, 
@@ -468,6 +467,8 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 				 std::vector<int> gemmap, 
 				 double lumifrac)
 {
+  // this function performs basically the same action as SBSDigAuxi::UnfoldData, except that instead of taking hits from an input tree, it generates hits from the histograms
+  // see examples with BigBite GEMs and BigBite Hodoscope
   int nhits;
   int mod;
   double edep;
@@ -606,7 +607,6 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
       }
     }
   }
-    
   
   while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
@@ -631,6 +631,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     }
   }
   
+  // the block of code below is similar to the code that unfolds the data from the BigBite hodoscope in SBSDigAuxi::UnfoldData(...)
   while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
   if(idet>=detmap.size())idet = -1;
   //cout << " " << idet;
@@ -638,11 +639,14 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   if(idet>=0){
     //cout << "hodo" << endl;
     for(int m = 0; m<90; m++){
+      // determine the number of hits to generate, then loop on this number of hits
       nhits = R->Poisson(NhitsBBHodo[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
       
       //h_NhitsBBHodo_XC->Fill(m, nhits);
             
       for(int i = 0; i<nhits; i++){
+	// energy deposit, hit position
+	// generated from sampling the histograms with function GetRandom();
 	edep =  h_EdephitBBHodo->GetRandom();//*1.e6;
 	//if(edep<0.002)continue;
 	x_hit =  h_xhitBBHodo->GetRandom();
@@ -651,6 +655,9 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//h_xhitBBHodo_XC->Fill(x_hit);
 	
 	//p = R->Uniform(-50.,50.);
+	// from that point, it's almost the same code as in 
+	// SBSDigAuxi::UnfoldData(...), with one exception:
+	// * t is generated uniformly within the DAQ time window.
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
 	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
 	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
@@ -687,17 +694,22 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   
   
   }//end if(fDetailedDig) 
-  
+
+  // the block of code below is similar to the code that unfolds the data from the BigBite GEMs in SBSDigAuxi::UnfoldData(...)
   idet = 0;
   while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
   if(idet>=gemmap.size())idet = -1;
   
   if(idet>=0){
     //    cout << "bbgems" << endl;
+    // loop on the GEM layers
     for(int m = 0; m<5; m++){
+      // determine the number of hits to generate, then loop on this number of hits
       nhits = R->Poisson(NhitsBBGEMs[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
       //h_NhitsBBGEMs_XC[m]->Fill(nhits);
       for(int i = 0; i<nhits; i++){
+	// energy deposit, hit position (at entrance of drift) 
+	// generated from sampling the histograms with function GetRandom();
 	edep =  h_EdephitBBGEMs->GetRandom();
 	x_hit =  h_xhitBBGEMs[m]->GetRandom();
 	y_hit =  h_yhitBBGEMs[m]->GetRandom();
@@ -712,7 +724,13 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	hit.source = 1;
 	
 	mod = 0;
-	
+	// from that point, it's almost the same code as in 
+	// SBSDigAuxi::UnfoldData(...), with a few exceptions:
+	// * z_in, z_out are assumed to be -/+ 0.0015m respectively; 
+	//   (that's not too big of an approximation)
+	// * x(y)_out assumed to be x(y)_in+dx(y) 
+	//   where dx(y) is sampled from the distribution of x(y)_out-x(y)_in.
+	// * t is generated uniformly within the DAQ time window.
 	while(mod<gemdets[idet]->fNPlanes/2){
 	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;	  mod++;
 	}//that does the job, but maybe can be optimized???
@@ -729,7 +747,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	hit.xin = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	hit.yin = y_hit;
 	hit.zin = -0.0015;
-	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitBBGEMs[m]->GetRandom();
+	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitBBGEMs[m]->GetRandom();// 
 	hit.yout = y_hit+h_dyhitBBGEMs[m]->GetRandom();
 	//if(fabs(hit.yout)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.){
 	//hit.yout *= gemdets[idet]->GEMPlanes[mod*2+1].dX()/2./hit.yout;
