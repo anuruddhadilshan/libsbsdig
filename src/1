@@ -24,7 +24,6 @@ class SBSDigBkgdGen {
   ~SBSDigBkgdGen();
   void Initialize(TFile* f_bkgd);
   
-  // this function performs basically the same action as SBSDigAuxi::UnfoldData, except that instead of taking hits from an input tree, it generates hits from the histograms
   void GenerateBkgd(TRandom3* R, 
 		    std::vector<SBSDigPMTDet*> pmtdets,
 		    std::vector<int> detmap, 
@@ -63,22 +62,6 @@ class SBSDigBkgdGen {
   TH1D** h_dxhitCEPOL_GEMREARs;// one hisogram per GEM layer
   TH1D** h_dyhitCEPOL_GEMREARs;// one hisogram per GEM layer
 
-///PRPOLBS_GEM
-  Double_t* NhitsPRPOLBS_GEMs;// one number per GEM layer
-  TH1D* h_EdephitPRPOLBS_GEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_yhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitPRPOLBS_GEMs;// one hisogram per GEM layer
-
-///PRPOLFS_GEM
-  Double_t* NhitsPRPOLFS_GEMs;// one number per GEM layer
-  TH1D* h_EdephitPRPOLFS_GEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_yhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitPRPOLFS_GEMs;// one hisogram per GEM layer
-
 
   // necessary histograms for calorimeter/scintillator type detectors:
   // * hit multiplicity
@@ -97,19 +80,6 @@ class SBSDigBkgdGen {
   Double_t* NhitsBBHodo;
   TH1D* h_EdephitBBHodo;
   TH1D* h_xhitBBHodo;
-  
-  Double_t* NhitsPRPOLBS_SCINT;
-  TH1D* h_EdephitPRPOLBS_SCINT;
-  TH1D* h_xhitPRPOLBS_SCINT;
-  
-  Double_t* NhitsPRPOLFS_SCINT;
-  TH1D* h_EdephitPRPOLFS_SCINT;
-  TH1D* h_xhitPRPOLFS_SCINT;
-  
-  Double_t* NhitsACTIVEANA;
-  TH1D* h_EdephitACTIVEANA;
-  TH1D* h_xhitACTIVEANA;
-  
   
   // necessary histograms for cherenkov type detectors:
   // * probability for 1 hit
