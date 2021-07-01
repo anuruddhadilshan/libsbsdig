@@ -10,9 +10,7 @@
 #include "TCut.h"
 #include "TEventList.h"
 #include "G4SBSRunData.hh"
-//#include "g4sbs_gmn_tree.C"
 #include "gmn_deftree.C"
-//#include "gmn_nope_tree.C"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TProfile.h"
@@ -25,77 +23,10 @@
 #include "TGraph.h"
 #include "TSystem.h"
 
-/*
-//Return an simplified PID using the G4 PID for the most common particles: e+-, mu+-, pi+-0, K+-, n, p/
-int findReducedPID(int G4pid, double *M = 0)
-{
-  int sPID;
-  switch(G4pid){
-  case(22):
-    sPID = 0;
-    if(M)*M = 0.0;
-    break;
-  case(11):
-    sPID = -1;
-    if(M)*M = 0.000511;
-    break;
-  case(-11):
-    sPID = 1;
-    if(M)*M = 0.000511;
-    break;
-  case(13):
-    sPID = -2;
-    if(M)*M = 0.105658;
-    break;
-  case(-13):
-    sPID = 2;
-    if(M)*M = 0.105658;
-    break;
-  case(211):
-    sPID = 3;
-    if(M)*M = 0.139570;
-    break;
-  case(-211):
-    sPID = -3;
-    if(M)*M = 0.139570;
-    break;
-  case(321):
-    sPID = 4;
-    if(M)*M = 0.493677;
-    break;
-  case(-321):
-    sPID = -4;
-    if(M)*M = 0.493677;
-    break;
-  case(2112):
-    sPID = 5;
-    if(M)*M = 0.939565;
-    break;
-  case(111):
-    sPID = -5;
-    if(M)*M = 0.134977;
-    break;
-  case(2212):
-    sPID = 6;
-    if(M)*M = 0.938272;
-    break;
-  default:
-    sPID = -10;
-    if(M)*M = 10000.0;
-    break;
-  }
-  return(sPID);
-}
+// This script is needed to generate histograms of distribution 
+// of energy deposit, position, etc... for beam induced background hits.
 
-int retrieveG4PID(int sPID){
-  int G4PID[12] = {111, -321, -211, 13, 11, 22, -11, -13, 211, 321, 2112, 2212};
-  if(sPID>-10){
-    return(G4PID[sPID+5]);
-  }else{
-    return(420000001);
-  }
-}
-*/
+
 void BeamBackground(const char *inputfilename, 
 		    const char *root_outfile)
 		    
