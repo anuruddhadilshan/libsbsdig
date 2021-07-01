@@ -26,11 +26,11 @@
 // This script is needed to generate histograms of distribution 
 // of energy deposit, position, etc... for beam induced background hits.
 
-
 void BeamBackground(const char *inputfilename, 
 		    const char *root_outfile)
 		    
 {
+  // reads and stores the list of files to process
   cout << "reading input files" << endl;
   
   ifstream inputfile(inputfilename);
@@ -69,6 +69,8 @@ void BeamBackground(const char *inputfilename,
     pebins_log10[k] = pow(10.0, (double)k*0.05);
   }
   
+  // declare the output files and the histograms
+  // 
   TFile *fout = new TFile( root_outfile, "RECREATE" );
   
   TH1D *h1_Ntries = new TH1D("h1_Ntries","number of total generated events",1, 0, 1);
@@ -138,14 +140,15 @@ void BeamBackground(const char *inputfilename,
   TH2D *h1_GRINCH_NpeVsChan = new TH2D("h1_GRINCH_NpeVsChan", "", 510, 0, 510, 100, 0, 100);
   
   int FileCounter = 0;
-
+  
+  // declare arrays for the number of hits
   int nhits_GEM[5];
   int nhits_HCal[288];
   int nhits_Hodo[90];
   int nhits_PS[52];
   int nhits_SH[189];
   int nhits_GRINCH[510];
-  
+    
   double HCal_Edep_blocks_400ns[288];
   double BBHodo_Edep_slats_400ns[90];
   
@@ -167,6 +170,7 @@ void BeamBackground(const char *inputfilename,
   double x_ref, z_ref;
   double z_hit;
   
+  // loop on files
   TObjArray *fileElements=C->GetListOfFiles();
   TIter next(fileElements);
   TChainElement *chEl=0;
@@ -174,22 +178,24 @@ void BeamBackground(const char *inputfilename,
     //TFile *f = new TFile(chEl->GetTitle());
     TFile f(chEl->GetTitle());
      
+    // for each file, get the G4SBSRunData object...
     G4SBSRunData *RD = (G4SBSRunData*)f.Get("run_data");
     //N1_tot+= (double)RD->fNtries;
     theta_sbs = RD->fSBStheta;
     d_hcal = RD->fHCALdist;
     x_ref = -d_hcal*sin(theta_sbs);
     z_ref = d_hcal*cos(theta_sbs);
-
+    
     TChain *C1 = (TChain*)f.Get("T");
     
+    // and the tree...
     gmn_deftree *T1 = new gmn_deftree(C1);
     
     FileCounter++;
   
     Long64_t MaxEvt = C1->GetEntries();
     cout << chEl->GetTitle() << ": " << MaxEvt << " entries" << endl;
-
+    // loop on events:
     for(Long64_t nevent = 0; nevent<MaxEvt; nevent++){
       //while( T1->GetEntry(nevent++) && nevent < 10000 ){
       if( nevent%1000 == 0){// && nevent!=0){
@@ -198,6 +204,7 @@ void BeamBackground(const char *inputfilename,
       
       T1->GetEntry(nevent);
       
+      // fill HCal hit energy deposit and position histograms, and increment number of hits
       if(T1->Harm_HCalScint_hit_nhits){
 	for(int i = 0; i<T1->Harm_HCalScint_hit_nhits; i++){
 	  HCal_Edep_blocks_400ns[T1->Harm_HCalScint_hit_cell->at(i)]+= T1->Harm_HCalScint_hit_sumedep->at(i);
@@ -221,7 +228,7 @@ void BeamBackground(const char *inputfilename,
 	}
       }
       
-      //cout << "frourourtre" << endl;	
+      // fill BB hodoscope energy deposit and position histograms, and increment number of hits
       if(T1->Earm_BBHodoScint_hit_nhits){
 	for(int i = 0; i<T1->Earm_BBHodoScint_hit_nhits; i++){
 	  nhits_Hodo[T1->Earm_BBHodoScint_hit_cell->at(i)]++;
@@ -248,6 +255,7 @@ void BeamBackground(const char *inputfilename,
 	}
       }
       
+      // fill BigBite GEMs energy deposit, position, and drift exit-entrance position difference histograms, and increment number of hits
       //cout << "BBGEM: " << T1->Earm_BBGEM_hit_nhits << endl;
       if(T1->Earm_BBGEM_hit_nhits){
 	for(int i = 0; i<T1->Earm_BBGEM_hit_nhits; i++){
@@ -269,6 +277,7 @@ void BeamBackground(const char *inputfilename,
 	}
       }
       
+      // fill Preshower energy deposit histograms, and increment number of hits
       if(T1->Earm_BBPSTF1_hit_nhits){
 	for(int i = 0; i<T1->Earm_BBPSTF1_hit_nhits; i++){
 	  if(T1->Earm_BBPSTF1_hit_sumedep->at(i)>=1.e-3){
@@ -284,6 +293,7 @@ void BeamBackground(const char *inputfilename,
 	}
       }
       //cout << "BBSHTF1: " << T1->Earm_BBSHTF1_hit_nhits << endl;
+      // fill Shower energy deposit histograms
       if(T1->Earm_BBSHTF1_hit_nhits){
 	for(int i = 0; i<T1->Earm_BBSHTF1_hit_nhits; i++){
 	  if(T1->Earm_BBSHTF1_hit_sumedep->at(i)>=1.e-3){
@@ -299,7 +309,8 @@ void BeamBackground(const char *inputfilename,
 	}
       }
       
-       if(T1->Earm_GRINCH_hit_nhits){
+      // fill GRINCH histograms, and increment number of hits
+      if(T1->Earm_GRINCH_hit_nhits){
 	for(int i = 0; i<T1->Earm_GRINCH_hit_nhits; i++){
 	  chan = int(T1->Earm_GRINCH_hit_PMT->at(i)/5);
 	  nhits_GRINCH[chan]++;
@@ -316,6 +327,9 @@ void BeamBackground(const char *inputfilename,
     }//end for(Long_64t...)
     
     //if(FileCounter==5){
+    // fill the hits histograms and reinitialize the number of hits 
+    // WARNING: the following assumes that each beam-on-target file has 5 million generated beam electrons
+    // TODO: replace this with something smarter (e.g. set a "time window" and a beam current).
     if(FileCounter%3==0){
       cout << "File Counter = 3 => 15 M evts beam-on-target" << endl;
       for(int j = 0; j<288; j++){
