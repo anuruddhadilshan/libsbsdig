@@ -20,10 +20,11 @@ class SBSDigBkgdGen {
   // the number obtained from this fit is scaled by the detector time window size divided by the equivalent time window size of the sample (provided by the input file).
  public:
   SBSDigBkgdGen();
-  SBSDigBkgdGen(TFile* f_bkgd, double timewindow, bool pmtbkgddig);
+  SBSDigBkgdGen(TFile* f_bkgd, std::vector<TString> det_list, double timewindow, bool pmtbkgddig);
   ~SBSDigBkgdGen();
-  void Initialize(TFile* f_bkgd);
+  void Initialize(TFile* f_bkgd, std::vector<TString> det_list);
   
+  // this function performs basically the same action as SBSDigAuxi::UnfoldData, except that instead of taking hits from an input tree, it generates hits from the histograms
   void GenerateBkgd(TRandom3* R, 
 		    std::vector<SBSDigPMTDet*> pmtdets,
 		    std::vector<int> detmap, 
