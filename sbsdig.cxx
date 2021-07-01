@@ -2175,6 +2175,51 @@ int main(int argc, char** argv){
       detmap.push_back(HCAL_UNIQUE_DETID);
       cout << " set up! " << endl;
     }
+    /*
+    if(detectors_list[k] == "ecal"){
+      SBSDigPMTDet* ecal = new SBSDigPMTDet(ECAL_UNIQUE_DETID, NChan_ecal, gain_ecal*qe);
+      
+      ecal->fGain = gain_ecal;
+      ecal->fPedestal = ped_ecal;
+      ecal->fPedSigma = pedsigma_ecal;
+      ecal->fTrigOffset = trigoffset_ecal;
+      ecal->fThreshold = threshold_ecal*spe_unit/ROimpedance;
+      ecal->fGateWidth = gatewidth_ecal;
+      ecal->fADCconv = ADCconv_ecal;
+      ecal->fADCbits = FADC_ADCbits;
+      ecal->fTDCconv = TDCconv_ecal;
+      ecal->fTDCbits = TDCbits_ecal; 
+      ecal->fSigmaPulse = sigmapulse_ecal; 
+      ecal->SetSamples(FADC_sampsize);
+      
+      //ordered by increasing uinque id
+      PMTdetectors.push_back(ecal);
+      detmap.push_back(ECAL_UNIQUE_DETID);
+      cout << " set up! " << endl;
+    }
+    
+    if(detectors_list[k] == "cdet"){
+      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet*qe);
+      
+      cdet->fGain = gain_cdet;
+      cdet->fPedestal = ped_cdet;
+      cdet->fPedSigma = pedsigma_cdet;
+      cdet->fTrigOffset = trigoffset_cdet;
+      cdet->fThreshold = threshold_cdet*spe_unit/ROimpedance;
+      cdet->fGateWidth = gatewidth_cdet;
+      cdet->fADCconv = ADCconv_cdet;
+      cdet->fADCbits = FADC_ADCbits;
+      cdet->fTDCconv = TDCconv_cdet;
+      cdet->fTDCbits = TDCbits_cdet; 
+      cdet->fSigmaPulse = sigmapulse_cdet; 
+      cdet->SetSamples(FADC_sampsize);
+      
+      //ordered by increasing uinque id
+      PMTdetectors.push_back(cdet);
+      detmap.push_back(CDET_UNIQUE_DETID);
+      cout << " set up! " << endl;
+    }
+    */
     
     // ** How to add a new subsystem **
     // Add the new detector here!
@@ -2281,7 +2326,7 @@ int main(int argc, char** argv){
     if(f_bkgd->IsZombie()){
       LumiFrac = 0;
     }else{
-      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, BkgdTimeWindow, pmtbkgddig);
+      BkgdGenerator = new SBSDigBkgdGen(f_bkgd, detectors_list, BkgdTimeWindow, pmtbkgddig);
       cout << "Includes background from file: " << inputbkgdfile.c_str() 
 	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
 	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
