@@ -50,14 +50,30 @@ class SBSDigGEMSimDig {
 		TRandom3* R,
 		const TVector3& xi,
 		const TVector3& xo,
-		const Double_t t0,
-		bool isbkgd = false);
+		const Double_t t0);
+  
+  void AvaModel_2(const int ic, //module number
+		  SBSDigGEMDet* gemdet,
+		  TRandom3* R,
+		  const TVector3& xi,
+		  const TVector3& xo,
+		  const Double_t t0);
+  
+  void Integration_semiana(double roangle, 
+			    double xl, double xr, double yb, double yt, 
+			    int nx, double xbw);
+  
+  void Integration_fastappx(TRandom3* R, double roangle, 
+			    double nions_strip,
+			    double xc_hit, double yc_hit,
+			    double dx2_hit, double dy2_hit,
+			    double xl, double xr, double yb, double yt, 
+			    int nx, double xbw, int ny, double ybw);
   
   void IonModel (TRandom3* R,
 		 const TVector3& xi,
 		 const TVector3& xo,
-		 const Double_t elost,
-		 bool isbkgd = false);
+		 const Double_t elost);
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers
@@ -72,6 +88,9 @@ class SBSDigGEMSimDig {
   std::vector<Double_t> fSumA;
   //std::vector<Short_t>  fDADC;
 
+  Double_t fAvaGain;
+  Int_t fNSamples;
+  
   //zero suppression and common mode
   Bool_t fDoZeroSup;
   Double_t fZeroSup;
@@ -83,7 +102,33 @@ class SBSDigGEMSimDig {
 		      Double_t C,  // normalization factor
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
+  
+  /*
+  TH2D* h2D_edepVdr;
+  
+  TH2D* h1_AvaSizeYvsX_SemiAna;
+  TH2D* h1_AvaSizeYvsX_FastAppx;
+  TH2D* h1_AvaSizeVsZion_SemiAna;
+  TH2D* h1_AvaSizeVsTTime_SemiAna;
+  
+  TH1D* h1_SumweightsSemiAna;
+  TH2D* h2D_SumweightsFastAppx;
 
+  TH1D* h1_GammaEffSemiAna;
+  TH2D* h2D_GammaEffFastAppx;
+  
+  TH1D* h1_NormSemiAna;
+  TH1D* h1_NormFastAppx;
+
+  TH1D* h1_SigmaEff;
+  TH1D* h1_NionsPix;
+ 
+  TH1D** h1_nbins_X;
+  TH1D** h1_nbins_Y;
+
+  TH1D** h1_binw_X;
+  TH1D** h1_binw_Y;
+  
   TH1D* h1_modhit_s;
   TH1D* h1_xhit_s;
   TH1D* h1_yhit_s;
@@ -116,7 +161,6 @@ class SBSDigGEMSimDig {
   TH1D** h1_fSumA_X;
   TH1D** h1_fSumA_Y;
   
-  /*
   TH2D* h1_QvsX_ion;
   TH2D* h1_QvsY_ion;
   TH2D* h1_QnormvsX_ion;
@@ -140,6 +184,9 @@ class SBSDigGEMSimDig {
   TH2D* h1_xGEMvsADC_inava_4;
   TH2D* h1_yGEMvsADC_inava_4;
   TH1D* h1_yGEM_incheckout;
+  
+  TH2D* h1_ava_yint;
+  TH1D* h1_ava_int;
   */
   
   //std::chrono::steady_clock fClock_dbg;

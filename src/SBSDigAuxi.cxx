@@ -56,10 +56,11 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	Npe = R->Poisson(Npe_Edep_ratio*T->Harm_HCalScint.sumedep->at(k)*1.0e3);
 	t = tzero+R->Gaus(T->Harm_HCalScint.tavg->at(k)+10.11, 1.912)-pmtdets[idet]->fTrigOffset;
       
-	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
+	sigma_tgen = pmtdets[idet]->fSigmaPulse*(0.4244+11380/pow(Npe+153.4, 2));
+	//cout << sigma_tgen << endl;
 	//Generate here,...
-	//cout << " HCal : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_HCalScint.tavg->at(k) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
-	pmtdets[idet]->PMTmap[chan].Fill(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, signal);
+	//cout << " HCal : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_HCalScint.tavg->at(k) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
+	pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, signal);
       }
       has_data = true;
     }
@@ -87,15 +88,18 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+T->Earm_BBPSTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_BBPSTF1.sumedep->at(i));
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(300.0*T->Earm_BBPSTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(300.0*T->Earm_BBPSTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = tzero+T->Earm_BBPSTF1.tavg->at(i)+R->Gaus(3.2-5.805*T->Earm_BBPSTF1.zhit->at(i)-17.77*pow(T->Earm_BBPSTF1.zhit->at(i), 2), 0.5)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBPSTF1.cell->at(i);
 	  //T->Earm_BBPSTF1_hit_sumedep->at(i);
 	
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << " BBPS : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBPSTF1.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
 	}
       }
       has_data = true;
@@ -123,20 +127,60 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	//if we're go, let's generate
 	if(genpeyield){
 	  beta = sqrt( pow(m_e+T->Earm_BBSHTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_BBSHTF1.sumedep->at(i));
-	  sin2thetaC = TMath::Max(1.-1./pow(n_lg*beta, 2), 0.);
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_lg*n_lg)) );
+	  Npe = R->Poisson(360.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
 	  t = tzero+T->Earm_BBSHTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1.zhit->at(i)-7.469*pow(T->Earm_BBSHTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBSHTF1.cell->at(i);
 	  //T->Earm_BBSHTF1_hit_sumedep->at(i);
-		
+	  
+	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill_FADCmode7(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << " BBSH : t = " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBSHTF1.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << ", Npe " << Npe << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+	}
+      }
+      has_data = true;
+    }
+
+    //ECal
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=ECAL_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    //while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    if(idet>=0){// && T->Earm_ECalTF1.nhits){
+      for(int i = 0; i<T->Earm_ECalTF1.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-4)continue;
+	//check probability to generate p.e. yield
+	bool genpeyield = true;
+	if(T->Earm_ECalTF1.sumedep->at(i)<1.e-2)genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*T->Earm_ECalTF1.sumedep->at(i));
+	//if we're go, let's generate
+	if(genpeyield){
+	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
+	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	  //1800. Used to be 932.: just wrong
+	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  chan = T->Earm_ECalTF1.cell->at(i);
+	  //T->Earm_ECalTF1_hit_sumedep->at(i);
+	  
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
 	}
       }
       has_data = true;
     }
-
+    
     while(idet<(int)detmap.size()){
       if(idet<0)idet++;
       if(detmap[idet]!=GRINCH_UNIQUE_DETID){
@@ -188,7 +232,32 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;
     }
-
+    
+    //CDet
+    while(idet<(int)detmap.size()){
+      if(idet<0)idet++;
+      if(detmap[idet]!=CDET_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=detmap.size())idet = -1;
+    
+    if(idet>=0){
+      for(int i = 0; i<T->CDET_Scint.nhits; i++){
+	// Evaluation of number of photoelectrons and time from energy deposit documented at:
+	// 
+	chan = T->CDET_Scint.cell->at(i);
+	Npe = R->Poisson( T->CDET_Scint.sumedep->at(i)*5.634e3 );
+	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16;
+	
+	
+	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+      }
+      has_data = true;
+    }
+    
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors beam side
@@ -477,7 +546,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
       for(int k = 0; k<T->Harm_CEPolFront.nhits; k++){
-	if(T->Harm_CEPolFront.edep->at(k)>0){
+ if(T->Harm_CEPolFront.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
 	  hit.source = signal;
 	  mod = 0;
@@ -508,12 +577,14 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=CEPOL_GEMREAR_UNIQUE_DETID){
 	idet++;
+
       }else{
 	break;
       }
     }
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
+
       for(int k = 0; k<T->Harm_CEPolRear.nhits; k++){
 	if(T->Harm_CEPolRear.edep->at(k)>0){
 	  SBSDigGEMDet::gemhit hit; 
@@ -534,13 +605,94 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.yout = T->Harm_CEPolRear.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_CEPolRear.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_CEPolRear.plane->at(k)-1];//+0.8031825;
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	       //cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
+	      //cout<<" Harm_CEPolRear  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<endl;
 
 	}//end if(sumedep>0)
 	
       }
       has_data = true;  
     }
+    //GEn-rp GEMs: prpolbs_gem
+    idet = 0;
+    while(idet<(int)gemmap.size()){
+      if(gemmap[idet]!=PRPOLBS_GEM_UNIQUE_DETID){
+	idet++;
+      }else{
+	break;
+      }
+    }
+    if(idet>=gemmap.size())idet = -1;
+    if(idet>=0){// && T->Earm_BBGEM.nhits){
+        for(int k = 0; k<T->Harm_PrPolGEMBeamSide.nhits; k++){
+  //cout<<" Nhits_prbol print:   "<<T->Harm_PrPolGEMBeamSide.nhits<<endl;
+	if(T->Harm_PrPolGEMBeamSide.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  mod = 0;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_PrPolGEMBeamSide.xin->at(k) && T->Harm_PrPolGEMBeamSide.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_PrPolGEMBeamSide.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_PrPolGEMBeamSide.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  hit.t = tzero+T->Harm_PrPolGEMBeamSide.t->at(k);
+	  hit.xin = T->Harm_PrPolGEMBeamSide.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_PrPolGEMBeamSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
+	  hit.zin = T->Harm_PrPolGEMBeamSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
+	  hit.xout = T->Harm_PrPolGEMBeamSide.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_PrPolGEMBeamSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
+	  hit.zout = T->Harm_PrPolGEMBeamSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMBeamSide.plane->at(k)-1];//+0.8031825;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+//cout<<" Harm_PrPolGEMBeamSide  "<<"  zin  "<<hit.zin<<"  zout  "<<hit.zout<<" plane "<<T->Harm_PrPolGEMBeamSide.plane->at(k)<<endl;
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+ //GEn-rp GEMs: prpolfs_gem
+    idet = 0;
+    while(idet<(int)gemmap.size()){
+      if(gemmap[idet]!=PRPOLFS_GEM_UNIQUE_DETID){
+	idet++;
+
+      }else{
+	break;
+      }
+    }
+
+
+    if(idet>=gemmap.size())idet = -1;
+    if(idet>=0){// && T->Earm_BBGEM.nhits){
+      for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){
+	if(T->Harm_PrPolGEMFarSide.edep->at(k)>0){
+	  SBSDigGEMDet::gemhit hit; 
+	  hit.source = signal;
+	  mod = 0;
+	  while(mod<gemdets[idet]->fNPlanes/2){
+	    if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=T->Harm_PrPolGEMFarSide.xin->at(k) && T->Harm_PrPolGEMFarSide.xin->at(k)<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && T->Harm_PrPolGEMFarSide.plane->at(k)==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;
+	    //cout << gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << " <? " << T->Harm_PrPolGEMFarSide.xin->at(k) << " <? " << gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5 << endl;
+	    //cout << T->Harm_PrPolGEMFarSide.plane->at(k) << " =? " << gemdets[idet]->GEMPlanes[mod*2].Layer() << endl;
+	    mod++;
+	  }//that does the job, but maybe can be optimized???
+	  if(mod==gemdets[idet]->fNPlanes/2)continue;
+	  hit.module = mod; 
+	  hit.edep = T->Harm_PrPolGEMFarSide.edep->at(k)*1.0e9;//eV! not MeV!!!!
+	  hit.t = tzero+T->Harm_PrPolGEMFarSide.t->at(k);
+	  hit.xin = T->Harm_PrPolGEMFarSide.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yin = T->Harm_PrPolGEMFarSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
+	  hit.zin = T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  hit.xout = T->Harm_PrPolGEMFarSide.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
+	  hit.zout = T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  gemdets[idet]->fGEMhits.push_back(hit);
+	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<"  zout   "<<T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<endl;
+	}//end if(sumedep>0)
+	
+      }
+      has_data = true;  
+    }
+
 
     }   
   return has_data;

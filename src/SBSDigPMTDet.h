@@ -11,7 +11,7 @@
 class SBSDigPMTDet {
  public:
   SBSDigPMTDet();
-  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan);
+  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv);
   SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth);
   virtual ~SBSDigPMTDet();
   void Digitize(g4sbs_tree* T, TRandom3* R);
@@ -35,6 +35,7 @@ class SBSDigPMTDet {
   double fADCbits;
   double fTDCconv;
   double fTDCbits;
+  double fSigmaPulse;
 };
 
 #endif
