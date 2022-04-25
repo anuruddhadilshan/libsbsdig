@@ -3,7 +3,7 @@ Rseed 0
 #global trigger jitter for all detectors in ns
 TriggerJitter 3.0 
 #list of detectors to digitize
-detectors_list hcal bbps bbsh grinch bbhodo bbgem 
+detectors_list hcal bbps bbsh bbhodo grinch bbgem 
 
 ## parameters for bbps
 NChan_bbps 52 
@@ -84,6 +84,7 @@ gatewidth_bbgem 400
 nlayers_bbgem 5
 #bbgem_layer_z 0.85 1.0 1.15 1.30 2.33223544
 bbgem_layer_z 0.0468175 0.1968175 0.3468175 0.4968175 1.5550219
+#bbgem_layer_z 0.0 0.137 0.274 0.411 1.5517
 #1.52905294
 layer_bbgem 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5 5 5 
 #number of strips for each plane/module
