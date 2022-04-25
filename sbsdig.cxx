@@ -1,5 +1,6 @@
 //includes: standard
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <map>
@@ -102,7 +103,7 @@ int main(int argc, char** argv){
   double BkgdTimeWindow = 0, LumiFrac = 0;
   bool pmtbkgddig = false;
       
-  if(argc<3 && argc>4){
+  if(argc<3 || argc>4){
     cout << "*** Inadequate number of arguments! ***" << endl
 	 << " Arguments: database (mandatory); " << endl
 	 << "           list_of_sig_input_files (str, mandatory); " << endl
@@ -222,6 +223,7 @@ int main(int argc, char** argv){
   Double_t* offset_bbgem;
   Double_t* RO_angle_bbgem;
   Double_t* triggeroffset_bbgem;
+  Double_t* gain_bbgem;//one gain per module
   Double_t* commonmode_array_bbgem;
   UShort_t nAPV_bbgem = 0;
   
@@ -235,6 +237,7 @@ int main(int argc, char** argv){
   Double_t* offset_ft;
   Double_t* RO_angle_ft;
   Double_t* triggeroffset_ft;
+  Double_t* gain_ft;//one gain per module
   Double_t* commonmode_array_ft;
   UShort_t nAPV_ft = 0;
 
@@ -248,6 +251,7 @@ int main(int argc, char** argv){
   Double_t* offset_fpp1;
   Double_t* RO_angle_fpp1;
   Double_t* triggeroffset_fpp1;
+  Double_t* gain_fpp1;//one gain per module
   Double_t* commonmode_array_fpp1;
   UShort_t nAPV_fpp1 = 0;
   
@@ -261,6 +265,7 @@ int main(int argc, char** argv){
   Double_t* offset_fpp2;
   Double_t* RO_angle_fpp2;
   Double_t* triggeroffset_fpp2;
+  Double_t* gain_fpp2;//one gain per module
   Double_t* commonmode_array_fpp2;
   UShort_t nAPV_fpp2 = 0;
 
@@ -274,6 +279,7 @@ int main(int argc, char** argv){
   Double_t* offset_cepol_front;
   Double_t* RO_angle_cepol_front;
   Double_t* triggeroffset_cepol_front;
+  Double_t* gain_cepol_front;//one gain per module
   Double_t* commonmode_array_cepol_front;
   UShort_t nAPV_cepol_front = 0;
 
@@ -287,6 +293,7 @@ int main(int argc, char** argv){
   Double_t* offset_cepol_rear;
   Double_t* RO_angle_cepol_rear;
   Double_t* triggeroffset_cepol_rear;
+  Double_t* gain_cepol_rear;//one gain per module
   Double_t* commonmode_array_cepol_rear;
   UShort_t nAPV_cepol_rear = 0;
   
@@ -300,6 +307,7 @@ int main(int argc, char** argv){
   Double_t* offset_prpolbs_gem;
   Double_t* RO_angle_prpolbs_gem;
   Double_t* triggeroffset_prpolbs_gem;
+  Double_t* gain_prpolbs_gem;//one gain per module
   Double_t* commonmode_array_prpolbs_gem;
   UShort_t nAPV_prpolbs_gem = 0;
   
@@ -313,6 +321,7 @@ int main(int argc, char** argv){
   Double_t* offset_prpolfs_gem;
   Double_t* RO_angle_prpolfs_gem;
   Double_t* triggeroffset_prpolfs_gem;
+  Double_t* gain_prpolfs_gem;//one gain per module
   Double_t* commonmode_array_prpolfs_gem;
   UShort_t nAPV_prpolfs_gem = 0;
   
@@ -910,6 +919,7 @@ int main(int argc, char** argv){
 	  offset_bbgem = new Double_t[NPlanes_bbgem];
 	  RO_angle_bbgem = new Double_t[NPlanes_bbgem];
 	  triggeroffset_bbgem = new Double_t[NPlanes_bbgem/2];
+	  gain_bbgem = new Double_t[NPlanes_bbgem/2];
 	}
 	
 	if(skey=="gatewidth_bbgem"){
@@ -1011,13 +1021,35 @@ int main(int argc, char** argv){
 	    for(int k = 1; k<ntokens; k++){
 	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
 	      triggeroffset_bbgem[k-1] = stemp.Atof();
-	      // if this is affected at k-1, program crashes... it should not and that's confusing...
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_bbgem = " << ntokens-1 
 		 << " don't match Nplanes = " << NPlanes_bbgem << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
+	  }
+	}
+	
+	if(skey=="gain_bbgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_bbgem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_bbgem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_bbgem = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_bbgem/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_bbgem/2; k++){
+		gain_bbgem[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
 	  }
 	}
 	
@@ -1041,6 +1073,7 @@ int main(int argc, char** argv){
 	  offset_cepol_front = new Double_t[NPlanes_cepol_front];
 	  RO_angle_cepol_front = new Double_t[NPlanes_cepol_front];
 	  triggeroffset_cepol_front = new Double_t[NPlanes_cepol_front/2];
+	  gain_cepol_front = new Double_t[NPlanes_cepol_front/2];
 	}
 	
 	if(skey=="gatewidth_cepol_front"){
@@ -1152,6 +1185,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_cepol_front"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_front/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_cepol_front[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_cepol_front = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_cepol_front/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_cepol_front/2; k++){
+		gain_cepol_front[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+		
 	if(skey=="commonmode_array_cepol_front"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_cepol_front = new Double_t[ntokens-1];
@@ -1173,6 +1229,7 @@ int main(int argc, char** argv){
 	  offset_cepol_rear = new Double_t[NPlanes_cepol_rear];
 	  RO_angle_cepol_rear = new Double_t[NPlanes_cepol_rear];
 	  triggeroffset_cepol_rear = new Double_t[NPlanes_cepol_rear/2];
+	  gain_cepol_rear = new Double_t[NPlanes_cepol_rear/2];
 	}
 	
 	if(skey=="gatewidth_cepol_rear"){
@@ -1284,6 +1341,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_cepol_rear"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_cepol_rear/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_cepol_rear[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_cepol_rear = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_cepol_rear/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_cepol_rear/2; k++){
+		gain_cepol_rear[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+		
 	if(skey=="commonmode_array_cepol_rear"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_cepol_rear = new Double_t[ntokens-1];
@@ -1305,6 +1385,7 @@ int main(int argc, char** argv){
 	  offset_prpolbs_gem = new Double_t[NPlanes_prpolbs_gem];
 	  RO_angle_prpolbs_gem = new Double_t[NPlanes_prpolbs_gem];
 	  triggeroffset_prpolbs_gem = new Double_t[NPlanes_prpolbs_gem/2];
+	  gain_prpolbs_gem = new Double_t[NPlanes_prpolbs_gem/2];
 	}
 	
 	if(skey=="gatewidth_prpolbs_gem"){
@@ -1416,6 +1497,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_prpolbs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolbs_gem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_prpolbs_gem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_prpolbs_gem = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_prpolbs_gem/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_prpolbs_gem/2; k++){
+		gain_prpolbs_gem[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+	
 	if(skey=="commonmode_array_prpolbs_gem"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_prpolbs_gem = new Double_t[ntokens-1];
@@ -1436,6 +1540,7 @@ int main(int argc, char** argv){
 	  offset_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem];
 	  RO_angle_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem];
 	  triggeroffset_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem/2];
+	  gain_prpolfs_gem = new Double_t[NPlanes_prpolfs_gem/2];
 	}
 	
 	if(skey=="gatewidth_prpolfs_gem"){
@@ -1547,6 +1652,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_prpolfs_gem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_prpolfs_gem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_prpolfs_gem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_prpolfs_gem = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_prpolfs_gem/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_prpolfs_gem/2; k++){
+		gain_prpolfs_gem[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+	
 	if(skey=="commonmode_array_prpolfs_gem"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_prpolfs_gem = new Double_t[ntokens-1];
@@ -1568,6 +1696,7 @@ int main(int argc, char** argv){
 	  offset_ft = new Double_t[NPlanes_ft];
 	  RO_angle_ft = new Double_t[NPlanes_ft];
 	  triggeroffset_ft = new Double_t[NPlanes_ft/2];
+	  gain_ft = new Double_t[NPlanes_ft/2];
 	}
 	
 	if(skey=="gatewidth_ft"){
@@ -1679,6 +1808,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_ft"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_ft/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_ft[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_ft = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_ft/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_ft/2; k++){
+		gain_ft[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+
 	if(skey=="commonmode_array_ft"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_ft = new Double_t[ntokens-1];
@@ -1700,6 +1852,7 @@ int main(int argc, char** argv){
 	  offset_fpp1 = new Double_t[NPlanes_fpp1];
 	  RO_angle_fpp1 = new Double_t[NPlanes_fpp1];
 	  triggeroffset_fpp1 = new Double_t[NPlanes_fpp1/2];
+	  gain_fpp1 = new Double_t[NPlanes_fpp1/2];
 	}
 	
 	if(skey=="gatewidth_fpp1"){
@@ -1811,6 +1964,29 @@ int main(int argc, char** argv){
 	  }
 	}
 	
+	if(skey=="gain_fpp1"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp1/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_fpp1[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_fpp1 = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_fpp1/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_fpp1/2; k++){
+		gain_fpp1[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+
 	if(skey=="commonmode_array_fpp1"){
 	  cout << "reading " << skey.Data() << endl;
 	  commonmode_array_fpp1 = new Double_t[ntokens-1];
@@ -1832,6 +2008,7 @@ int main(int argc, char** argv){
 	  offset_fpp2 = new Double_t[NPlanes_fpp2];
 	  RO_angle_fpp2 = new Double_t[NPlanes_fpp2];
 	  triggeroffset_fpp2 = new Double_t[NPlanes_fpp2/2];
+	  gain_fpp2 = new Double_t[NPlanes_fpp2/2];
 	}
 	
 	if(skey=="gatewidth_fpp2"){
@@ -1940,6 +2117,29 @@ int main(int argc, char** argv){
 		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
+	  }
+	}
+	
+	if(skey=="gain_fpp2"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_fpp2/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_fpp2[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_fpp2 = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_fpp2/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_fpp2/2; k++){
+		gain_fpp2[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
 	  }
 	}
 	
