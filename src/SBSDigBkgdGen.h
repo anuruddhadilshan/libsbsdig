@@ -47,6 +47,14 @@ class SBSDigBkgdGen {
   TH1D** h_yhitBBGEMs;// one hisogram per GEM layer
   TH1D** h_dxhitBBGEMs;// one hisogram per GEM layer
   TH1D** h_dyhitBBGEMs;// one hisogram per GEM layer
+
+  Double_t* NhitsSBSGEMs;// one number per GEM layer
+  TH1D* h_EdephitSBSGEMs;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitSBSGEMs;// one hisogram per GEM layer
+  TH1D** h_yhitSBSGEMs;// one hisogram per GEM layer
+  TH1D** h_dxhitSBSGEMs;// one hisogram per GEM layer
+  TH1D** h_dyhitSBSGEMs;// one hisogram per GEM layer
+  
 ///CEPOL_GEMFRONT
   Double_t* NhitsCEPOL_GEMFRONTs;// one number per GEM layer
   TH1D* h_EdephitCEPOL_GEMFRONTs;// distribution is assumed to be the same for all layers

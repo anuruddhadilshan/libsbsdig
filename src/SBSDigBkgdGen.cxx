@@ -42,6 +42,12 @@ SBSDigBkgdGen::SBSDigBkgdGen()
   h_dxhitFPP2 = new TH1D*[5];
   h_dyhitFPP2 = new TH1D*[5];
 
+  NhitsSBSGEMs = new Double_t[5];
+  h_xhitSBSGEMs = new TH1D*[5];
+  h_yhitSBSGEMs = new TH1D*[5];
+  h_dxhitSBSGEMs = new TH1D*[5];
+  h_dyhitSBSGEMs = new TH1D*[5];
+  
   NhitsCEPOL_GEMFRONTs = new Double_t[4];
   h_xhitCEPOL_GEMFRONTs = new TH1D*[4];
   h_yhitCEPOL_GEMFRONTs = new TH1D*[4];
@@ -102,6 +108,13 @@ SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, std::vector<TString> det_list, doubl
   h_yhitFPP2 = new TH1D*[5];
   h_dxhitFPP2 = new TH1D*[5];
   h_dyhitFPP2 = new TH1D*[5];
+
+  NhitsSBSGEMs = new Double_t[5];
+  h_xhitSBSGEMs = new TH1D*[5];
+  h_yhitSBSGEMs = new TH1D*[5];
+  h_dxhitSBSGEMs = new TH1D*[5];
+  h_dyhitSBSGEMs = new TH1D*[5];
+  
   NhitsCEPOL_GEMFRONTs = new Double_t[4];
   h_xhitCEPOL_GEMFRONTs = new TH1D*[4];
   h_yhitCEPOL_GEMFRONTs = new TH1D*[4];
@@ -145,6 +158,12 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   TH2D* h1_BBGEM_yVsx_[5];
   TH2D* h1_BBGEM_dyVsdx_[5];
   TH1D* h1_BBGEM_Edep_[5];
+  
+  TH1D* h1_SBSGEM_nhits_[5];
+  TF1* f1_sbsgemnhits_[5];
+  TH2D* h1_SBSGEM_yVsx_[5];
+  TH2D* h1_SBSGEM_dyVsdx_[5];
+  TH1D* h1_SBSGEM_Edep_[5];
   
   //CEPOL_GEMFRONT
   TH1D* h1_CEPOL_GEMFRONT_nhits_[4];
@@ -251,6 +270,56 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
 	
 	
 	//cout << m << " " << NhitsBBGEMs[m] << endl;
+      }
+    }
+  // Initialization of SBSGEM histograms:
+  // most histograms are 1D projections the 2D histograms stored in the input file.
+  // for the energy deposit, the input file histograms (one per plane) are consolidated into one
+    if(det_list[k]=="sbsgem"){
+      cout << "SBS GEMs" << endl;
+      for(int m = 0; m<5; m++){
+	// fit of the hits mulitplicity distribution.
+	h1_SBSGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_SBSGEM_nhits_%d",m));
+	f1_sbsgemnhits_[m] = new TF1(Form("f1_sbsgemnhits_%d", m), "gaus", 0., 400.);
+	h1_SBSGEM_nhits_[m]->Fit(f1_sbsgemnhits_[m], "QRN");
+	mu = f1_sbsgemnhits_[m]->GetParameter(1);
+	sigma = f1_sbsgemnhits_[m]->GetParameter(2);
+	if(mu>=0){
+	  f1_sbsgemnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+	  h1_SBSGEM_nhits_[m]->Fit(f1_sbsgemnhits_[m], "QRN");
+	}
+	NhitsSBSGEMs[m] = max(1.0, f1_sbsgemnhits_[m]->GetParameter(1));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_SBSGEM_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_SBSGEM_yVsx_%d",m));
+	h_xhitSBSGEMs[m] = h1_SBSGEM_yVsx_[m]->ProjectionX(Form("h1_xhitSBSGEM_%d",m));
+	h_yhitSBSGEMs[m] = h1_SBSGEM_yVsx_[m]->ProjectionY(Form("h1_yhitSBSGEM_%d",m));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_SBSGEM_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_SBSGEM_dyVsdx_%d",m));
+	h_dxhitSBSGEMs[m] = h1_SBSGEM_dyVsdx_[m]->ProjectionX(Form("h1_dxhitSBSGEM_%d",m));
+	h_dyhitSBSGEMs[m] = h1_SBSGEM_dyVsdx_[m]->ProjectionY(Form("h1_dyhitSBSGEM_%d",m));
+	
+	h1_SBSGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_SBSGEM_Edep_%d",m));
+	//h1_SBSGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_SBSGEM_Edep_log_%d",m));
+	
+	if(m==0){
+	  h_EdephitSBSGEMs = h1_SBSGEM_Edep_[m];
+	}else{
+	  h_EdephitSBSGEMs->Add(h1_SBSGEM_Edep_[m]);
+	}
+	
+	/*
+	//cross-check histos
+	h_NhitsSBSGEMs_XC[m] = new TH1D(Form("h_NhitsSBSGEMs_XC_%d", m), "", 250, 0, 1000);
+	h_xhitSBSGEMs_XC[m] = new TH1D(Form("h_xhitSBSGEMs_XC_%d", m), "", 205, -1.025, 1.025);
+	h_yhitSBSGEMs_XC[m] = new TH1D(Form("h_yhitSBSGEMs_XC_%d", m), "", 62, -0.31, 0.31);
+	//h_dxhitSBSGEMs_XC[m] = new TH1D(Form("h_dxhitSBSGEMs_XC_%d", m), "", 100, 0.05, 0.05);
+	//h_dyhitSBSGEMs_XC[m] = new TH1D(Form("h_dyhitSBSGEMs_XC_%d", m), "", 100, -0.05, 0.05);
+	*/
+	
+	
+	//cout << m << " " << NhitsSBSGEMs[m] << endl;
       }
     }
     
@@ -812,7 +881,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   }//end loop on detector list
 }
 
-
+  
 void SBSDigBkgdGen::GenerateBkgd(TRandom3* R, 
 				 std::vector<SBSDigPMTDet*> pmtdets,
 				 std::vector<int> detmap, 
@@ -1214,6 +1283,69 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     }
   }
   
+  while(gemmap[idet]!=SBSGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
+  if(idet>=gemmap.size())idet = -1;
+  
+  if(idet>=0){
+    //    cout << "sbsgems" << endl;
+    // loop on the GEM layers
+    for(int m = 0; m<5; m++){
+      // determine the number of hits to generate, then loop on this number of hits
+      nhits = R->Poisson(NhitsSBSGEMs[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
+      //h_NhitsSBSGEMs_XC[m]->Fill(nhits);
+      for(int i = 0; i<nhits; i++){
+	// energy deposit, hit position (at entrance of drift) 
+	// generated from sampling the histograms with function GetRandom();
+	edep =  h_EdephitSBSGEMs->GetRandom();
+	x_hit =  h_xhitSBSGEMs[m]->GetRandom();
+	y_hit =  h_yhitSBSGEMs[m]->GetRandom();
+
+	//h_EdephitSBSGEMs_XC->Fill(edep);
+	//h_xhitSBSGEMs_XC[m]->Fill(x_hit);
+	//h_yhitSBSGEMs_XC[m]->Fill(y_hit);
+	
+	//x_hit =  h_dxhitSBSGEMs[m]->GetRandom();
+	//y_hit =  h_dyhitSBSGEMs[m]->GetRandom();
+	SBSDigGEMDet::gemhit hit; 
+	hit.source = 1;
+	
+	mod = 0;
+	// from that point, it's almost the same code as in 
+	// SBSDigAuxi::UnfoldData(...), with a few exceptions:
+	// * z_in, z_out are assumed to be -/+ 0.0015m respectively; 
+	//   (that's not too big of an approximation)
+	// * x(y)_out assumed to be x(y)_in+dx(y) 
+	//   where dx(y) is sampled from the distribution of x(y)_out-x(y)_in.
+	// * t is generated uniformly within the DAQ time window.
+	while(mod<gemdets[idet]->fNPlanes/2){
+	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;	  mod++;
+	}//that does the job, but maybe can be optimized???
+	if(mod==gemdets[idet]->fNPlanes/2)continue;
+	//h_modSBSGEMs_XC->Fill(mod);
+	
+	if(fabs(y_hit)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.)continue;
+	
+	//cout << x_hit << " " << y_hit << " " << mod << endl;
+	
+	hit.module = mod; 
+	hit.edep = edep*1.0e6;//already in MeV for some reasons...
+	
+	hit.xin = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+	hit.yin = y_hit;
+	hit.zin = -0.0015;
+	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitSBSGEMs[m]->GetRandom();// 
+	hit.yout = y_hit+h_dyhitSBSGEMs[m]->GetRandom();
+	//if(fabs(hit.yout)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.){
+	//hit.yout *= gemdets[idet]->GEMPlanes[mod*2+1].dX()/2./hit.yout;
+	//}
+	hit.zout = 0.0015;
+	hit.t = R->Uniform(-gemdets[idet]->fGateWidth/2.-50., gemdets[idet]->fGateWidth/2.-50.);
+	
+	gemdets[idet]->fGEMhits.push_back(hit);
+      }
+    }
+  }
+    
   ///GEN-rp GEMs CEPOL_GEMFRONT
  idet = 0;
   while(gemmap[idet]!=CEPOL_GEMFRONT_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
