@@ -227,6 +227,20 @@ int main(int argc, char** argv){
   Double_t* commonmode_array_bbgem;
   UShort_t nAPV_bbgem = 0;
   
+  Int_t NPlanes_sbsgem = 32;// number of planes/modules/readout
+  Double_t gatewidth_sbsgem = 400.;
+  Double_t ZsupThr_sbsgem = 240.;
+  Int_t Nlayers_sbsgem = 5;
+  std::vector<Double_t> sbsgem_layer_z;
+  Int_t* layer_sbsgem;
+  Int_t* nstrips_sbsgem;
+  Double_t* offset_sbsgem;
+  Double_t* RO_angle_sbsgem;
+  Double_t* triggeroffset_sbsgem;
+  Double_t* gain_sbsgem;//one gain per module
+  Double_t* commonmode_array_sbsgem;
+  UShort_t nAPV_sbsgem = 0;
+  
   Int_t NPlanes_ft = 36;// number of planes/modules/readout
   Double_t gatewidth_ft = 400.;
   Double_t ZsupThr_ft = 240.;
@@ -1062,6 +1076,162 @@ int main(int argc, char** argv){
 	    commonmode_array_bbgem[k-1] = stemp.Atof();
 	  }
 	}
+	
+	//SBSGEM
+	if(skey=="NPlanes_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NPlanes_sbsgem = stemp.Atoi();
+	  
+	  layer_sbsgem = new Int_t[NPlanes_sbsgem];
+	  nstrips_sbsgem = new Int_t[NPlanes_sbsgem];
+	  offset_sbsgem = new Double_t[NPlanes_sbsgem];
+	  RO_angle_sbsgem = new Double_t[NPlanes_sbsgem];
+	  triggeroffset_sbsgem = new Double_t[NPlanes_sbsgem/2];
+	  gain_sbsgem = new Double_t[NPlanes_sbsgem/2];
+	}
+	
+	if(skey=="gatewidth_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_sbsgem = stemp.Atof();
+	}
+		
+	if(skey=="ZsupThr_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ZsupThr_sbsgem = stemp.Atof();
+	}
+
+	if(skey=="nlayers_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  Nlayers_sbsgem = stemp.Atof();
+	}
+	
+	if(skey=="sbsgem_layer_z"){
+	  cout << "reading " << skey.Data() << endl;
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  if(ntokens==Nlayers_sbsgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      sbsgem_layer_z.push_back(stemp.Atof());
+	    }
+	  }else{
+	    cout << "number of entries for sbsgem_layer_z = " << ntokens-1 
+		 << " don't match nlayers = " << Nlayers_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	  }
+	}
+	
+	if(skey=="layer_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      layer_sbsgem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for layer_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="nstrips_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      nstrips_sbsgem[k-1] = stemp.Atoi();
+	    }
+	  }else{
+	    cout << "number of entries for nstrips_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="offset_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      offset_sbsgem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for offset_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="RO_angle_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      RO_angle_sbsgem[k-1] = stemp.Atof()*TMath::DegToRad();
+	    }
+	  }else{
+	    cout << "number of entries for RO_angle_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="triggeroffset_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      triggeroffset_sbsgem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for triggeroffset_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes = " << NPlanes_sbsgem << endl;
+	    cout << "fix your db " << endl;
+	    exit(-1);
+	  }
+	}
+	
+	if(skey=="gain_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  if(ntokens==NPlanes_sbsgem/2+1){
+	    for(int k = 1; k<ntokens; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	      gain_sbsgem[k-1] = stemp.Atof();
+	    }
+	  }else{
+	    cout << "number of entries for gain_sbsgem = " << ntokens-1 
+		 << " don't match Nplanes/2 = " << NPlanes_sbsgem/2 << endl;
+	    if(ntokens>=2){
+	      cout << "applying first value on all planes " << endl;
+	      TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	      for(int k = 0; k<NPlanes_sbsgem/2; k++){
+		gain_sbsgem[k] = stemp.Atof();
+	      }
+	    }else{
+	      cout << "fix your db " << endl;
+	      exit(-1);
+	    }
+	  }
+	}
+	
+	if(skey=="commonmode_array_sbsgem"){
+	  cout << "reading " << skey.Data() << endl;
+	  commonmode_array_sbsgem = new Double_t[ntokens-1];
+	  for(int k = 1; k<ntokens; k++){
+	    nAPV_sbsgem++;
+	    TString stemp = ( (TObjString*) (*tokens)[k] )->GetString();
+	    commonmode_array_sbsgem[k-1] = stemp.Atof();
+	  }
+	}
+	
 	// GEMs GEn-RP front
 	if(skey=="NPlanes_cepol_front"){
 	  cout << "reading " << skey.Data() << endl;
@@ -2174,6 +2344,19 @@ int main(int argc, char** argv){
       
       GEMdetectors.push_back(bbgem);
       gemdetmap.push_back(BBGEM_UNIQUE_DETID);
+      GEMsimDig.push_back(gemdig);
+      cout << " set up! " << endl;
+    }
+    if(detectors_list[k] == "sbsgem"){
+      SBSDigGEMDet* sbsgem = new SBSDigGEMDet(SBSGEM_UNIQUE_DETID, NPlanes_sbsgem, layer_sbsgem, nstrips_sbsgem, offset_sbsgem, RO_angle_sbsgem, 6, ZsupThr_sbsgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_sbsgem/2, triggeroffset_sbsgem, ZsupThr_sbsgem, nAPV_sbsgem, commonmode_array_sbsgem);
+      for(int m = 0; m<Nlayers_sbsgem; m++){
+	sbsgem->fZLayer.push_back(sbsgem_layer_z[m]);
+      }
+      sbsgem->fGateWidth = gatewidth_sbsgem;
+      
+      GEMdetectors.push_back(sbsgem);
+      gemdetmap.push_back(SBSGEM_UNIQUE_DETID);
       GEMsimDig.push_back(gemdig);
       cout << " set up! " << endl;
     }
