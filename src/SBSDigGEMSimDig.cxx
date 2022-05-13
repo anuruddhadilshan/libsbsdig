@@ -1431,6 +1431,44 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	      }
 	      //}
 	  }
+	  if(uniqueid==SBSGEM_UNIQUE_DETID){
+	    /*
+	    if(sigonly){
+	      cout << T->Harm_SBSGEM_Dig_sig.nstrips << endl;
+	      for(int k = 0; k<fNSamples; k++){
+		T->Harm_SBSGEM_Dig_sig.nstrips++;
+		T->Harm_SBSGEM_Dig_sig.module->push_back(i);
+		T->Harm_SBSGEM_Dig_sig.strip->push_back(j);
+	      
+	      //T->Harm_SBSGEM_Dig_sig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	      //T->Harm_SBSGEM_Dig_sig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	      //T->Harm_SBSGEM_Dig_sig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	      //T->Harm_SBSGEM_Dig_sig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	      //T->Harm_SBSGEM_Dig_sig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	      //T->Harm_SBSGEM_Dig_sig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+		T->Harm_SBSGEM_Dig_sig.samp->push_back(k);
+		T->Harm_SBSGEM_Dig_sig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	      }
+
+	    }else{
+	      */
+	      for(int k = 0; k<fNSamples; k++){
+		T->Harm_SBSGEM_Dig.nstrips++;
+		T->Harm_SBSGEM_Dig.module->push_back(i);
+		T->Harm_SBSGEM_Dig.strip->push_back(j);
+	      /*
+	      T->Harm_SBSGEM_Dig.adc_0->push_back(gemdet->GEMPlanes[i].GetADC(j, 0));
+	      T->Harm_SBSGEM_Dig.adc_1->push_back(gemdet->GEMPlanes[i].GetADC(j, 1));
+	      T->Harm_SBSGEM_Dig.adc_2->push_back(gemdet->GEMPlanes[i].GetADC(j, 2));
+	      T->Harm_SBSGEM_Dig.adc_3->push_back(gemdet->GEMPlanes[i].GetADC(j, 3));
+	      T->Harm_SBSGEM_Dig.adc_4->push_back(gemdet->GEMPlanes[i].GetADC(j, 4));
+	      T->Harm_SBSGEM_Dig.adc_5->push_back(gemdet->GEMPlanes[i].GetADC(j, 5));
+	      */
+		T->Harm_SBSGEM_Dig.samp->push_back(k);
+		T->Harm_SBSGEM_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
+	      }
+	      //}
+	  }
 	  if(uniqueid==CEPOL_GEMFRONT_UNIQUE_DETID){
 	     for(int k = 0; k<fNSamples; k++){
 	       T->Harm_CEPolFront_Dig.nstrips++;

@@ -87,7 +87,7 @@ void BeamBackground(const char *inputfilename,
   for(int m = 0; m<5; m++){
     h1_BBGEM_nhits_[m] = new TH1D(Form("h1_BBGEM_nhits_%d",m), 
 				  Form("BB GEM plane %d energy deposit", m+1),
-				  500, 0.0, 500);
+				  500, 0.0, 1000);
     h1_BBGEM_yVsx_[m] = new TH2D(Form("h1_BBGEM_yVsx_%d",m), 
   				 Form("BB GEM plane %d y vs x coordinate", m+1),
   				 202, -1.01, 1.01, 62, -0.31, 0.31);
@@ -150,7 +150,7 @@ void BeamBackground(const char *inputfilename,
   TH2D *h1_BBHodo_EdepTotVsSlat_log = new TH2D("h1_BBHodo_EdepTotVsSlat_log", ";GeV", 90, 0, 90, 110, edepbins_log10);
 
   //PS
-  TH2D *h1_BBPS_nhitsVsChan = new TH2D("h1_BBPS_nhitsVsChan", "", 52, 0, 52, 150, 0, 150);
+  TH2D *h1_BBPS_nhitsVsChan = new TH2D("h1_BBPS_nhitsVsChan", "", 52, 0, 52, 200, 0, 200);
   
   TH2D *h1_BBPS_EdepHitVsChan = new TH2D("h1_BBPS_EdepHitVsChan", ";GeV", 52, 0, 52, 250, 0.0+1.0e-3, 2.5+1.0e-3);
   TH2D *h1_BBPS_EdepHitVsChan_log = new TH2D("h1_BBPS_EdepHitVsChan_log", ";GeV", 52, 0, 52, 110, edepbins_log10);
@@ -190,7 +190,7 @@ void BeamBackground(const char *inputfilename,
   memset(HCal_Edep_blocks_400ns, 0, 288*sizeof(double));
   memset(BBHodo_Edep_slats_400ns, 0, 90*sizeof(double));
 
-  Long64_t N1_tot = 0;
+  Long64_t N1 = 0;
   int nplane;
   int chan;
 
@@ -208,7 +208,7 @@ void BeamBackground(const char *inputfilename,
      
     // for each file, get the G4SBSRunData object...
     G4SBSRunData *RD = (G4SBSRunData*)f.Get("run_data");
-    //N1_tot+= (double)RD->fNtries;
+    N1+= (double)RD->fNtries;
     theta_sbs = RD->fSBStheta;
     d_hcal = RD->fHCALdist;
     x_ref = -d_hcal*sin(theta_sbs);
@@ -384,8 +384,9 @@ void BeamBackground(const char *inputfilename,
     // fill the hits histograms and reinitialize the number of hits 
     // WARNING: the following assumes that each beam-on-target file has 5 million generated beam electrons
     // TODO: replace this with something smarter (e.g. set a "time window" and a beam current).
-    if(FileCounter%3==0){
-      cout << "File Counter = 3 => 15 M evts beam-on-target" << endl;
+    if(FileCounter%1==0){
+      cout << "File Counter = 1 => " << N1 << " evts beam-on-target" << endl;
+      N1 = 0;
       for(int j = 0; j<288; j++){
     	h1_HCal_nhitsVsChan->Fill(j, nhits_HCal[j]);
     	h1_HCal_EdepTotVsChan->Fill(j, HCal_Edep_blocks_400ns[j]);

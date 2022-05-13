@@ -347,7 +347,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     //while(gemmap[idet]!=BBGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
     if(idet>=gemmap.size())idet = -1;
-    //cout << " gem " << idet << endl;
     // Now process the GEM data
     if(idet>=0){// && T->Earm_BBGEM.nhits){
       for(int k = 0; k<T->Earm_BBGEM.nhits; k++){
@@ -403,7 +402,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     //while(gemmap[idet]!=SBSGEM_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
     if(idet>=gemmap.size())idet = -1;
-    //cout << " gem " << idet << endl;
     // Now process the GEM data
     if(idet>=0){// && T->Harm_SBSGEM.nhits){
       for(int k = 0; k<T->Harm_SBSGEM.nhits; k++){
