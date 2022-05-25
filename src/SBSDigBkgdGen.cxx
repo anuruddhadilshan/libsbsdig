@@ -42,11 +42,11 @@ SBSDigBkgdGen::SBSDigBkgdGen()
   h_dxhitFPP2 = new TH1D*[5];
   h_dyhitFPP2 = new TH1D*[5];
 
-  NhitsSBSGEMs = new Double_t[5];
-  h_xhitSBSGEMs = new TH1D*[5];
-  h_yhitSBSGEMs = new TH1D*[5];
-  h_dxhitSBSGEMs = new TH1D*[5];
-  h_dyhitSBSGEMs = new TH1D*[5];
+  NhitsSBSGEMs = new Double_t[8];
+  h_xhitSBSGEMs = new TH1D*[8];
+  h_yhitSBSGEMs = new TH1D*[8];
+  h_dxhitSBSGEMs = new TH1D*[8];
+  h_dyhitSBSGEMs = new TH1D*[8];
   
   NhitsCEPOL_GEMFRONTs = new Double_t[4];
   h_xhitCEPOL_GEMFRONTs = new TH1D*[4];
@@ -109,11 +109,11 @@ SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, std::vector<TString> det_list, doubl
   h_dxhitFPP2 = new TH1D*[5];
   h_dyhitFPP2 = new TH1D*[5];
 
-  NhitsSBSGEMs = new Double_t[5];
-  h_xhitSBSGEMs = new TH1D*[5];
-  h_yhitSBSGEMs = new TH1D*[5];
-  h_dxhitSBSGEMs = new TH1D*[5];
-  h_dyhitSBSGEMs = new TH1D*[5];
+  NhitsSBSGEMs = new Double_t[8];
+  h_xhitSBSGEMs = new TH1D*[8];
+  h_yhitSBSGEMs = new TH1D*[8];
+  h_dxhitSBSGEMs = new TH1D*[8];
+  h_dyhitSBSGEMs = new TH1D*[8];
   
   NhitsCEPOL_GEMFRONTs = new Double_t[4];
   h_xhitCEPOL_GEMFRONTs = new TH1D*[4];
@@ -159,11 +159,11 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   TH2D* h1_BBGEM_dyVsdx_[5];
   TH1D* h1_BBGEM_Edep_[5];
   
-  TH1D* h1_SBSGEM_nhits_[5];
-  TF1* f1_sbsgemnhits_[5];
-  TH2D* h1_SBSGEM_yVsx_[5];
-  TH2D* h1_SBSGEM_dyVsdx_[5];
-  TH1D* h1_SBSGEM_Edep_[5];
+  TH1D* h1_SBSGEM_nhits_[8];
+  TF1* f1_sbsgemnhits_[8];
+  TH2D* h1_SBSGEM_yVsx_[8];
+  TH2D* h1_SBSGEM_dyVsdx_[8];
+  TH1D* h1_SBSGEM_Edep_[8];
   
   //CEPOL_GEMFRONT
   TH1D* h1_CEPOL_GEMFRONT_nhits_[4];
@@ -277,7 +277,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   // for the energy deposit, the input file histograms (one per plane) are consolidated into one
     if(det_list[k]=="sbsgem"){
       cout << "SBS GEMs" << endl;
-      for(int m = 0; m<5; m++){
+      for(int m = 0; m<8; m++){
 	// fit of the hits mulitplicity distribution.
 	h1_SBSGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_SBSGEM_nhits_%d",m));
 	f1_sbsgemnhits_[m] = new TF1(Form("f1_sbsgemnhits_%d", m), "gaus", 0., 400.);
@@ -1289,7 +1289,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   if(idet>=0){
     //    cout << "sbsgems" << endl;
     // loop on the GEM layers
-    for(int m = 0; m<5; m++){
+    for(int m = 0; m<8; m++){
       // determine the number of hits to generate, then loop on this number of hits
       nhits = R->Poisson(NhitsSBSGEMs[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
       //h_NhitsSBSGEMs_XC[m]->Fill(nhits);
