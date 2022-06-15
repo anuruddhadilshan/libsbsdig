@@ -31,6 +31,13 @@ void BeamBackground(const char *inputfilename,
 		    const char *root_outfile)
 		    
 {
+  cout << " This file uses root generated class all_deftree. " << endl
+       << " if you can't find it or your file seems to be inadapted to your file " << endl
+       << " (missing branches warnings, unidentified crashes)" << endl
+       << " you may generate file all_deftree.C and .h yourself " << endl
+       << " by opening one of your g4sbs files and type: " <<
+       << " T->MakeClass(\"all_deftree\") " << endl;
+  
   // reads and stores the list of files to process
   cout << "reading input files" << endl;
   
