@@ -169,7 +169,7 @@ void BeamBackground(const char *inputfilename,
   memset(HCal_Edep_blocks_400ns, 0, 288*sizeof(double));
   memset(BBHodo_Edep_slats_400ns, 0, 90*sizeof(double));
 
-  Long64_t N1_tot = 0;
+  //Long64_t N1_tot = 0;
   int nplane;
   int chan;
 
@@ -341,8 +341,8 @@ void BeamBackground(const char *inputfilename,
     // fill the hits histograms and reinitialize the number of hits 
     // WARNING: the following assumes that each beam-on-target file has 5 million generated beam electrons
     // TODO: replace this with something smarter (e.g. set a "time window" and a beam current).
-    if(FileCounter%3==0){
-      cout << "File Counter = 3 => 15 M evts beam-on-target" << endl;
+    if(FileCounter%1==0){
+      cout << " Background sample per file: " << RD->fNtries << " events per file " << endl;
       for(int j = 0; j<288; j++){
     	h1_HCal_nhitsVsChan->Fill(j, nhits_HCal[j]);
     	h1_HCal_EdepTotVsChan->Fill(j, HCal_Edep_blocks_400ns[j]);

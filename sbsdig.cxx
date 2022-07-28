@@ -2690,9 +2690,16 @@ int main(int argc, char** argv){
       if(ntokens>=3){
 	inputbkgdfile = ( (TObjString*) (*tokens)[0] )->GetString();
 	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	BkgdTimeWindow = stemp.Atof();
+	// EPAF: this "bkgd time window" notion is confusing. 
+	// I will replace it with more straightforward stuff:
+	// number of events per file and current: 
+	// then I will convert this to a to make it transparent to the code
+	double nevperfile = stemp.Atof();
 	stemp = ( (TObjString*) (*tokens)[2] )->GetString();
-	LumiFrac = stemp.Atof();
+	double Ibeam = stemp.Atof();//in uA
+	BkgdTimeWindow = nevperfile*qe/Ibeam/spe_unit;// in ns!
+	LumiFrac = 1.0;
+	if(Ibeam<=0)LumiFrac=0.0;
 	if(ntokens==4){
 	  stemp = ( (TObjString*) (*tokens)[3] )->GetString();
 	  pmtbkgddig = stemp.Atoi();
