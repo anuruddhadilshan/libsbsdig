@@ -90,7 +90,7 @@ bbgem_layer_z 0.0 0.137 0.274 0.411 1.5517
 layer_bbgem 1 1 2 2 2 2 2 2 3 3 4 4 5 5 5 5 5 5 5 5 
 nstrips_bbgem 3840 3840 1280 1024 1280 1024 1280 1024 3840 3840 3840 3840 1280 1536 1280 1536 1280 1536 1280 1536 
 #offset in transport coordinate for each plane/module in meters
-offset_bbgem 0. 0. -0.512 0. 0. 0. 0.512 0. 0. 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
+offset_bbgem 0. 0. -0.512 0. 0. 0. 0.512 0. 0. 0. 0. 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. 
 #strip angle for all BB GEM readouts in degrees
 RO_angle_bbgem -30.0 30.0 0.0 90.0 0.0 90.0 0.0 90.0 -30.0 30.0 -30.0 30.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
 #trigger offsets for all planes in ns
