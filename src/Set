@@ -1,8 +1,0 @@
-g4sbs_data.h:    int nhits;
-g4sbs_data.h:      nhits(0), row(0), col(0), cell(0), plane(0), xcell(0), ycell(0), zcell(0),
-g4sbs_data.h:    int nhits;
-g4sbs_data.h:      nhits(0), PMT(0), row(0), col(0), plane(0), xcell(0),
-g4sbs_data.h:    Int_t                  nhits;
-g4sbs_data.h:      nhits(0), PMT(0), row(0), col(0), xpmt(0), ypmt(0), zpmt(0), xgpmt(0),
-g4sbs_data.h:    Int_t                 nhits;
-g4sbs_data.h:    GEMData_t() : nhits(0), plane(0), strip(0), x(0), y(0), z(0), polx(0), poly(0), polz(0), t(0), trms(0), tmin(0), tmax(0), tx(0), ty(0), txp(0), typ(0), xg(0), yg(0), zg(0), trid(0), mid(0), pid(0), vx(0), vy(0), vz(0), p(0), edep(0), beta(0), xin(0), yin(0), zin(0), xout(0), yout(0), zout(0) {};
