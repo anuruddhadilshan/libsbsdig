@@ -228,30 +228,34 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
     if(det_list[k]=="bbgem"){
       cout << "BB GEMs" << endl;
       for(int m = 0; m<5; m++){
-	// fit of the hits mulitplicity distribution.
-	h1_BBGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_nhits_%d",m));
-	f1_bbgemnhits_[m] = new TF1(Form("f1_bbgemnhits_%d", m), "gaus", 0., 400.);
-	h1_BBGEM_nhits_[m]->Fit(f1_bbgemnhits_[m], "QRN");
-	mu = f1_bbgemnhits_[m]->GetParameter(1);
-	sigma = f1_bbgemnhits_[m]->GetParameter(2);
-	if(mu>=0){
-	  f1_bbgemnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
-	  h1_BBGEM_nhits_[m]->Fit(f1_bbgemnhits_[m], "QRN");
-	}
-	NhitsBBGEMs[m] = max(1.0, f1_bbgemnhits_[m]->GetParameter(1));
+	// // fit of the hits mulitplicity distribution.
+	// h1_BBGEM_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_nhits_%d",m));
+	// f1_bbgemnhits_[m] = new TF1(Form("f1_bbgemnhits_%d", m), "gaus", 0., 400.);
+	// h1_BBGEM_nhits_[m]->Fit(f1_bbgemnhits_[m], "QRN");
+	// mu = f1_bbgemnhits_[m]->GetParameter(1);
+	// sigma = f1_bbgemnhits_[m]->GetParameter(2);
+	// if(mu>=0){
+	//   f1_bbgemnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+	//   h1_BBGEM_nhits_[m]->Fit(f1_bbgemnhits_[m], "QRN");
+	// }
+	//Get mean number of hits per layer in background time window from histogram entries:
+	
+	//	NhitsBBGEMs[m] = max(1.0, f1_bbgemnhits_[m]->GetParameter(1));
 	
 	// copy of 2D position histograms, then projection to obtain 1D histograms
 	h1_BBGEM_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_BBGEM_yVsx_%d",m));
 	h_xhitBBGEMs[m] = h1_BBGEM_yVsx_[m]->ProjectionX(Form("h1_xhitBBGEM_%d",m));
 	h_yhitBBGEMs[m] = h1_BBGEM_yVsx_[m]->ProjectionY(Form("h1_yhitBBGEM_%d",m));
+
+	NhitsBBGEMs[m] = h1_BBGEM_yVsx_[m]->GetEntries();
 	
 	// copy of 2D position histograms, then projection to obtain 1D histograms
 	h1_BBGEM_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_BBGEM_dyVsdx_%d",m));
 	h_dxhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionX(Form("h1_dxhitBBGEM_%d",m));
 	h_dyhitBBGEMs[m] = h1_BBGEM_dyVsdx_[m]->ProjectionY(Form("h1_dyhitBBGEM_%d",m));
 	
-	h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_%d",m));
-	//h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_log_%d",m));
+	//h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_%d",m));
+	h1_BBGEM_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_BBGEM_Edep_log_%d",m)); //this is log( edep (keV))
 	
 	if(m==0){
 	  h_EdephitBBGEMs = h1_BBGEM_Edep_[m];
@@ -485,7 +489,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       }
     }
     
-    if(det_list[k]=="hcal"){
+    if(det_list[k]=="hcal" && fPMTBkgdDig ){
       // Initialization of HCal histograms:
       // most histograms are 1D projections the 2D histograms stored in the input file.
       cout << "HCal" << endl;
@@ -515,7 +519,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       h_zhitHCal = h1_HCal_zHitVsChan->ProjectionY("h_zhitHCal");
     }
     
-    if(det_list[k]=="bbps"){
+    if(det_list[k]=="bbps" && fPMTBkgdDig){
       //PS
       cout << "PS" << endl;
       TH2D *h1_BBPS_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_BBPS_nhitsVsChan");
@@ -541,7 +545,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       h_EdephitBBPS = h1_BBPS_EdepHitVsChan->ProjectionY("h_EdephitBBPS");
     }
     
-    if(det_list[k]=="bbsh"){
+    if(det_list[k]=="bbsh" && fPMTBkgdDig){
       //SH
       cout << "SH" << endl;
       TH2D *h1_BBSH_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_BBSH_nhitsVsChan");
@@ -566,7 +570,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       h_EdephitBBSH = h1_BBSH_EdepHitVsChan->ProjectionY("h_EdephitBBSH");
     }
     
-    if(det_list[k]=="bbhodo"){
+    if(det_list[k]=="bbhodo" && fPMTBkgdDig){
       //BB Hodo
       cout << "Hodo" << endl;
       TH2D *h1_BBHodo_nhitsVsSlat = (TH2D*)f_bkgd->Get("h1_BBHodo_nhitsVsSlat");
@@ -682,7 +686,7 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       h_xhitACTIVEANA = h1_ACTIVEANA_xhitVsSlat->ProjectionY("h_xhitACTIVEANA");
     }
     
-    if(det_list[k]=="grinch"){
+    if(det_list[k]=="grinch" && fPMTBkgdDig){
       //GRINCH
       cout << "GRINCH" << endl;
       TH2D *h1_GRINCH_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_GRINCH_nhitsVsChan");
@@ -903,317 +907,317 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   
   if(fPMTBkgdDig){//
   
-  //ordering by increasing unique det ID
-  while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  if(idet>=0){
-    //cout << "hcal" << endl;
-    for(int m = 0; m<288; m++){
-      nhits = R->Poisson(NhitsHCal[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      //cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;*
-      //h_NhitsHCal_XC->Fill(m, nhits);
-      for(int i = 0; i<nhits; i++){
-	edep = h_EdephitHCal->GetRandom();//R);
-	z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
-	//h_EdephitHCal_XC->Fill(edep);
-	//h_zhitHCal_XC->Fill(z_hit);
+    //ordering by increasing unique det ID
+    while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    if(idet>=0){
+      //cout << "hcal" << endl;
+      for(int m = 0; m<288; m++){
+	nhits = R->Poisson(NhitsHCal[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+	//cout << m << " " << NhitsHCal[m]*lumifrac << " " << nhits << endl;*
+	//h_NhitsHCal_XC->Fill(m, nhits);
+	for(int i = 0; i<nhits; i++){
+	  edep = h_EdephitHCal->GetRandom();//R);
+	  z_hit = h_zhitHCal->GetRandom();//R); //R->Uniform(-0.91, 0.91);//for the time being
+	  //h_EdephitHCal_XC->Fill(edep);
+	  //h_zhitHCal_XC->Fill(z_hit);
 	
-	//cout << " " << i << " " << edep << " " << z_hit << endl;
-	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
-	Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
-	sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
+	  //cout << " " << i << " " << edep << " " << z_hit << endl;
+	  Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
+	  Npe = R->Poisson(Npe_Edep_ratio*edep*1.0e3);
+	  sigma_tgen = 0.4244+11380/pow(Npe+153.4, 2);
 	
-	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	
-	//if(edep>1.e-3)
-	pmtdets[idet]->PMTmap[m].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
+	  //if(edep>1.e-3)
+	  pmtdets[idet]->PMTmap[m].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, sigma_tgen, 1);// edep > 1 MeV
+	}
       }
     }
-  }
   
-  while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  if(idet>=0){
-    //cout << "ps" << endl;
-    for(int m = 0; m<52; m++){
-      nhits = R->Poisson(NhitsBBPS[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      //cout << m << " " << NhitsBBPS[m]*lumifrac << " " << nhits << endl;
-      //h_NhitsBBPS_XC->Fill(m, nhits);
-      for(int i = 0; i<nhits; i++){
-	edep = h_EdephitBBPS->GetRandom();//R);
+    while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    if(idet>=0){
+      //cout << "ps" << endl;
+      for(int m = 0; m<52; m++){
+	nhits = R->Poisson(NhitsBBPS[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+	//cout << m << " " << NhitsBBPS[m]*lumifrac << " " << nhits << endl;
+	//h_NhitsBBPS_XC->Fill(m, nhits);
+	for(int i = 0; i<nhits; i++){
+	  edep = h_EdephitBBPS->GetRandom();//R);
 	
-	//h_EdephitBBPS_XC->Fill(edep);
+	  //h_EdephitBBPS_XC->Fill(edep);
 	
-	if(edep<1.e-4)continue;
-	//check probability to generate p.e. yield
-	bool genpeyield = true;
-	if(edep<1.e-2)
-	  genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
-	//if we're go, let's generate
-	if(genpeyield){
-	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
-	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
-	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	  if(edep<1.e-4)continue;
+	  //check probability to generate p.e. yield
+	  bool genpeyield = true;
+	  if(edep<1.e-2)
+	    genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
+	  //if we're go, let's generate
+	  if(genpeyield){
+	    beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
+	    sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	    //1500. Used to be 454.: just wrong
+	    Npe = R->Poisson(300.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
 	  
-	  //cout << " " << i << " " << edep << " " << Npe << endl;
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  //if(edep>1.e-3)
-	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	    //cout << " " << i << " " << edep << " " << Npe << endl;
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    //if(edep>1.e-3)
+	    pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  }
 	}
       }
     }
-  }
   
-  while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  if(idet>=0){
-    //cout << "sh" << endl;
-    for(int m = 0; m<189; m++){
-      nhits = R->Poisson(NhitsBBSH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      //h_NhitsBBSH_XC->Fill(m, nhits);
-      for(int i = 0; i<nhits; i++){
-	edep = h_EdephitBBSH->GetRandom();//R);
+    while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    if(idet>=0){
+      //cout << "sh" << endl;
+      for(int m = 0; m<189; m++){
+	nhits = R->Poisson(NhitsBBSH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+	//h_NhitsBBSH_XC->Fill(m, nhits);
+	for(int i = 0; i<nhits; i++){
+	  edep = h_EdephitBBSH->GetRandom();//R);
 	
-	//h_EdephitBBSH_XC->Fill(edep);
+	  //h_EdephitBBSH_XC->Fill(edep);
 	
-	if(edep<1.e-4)continue;
-	//check probability to generate p.e. yield
-	bool genpeyield = true;
-	if(edep<1.e-2)
-	  genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
-	//if we're go, let's generate
-	if(genpeyield){
-	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
-	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	  if(edep<1.e-4)continue;
+	  //check probability to generate p.e. yield
+	  bool genpeyield = true;
+	  if(edep<1.e-2)
+	    genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
+	  //if we're go, let's generate
+	  if(genpeyield){
+	    beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
+	    sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	    //1500. Used to be 454.: just wrong
+	    Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    //if(edep>1.e-3)
+	    pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  }
+	}
+      }
+    }
+  
+    while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    if(idet>=0){
+      //cout << "sh" << endl;
+      for(int m = 0; m<189; m++){
+	nhits = R->Poisson(NhitsECal[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+	//h_NhitsECal_XC->Fill(m, nhits);
+	for(int i = 0; i<nhits; i++){
+	  edep = h_EdephitECal->GetRandom();//R);
+	
+	  //h_EdephitECal_XC->Fill(edep);
+	
+	  if(edep<1.e-4)continue;
+	  //check probability to generate p.e. yield
+	  bool genpeyield = true;
+	  if(edep<1.e-2)
+	    genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
+	  //if we're go, let's generate
+	  if(genpeyield){
+	    beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
+	    sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
+	    //1500. Used to be 454.: just wrong
+	    Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    //if(edep>1.e-3)
+	    pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  }
+	}
+      }
+    }
+  
+    while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    if(idet>=0){
+      //cout << "grinch" << endl;
+      for(int m = 0; m<510; m++){
+	p = R->Uniform(0, 1);
+	if(p<P2hitsGRINCH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow){
+	  nhits = 2;
+	}else if(p<P1hitGRINCH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow)nhits = 1;
+      
+	//h_NhitsGRINCH_XC->Fill(m, nhits);
+      
+	for(int i = 0; i<nhits; i++){
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  //if(edep>1.e-3)
-	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	  Npe = h_NpeGRINCH->GetRandom();
+	
+	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	
+	  //h_NpeGRINCH_XC->Fill(Npe);
 	}
       }
     }
-  }
   
-  while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  if(idet>=0){
-    //cout << "sh" << endl;
-    for(int m = 0; m<189; m++){
-      nhits = R->Poisson(NhitsECal[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      //h_NhitsECal_XC->Fill(m, nhits);
-      for(int i = 0; i<nhits; i++){
-	edep = h_EdephitECal->GetRandom();//R);
+    // the block of code below is similar to the code that unfolds the data from the BigBite hodoscope in SBSDigAuxi::UnfoldData(...)
+    while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    // Process hodoscope data
+    if(idet>=0){
+      //cout << "hodo" << endl;
+      for(int m = 0; m<90; m++){
+	// determine the number of hits to generate, then loop on this number of hits
+	nhits = R->Poisson(NhitsBBHodo[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      
+	//h_NhitsBBHodo_XC->Fill(m, nhits);
+            
+	for(int i = 0; i<nhits; i++){
+	  // energy deposit, hit position
+	  // generated from sampling the histograms with function GetRandom();
+	  edep =  h_EdephitBBHodo->GetRandom();//*1.e6;
+	  //if(edep<0.002)continue;
+	  x_hit =  h_xhitBBHodo->GetRandom();
 	
-	//h_EdephitECal_XC->Fill(edep);
+	  //h_EdephitBBHodo_XC->Fill(edep);
+	  //h_xhitBBHodo_XC->Fill(x_hit);
 	
-	if(edep<1.e-4)continue;
-	//check probability to generate p.e. yield
-	bool genpeyield = true;
-	if(edep<1.e-2)
-	  genpeyield = R->Uniform(0, 1)<=1-exp(0.29-950.*edep);
-	//if we're go, let's generate
-	if(genpeyield){
-	  beta = sqrt( pow(m_e+edep, 2)-m_e*m_e )/(m_e + edep);
-	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
-	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(360.0*edep*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
+	  //p = R->Uniform(-50.,50.);
+	  // from that point, it's almost the same code as in 
+	  // SBSDigAuxi::UnfoldData(...), with one exception:
+	  // * t is generated uniformly within the DAQ time window.
+	  for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	    // Evaluation of number of photoelectrons and time from energy deposit documented at:
+	    // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	    Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
+	    //T->Earm_BBHodoScint_hit_sumedep->at(i);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	  }
+	}
+      }
+    }
+    //GEN-rp PRPOLBS_SCINT 
+    while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    // Process hodoscope data
+    if(idet>=0){
+      //cout << "hodo" << endl;
+      for(int m = 0; m<90; m++){
+	nhits = R->Poisson(NhitsPRPOLBS_SCINT[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      
+	//h_NhitsPRPOLBS_SCINT_XC->Fill(m, nhits);
+            
+	for(int i = 0; i<nhits; i++){
+	  edep =  h_EdephitPRPOLBS_SCINT->GetRandom();//*1.e6;
+	  //if(edep<0.002)continue;
+	  x_hit =  h_xhitPRPOLBS_SCINT->GetRandom();
+	
+	  //h_EdephitPRPOLBS_SCINT_XC->Fill(edep);
+	  //h_xhitPRPOLBS_SCINT_XC->Fill(x_hit);
+	
+	  //p = R->Uniform(-50.,50.);
+	  for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	    // Evaluation of number of photoelectrons and time from energy deposit documented at:
+	    // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	    Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
+	    //T->Earm_PRPOLBS_SCINTScint_hit_sumedep->at(i);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	  }
+	}
+      }
+    }
+  
+    //GEN-rp PRPOLFS_SCINT 
+    while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    // Process hodoscope data
+    if(idet>=0){
+      //cout << "hodo" << endl;
+      for(int m = 0; m<90; m++){
+	nhits = R->Poisson(NhitsPRPOLFS_SCINT[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      
+	//h_NhitsPRPOLFS_SCINT_XC->Fill(m, nhits);
+            
+	for(int i = 0; i<nhits; i++){
+	  edep =  h_EdephitPRPOLFS_SCINT->GetRandom();//*1.e6;
+	  //if(edep<0.002)continue;
+	  x_hit =  h_xhitPRPOLFS_SCINT->GetRandom();
+	
+	  //h_EdephitPRPOLFS_SCINT_XC->Fill(edep);
+	  //h_xhitPRPOLFS_SCINT_XC->Fill(x_hit);
+	
+	  //p = R->Uniform(-50.,50.);
+	  for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	    // Evaluation of number of photoelectrons and time from energy deposit documented at:
+	    // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	    Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
+	    //T->Earm_PRPOLFS_SCINTScint_hit_sumedep->at(i);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	  }
+	}
+      }
+    }
+  
+    //GEN-rp ACTIVEANA 
+    while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    //cout << " " << idet;
+    // Process hodoscope data
+    if(idet>=0){
+      //cout << "hodo" << endl;
+      for(int m = 0; m<90; m++){
+	nhits = R->Poisson(NhitsACTIVEANA[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+      
+	//h_NhitsACTIVEANA_XC->Fill(m, nhits);
+            
+	for(int i = 0; i<nhits; i++){
+	  edep =  h_EdephitACTIVEANA->GetRandom();//*1.e6;
+	  //if(edep<0.002)continue;
+	  x_hit =  h_xhitACTIVEANA->GetRandom();
+	
+	  //h_EdephitACTIVEANA_XC->Fill(edep);
+	  //h_xhitACTIVEANA_XC->Fill(x_hit);
+	
+	  //p = R->Uniform(-50.,50.);
+	  for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
+	    // Evaluation of number of photoelectrons and time from energy deposit documented at:
+	    // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
+	    Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
+	    t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
+	    //T->Earm_ACTIVEANAScint_hit_sumedep->at(i);
+	    //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
+	    pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	  }
+	}
+      }
+    }
+  
+    while(detmap[idet]!=CDET_UNIQUE_DETID && idet<(int)detmap.size())idet++;
+    if(idet>=detmap.size())idet = -1;
+    // Process hodoscope data
+    if(idet>=0){
+      //cout << "hodo" << endl;
+      for(int m = 0; m<2352; m++){
+	nhits = R->Poisson(NhitsCDet[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
+	for(int i = 0; i<nhits; i++){
+	  edep =  h_EdephitCDet->GetRandom();//*1.e6;
+	  //if(edep<0.002)continue;
+	  x_hit =  h_xhitCDet->GetRandom();
+	
+	  Npe = R->Poisson( edep*5.634e3 );
 	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  //if(edep>1.e-3)
-	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, 1);// edep > 1 MeV
+	
+	  pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
+	
 	}
       }
     }
-  }
-  
-  while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  if(idet>=0){
-    //cout << "grinch" << endl;
-    for(int m = 0; m<510; m++){
-      p = R->Uniform(0, 1);
-      if(p<P2hitsGRINCH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow){
-	nhits = 2;
-      }else if(p<P1hitGRINCH[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow)nhits = 1;
-      
-      //h_NhitsGRINCH_XC->Fill(m, nhits);
-      
-      for(int i = 0; i<nhits; i++){
-	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
-	Npe = h_NpeGRINCH->GetRandom();
-	
-	pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	
-	//h_NpeGRINCH_XC->Fill(Npe);
-      }
-    }
-  }
-  
-  // the block of code below is similar to the code that unfolds the data from the BigBite hodoscope in SBSDigAuxi::UnfoldData(...)
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;
-  // Process hodoscope data
-  if(idet>=0){
-    //cout << "hodo" << endl;
-    for(int m = 0; m<90; m++){
-      // determine the number of hits to generate, then loop on this number of hits
-      nhits = R->Poisson(NhitsBBHodo[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      
-      //h_NhitsBBHodo_XC->Fill(m, nhits);
-            
-      for(int i = 0; i<nhits; i++){
-	// energy deposit, hit position
-	// generated from sampling the histograms with function GetRandom();
-	edep =  h_EdephitBBHodo->GetRandom();//*1.e6;
-	//if(edep<0.002)continue;
-	x_hit =  h_xhitBBHodo->GetRandom();
-	
-	//h_EdephitBBHodo_XC->Fill(edep);
-	//h_xhitBBHodo_XC->Fill(x_hit);
-	
-	//p = R->Uniform(-50.,50.);
-	// from that point, it's almost the same code as in 
-	// SBSDigAuxi::UnfoldData(...), with one exception:
-	// * t is generated uniformly within the DAQ time window.
-	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
-	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
-	  Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
-	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
-	  //T->Earm_BBHodoScint_hit_sumedep->at(i);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	}
-      }
-    }
-  }
- //GEN-rp PRPOLBS_SCINT 
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;
-  // Process hodoscope data
-  if(idet>=0){
-    //cout << "hodo" << endl;
-    for(int m = 0; m<90; m++){
-      nhits = R->Poisson(NhitsPRPOLBS_SCINT[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      
-      //h_NhitsPRPOLBS_SCINT_XC->Fill(m, nhits);
-            
-      for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitPRPOLBS_SCINT->GetRandom();//*1.e6;
-	//if(edep<0.002)continue;
-	x_hit =  h_xhitPRPOLBS_SCINT->GetRandom();
-	
-	//h_EdephitPRPOLBS_SCINT_XC->Fill(edep);
-	//h_xhitPRPOLBS_SCINT_XC->Fill(x_hit);
-	
-	//p = R->Uniform(-50.,50.);
-	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
-	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
-	  Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
-	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
-	  //T->Earm_PRPOLBS_SCINTScint_hit_sumedep->at(i);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	}
-      }
-    }
-  }
-  
- //GEN-rp PRPOLFS_SCINT 
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;
-  // Process hodoscope data
-  if(idet>=0){
-    //cout << "hodo" << endl;
-    for(int m = 0; m<90; m++){
-      nhits = R->Poisson(NhitsPRPOLFS_SCINT[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      
-      //h_NhitsPRPOLFS_SCINT_XC->Fill(m, nhits);
-            
-      for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitPRPOLFS_SCINT->GetRandom();//*1.e6;
-	//if(edep<0.002)continue;
-	x_hit =  h_xhitPRPOLFS_SCINT->GetRandom();
-	
-	//h_EdephitPRPOLFS_SCINT_XC->Fill(edep);
-	//h_xhitPRPOLFS_SCINT_XC->Fill(x_hit);
-	
-	//p = R->Uniform(-50.,50.);
-	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
-	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
-	  Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
-	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
-	  //T->Earm_PRPOLFS_SCINTScint_hit_sumedep->at(i);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	}
-      }
-    }
-  }
-  
- //GEN-rp ACTIVEANA 
-  while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  //cout << " " << idet;
-  // Process hodoscope data
-  if(idet>=0){
-    //cout << "hodo" << endl;
-    for(int m = 0; m<90; m++){
-      nhits = R->Poisson(NhitsACTIVEANA[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      
-      //h_NhitsACTIVEANA_XC->Fill(m, nhits);
-            
-      for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitACTIVEANA->GetRandom();//*1.e6;
-	//if(edep<0.002)continue;
-	x_hit =  h_xhitACTIVEANA->GetRandom();
-	
-	//h_EdephitACTIVEANA_XC->Fill(edep);
-	//h_xhitACTIVEANA_XC->Fill(x_hit);
-	
-	//p = R->Uniform(-50.,50.);
-	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  // Evaluation of number of photoelectrons and time from energy deposit documented at:
-	  // https://hallaweb.jlab.org/dvcslog/SBS/170711_172759/BB_hodoscope_restudy_update_20170711.pdf
-	  Npe = R->Poisson(1.0e7*edep*0.113187*exp(-(0.3+pow(-1, j)*x_hit)/1.03533)* 0.24);
-	  t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);//+p+(0.55+pow(-1, j)*x_hit)/0.15;
-	  //T->Earm_ACTIVEANAScint_hit_sumedep->at(i);
-	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[m*2+j].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	}
-      }
-    }
-  }
-  
-  while(detmap[idet]!=CDET_UNIQUE_DETID && idet<(int)detmap.size())idet++;
-  if(idet>=detmap.size())idet = -1;
-  // Process hodoscope data
-  if(idet>=0){
-    //cout << "hodo" << endl;
-    for(int m = 0; m<2352; m++){
-      nhits = R->Poisson(NhitsCDet[m]*lumifrac*pmtdets[idet]->fGateWidth/fTimeWindow);
-      for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitCDet->GetRandom();//*1.e6;
-	//if(edep<0.002)continue;
-	x_hit =  h_xhitCDet->GetRandom();
-	
-	Npe = R->Poisson( edep*5.634e3 );
-	t = R->Uniform(-pmtdets[idet]->fGateWidth/2., pmtdets[idet]->fGateWidth/2.);
-	
-	pmtdets[idet]->PMTmap[m].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, 1);
-	
-      }
-    }
-  }
   
   
   }//end if(fDetailedDig) 
@@ -1229,11 +1233,21 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     for(int m = 0; m<5; m++){
       // determine the number of hits to generate, then loop on this number of hits
       nhits = R->Poisson(NhitsBBGEMs[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
+
+      // cout << "layer, NhitsBBGEMs[layer], gate width, time window, num bkgd hits = " << m << ", " 
+      //  	   << NhitsBBGEMs[m] << ", " << gemdets[idet]->fGateWidth << ", " << fTimeWindow << ", " << nhits << endl;
       //h_NhitsBBGEMs_XC[m]->Fill(nhits);
       for(int i = 0; i<nhits; i++){
 	// energy deposit, hit position (at entrance of drift) 
 	// generated from sampling the histograms with function GetRandom();
-	edep =  h_EdephitBBGEMs->GetRandom();
+
+	//now the edep histogram is actually log( Edep (keV) );
+
+	double logedep_keV = h_EdephitBBGEMs->GetRandom();
+	edep = exp( logedep_keV )/1000.; //energy deposit in MeV!
+
+	//cout << "hit, edep (MeV) = " << i << ", " << edep << endl;
+	
 	x_hit =  h_xhitBBGEMs[m]->GetRandom();
 	y_hit =  h_yhitBBGEMs[m]->GetRandom();
 
@@ -1262,7 +1276,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	
 	if(fabs(y_hit)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.)continue;
 	
-	//cout << x_hit << " " << y_hit << " " << mod << endl;
+	//cout << "(x_hit,y_hit,mod) = (" << x_hit << ", " << y_hit << ", " << mod << ")" << endl;
 	
 	hit.module = mod; 
 	hit.edep = edep*1.0e6;//already in MeV for some reasons...
@@ -1277,6 +1291,8 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
 	//}
 	hit.zout = 0.0015;
 	hit.t = R->Uniform(-gemdets[idet]->fGateWidth/2.-50., gemdets[idet]->fGateWidth/2.-50.);
+
+	//cout << "Adding new background hit " << i << endl;
 	
 	gemdets[idet]->fGEMhits.push_back(hit);
       }

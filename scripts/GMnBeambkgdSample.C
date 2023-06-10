@@ -17,12 +17,14 @@
 #include "TVector3.h"
 #include "TMath.h"
 #include "TF2.h"
-#include "HistLoader.h"
+//#include "HistLoader.h" do we need this?
 #include "TChainElement.h"
 #include "TRandom3.h"
 #include "TGraph.h"
 #include "TSystem.h"
 
+
+#include <set>
 // This script is needed to generate histograms of distribution 
 // of energy deposit, position, etc... for beam induced background hits.
 
@@ -34,7 +36,7 @@ void BeamBackground(const char *inputfilename,
        << " if you can't find it or your file seems to be inadapted to your file " << endl
        << " (missing branches warnings, unidentified crashes)" << endl
        << " you may generate file gmn_deftree.C and .h yourself " << endl
-       << " by opening one of your g4sbs files and type: " <<
+       << " by opening one of your g4sbs files and type: " 
        << " T->MakeClass(\"gmn_deftree\") " << endl;
   
   // reads and stores the list of files to process
@@ -321,18 +323,18 @@ void BeamBackground(const char *inputfilename,
       }
       
       // fill GRINCH histograms, and increment number of hits
-      if(T1->Earm_GRINCH_hit_nhits){
-	for(int i = 0; i<T1->Earm_GRINCH_hit_nhits; i++){
-	  chan = int(T1->Earm_GRINCH_hit_PMT->at(i)/5);
-	  nhits_GRINCH[chan]++;
+      // if(T1->Earm_GRINCH_hit_nhits){
+      // 	for(int i = 0; i<T1->Earm_GRINCH_hit_nhits; i++){
+      // 	  chan = int(T1->Earm_GRINCH_hit_PMT->at(i)/5);
+      // 	  nhits_GRINCH[chan]++;
 
-	  h1_GRINCH_NpeVsChan->Fill(chan, T1->Earm_GRINCH_hit_NumPhotoelectrons->at(i));
-	  // h1_BBSH_Edep->Fill(T1->Earm_BBSHTF1_hit_row->at(i), 
-	  // 		     T1->Earm_BBSHTF1_hit_col->at(i), 
-	  // 		     T1->Earm_BBSHTF1_hit_sumedep->at(i));
-	  // h1_BBSH_EdepSpectrum->Fill(T1->Earm_BBSHTF1_hit_cell->at(i), T1->Earm_BBSHTF1_hit_sumedep->at(i));
-	}
-      }
+      // 	  h1_GRINCH_NpeVsChan->Fill(chan, T1->Earm_GRINCH_hit_NumPhotoelectrons->at(i));
+      // 	  // h1_BBSH_Edep->Fill(T1->Earm_BBSHTF1_hit_row->at(i), 
+      // 	  // 		     T1->Earm_BBSHTF1_hit_col->at(i), 
+      // 	  // 		     T1->Earm_BBSHTF1_hit_sumedep->at(i));
+      // 	  // h1_BBSH_EdepSpectrum->Fill(T1->Earm_BBSHTF1_hit_cell->at(i), T1->Earm_BBSHTF1_hit_sumedep->at(i));
+      // 	}
+      // }
      
       
     }//end for(Long_64t...)
