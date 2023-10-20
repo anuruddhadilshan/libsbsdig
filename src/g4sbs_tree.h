@@ -147,7 +147,7 @@ public :
    // TSBSGeant4::CalData_t  Earm_ECAL_box;
    //TSBSGeant4::ECalData_t Earm_ECAL;
    TSBSGeant4::CalData_t Earm_ECalTF1;
-   TSBSGeant4::DigCalData_t Earm_ECal_Dig;
+   TSBSGeant4::DigSampCalData_t Earm_ECal_Dig;
 
    // Focal Plane Polarimeter 1 hits
    TSBSGeant4::GEMData_t Harm_FPP1;

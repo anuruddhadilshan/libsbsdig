@@ -137,10 +137,10 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
        SetupDetBranch(Harm_HCal_Dig, "Harm.HCal.dighit");
      }
      //GENRP
-     if(det_list[k]=="h_cdet"){
-       SetupDetBranch(CDET_Scint,"Harm.CDET_Scint.hit");
-       SetupDetBranch(CDET_Dig, "Harm.CDET.dighit");
-     }
+     //if(det_list[k]=="cdet"){
+     //  SetupDetBranch(CDET_Scint,"Earm.CDET_Scint.hit");
+     //  SetupDetBranch(CDET_Dig, "Earm.CDET.dighit");
+     //}
      if(det_list[k]=="activeana"){
        SetupDetBranch(Harm_ActAnScint, "Harm.ActAnScint.hit");
        SetupDetBranch(Harm_ActAn_Dig, "Harm.ActAn.dighit");
@@ -174,7 +174,7 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
        SetupDetBranch(Harm_PrPolGEMFarSide_Dig, "Harm.PRPolGEMFarSide.dighit");
      }
      //GEP
-     if(det_list[k]=="e_cdet"){
+     if(det_list[k]=="cdet"){
        SetupDetBranch(CDET_Scint,"Earm.CDET_Scint.hit");
        SetupDetBranch(CDET_Dig,"Earm.CDET.dighit");
      }

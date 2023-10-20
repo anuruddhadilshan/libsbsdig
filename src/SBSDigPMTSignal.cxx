@@ -299,10 +299,12 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
     fSamples[0]+= Eval(fTmin+(0.5)*fSampSize);//f1->Eval(fTmin+(0.5)*fSampSize);//*fSampSize;
     //cout << Eval(fTmin+(0.5)*fSampSize) << endl;
     //Evaluate this function might be a bit of a time drain!
+    //cout << fSamples[0] << " ";
     for(int i = 1; i<fNSamps; i++){
       fSamples[i]+= Eval(fTmin+(i+0.5)*fSampSize);//f1->Eval(fTmin+(i+0.5)*fSampSize);//*fSampSize;
       //if(i>0){
       //cout << Eval(fTmin+(i+0.5)*fSampSize) << endl;
+      //cout << fSamples[i] << " ";
       if(fSamples[i-1]<=thr && thr<fSamples[i]){
 	t_lead = fTmin+(i-0.5)*fSampSize+fSampSize*(thr-fSamples[i-1])/(fSamples[i]-fSamples[i-1]);
 	goodtime = true;
@@ -312,6 +314,7 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
 	goodtime = true;
       }
     }
+    //cout << endl;
   }
     
   // find the lead and trail time for *this* pulse, not the total pulse
@@ -506,10 +509,14 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   if(fNSamps){
     fADC = 0;
     Int_t Nconv = fNSamps/fNADCSamps;
+    //if(detid==12)cout << "det "<< detid << ": ";
     for(int i = 0; i<fNADCSamps; i++){
+      //if(detid==12)cout << fADCSamples[i] << " ";
       for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
+      //if(detid==12)cout << fADCSamples[i] << " ";
       fADCSamples[i]*=1.0e15/ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
+      //cout << fADCSamples[i] << " ; ";
       
       if(fADCSamples[i]>4095)fADCSamples[i] = 4095;
       
@@ -523,6 +530,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       if(i<4)vmin+= fADCSamples[i]/4;
       */
     }
+    //if(detid==12)cout << endl;
   }
   //fSumEdep*=1.0e9;// store in eV.
   
@@ -670,9 +678,18 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   }
   
   if(detid==ECAL_UNIQUE_DETID){
+    /*
     T->Earm_ECal_Dig.nchan++;
     T->Earm_ECal_Dig.chan->push_back(chan);
     T->Earm_ECal_Dig.adc->push_back(fADC);
+    */
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Earm_ECal_Dig.nchan++;
+      T->Earm_ECal_Dig.chan->push_back(chan);
+      T->Earm_ECal_Dig.adc->push_back(fADCSamples[i]);
+      T->Earm_ECal_Dig.samp->push_back(i);
+      T->Earm_ECal_Dig.tdc->push_back(-1000000);
+    }
   }
   
   if(detid==HODO_UNIQUE_DETID){

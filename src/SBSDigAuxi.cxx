@@ -169,13 +169,17 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
-	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );//ECal is a lead glass detector, so this could be correct
+	  // rough, first step: t of photons at PMT = tavg_TF1_hit + (0.172-z_TF1_hit)*n/C 
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+(0.172-T->Earm_ECalTF1.zhit->at(i)*n_leadglass/3.e-1)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_ECalTF1.cell->at(i);
 	  //T->Earm_ECalTF1_hit_sumedep->at(i);
 	  
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //ECal switched to FADC :)
+	  //cout << T->Earm_ECalTF1.sumedep->at(i) << " " << Npe << " " << t << " " << pmtdets[idet]->fSigmaPulse << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
 	}
       }
       has_data = true;
@@ -250,7 +254,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	// 
 	chan = T->CDET_Scint.cell->at(i);
 	Npe = R->Poisson( T->CDET_Scint.sumedep->at(i)*5.634e3 );
-	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16;
+	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16-pmtdets[idet]->fTrigOffset;
 	
 	
 	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
@@ -486,7 +490,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.xout = T->Harm_FT.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yout = T->Harm_FT.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_FT.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_FT.plane->at(k)-1];//+1.7886925;
-	  //cout << mod << " " << hit.zin << " " << hit.zout << endl;
+	  //cout << T->Harm_FT.plane->at(k) << " " << T->Harm_FT.zin->at(k) << " " << gemdets[idet]->fZLayer[T->Harm_FT.plane->at(k)-1] << " " << mod << " " << hit.zin << " " << hit.zout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)
 	

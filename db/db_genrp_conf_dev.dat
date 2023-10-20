@@ -13,7 +13,7 @@ pedsigma_bbps 3.0
 trigoffset_bbps 18.2 
 threshold_bbps 22.0e-3 
 ADCconv_bbps 40 
-ADCbits_bbps 12 
+#ADCbits_bbps 12 
 TDCconv_bbps 0.12
 TDCbits_bbps 12 
 sigmapulse_bbps 40.0 
@@ -27,7 +27,7 @@ pedsigma_bbsh 4.5
 trigoffset_bbsh 18.5 
 threshold_bbsh 22.e-3 
 ADCconv_bbsh 40 
-ADCbits_bbsh 12 
+#ADCbits_bbsh 12 
 TDCconv_bbsh 0.12 
 TDCbits_bbsh 12 
 sigmapulse_bbsh 40.0 
@@ -41,7 +41,7 @@ pedsigma_grinch 3.0
 trigoffset_grinch 15.3 
 threshold_grinch 3.e-3 
 ADCconv_grinch 100 
-ADCbits_grinch 12 
+#ADCbits_grinch 12 
 TDCconv_grinch 1.0 
 TDCbits_grinch 16 
 sigmapulse_grinch 3.75 
@@ -55,7 +55,7 @@ pedsigma_bbhodo 3.0
 trigoffset_bbhodo 18.6 
 threshold_bbhodo 3.e-3 
 ADCconv_bbhodo 100 
-ADCbits_bbhodo 12 
+#ADCbits_bbhodo 12 
 TDCconv_bbhodo 0.1 
 TDCbits_bbhodo 19 
 sigmapulse_bbhodo 1.6 

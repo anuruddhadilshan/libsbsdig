@@ -147,8 +147,8 @@ int main(int argc, char** argv){
   
   std::vector<TString> detectors_list;
   
-  const int nparam_hcal = 13;
-  const int nparam_pmtdet = 12;
+  const int nparam_pmtdet_adc = 12;
+  const int nparam_pmtdet_fadc = 11;
   const int nparam_gemdet = 12;
   
   int nparam_bbps_read = 0;
@@ -251,6 +251,35 @@ int main(int argc, char** argv){
   Double_t* gain_sbsgem;//one gain per module
   Double_t* commonmode_array_sbsgem;
   UShort_t nAPV_sbsgem = 0;
+  
+  //GEP detectors: parameters with dummy values...
+  int nparam_ecal_read = 0;
+  Int_t NChan_ecal = 189;
+  Double_t gatewidth_ecal = 100.;
+  Double_t gain_ecal = 7.5e5;
+  Double_t ped_ecal = 500.;
+  Double_t pedsigma_ecal = 4.5;
+  Double_t trigoffset_ecal = 18.5;
+  Double_t threshold_ecal = 3.e-3;
+  Double_t ADCconv_ecal = 50.;
+  Int_t ADCbits_ecal = 12;
+  Double_t TDCconv_ecal = 0.0625;
+  Int_t TDCbits_ecal = 15;
+  Double_t sigmapulse_ecal = 3.0;
+
+  int nparam_cdet_read = 0;
+  Int_t NChan_cdet = 189;
+  Double_t gatewidth_cdet = 100.;
+  Double_t gain_cdet = 7.5e5;
+  Double_t ped_cdet = 500.;
+  Double_t pedsigma_cdet = 4.5;
+  Double_t trigoffset_cdet = 18.5;
+  Double_t threshold_cdet = 3.e-3;
+  Double_t ADCconv_cdet = 50.;
+  Int_t ADCbits_cdet = 12;
+  Double_t TDCconv_cdet = 0.0625;
+  Int_t TDCbits_cdet = 15;
+  Double_t sigmapulse_cdet = 3.0;
   
   int nparam_ft_read = 0;
   Int_t NPlanes_ft = 36;// number of planes/modules/readout
@@ -799,23 +828,162 @@ int main(int argc, char** argv){
 	  nparam_hcal_read++;
 	}	
 	
-	if(skey=="FADC_ADCbits"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  FADC_ADCbits = stemp.Atoi();
-	  nparam_hcal_read++;
-	}
-	
-	if(skey=="FADC_sampsize"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  FADC_sampsize = stemp.Atof();
-	  nparam_hcal_read++;
-	}
-	
 	if(skey=="sigmapulse_hcal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  sigmapulse_hcal = stemp.Atof();
 	  nparam_hcal_read++;
 	}
+	
+	if(skey=="FADC_ADCbits"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  FADC_ADCbits = stemp.Atoi();
+	}
+	
+	if(skey=="FADC_sampsize"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  FADC_sampsize = stemp.Atof();
+	}
+	
+	//Ecal
+	if(skey=="NChan_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_ecal = stemp.Atoi();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="gatewidth_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="gain_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="ped_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="pedsigma_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="trigoffset_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="threshold_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	if(skey=="ADCconv_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}	
+	
+	if(skey=="TDCconv_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}	
+	
+	if(skey=="TDCbits_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_ecal = stemp.Atoi();
+	  nparam_ecal_read++;
+	}	
+	
+	if(skey=="sigmapulse_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
+	//CDET
+	if(skey=="NChan_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  NChan_cdet = stemp.Atoi();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="gatewidth_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gatewidth_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="gain_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  gain_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="ped_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ped_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="pedsigma_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  pedsigma_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="trigoffset_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  trigoffset_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="threshold_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  threshold_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
+	if(skey=="ADCconv_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCconv_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}	
+
+	if(skey=="ADCbits_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  ADCbits_cdet = stemp.Atoi();
+	  nparam_cdet_read++;
+	}	
+	
+	if(skey=="TDCconv_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCconv_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}	
+	
+	if(skey=="TDCbits_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  TDCbits_cdet = stemp.Atoi();
+	  nparam_cdet_read++;
+	}	
+	
+	if(skey=="sigmapulse_cdet"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  sigmapulse_cdet = stemp.Atof();
+	  nparam_cdet_read++;
+	}
+	
 	
 	// ** How to add a new subsystem **
 	// Add reading of param from other detectors there...
@@ -1835,7 +2003,7 @@ int main(int argc, char** argv){
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_prpolbs_gem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_prpolbs_gem << endl;
+		 << " don't match Nplanes/2 = " << NPlanes_prpolbs_gem/2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -2002,7 +2170,7 @@ int main(int argc, char** argv){
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_prpolfs_gem = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_prpolfs_gem << endl;
+		 << " don't match Nplanes/2 = " << NPlanes_prpolfs_gem/2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -2170,7 +2338,7 @@ int main(int argc, char** argv){
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_ft = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_ft << endl;
+		 << " don't match Nplanes/2 = " << NPlanes_ft/2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -2338,7 +2506,7 @@ int main(int argc, char** argv){
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_fpp1 = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_fpp1 << endl;
+		 << " don't match Nplanes/2 = " << NPlanes_fpp1/2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -2506,7 +2674,7 @@ int main(int argc, char** argv){
 	    }
 	  }else{
 	    cout << "number of entries for triggeroffset_fpp2 = " << ntokens-1 
-		 << " don't match Nplanes = " << NPlanes_fpp2 << endl;
+		 << " don't match Nplanes/2 = " << NPlanes_fpp2/2 << endl;
 	    cout << "fix your db " << endl;
 	    exit(-1);
 	  }
@@ -2725,7 +2893,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      if(nparam_bbps_read!=nparam_pmtdet){
+      if(nparam_bbps_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2752,7 +2920,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      if(nparam_bbsh_read!=nparam_pmtdet){
+      if(nparam_bbsh_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2778,7 +2946,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "grinch"){
-      if(nparam_grinch_read!=nparam_pmtdet){
+      if(nparam_grinch_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2801,7 +2969,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbhodo"){
-      if(nparam_bbhodo_read!=nparam_pmtdet){
+      if(nparam_bbhodo_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2824,7 +2992,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      if(nparam_hcal_read!=nparam_hcal){
+      if(nparam_hcal_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2848,8 +3016,12 @@ int main(int argc, char** argv){
       detmap.push_back(HCAL_UNIQUE_DETID);
       cout << " set up! " << endl;
     }
-    /*
+
     if(detectors_list[k] == "ecal"){
+      if(nparam_ecal_read!=nparam_pmtdet_fadc){
+	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
+	exit(-1);
+      }
       SBSDigPMTDet* ecal = new SBSDigPMTDet(ECAL_UNIQUE_DETID, NChan_ecal, gain_ecal*qe);
       
       ecal->fGain = gain_ecal;
@@ -2872,7 +3044,11 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "cdet"){
-      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet*qe);
+      if(nparam_cdet_read!=nparam_pmtdet_fadc){
+	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
+	exit(-1);
+      }
+      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet*qe, sigmapulse_cdet, gatewidth_cdet);
       
       cdet->fGain = gain_cdet;
       cdet->fPedestal = ped_cdet;
@@ -2892,12 +3068,11 @@ int main(int argc, char** argv){
       detmap.push_back(CDET_UNIQUE_DETID);
       cout << " set up! " << endl;
     }
-    */
     
     // ** How to add a new subsystem **
     // Add the new detector here!
     if(detectors_list[k] == "prpolscint_bs"){
-      if(nparam_prpolscint_bs_read!=nparam_pmtdet){
+      if(nparam_prpolscint_bs_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2920,7 +3095,7 @@ int main(int argc, char** argv){
     } 
     
     if(detectors_list[k] == "prpolscint_fs"){
-      if(nparam_prpolscint_fs_read!=nparam_pmtdet){
+      if(nparam_prpolscint_fs_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -2943,7 +3118,7 @@ int main(int argc, char** argv){
     } 
 
     if(detectors_list[k] == "activeana"){
-      if(nparam_activeana_read!=nparam_pmtdet){
+      if(nparam_activeana_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -3068,7 +3243,7 @@ int main(int argc, char** argv){
       
       //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
-	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID){
+	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==ECAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
 	}else{
 	  PMTdetectors[k]->Clear();
