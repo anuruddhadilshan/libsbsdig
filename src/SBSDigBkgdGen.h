@@ -95,7 +95,7 @@ class SBSDigBkgdGen {
   Double_t* NhitsHCal;// one number per block
   TH1D* h_EdephitHCal;// distribution is assumed to be the same for all blocks
   TH1D* h_zhitHCal;// distribution is assumed to be the same for all blocks
-  
+
   Double_t* NhitsBBPS;
   TH1D* h_EdephitBBPS;
   

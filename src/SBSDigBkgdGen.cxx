@@ -27,20 +27,20 @@ SBSDigBkgdGen::SBSDigBkgdGen()
   NhitsECal = new Double_t[1770];
   NhitsCDet = new Double_t[2352];
   NhitsFT = new Double_t[6];
-  h_xhitFT = new TH1D*[5];
-  h_yhitFT = new TH1D*[5];
-  h_dxhitFT = new TH1D*[5];
-  h_dyhitFT = new TH1D*[5];
-  NhitsFPP1 = new Double_t[5];
-  h_xhitFPP1 = new TH1D*[5];
-  h_yhitFPP1 = new TH1D*[5];
-  h_dxhitFPP1 = new TH1D*[5];
-  h_dyhitFPP1 = new TH1D*[5];
-  NhitsFPP2 = new Double_t[5];
-  h_xhitFPP2 = new TH1D*[5];
-  h_yhitFPP2 = new TH1D*[5];
-  h_dxhitFPP2 = new TH1D*[5];
-  h_dyhitFPP2 = new TH1D*[5];
+  h_xhitFT = new TH1D*[8];
+  h_yhitFT = new TH1D*[8];
+  h_dxhitFT = new TH1D*[8];
+  h_dyhitFT = new TH1D*[8];
+  NhitsFPP1 = new Double_t[8];
+  h_xhitFPP1 = new TH1D*[8];
+  h_yhitFPP1 = new TH1D*[8];
+  h_dxhitFPP1 = new TH1D*[8];
+  h_dyhitFPP1 = new TH1D*[8];
+  // NhitsFPP2 = new Double_t[5];
+  // h_xhitFPP2 = new TH1D*[5];
+  // h_yhitFPP2 = new TH1D*[5];
+  // h_dxhitFPP2 = new TH1D*[5];
+  // h_dyhitFPP2 = new TH1D*[5];
 
   NhitsSBSGEMs = new Double_t[8];
   h_xhitSBSGEMs = new TH1D*[8];
@@ -94,15 +94,15 @@ SBSDigBkgdGen::SBSDigBkgdGen(TFile* f_bkgd, std::vector<TString> det_list, doubl
   NhitsECal = new Double_t[1770];
   NhitsCDet = new Double_t[2352];
   NhitsFT = new Double_t[6];
-  h_xhitFT = new TH1D*[6];
-  h_yhitFT = new TH1D*[6];
-  h_dxhitFT = new TH1D*[6];
-  h_dyhitFT = new TH1D*[6];
-  NhitsFPP1 = new Double_t[5];
-  h_xhitFPP1 = new TH1D*[5];
-  h_yhitFPP1 = new TH1D*[5];
-  h_dxhitFPP1 = new TH1D*[5];
-  h_dyhitFPP1 = new TH1D*[5];
+  h_xhitFT = new TH1D*[8];
+  h_yhitFT = new TH1D*[8];
+  h_dxhitFT = new TH1D*[8];
+  h_dyhitFT = new TH1D*[8];
+  NhitsFPP1 = new Double_t[8];
+  h_xhitFPP1 = new TH1D*[8];
+  h_yhitFPP1 = new TH1D*[8];
+  h_dxhitFPP1 = new TH1D*[8];
+  h_dyhitFPP1 = new TH1D*[8];
   NhitsFPP2 = new Double_t[5];
   h_xhitFPP2 = new TH1D*[5];
   h_yhitFPP2 = new TH1D*[5];
@@ -172,14 +172,14 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   TH2D* h1_CEPOL_GEMFRONT_dyVsdx_[4];
   TH1D* h1_CEPOL_GEMFRONT_Edep_[4];
   
- //CEPOL_GEMREAR
+  //CEPOL_GEMREAR
   TH1D* h1_CEPOL_GEMREAR_nhits_[4];
   TF1* f1_CEPOL_GEMREARnhits_[4];
   TH2D* h1_CEPOL_GEMREAR_yVsx_[4];
   TH2D* h1_CEPOL_GEMREAR_dyVsdx_[4];
   TH1D* h1_CEPOL_GEMREAR_Edep_[4];
   
- //PRPOLBS_GEM
+  //PRPOLBS_GEM
   TH1D* h1_PRPOLBS_GEM_nhits_[2];
   TF1* f1_PRPOLBS_GEMnhits_[2];
   TH2D* h1_PRPOLBS_GEM_yVsx_[2];
@@ -192,6 +192,20 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
   TH2D* h1_PRPOLFS_GEM_yVsx_[2];
   TH2D* h1_PRPOLFS_GEM_dyVsdx_[2];
   TH1D* h1_PRPOLFS_GEM_Edep_[2];
+
+  //FT GEMs
+  TH1D* h1_FT_nhits_[8];
+  TF1* f1_ftnhits_[8];
+  TH2D* h1_FT_yVsx_[8];
+  TH2D* h1_FT_dyVsdx_[8];
+  TH1D* h1_FT_Edep_[8];
+  
+  //FPP1 GEMs
+  TH1D* h1_FPP1_nhits_[8];
+  TF1* f1_fpp1nhits_[8];
+  TH2D* h1_FPP1_yVsx_[8];
+  TH2D* h1_FPP1_dyVsdx_[8];
+  TH1D* h1_FPP1_Edep_[8];
   
   /*
   //cross-check histos
@@ -489,6 +503,102 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
       }
     }
     
+    if(det_list[k]=="ft"){
+      cout << "FT GEMs" << endl;
+      for(int m = 0; m<8; m++){
+	// fit of the hits mulitplicity distribution.
+	h1_FT_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_nhits_%d",m));
+	f1_ftnhits_[m] = new TF1(Form("f1_ftnhits_%d", m), "gaus", 0., 400.);
+	h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
+	mu = f1_ftnhits_[m]->GetParameter(1);
+	sigma = f1_ftnhits_[m]->GetParameter(2);
+	if(mu>=0){
+	  f1_ftnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+	  h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
+	}
+	NhitsFT[m] = max(1.0, f1_ftnhits_[m]->GetParameter(1));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_FT_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_yVsx_%d",m));
+	h_xhitFT[m] = h1_FT_yVsx_[m]->ProjectionX(Form("h1_xhitFT_%d",m));
+	h_yhitFT[m] = h1_FT_yVsx_[m]->ProjectionY(Form("h1_yhitFT_%d",m));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_FT_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_dyVsdx_%d",m));
+	h_dxhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFT_%d",m));
+	h_dyhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFT_%d",m));
+	
+	h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_%d",m));
+	//h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_log_%d",m));
+	
+	if(m==0){
+	  h_EdephitFT = h1_FT_Edep_[m];
+	}else{
+	  h_EdephitFT->Add(h1_FT_Edep_[m]);
+	}
+	
+	/*
+	//cross-check histos
+	h_NhitsFT_XC[m] = new TH1D(Form("h_NhitsFT_XC_%d", m), "", 250, 0, 1000);
+	h_xhitFT_XC[m] = new TH1D(Form("h_xhitFT_XC_%d", m), "", 205, -1.025, 1.025);
+	h_yhitFT_XC[m] = new TH1D(Form("h_yhitFT_XC_%d", m), "", 62, -0.31, 0.31);
+	//h_dxhitFT_XC[m] = new TH1D(Form("h_dxhitFT_XC_%d", m), "", 100, 0.05, 0.05);
+	//h_dyhitFT_XC[m] = new TH1D(Form("h_dyhitFT_XC_%d", m), "", 100, -0.05, 0.05);
+	*/
+	
+	
+	//cout << m << " " << NhitsFT[m] << endl;
+      }
+    }
+    
+    if(det_list[k]=="fpp1"){
+      cout << "FPP1 GEMs" << endl;
+      for(int m = 0; m<8; m++){
+	// fit of the hits mulitplicity distribution.
+	h1_FPP1_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_nhits_%d",m));
+	f1_fpp1nhits_[m] = new TF1(Form("f1_fpp1nhits_%d", m), "gaus", 0., 400.);
+	h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
+	mu = f1_fpp1nhits_[m]->GetParameter(1);
+	sigma = f1_fpp1nhits_[m]->GetParameter(2);
+	if(mu>=0){
+	  f1_fpp1nhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+	  h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
+	}
+	NhitsFPP1[m] = max(1.0, f1_fpp1nhits_[m]->GetParameter(1));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_FPP1_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_yVsx_%d",m));
+	h_xhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionX(Form("h1_xhitFPP1_%d",m));
+	h_yhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionY(Form("h1_yhitFPP1_%d",m));
+	
+	// copy of 2D position histograms, then projection to obtain 1D histograms
+	h1_FPP1_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_dyVsdx_%d",m));
+	h_dxhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFPP1_%d",m));
+	h_dyhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFPP1_%d",m));
+	
+	h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_%d",m));
+	//h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_log_%d",m));
+	
+	if(m==0){
+	  h_EdephitFPP1 = h1_FPP1_Edep_[m];
+	}else{
+	  h_EdephitFPP1->Add(h1_FPP1_Edep_[m]);
+	}
+	
+	/*
+	//cross-check histos
+	h_NhitsFPP1_XC[m] = new TH1D(Form("h_NhitsFPP1_XC_%d", m), "", 250, 0, 1000);
+	h_xhitFPP1_XC[m] = new TH1D(Form("h_xhitFPP1_XC_%d", m), "", 205, -1.025, 1.025);
+	h_yhitFPP1_XC[m] = new TH1D(Form("h_yhitFPP1_XC_%d", m), "", 62, -0.31, 0.31);
+	//h_dxhitFPP1_XC[m] = new TH1D(Form("h_dxhitFPP1_XC_%d", m), "", 100, 0.05, 0.05);
+	//h_dyhitFPP1_XC[m] = new TH1D(Form("h_dyhitFPP1_XC_%d", m), "", 100, -0.05, 0.05);
+	*/
+	
+	
+	//cout << m << " " << NhitsFPP1[m] << endl;
+      }
+    }
+    
     if(det_list[k]=="hcal" && fPMTBkgdDig ){
       // Initialization of HCal histograms:
       // most histograms are 1D projections the 2D histograms stored in the input file.
@@ -702,138 +812,138 @@ void SBSDigBkgdGen::Initialize(TFile* f_bkgd, std::vector<TString> det_list)
     }
     
     
-    if(det_list[k]=="ft"){
-      TH1D* h1_FT_nhits_[6];
-      TF1* f1_ftnhits_[6];
-      TH2D* h1_FT_yVsx_[6];
-      TH2D* h1_FT_dyVsdx_[6];
-      TH1D* h1_FT_Edep_[6];
+    // if(det_list[k]=="ft"){
+    //   TH1D* h1_FT_nhits_[6];
+    //   TF1* f1_ftnhits_[6];
+    //   TH2D* h1_FT_yVsx_[6];
+    //   TH2D* h1_FT_dyVsdx_[6];
+    //   TH1D* h1_FT_Edep_[6];
       
-      cout << "FT" << endl;
+    //   cout << "FT" << endl;
       
-      for(int m = 0; m<6; m++){
-	//Nhits
-	h1_FT_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_nhits_%d",m));
-	f1_ftnhits_[m] = new TF1(Form("f1_ftnhits_%d", m), "gaus", 0., 400.);
-	h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
-	mu = f1_ftnhits_[m]->GetParameter(1);
-	sigma = f1_ftnhits_[m]->GetParameter(2);
-	if(mu>=0){
-	  f1_ftnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
-	  h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
-	}
-	NhitsFT[m] = max(1.0, f1_ftnhits_[m]->GetParameter(1));
+    //   for(int m = 0; m<6; m++){
+    // 	//Nhits
+    // 	h1_FT_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_nhits_%d",m));
+    // 	f1_ftnhits_[m] = new TF1(Form("f1_ftnhits_%d", m), "gaus", 0., 400.);
+    // 	h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
+    // 	mu = f1_ftnhits_[m]->GetParameter(1);
+    // 	sigma = f1_ftnhits_[m]->GetParameter(2);
+    // 	if(mu>=0){
+    // 	  f1_ftnhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+    // 	  h1_FT_nhits_[m]->Fit(f1_ftnhits_[m], "QRN");
+    // 	}
+    // 	NhitsFT[m] = max(1.0, f1_ftnhits_[m]->GetParameter(1));
 	
-	h1_FT_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_yVsx_%d",m));
-	h_xhitFT[m] = h1_FT_yVsx_[m]->ProjectionX(Form("h1_xhitFT_%d",m));
-	h_yhitFT[m] = h1_FT_yVsx_[m]->ProjectionY(Form("h1_yhitFT_%d",m));
+    // 	h1_FT_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_yVsx_%d",m));
+    // 	h_xhitFT[m] = h1_FT_yVsx_[m]->ProjectionX(Form("h1_xhitFT_%d",m));
+    // 	h_yhitFT[m] = h1_FT_yVsx_[m]->ProjectionY(Form("h1_yhitFT_%d",m));
 	
-	h1_FT_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_dyVsdx_%d",m));
-	h_dxhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFT_%d",m));
-	h_dyhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFT_%d",m));
+    // 	h1_FT_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FT_dyVsdx_%d",m));
+    // 	h_dxhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFT_%d",m));
+    // 	h_dyhitFT[m] = h1_FT_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFT_%d",m));
 	
-	h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_%d",m));
-	//h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_log_%d",m));
+    // 	h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_%d",m));
+    // 	//h1_FT_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FT_Edep_log_%d",m));
 	
-	if(m==0){
-	  h_EdephitFT = h1_FT_Edep_[m];
-	}else{
-	  h_EdephitFT->Add(h1_FT_Edep_[m]);
-	}
-	//cout << m << " " << NhitsFT[m] << endl;
-      }
-    }
+    // 	if(m==0){
+    // 	  h_EdephitFT = h1_FT_Edep_[m];
+    // 	}else{
+    // 	  h_EdephitFT->Add(h1_FT_Edep_[m]);
+    // 	}
+    // 	//cout << m << " " << NhitsFT[m] << endl;
+    //   }
+    // }
   
-    if(det_list[k]=="fpp1"){
-      TH1D* h1_FPP1_nhits_[5];
-      TF1* f1_fpp1nhits_[5];
-      TH2D* h1_FPP1_yVsx_[5];
-      TH2D* h1_FPP1_dyVsdx_[5];
-      TH1D* h1_FPP1_Edep_[5];
+    // if(det_list[k]=="fpp1"){
+    //   TH1D* h1_FPP1_nhits_[5];
+    //   TF1* f1_fpp1nhits_[5];
+    //   TH2D* h1_FPP1_yVsx_[5];
+    //   TH2D* h1_FPP1_dyVsdx_[5];
+    //   TH1D* h1_FPP1_Edep_[5];
       
-      cout << "FPP1" << endl;
+    //   cout << "FPP1" << endl;
       
-      for(int m = 0; m<6; m++){
-	//Nhits
-	h1_FPP1_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_nhits_%d",m));
-	f1_fpp1nhits_[m] = new TF1(Form("f1_fpp1nhits_%d", m), "gaus", 0., 400.);
-	h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
-	mu = f1_fpp1nhits_[m]->GetParameter(1);
-	sigma = f1_fpp1nhits_[m]->GetParameter(2);
-	if(mu>=0){
-	  f1_fpp1nhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
-	  h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
-	}
-	NhitsFPP1[m] = max(1.0, f1_fpp1nhits_[m]->GetParameter(1));
+    //   for(int m = 0; m<6; m++){
+    // 	//Nhits
+    // 	h1_FPP1_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_nhits_%d",m));
+    // 	f1_fpp1nhits_[m] = new TF1(Form("f1_fpp1nhits_%d", m), "gaus", 0., 400.);
+    // 	h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
+    // 	mu = f1_fpp1nhits_[m]->GetParameter(1);
+    // 	sigma = f1_fpp1nhits_[m]->GetParameter(2);
+    // 	if(mu>=0){
+    // 	  f1_fpp1nhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+    // 	  h1_FPP1_nhits_[m]->Fit(f1_fpp1nhits_[m], "QRN");
+    // 	}
+    // 	NhitsFPP1[m] = max(1.0, f1_fpp1nhits_[m]->GetParameter(1));
 	
-	h1_FPP1_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_yVsx_%d",m));
-	h_xhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionX(Form("h1_xhitFPP1_%d",m));
-	h_yhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionY(Form("h1_yhitFPP1_%d",m));
+    // 	h1_FPP1_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_yVsx_%d",m));
+    // 	h_xhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionX(Form("h1_xhitFPP1_%d",m));
+    // 	h_yhitFPP1[m] = h1_FPP1_yVsx_[m]->ProjectionY(Form("h1_yhitFPP1_%d",m));
 	
-	h1_FPP1_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_dyVsdx_%d",m));
-	h_dxhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFPP1_%d",m));
-	h_dyhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFPP1_%d",m));
+    // 	h1_FPP1_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP1_dyVsdx_%d",m));
+    // 	h_dxhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFPP1_%d",m));
+    // 	h_dyhitFPP1[m] = h1_FPP1_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFPP1_%d",m));
 	
-	h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_%d",m));
-	//h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_log_%d",m));
+    // 	h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_%d",m));
+    // 	//h1_FPP1_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP1_Edep_log_%d",m));
 	
-	if(m==0){
-	  h_EdephitFPP1 = h1_FPP1_Edep_[m];
-	}else{
-	  h_EdephitFPP1->Add(h1_FPP1_Edep_[m]);
-	}
-	//cout << m << " " << NhitsFPP1[m] << endl;
-      }
-    }
+    // 	if(m==0){
+    // 	  h_EdephitFPP1 = h1_FPP1_Edep_[m];
+    // 	}else{
+    // 	  h_EdephitFPP1->Add(h1_FPP1_Edep_[m]);
+    // 	}
+    // 	//cout << m << " " << NhitsFPP1[m] << endl;
+    //   }
+    // }
    
-    if(det_list[k]=="fpp2"){
-      TH1D* h1_FPP2_nhits_[5];
-      TF1* f1_fpp2nhits_[5];
-      TH2D* h1_FPP2_yVsx_[5];
-      TH2D* h1_FPP2_dyVsdx_[5];
-      TH1D* h1_FPP2_Edep_[5];
+    // if(det_list[k]=="fpp2"){
+    //   TH1D* h1_FPP2_nhits_[5];
+    //   TF1* f1_fpp2nhits_[5];
+    //   TH2D* h1_FPP2_yVsx_[5];
+    //   TH2D* h1_FPP2_dyVsdx_[5];
+    //   TH1D* h1_FPP2_Edep_[5];
       
-      cout << "FPP2" << endl;
+    //   cout << "FPP2" << endl;
       
-      for(int m = 0; m<6; m++){
-	//Nhits
-	h1_FPP2_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_nhits_%d",m));
-	f1_fpp2nhits_[m] = new TF1(Form("f1_fpp2nhits_%d", m), "gaus", 0., 400.);
-	h1_FPP2_nhits_[m]->Fit(f1_fpp2nhits_[m], "QRN");
-	mu = f1_fpp2nhits_[m]->GetParameter(1);
-	sigma = f1_fpp2nhits_[m]->GetParameter(2);
-	if(mu>=0){
-	  f1_fpp2nhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
-	  h1_FPP2_nhits_[m]->Fit(f1_fpp2nhits_[m], "QRN");
-	}
-	NhitsFPP2[m] = max(1.0, f1_fpp2nhits_[m]->GetParameter(1));
+    //   for(int m = 0; m<6; m++){
+    // 	//Nhits
+    // 	h1_FPP2_nhits_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_nhits_%d",m));
+    // 	f1_fpp2nhits_[m] = new TF1(Form("f1_fpp2nhits_%d", m), "gaus", 0., 400.);
+    // 	h1_FPP2_nhits_[m]->Fit(f1_fpp2nhits_[m], "QRN");
+    // 	mu = f1_fpp2nhits_[m]->GetParameter(1);
+    // 	sigma = f1_fpp2nhits_[m]->GetParameter(2);
+    // 	if(mu>=0){
+    // 	  f1_fpp2nhits_[m]->SetRange(mu-2*sigma, mu+2*sigma);
+    // 	  h1_FPP2_nhits_[m]->Fit(f1_fpp2nhits_[m], "QRN");
+    // 	}
+    // 	NhitsFPP2[m] = max(1.0, f1_fpp2nhits_[m]->GetParameter(1));
 	
-	h1_FPP2_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP2_yVsx_%d",m));
-	h_xhitFPP2[m] = h1_FPP2_yVsx_[m]->ProjectionX(Form("h1_xhitFPP2_%d",m));
-	h_yhitFPP2[m] = h1_FPP2_yVsx_[m]->ProjectionY(Form("h1_yhitFPP2_%d",m));
+    // 	h1_FPP2_yVsx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP2_yVsx_%d",m));
+    // 	h_xhitFPP2[m] = h1_FPP2_yVsx_[m]->ProjectionX(Form("h1_xhitFPP2_%d",m));
+    // 	h_yhitFPP2[m] = h1_FPP2_yVsx_[m]->ProjectionY(Form("h1_yhitFPP2_%d",m));
 	
-	h1_FPP2_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP2_dyVsdx_%d",m));
-	h_dxhitFPP2[m] = h1_FPP2_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFPP2_%d",m));
-	h_dyhitFPP2[m] = h1_FPP2_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFPP2_%d",m));
+    // 	h1_FPP2_dyVsdx_[m] = (TH2D*)f_bkgd->Get(Form("h1_FPP2_dyVsdx_%d",m));
+    // 	h_dxhitFPP2[m] = h1_FPP2_dyVsdx_[m]->ProjectionX(Form("h1_dxhitFPP2_%d",m));
+    // 	h_dyhitFPP2[m] = h1_FPP2_dyVsdx_[m]->ProjectionY(Form("h1_dyhitFPP2_%d",m));
 	
-	h1_FPP2_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_Edep_%d",m));
-	//h1_FPP2_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_Edep_log_%d",m));
+    // 	h1_FPP2_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_Edep_%d",m));
+    // 	//h1_FPP2_Edep_[m] = (TH1D*)f_bkgd->Get(Form("h1_FPP2_Edep_log_%d",m));
 	
-	if(m==0){
-	  h_EdephitFPP2 = h1_FPP2_Edep_[m];
-	}else{
-	  h_EdephitFPP2->Add(h1_FPP2_Edep_[m]);
-	}
-	//cout << m << " " << NhitsFPP2[m] << endl;
-      }
-    }
+    // 	if(m==0){
+    // 	  h_EdephitFPP2 = h1_FPP2_Edep_[m];
+    // 	}else{
+    // 	  h_EdephitFPP2->Add(h1_FPP2_Edep_[m]);
+    // 	}
+    // 	//cout << m << " " << NhitsFPP2[m] << endl;
+    //   }
+    // }
 
     if(det_list[k]=="ecal"){
       //ECal
       cout << "ECal" << endl;
       TH2D *h1_ECal_nhitsVsChan = (TH2D*)f_bkgd->Get("h1_ECal_nhitsVsChan");
-      TH1D* h1_ECal_nhits_[1770];
-      TF1* f1_ecalnhits_[1770];
+      TH1D* h1_ECal_nhits_[1656];
+      TF1* f1_ecalnhits_[1656];
       TH2D *h1_ECal_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_ECal_EdepHitVsChan");
       //TH2D *h1_ECal_EdepHitVsChan = (TH2D*)f_bkgd->Get("h1_ECal_EdepHitVsChan_log");
       
@@ -1590,7 +1700,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   
   if(idet>=0){
     //    cout << "ft" << endl;
-    for(int m = 0; m<6; m++){
+    for(int m = 0; m<8; m++){
       nhits = R->Poisson(NhitsFT[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
       //h_NhitsFT_XC[m]->Fill(nhits);
       for(int i = 0; i<nhits; i++){
@@ -1644,7 +1754,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   
   if(idet>=0){
     //    cout << "fpp1" << endl;
-    for(int m = 0; m<5; m++){
+    for(int m = 0; m<8; m++){
       nhits = R->Poisson(NhitsFPP1[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
       //h_NhitsFPP1_XC[m]->Fill(nhits);
       for(int i = 0; i<nhits; i++){
@@ -1692,59 +1802,60 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
     }
   }
   
-  idet = 0;
-  while(gemmap[idet]!=FPP2_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
-  if(idet>=gemmap.size())idet = -1;
   
-  if(idet>=0){
-    //    cout << "fpp2" << endl;
-    for(int m = 0; m<6; m++){
-      nhits = R->Poisson(NhitsFPP2[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
-      //h_NhitsFPP2_XC[m]->Fill(nhits);
-      for(int i = 0; i<nhits; i++){
-	edep =  h_EdephitFPP2->GetRandom();
-	x_hit =  h_xhitFPP2[m]->GetRandom();
-	y_hit =  h_yhitFPP2[m]->GetRandom();
+  // idet = 0;
+  // while(gemmap[idet]!=FPP2_UNIQUE_DETID && idet<(int)gemmap.size())idet++;
+  // if(idet>=gemmap.size())idet = -1;
+  
+  // if(idet>=0){
+  //   //    cout << "fpp2" << endl;
+  //   for(int m = 0; m<6; m++){
+  //     nhits = R->Poisson(NhitsFPP2[m]*lumifrac*gemdets[idet]->fGateWidth/fTimeWindow);
+  //     //h_NhitsFPP2_XC[m]->Fill(nhits);
+  //     for(int i = 0; i<nhits; i++){
+  // 	edep =  h_EdephitFPP2->GetRandom();
+  // 	x_hit =  h_xhitFPP2[m]->GetRandom();
+  // 	y_hit =  h_yhitFPP2[m]->GetRandom();
 
-	//h_EdephitFPP2_XC->Fill(edep);
-	//h_xhitFPP2_XC[m]->Fill(x_hit);
-	//h_yhitFPP2_XC[m]->Fill(y_hit);
+  // 	//h_EdephitFPP2_XC->Fill(edep);
+  // 	//h_xhitFPP2_XC[m]->Fill(x_hit);
+  // 	//h_yhitFPP2_XC[m]->Fill(y_hit);
 	
-	//x_hit =  h_dxhitFPP2[m]->GetRandom();
-	//y_hit =  h_dyhitFPP2[m]->GetRandom();
-	SBSDigGEMDet::gemhit hit; 
-	hit.source = 1;
+  // 	//x_hit =  h_dxhitFPP2[m]->GetRandom();
+  // 	//y_hit =  h_dyhitFPP2[m]->GetRandom();
+  // 	SBSDigGEMDet::gemhit hit; 
+  // 	hit.source = 1;
 	
-	mod = 0;
+  // 	mod = 0;
 	
-	while(mod<gemdets[idet]->fNPlanes/2){
-	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;	  mod++;
-	}//that does the job, but maybe can be optimized???
-	if(mod==gemdets[idet]->fNPlanes/2)continue;
-	//h_modFPP2_XC->Fill(mod);
+  // 	while(mod<gemdets[idet]->fNPlanes/2){
+  // 	  if( (gemdets[idet]->GEMPlanes[mod*2].Xoffset()-gemdets[idet]->GEMPlanes[mod*2].dX()*0.5)<=x_hit && x_hit<=(gemdets[idet]->GEMPlanes[mod*2].Xoffset()+gemdets[idet]->GEMPlanes[mod*2].dX()*0.5) && m+1==gemdets[idet]->GEMPlanes[mod*2].Layer() )break;	  mod++;
+  // 	}//that does the job, but maybe can be optimized???
+  // 	if(mod==gemdets[idet]->fNPlanes/2)continue;
+  // 	//h_modFPP2_XC->Fill(mod);
 	
-	if(fabs(y_hit)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.)continue;
+  // 	if(fabs(y_hit)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.)continue;
 	
-	//cout << x_hit << " " << y_hit << " " << mod << endl;
+  // 	//cout << x_hit << " " << y_hit << " " << mod << endl;
 	
-	hit.module = mod; 
-	hit.edep = edep*1.0e6;//already in MeV for some reasons...
+  // 	hit.module = mod; 
+  // 	hit.edep = edep*1.0e6;//already in MeV for some reasons...
 	
-	hit.xin = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	hit.yin = y_hit;
-	hit.zin = -0.0015;
-	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitFPP2[m]->GetRandom();
-	hit.yout = y_hit+h_dyhitFPP2[m]->GetRandom();
-	//if(fabs(hit.yout)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.){
-	//hit.yout *= gemdets[idet]->GEMPlanes[mod*2+1].dX()/2./hit.yout;
-	//}
-	hit.zout = 0.0015;
-	hit.t = R->Uniform(-gemdets[idet]->fGateWidth/2.-50., gemdets[idet]->fGateWidth/2.-50.);
+  // 	hit.xin = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
+  // 	hit.yin = y_hit;
+  // 	hit.zin = -0.0015;
+  // 	hit.xout = x_hit-gemdets[idet]->GEMPlanes[mod*2].Xoffset()+h_dxhitFPP2[m]->GetRandom();
+  // 	hit.yout = y_hit+h_dyhitFPP2[m]->GetRandom();
+  // 	//if(fabs(hit.yout)>gemdets[idet]->GEMPlanes[mod*2+1].dX()/2.){
+  // 	//hit.yout *= gemdets[idet]->GEMPlanes[mod*2+1].dX()/2./hit.yout;
+  // 	//}
+  // 	hit.zout = 0.0015;
+  // 	hit.t = R->Uniform(-gemdets[idet]->fGateWidth/2.-50., gemdets[idet]->fGateWidth/2.-50.);
 	
-	gemdets[idet]->fGEMhits.push_back(hit);
-      }
-    }
-  }
+  // 	gemdets[idet]->fGEMhits.push_back(hit);
+  //     }
+  //   }
+  // }
 
   
 }
