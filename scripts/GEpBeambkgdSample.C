@@ -249,7 +249,16 @@ void BeamBackground(const char *inputfilename = "list_gep1_beambkgd.txt",
 	}
       }
       
-      // fill BB hodoscope energy deposit and position histograms, and increment number of hits
+      // fill ECal energy deposit histograms, and increment number of hits
+      if(T1->Earm_ECalTF1_hit_nhits){
+	for(int i = 0; i<T1->Earm_ECalTF1_hit_nhits; i++){
+	  nhits_ECal[T1->Earm_ECalTF1_hit_cell->at(i)]++;
+	  h1_ECal_EdepHitVsChan->Fill(T1->Earm_ECalTF1_hit_cell->at(i), T1->Earm_ECalTF1_hit_sumedep->at(i));
+	  h1_ECal_EdepHitVsChan_log->Fill(T1->Earm_ECalTF1_hit_cell->at(i), T1->Earm_ECalTF1_hit_sumedep->at(i));
+	}
+      }
+      
+      // fill CDET energy deposit and position histograms, and increment number of hits
       if(T1->Earm_CDET_Scint_hit_nhits){
 	for(int i = 0; i<T1->Earm_CDET_Scint_hit_nhits; i++){
 	  nhits_CDet[T1->Earm_CDET_Scint_hit_cell->at(i)]++;
@@ -259,7 +268,7 @@ void BeamBackground(const char *inputfilename = "list_gep1_beambkgd.txt",
 	}
       }
       
-      // fill BigBite GEMs energy deposit, position, and drift exit-entrance position difference histograms, and increment number of hits
+      // fill GEMs energy deposit, position, and drift exit-entrance position difference histograms, and increment number of hits
       //cout << "FT: " << T1->Earm_FT_hit_nhits << endl;
       if(T1->Harm_FT_hit_nhits){
 	for(int i = 0; i<T1->Harm_FT_hit_nhits; i++){

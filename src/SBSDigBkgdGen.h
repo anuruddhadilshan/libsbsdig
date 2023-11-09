@@ -41,51 +41,51 @@ class SBSDigBkgdGen {
   // * hit energy deposit
   // * hit position (x and y): one per GEM layer
   // * hit spread (x and y): one per GEM layer
-  Double_t* NhitsBBGEMs;// one number per GEM layer
-  TH1D* h_EdephitBBGEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitBBGEMs;// one hisogram per GEM layer
-  TH1D** h_yhitBBGEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitBBGEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitBBGEMs;// one hisogram per GEM layer
+  Double_t* NhitsBBGEM;// one number per GEM layer
+  TH1D* h_EdephitBBGEM;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitBBGEM;// one hisogram per GEM layer
+  TH1D** h_yhitBBGEM;// one hisogram per GEM layer
+  TH1D** h_dxhitBBGEM;// one hisogram per GEM layer
+  TH1D** h_dyhitBBGEM;// one hisogram per GEM layer
 
-  Double_t* NhitsSBSGEMs;// one number per GEM layer
-  TH1D* h_EdephitSBSGEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitSBSGEMs;// one hisogram per GEM layer
-  TH1D** h_yhitSBSGEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitSBSGEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitSBSGEMs;// one hisogram per GEM layer
+  Double_t* NhitsSBSGEM;// one number per GEM layer
+  TH1D* h_EdephitSBSGEM;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitSBSGEM;// one hisogram per GEM layer
+  TH1D** h_yhitSBSGEM;// one hisogram per GEM layer
+  TH1D** h_dxhitSBSGEM;// one hisogram per GEM layer
+  TH1D** h_dyhitSBSGEM;// one hisogram per GEM layer
   
-///CEPOL_GEMFRONT
-  Double_t* NhitsCEPOL_GEMFRONTs;// one number per GEM layer
-  TH1D* h_EdephitCEPOL_GEMFRONTs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitCEPOL_GEMFRONTs;// one hisogram per GEM layer
-  TH1D** h_yhitCEPOL_GEMFRONTs;// one hisogram per GEM layer
-  TH1D** h_dxhitCEPOL_GEMFRONTs;// one hisogram per GEM layer
-  TH1D** h_dyhitCEPOL_GEMFRONTs;// one hisogram per GEM layer
+  ///CEPol_GEMFront
+  Double_t* NhitsCEPol_GEMFront;// one number per GEM layer
+  TH1D* h_EdephitCEPol_GEMFront;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitCEPol_GEMFront;// one hisogram per GEM layer
+  TH1D** h_yhitCEPol_GEMFront;// one hisogram per GEM layer
+  TH1D** h_dxhitCEPol_GEMFront;// one hisogram per GEM layer
+  TH1D** h_dyhitCEPol_GEMFront;// one hisogram per GEM layer
 
-///CEPOL_GEMFRONT
-  Double_t* NhitsCEPOL_GEMREARs;// one number per GEM layer
-  TH1D* h_EdephitCEPOL_GEMREARs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitCEPOL_GEMREARs;// one hisogram per GEM layer
-  TH1D** h_yhitCEPOL_GEMREARs;// one hisogram per GEM layer
-  TH1D** h_dxhitCEPOL_GEMREARs;// one hisogram per GEM layer
-  TH1D** h_dyhitCEPOL_GEMREARs;// one hisogram per GEM layer
+  ///CEPol_GEMRear
+  Double_t* NhitsCEPol_GEMRear;// one number per GEM layer
+  TH1D* h_EdephitCEPol_GEMRear;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitCEPol_GEMRear;// one hisogram per GEM layer
+  TH1D** h_yhitCEPol_GEMRear;// one hisogram per GEM layer
+  TH1D** h_dxhitCEPol_GEMRear;// one hisogram per GEM layer
+  TH1D** h_dyhitCEPol_GEMRear;// one hisogram per GEM layer
 
-///PRPOLBS_GEM
-  Double_t* NhitsPRPOLBS_GEMs;// one number per GEM layer
-  TH1D* h_EdephitPRPOLBS_GEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_yhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitPRPOLBS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitPRPOLBS_GEMs;// one hisogram per GEM layer
+  ///PRPOLBS_GEM
+  Double_t* NhitsPrPolBS_GEM;// one number per GEM layer
+  TH1D* h_EdephitPrPolBS_GEM;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitPrPolBS_GEM;// one hisogram per GEM layer
+  TH1D** h_yhitPrPolBS_GEM;// one hisogram per GEM layer
+  TH1D** h_dxhitPrPolBS_GEM;// one hisogram per GEM layer
+  TH1D** h_dyhitPrPolBS_GEM;// one hisogram per GEM layer
 
-///PRPOLFS_GEM
-  Double_t* NhitsPRPOLFS_GEMs;// one number per GEM layer
-  TH1D* h_EdephitPRPOLFS_GEMs;// distribution is assumed to be the same for all layers
-  TH1D** h_xhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_yhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dxhitPRPOLFS_GEMs;// one hisogram per GEM layer
-  TH1D** h_dyhitPRPOLFS_GEMs;// one hisogram per GEM layer
+  ///PRPOLFS_GEM
+  Double_t* NhitsPrPolFS_GEM;// one number per GEM layer
+  TH1D* h_EdephitPrPolFS_GEM;// distribution is assumed to be the same for all layers
+  TH1D** h_xhitPrPolFS_GEM;// one hisogram per GEM layer
+  TH1D** h_yhitPrPolFS_GEM;// one hisogram per GEM layer
+  TH1D** h_dxhitPrPolFS_GEM;// one hisogram per GEM layer
+  TH1D** h_dyhitPrPolFS_GEM;// one hisogram per GEM layer
 
 
   // necessary histograms for calorimeter/scintillator type detectors:
@@ -106,17 +106,17 @@ class SBSDigBkgdGen {
   TH1D* h_EdephitBBHodo;
   TH1D* h_xhitBBHodo;
   
-  Double_t* NhitsPRPOLBS_SCINT;
-  TH1D* h_EdephitPRPOLBS_SCINT;
-  TH1D* h_xhitPRPOLBS_SCINT;
+  Double_t* NhitsPrPolBS_Scint;
+  TH1D* h_EdephitPrPolBS_Scint;
+  TH1D* h_xhitPrPolBS_Scint;
   
-  Double_t* NhitsPRPOLFS_SCINT;
-  TH1D* h_EdephitPRPOLFS_SCINT;
-  TH1D* h_xhitPRPOLFS_SCINT;
+  Double_t* NhitsPrPolFS_Scint;
+  TH1D* h_EdephitPrPolFS_Scint;
+  TH1D* h_xhitPrPolFS_Scint;
   
-  Double_t* NhitsACTIVEANA;
-  TH1D* h_EdephitACTIVEANA;
-  TH1D* h_xhitACTIVEANA;
+  Double_t* NhitsActiveAna;
+  TH1D* h_EdephitActiveAna;
+  TH1D* h_xhitActiveAna;
   
   
   // necessary histograms for cherenkov type detectors:
@@ -157,11 +157,11 @@ class SBSDigBkgdGen {
   
   /*  
   //cross-check histos
-  TH1D** h_NhitsBBGEMs_XC;
-  TH1D* h_EdephitBBGEMs_XC;
-  TH1D** h_xhitBBGEMs_XC;
-  TH1D** h_yhitBBGEMs_XC;
-  TH1D* h_modBBGEMs_XC;
+  TH1D** h_NhitsBBGEM_XC;
+  TH1D* h_EdephitBBGEM_XC;
+  TH1D** h_xhitBBGEM_XC;
+  TH1D** h_yhitBBGEM_XC;
+  TH1D* h_modBBGEM_XC;
   
   TH2D* h_NhitsHCal_XC;
   TH1D* h_EdephitHCal_XC;
