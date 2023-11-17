@@ -180,7 +180,7 @@ void BeamBackground(const char *inputfilename = "list_gep1_beambkgd.txt",
   memset(nhits_CDet, 0, 2352*sizeof(int));
   memset(nhits_ECal, 0, 1656*sizeof(int));
 
-  //Long64_t N1_tot = 0;
+  Long64_t N1_tot = 0;
   int nplane;
   int chan;
 
@@ -198,7 +198,7 @@ void BeamBackground(const char *inputfilename = "list_gep1_beambkgd.txt",
      
     // for each file, get the G4SBSRunData object...
     G4SBSRunData *RD = (G4SBSRunData*)f.Get("run_data");
-    //N1_tot+= (double)RD->fNtries;
+    N1_tot+= (double)RD->fNtries;
     theta_sbs = RD->fSBStheta;
     d_hcal = RD->fHCALdist;
     x_ref = -d_hcal*sin(theta_sbs);
@@ -338,7 +338,7 @@ void BeamBackground(const char *inputfilename = "list_gep1_beambkgd.txt",
     C1->Delete();
     T1->~gep_deftree();
   }//end while (( chEl= )) 
-  //h1_Ntries->Fill(0.5, N1_tot);
+  h1_Ntries->Fill(0.5, N1_tot);
   
   
   //h1_HCal_Edep_rates->Scale(I_exp/1.602e-19/N1_tot);
