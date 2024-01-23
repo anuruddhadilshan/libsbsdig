@@ -3,7 +3,8 @@ Rseed 0
 #global trigger jitter for all detectors in ns
 TriggerJitter 3.0 
 #list of detectors to digitize
-detectors_list hcal bbps bbsh grinch bbhodo bbgem prpolscint_bs prpolscint_fs activeana cepol_front cepol_rear prpolbs_gem prpolfs_gem
+detectors_list hcal bbps bbsh bbhodo bbgem prpolscint_fs activeana cepol_front cepol_rear prpolfs_gem 
+## grinch 
 
 ## parameters for bbps
 NChan_bbps 52 
@@ -14,7 +15,7 @@ pedsigma_bbps 3.0
 trigoffset_bbps 18.2 
 threshold_bbps 22.0e-3 
 ADCconv_bbps 40 
-ADCbits_bbps 12 
+#ADCbits_bbps 12 
 TDCconv_bbps 0.12
 TDCbits_bbps 12 
 sigmapulse_bbps 40.0 
@@ -28,7 +29,7 @@ pedsigma_bbsh 4.5
 trigoffset_bbsh 18.5 
 threshold_bbsh 22.e-3 
 ADCconv_bbsh 40 
-ADCbits_bbsh 12 
+#ADCbits_bbsh 12 
 TDCconv_bbsh 0.12 
 TDCbits_bbsh 12 
 sigmapulse_bbsh 40.0 
@@ -42,7 +43,7 @@ pedsigma_grinch 3.0
 trigoffset_grinch 15.3 
 threshold_grinch 3.e-3 
 ADCconv_grinch 100 
-ADCbits_grinch 12 
+#ADCbits_grinch 12 
 TDCconv_grinch 1.0 
 TDCbits_grinch 16 
 sigmapulse_grinch 3.75 
@@ -56,7 +57,7 @@ pedsigma_bbhodo 3.0
 trigoffset_bbhodo 18.6 
 threshold_bbhodo 3.e-3 
 ADCconv_bbhodo 100 
-ADCbits_bbhodo 12 
+#ADCbits_bbhodo 12 
 TDCconv_bbhodo 0.1 
 TDCbits_bbhodo 19 
 sigmapulse_bbhodo 1.6 
@@ -75,20 +76,6 @@ TDCbits_hcal 16
 FADC_ADCbits 12 
 FADC_sampsize 4.0 
 sigmapulse_hcal 40.0 
-
-## parameters for HODOi prpolscint_bs
-NChan_polscint_bs 48 
-gatewidth_polscint_bs 30 
-gain_polscint_bs 1.0e5
-ped_polscint_bs 500.0 
-pedsigma_polscint_bs 3.0
-trigoffset_polscint_bs 37.6
-threshold_polscint_bs 3.e-3 
-ADCconv_polscint_bs 100 
-ADCbits_polscint_bs 12 
-TDCconv_polscint_bs 0.1 
-TDCbits_polscint_bs 19 
-sigmapulse_polscint_bs 1.6 
 
 ## parameters for HODOi prpolscint_fs
 NChan_polscint_fs 48 
@@ -162,74 +149,56 @@ offset_cepol_front -0.512 0. 0. 0. 0.512 0. -0.512 0. 0. 0. 0.512 0. -0.768 0. -
 RO_angle_cepol_front 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0  0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
 #trigger offsets for all planes in ns
 triggeroffset_cepol_front 121. 121. 121. 121.33 121.33 121.33   121.66 121.66 121.66 121.66 121.99 121.99 121.99 121.99 
+gain_cepol_front 20.
 #zero suppression threshold for GEMs in ADC channels
 ZsupThr_cepol_front 240.
 #common mode value/array for GEMs in ADC channels
 commonmode_array_cepol_front 1500.
  
- ## parameters for cepol_rear 
- # number of planes/modules/readout
- NPlanes_cepol_rear 32
- # data acquisition window for cepol_rear in ns
- gatewidth_cepol_rear 400
- #number of strips for each plane/module
- nlayers_cepol_rear 4
- #cepol_rear_layer_z 1.5889 1.6889 1.7889 1.8889
- cepol_rear_layer_z 0.7857175 0.8857175 0.9857175 1.0857175
- layer_cepol_rear 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 
- nstrips_cepol_rear  1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536
- #offset in transport coordinate for each plane/module in meters
- offset_cepol_rear -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
- #strip angle for all GEn-RP GEMs readouts in degrees
- RO_angle_cepol_rear 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
- #trigger offsets for all planes in ns
- triggeroffset_cepol_rear 122.8 122.8 122.8 122.8   123.13 123.13 123.13 123.13 123.46 123.46 123.46 123.46  123.79 123.79 123.79 123.79 
- #zero suppression threshold for GEMs in ADC channels
- ZsupThr_cepol_rear 240.
- #common mode value/array for GEMs in ADC channels
- commonmode_array_cepol_rear 1500.
+## parameters for cepol_rear 
+# number of planes/modules/readout
+NPlanes_cepol_rear 32
+# data acquisition window for cepol_rear in ns
+gatewidth_cepol_rear 400
+#number of strips for each plane/module
+nlayers_cepol_rear 4
+#cepol_rear_layer_z 1.5889 1.6889 1.7889 1.8889
+cepol_rear_layer_z 0.7857175 0.8857175 0.9857175 1.0857175
+layer_cepol_rear 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 
+nstrips_cepol_rear  1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536 1280 1536 1280 1536 1280 1536 1280  1536
+#offset in transport coordinate for each plane/module in meters
+offset_cepol_rear -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
+#strip angle for all GEn-RP GEMs readouts in degrees
+RO_angle_cepol_rear 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0
+#trigger offsets for all planes in ns
+triggeroffset_cepol_rear 122.8 122.8 122.8 122.8   123.13 123.13 123.13 123.13 123.46 123.46 123.46 123.46  123.79 123.79 123.79 123.79 
+gain_cepol_rear 20.
+#zero suppression threshold for GEMs in ADC channels
+ZsupThr_cepol_rear 240.
+#common mode value/array for GEMs in ADC channels
+commonmode_array_cepol_rear 1500.
  
- ## parameters for prpolbs_gem 
- # number of planes/modules/readout
- NPlanes_prpolbs_gem 16
- # data acquisition window for prpolbs_gem in ns
- gatewidth_prpolbs_gem 400
- #number of strips for each plane/module
- nlayers_prpolbs_gem 2
- prpolbs_gem_layer_z 0.6031825 0.5031825
- layer_prpolbs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
- nstrips_prpolbs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
- #offset in transport coordinate for each plane/module in meters
- offset_prpolbs_gem -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
- #strip angle for all GEn-RP GEMs readouts in degrees
- RO_angle_prpolbs_gem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
- #trigger offsets for all planes in ns
- triggeroffset_prpolbs_gem 126.53 126.53 126.53 126.53 126.85 126.85 126.85 126.85  
- #zero suppression threshold for GEMs in ADC channels
- ZsupThr_prpolbs_gem 240.
- #common mode value/array for GEMs in ADC channels
- commonmode_array_prpolbs_gem 1500.
- 
- ## parameters for prpolfs_gem 
- # number of planes/modules/readout
- NPlanes_prpolfs_gem 16
- # data acquisition window for prpolbs_gem in ns
- gatewidth_prpolfs_gem 400
- #number of strips for each plane/module
- nlayers_prpolfs_gem 2
- prpolfs_gem_layer_z -0.6031825 -0.5031825
- layer_prpolfs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
- nstrips_prpolfs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
- #offset in transport coordinate for each plane/module in meters
- offset_prpolfs_gem -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
- #strip angle for all GEn-RP GEMs readouts in degrees
- RO_angle_prpolfs_gem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
- #trigger offsets for all planes in ns
- triggeroffset_prpolfs_gem 126.53 126.53 126.53 126.53 126.85 126.85 126.85 126.85  
- #zero suppression threshold for GEMs in ADC channels
- ZsupThr_prpolfs_gem 240.
- #common mode value/array for GEMs in ADC channels
- commonmode_array_prpolfs_gem 1500.
+## parameters for prpolfs_gem 
+# number of planes/modules/readout
+NPlanes_prpolfs_gem 16
+# data acquisition window for prpolbs_gem in ns
+gatewidth_prpolfs_gem 400
+#number of strips for each plane/module
+nlayers_prpolfs_gem 2
+prpolfs_gem_layer_z -0.6031825 -0.5031825
+layer_prpolfs_gem 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2  
+nstrips_prpolfs_gem  1280 1536 1280 1536 1280 1536 1280  1536  1280  1536 1280 1536 1280 1536 1280 1536 
+#offset in transport coordinate for each plane/module in meters
+offset_prpolfs_gem -0.768 0. -0.256 0. 0.256 0. 0.768 0. -0.768 0. -0.256 0. 0.256 0. 0.768 0.
+#strip angle for all GEn-RP GEMs readouts in degrees
+RO_angle_prpolfs_gem 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 0.0 90.0 
+#trigger offsets for all planes in ns
+triggeroffset_prpolfs_gem 126.53 126.53 126.53 126.53 126.85 126.85 126.85 126.85  
+gain_prpolfs_gem 20.
+#zero suppression threshold for GEMs in ADC channels
+ZsupThr_prpolfs_gem 240.
+#common mode value/array for GEMs in ADC channels
+commonmode_array_prpolfs_gem 1500.
  
  
 
