@@ -280,8 +280,8 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=0){// && T->Harm_PRPolScintBeamSide.nhits){
       for(int i = 0; i<T->Harm_PRPolScintBeamSide.nhits; i++){
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintBeamSide.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_PRPolScintBeamSide.tavg->at(i)+(0.55+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintBeamSide.sumedep->at(i)*0.113187*exp(-(0.25+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/1.03533)* 0.24);
+	  t = tzero+T->Harm_PRPolScintBeamSide.tavg->at(i)+(0.5+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	  chan = T->Harm_PRPolScintBeamSide.cell->at(i)*2+j;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
 	}
@@ -301,8 +301,12 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=0){// && T->Harm_PRPolScintFarSide.nhits){
       for(int i = 0; i<T->Harm_PRPolScintFarSide.nhits; i++){
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintFarSide.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_PRPolScintFarSide.tavg->at(i)+(0.55+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	  // EPAF: I don't know what scintillator the side hodoscope uses. so I will use the same photon yield and light speed by default.
+	  // section is ~4x larger, so attenuation should be better, but without better information, I will keep the same attenuation as the hodoscope.
+	  // From the 3D drawings shown in the presentations, I will assume that each light guide is about 1/2 of the scintillator length (which is 50 cm).
+	  
+	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintFarSide.sumedep->at(i)*0.113187*exp(-(0.25+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/1.03533)* 0.24);
+	  t = tzero+T->Harm_PRPolScintFarSide.tavg->at(i)+(0.50+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	  chan = T->Harm_PRPolScintFarSide.cell->at(i)*2+j;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
 	}
@@ -322,24 +326,25 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=detmap.size())idet = -1;
     if(idet>=0){// && T->Harm_ActAnScint.nhits){
       for(int i = 0; i<T->Harm_ActAnScint.nhits; i++){
-	//for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-     //Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
-// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
-//(which depends on the energy deposit sumedep)times the light attenuation
-//(which depends on the distance between the light production and the PMT)
-// => Npe = (Npe_edep_unit*sumedep)*exp(-(|x_hit-x_PMT|)/Lambda)
-     
-       Npe = R->Poisson(1.0e7*T->Harm_ActAnScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1,0)*T->Harm_ActAnScint.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.55+pow(-1,0)*T->Harm_ActAnScint.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
-	  chan = T->Harm_ActAnScint.cell->at(i)*2;
-	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	//}
+	//Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
+	// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
+	// which depends on the energy deposit sumedep)times the light attenuation
+	// which depends on the distance between the light production and the PMT)
+	// => Npe = (Npe_edep_unit*sumedep)*exp(-(|x_hit-x_PMT|)/Lambda)
+	// EPAF: active analyzer uses same scintillator as hodoscope, hence we can use same photon yield and light speed.
+	// section is 2.56x larger, so attenuation should be better, but without better information, I will keep the same attenuation as the hodoscope.
+	// Also, I assume there is no light guide (or that its length is negligible...
+	
+	Npe = R->Poisson(1.0e7*T->Harm_ActAnScint.sumedep->at(i)*0.113187*exp( (T->Harm_ActAnScint.yhit->at(i)+0.125) /1.03533)* 0.24);
+	t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.125+T->Harm_ActAnScint.yhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	chan = T->Harm_ActAnScint.cell->at(i);
+	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
       }
       has_data = true;
     }
-    
-}//end if(!detmap.empty())
- //GEMs
+  }//end if(!detmap.empty())
+  
+  //GEMs
   if(!gemmap.empty()){
     idet = 0;
     while(idet<(int)gemmap.size()){
@@ -708,6 +713,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;  
     }
+
  //GEn-rp GEMs: prpolfs_gem
     idet = 0;
     while(idet<(int)gemmap.size()){
@@ -718,8 +724,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	break;
       }
     }
-
-
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
       for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){

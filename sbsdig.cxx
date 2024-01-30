@@ -3096,7 +3096,7 @@ int main(int argc, char** argv){
     } 
     
     if(detectors_list[k] == "prpolscint_fs"){
-      if(nparam_prpolscint_fs_read!=nparam_pmtdet_adc){
+      if(nparam_prpolscint_fs_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -3119,7 +3119,7 @@ int main(int argc, char** argv){
     } 
 
     if(detectors_list[k] == "activeana"){
-      if(nparam_activeana_read!=nparam_pmtdet_adc){
+      if(nparam_activeana_read!=nparam_pmtdet_fadc){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
