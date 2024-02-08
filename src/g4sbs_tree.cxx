@@ -142,24 +142,27 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
      //  SetupDetBranch(CDET_Dig, "Earm.CDET.dighit");
      //}
      if(det_list[k]=="activeana"){
+       printf(" activeana branches set up! \n");
        SetupDetBranch(Harm_ActAnScint, "Harm.ActAnScint.hit");
        SetupDetBranch(Harm_ActAn_Dig, "Harm.ActAn.dighit");
      }
      if(det_list[k]=="prpolscint_bs"){
+       printf(" prpolscint_bs branches set up! \n");
        SetupDetBranch(Harm_PRPolScintBeamSide, "Harm.PRPolScintBeamSide.hit");
        SetupDetBranch(Harm_PRPolScintBeamSide_Dig, "Harm.PRPolScintBeamSide.dighit");
      }
      if(det_list[k]=="prpolscint_fs"){
+       printf(" prpolscint_fs branches set up! \n");
        SetupDetBranch(Harm_PRPolScintFarSide, "Harm.PRPolScintFarSide.hit");
        SetupDetBranch(Harm_PRPolScintFarSide_Dig, "Harm.PRPolScintFarSide.dighit");
      }
      if(det_list[k]=="cepol_front"){
-       printf("cepol_front branches set up! \n");
+       printf(" cepol_front branches set up! \n");
        SetupDetBranch(Harm_CEPolFront, "Harm.CEPolFront.hit");
        SetupDetBranch(Harm_CEPolFront_Dig, "Harm.CEPolFront.dighit");
      }
      if(det_list[k]=="cepol_rear"){
-       printf("cepol_rear branches set up! \n");
+       printf(" cepol_rear branches set up! \n");
        SetupDetBranch(Harm_CEPolRear, "Harm.CEPolRear.hit");
        SetupDetBranch(Harm_CEPolRear_Dig, "Harm.CEPolRear.dighit");
      }
@@ -169,36 +172,43 @@ void g4sbs_tree::Init(TTree *tree, std::vector<TString> det_list, bool sig_br)
        SetupDetBranch(Harm_PrPolGEMBeamSide_Dig, "Harm.PRPolGEMBeamSide.dighit");
      }
      if(det_list[k]=="prpolfs_gem"){
-       printf("prpolfs_gem branches set up! \n");
+       printf(" prpolfs_gem branches set up! \n");
        SetupDetBranch(Harm_PrPolGEMFarSide, "Harm.PRPolGEMFarSide.hit");
        SetupDetBranch(Harm_PrPolGEMFarSide_Dig, "Harm.PRPolGEMFarSide.dighit");
      }
      //GEP
      if(det_list[k]=="cdet"){
+       printf(" cdet branches set up! \n");
        SetupDetBranch(CDET_Scint,"Earm.CDET_Scint.hit");
        SetupDetBranch(CDET_Dig,"Earm.CDET.dighit");
      }
      if(det_list[k]=="ecal"){
+       printf(" ecal branches set up! \n");
        SetupDetBranch(Earm_ECalTF1, "Earm.ECalTF1.hit");
        SetupDetBranch(Earm_ECal_Dig,"Earm.ECal.dighit");
      }
      if(det_list[k]=="ft"){
+       printf(" ft branches set up! \n");
        SetupDetBranch(Harm_FT, "Harm.FT.hit");
        SetupDetBranch(Harm_FT_Dig, "Harm.FT.dighit");
      }
      if(det_list[k]=="fpp1"){
+       printf(" ft branches set up! \n");
        SetupDetBranch(Harm_FPP1, "Harm.FPP1.hit");
        SetupDetBranch(Harm_FPP1_Dig, "Harm.FPP1.dighit");
      }
      if(det_list[k]=="fpp2"){
+       printf(" fpp1 branches set up! \n");
        SetupDetBranch(Harm_FPP2, "Harm.FPP2.hit");
        SetupDetBranch(Harm_FPP2_Dig, "Harm.FPP2.dighit");
      }
      if(det_list[k]=="sbsgem"){
+       printf(" fpp2 branches set up! \n");
        SetupDetBranch(Harm_SBSGEM, "Harm.SBSGEM.hit");
        SetupDetBranch(Harm_SBSGEM_Dig, "Harm.SBSGEM.dighit");
      }
      if(det_list[k]=="rich"){
+       printf(" rich branches set up! \n");
        SetupDetBranch(Harm_RICH,"Harm.RICH.hit");
        SetupDetBranch(Harm_RICH_Dig,"Harm.RICH.dighit");
      }

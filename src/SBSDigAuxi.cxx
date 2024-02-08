@@ -325,6 +325,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     if(idet>=detmap.size())idet = -1;
     if(idet>=0){// && T->Harm_ActAnScint.nhits){
+      cout << T->Harm_ActAnScint.nhits << endl;
       for(int i = 0; i<T->Harm_ActAnScint.nhits; i++){
 	//Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
 	// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
@@ -339,6 +340,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.125+T->Harm_ActAnScint.yhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	chan = T->Harm_ActAnScint.cell->at(i);
 	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << endl; 
       }
       has_data = true;
     }
@@ -742,13 +744,13 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.edep = T->Harm_PrPolGEMFarSide.edep->at(k)*1.0e9;//eV! not MeV!!!!
 	  hit.t = tzero+T->Harm_PrPolGEMFarSide.t->at(k);
 	  hit.xin = T->Harm_PrPolGEMFarSide.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yin = T->Harm_PrPolGEMFarSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
-	  hit.zin = T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  hit.yin = T->Harm_PrPolGEMFarSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = -(T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]);
 	  hit.xout = T->Harm_PrPolGEMFarSide.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
-	  hit.zout = T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = -(T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]);
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<"  zout   "<<T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<endl;
+	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< hit.zin <<"  zout   "<< hit.zout <<endl;
 	}//end if(sumedep>0)
 	
       }
