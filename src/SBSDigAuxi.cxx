@@ -39,7 +39,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	break;
       }
     }
-    //while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     if(idet>=0){// && T->Harm_HCalScint.sumedep) {
@@ -65,15 +64,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBPS_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     // Process BB PS data
@@ -105,15 +104,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBSH_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_BBSHTF1.nhits){
@@ -145,15 +144,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //ECal
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=ECAL_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_ECalTF1.nhits){
@@ -185,15 +184,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
     
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=GRINCH_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process GRINCH data
@@ -209,15 +208,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=HODO_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process hodoscope data
@@ -238,8 +237,10 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
     //CDet
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=CDET_UNIQUE_DETID){
 	idet++;
       }else{
@@ -265,17 +266,16 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors beam side
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size()){
     if(idet>=detmap.size())idet = -1;
-    //cout << " " << idet;
     // Process hodoscope data
     if(idet>=0){// && T->Harm_PRPolScintBeamSide.nhits){
       for(int i = 0; i<T->Harm_PRPolScintBeamSide.nhits; i++){
@@ -289,11 +289,14 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
     //genrp detectors far side scint
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=PRPOLFS_SCINT_UNIQUE_DETID){
 	idet++;
       }else{
+	//cout << "detmap [idet] = " << detmap[idet] << " =? " << PRPOLFS_SCINT_UNIQUE_DETID << " => PR pol scint unique ID FOUND! " << endl;
 	break;
       }
     }
@@ -315,17 +318,20 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //genrp detectors Activeana
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=ACTIVEANA_UNIQUE_DETID){
 	idet++;
       }else{
+	//cout << "detmap [idet] = " << detmap[idet] << " =? " << ACTIVEANA_UNIQUE_DETID << " => Active analyzer FOUND! " << endl;
 	break;
       }
     }
     if(idet>=detmap.size())idet = -1;
     if(idet>=0){// && T->Harm_ActAnScint.nhits){
-      cout << T->Harm_ActAnScint.nhits << endl;
+      //cout << T->Harm_ActAnScint.nhits << endl;
       for(int i = 0; i<T->Harm_ActAnScint.nhits; i++){
 	//Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
 	// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
@@ -340,7 +346,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.125+T->Harm_ActAnScint.yhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	chan = T->Harm_ActAnScint.cell->at(i);
 	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << endl; 
+	//cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << endl; 
       }
       has_data = true;
     }
@@ -404,6 +410,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
     //SBS GEM detectors
+    idet = 0;
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=SBSGEM_UNIQUE_DETID){
 	idet++;
