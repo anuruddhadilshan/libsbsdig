@@ -172,7 +172,8 @@ public :
 
    // GEn-RP Active analyzer hits
    TSBSGeant4::CalData_t Harm_ActAnScint;
-   TSBSGeant4::DigTimingData_t Harm_ActAn_Dig;
+   //TSBSGeant4::DigTimingData_t Harm_ActAn_Dig;
+   TSBSGeant4::DigSampCalData_t Harm_ActAn_Dig;
    
    // GEn-RP PR polarimeter Scintillators hits;
    TSBSGeant4::CalData_t Harm_PRPolScintBeamSide;

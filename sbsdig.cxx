@@ -3061,8 +3061,6 @@ int main(int argc, char** argv){
       cdet->fADCbits = FADC_ADCbits;
       cdet->fTDCconv = TDCconv_cdet;
       cdet->fTDCbits = TDCbits_cdet; 
-      cdet->fSigmaPulse = sigmapulse_cdet; 
-      cdet->SetSamples(FADC_sampsize);
       
       //ordered by increasing uinque id
       PMTdetectors.push_back(cdet);
@@ -3123,7 +3121,8 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe, sigmapulse_activeana, gatewidth_activeana);
+      //SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe, sigmapulse_activeana, gatewidth_activeana);
+      SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe);
       
       activeana->fGain = gain_activeana;
       activeana->fPedestal = ped_activeana;
@@ -3135,6 +3134,8 @@ int main(int argc, char** argv){
       activeana->fADCbits = ADCbits_activeana;
       activeana->fTDCconv = TDCconv_activeana;
       activeana->fTDCbits = TDCbits_activeana; 
+      activeana->fSigmaPulse = sigmapulse_activeana; 
+      activeana->SetSamples(FADC_sampsize);
       
       PMTdetectors.push_back(activeana);
       detmap.push_back(ACTIVEANA_UNIQUE_DETID);
@@ -3244,7 +3245,7 @@ int main(int argc, char** argv){
       
       //Clear detectors
       for(int k = 0; k<PMTdetectors.size(); k++){
-	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==ECAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID){
+	if(detmap[k]==HCAL_UNIQUE_DETID || detmap[k]==ECAL_UNIQUE_DETID || detmap[k]==BBPS_UNIQUE_DETID || detmap[k]==BBSH_UNIQUE_DETID || detmap[k]==ACTIVEANA_UNIQUE_DETID){
 	  PMTdetectors[k]->Clear(true);
 	}else{
 	  PMTdetectors[k]->Clear();

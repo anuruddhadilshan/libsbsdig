@@ -509,14 +509,13 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
   if(fNSamps){
     fADC = 0;
     Int_t Nconv = fNSamps/fNADCSamps;
-    //if(detid==12)cout << "det "<< detid << ": ";
     for(int i = 0; i<fNADCSamps; i++){
-      //if(detid==12)cout << fADCSamples[i] << " ";
-      for(int j = 0; j<Nconv; j++)fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
-      //if(detid==12)cout << fADCSamples[i] << " ";
+      for(int j = 0; j<Nconv; j++){
+	fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
+	//if(detid==ACTIVEANA_UNIQUE_DETID && TMath::IsNaN(fADCSamples[i]) )cout << " i " << i << " j " << j << ", idx " << i*Nconv+j << " size " << sizeof(fSamples) << " samp " << fSamples[i*Nconv+j] << "; ";
+      }
       fADCSamples[i]*=1.0e15/ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
-      //cout << fADCSamples[i] << " ; ";
       
       if(fADCSamples[i]>4095)fADCSamples[i] = 4095;
       
@@ -530,7 +529,7 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
       if(i<4)vmin+= fADCSamples[i]/4;
       */
     }
-    //if(detid==12)cout << endl;
+    //if(detid==ACTIVEANA_UNIQUE_DETID)cout << endl;
   }
   //fSumEdep*=1.0e9;// store in eV.
   
@@ -918,11 +917,11 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     }
   }
 
-if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
+  if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
     T->Harm_PRPolScintFarSide_Dig.nchan++;
     T->Harm_PRPolScintFarSide_Dig.chan->push_back(chan);
     T->Harm_PRPolScintFarSide_Dig.adc->push_back(fADC);
-
+    
     if(fTDCs.size()==2){
       for(int j = 0;j<fTDCs.size(); j++){
 	if(fTDCs[j] & ( 1 << (31) )){
@@ -938,28 +937,34 @@ if(detid==PRPOLFS_SCINT_UNIQUE_DETID){
     }
 
   }
-
-//genrp ActiveAna
+ 
+  //genrp ActiveAna
   if(detid==ACTIVEANA_UNIQUE_DETID){
-    T->Harm_ActAn_Dig.nchan++;
-    T->Harm_ActAn_Dig.chan->push_back(chan);
-    T->Harm_ActAn_Dig.adc->push_back(fADC);
-    if(fTDCs.size()==2){
-      for(int j = 0;j<fTDCs.size(); j++){
-	if(fTDCs[j] & ( 1 << (31) )){
-	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
-	  T->Harm_ActAn_Dig.tdc_t->push_back(fTDCs[j]);
-	}else{
-	  T->Harm_ActAn_Dig.tdc_l->push_back(fTDCs[j]);
-	}
-      }
-    }else{
-      T->Harm_ActAn_Dig.tdc_l->push_back(-1000000);
-      T->Harm_ActAn_Dig.tdc_t->push_back(-1000000);
+    //cout << " detector " << detid << " number of ADC samples " << fNADCSamps << endl;
+    for(int i = 0; i<fNADCSamps; i++){
+      T->Harm_ActAn_Dig.nchan++;
+      T->Harm_ActAn_Dig.chan->push_back(chan);
+      T->Harm_ActAn_Dig.adc->push_back(fADCSamples[i]);
+      T->Harm_ActAn_Dig.samp->push_back(i);
+      T->Harm_ActAn_Dig.tdc->push_back(-1000000);
     }
+  //   T->Harm_ActAn_Dig.nchan++;
+  //   T->Harm_ActAn_Dig.chan->push_back(chan);
+  //   T->Harm_ActAn_Dig.adc->push_back(fADC);
+  //   if(fTDCs.size()==2){
+  //     for(int j = 0;j<fTDCs.size(); j++){
+  // 	if(fTDCs[j] & ( 1 << (31) )){
+  // 	  fTDCs[j] ^= ( -0 ^ fTDCs[j] ) & ( 1 << (31) );
+  // 	  T->Harm_ActAn_Dig.tdc_t->push_back(fTDCs[j]);
+  // 	}else{
+  // 	  T->Harm_ActAn_Dig.tdc_l->push_back(fTDCs[j]);
+  // 	}
+  //     }
+  //   }else{
+  //     T->Harm_ActAn_Dig.tdc_l->push_back(-1000000);
+  //     T->Harm_ActAn_Dig.tdc_t->push_back(-1000000);
+  //   }
   }
-  
-  
 }//
 
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)

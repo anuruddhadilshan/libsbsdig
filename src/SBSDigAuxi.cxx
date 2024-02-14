@@ -231,6 +231,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  //T->Earm_BBHodoScint_hit_sumedep->at(i);
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << "BBhodo: chan "<< chan << " Npe " << Npe << " t " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBHodoScint.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
 	}
       }
       has_data = true;
@@ -345,8 +346,9 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	Npe = R->Poisson(1.0e7*T->Harm_ActAnScint.sumedep->at(i)*0.113187*exp( (T->Harm_ActAnScint.yhit->at(i)+0.125) /1.03533)* 0.24);
 	t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.125+T->Harm_ActAnScint.yhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	chan = T->Harm_ActAnScint.cell->at(i);
-	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	//cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << endl; 
+	//pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+	//cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_ActAnScint.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
       }
       has_data = true;
     }
