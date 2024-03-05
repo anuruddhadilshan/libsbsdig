@@ -12,8 +12,10 @@ gain_ecal 7.5e5
 ped_ecal 500.0 
 pedsigma_ecal 4.5 
 trigoffset_ecal 16.5 
-ADCconv_ecal 50 
-ADCbits_ecal 12 
+ADCconv_ecal 40.0 
+TDCconv_ecal 0.12 
+TDCbits_ecal 16 
+FADC_ADCbits 12 
 sigmapulse_ecal 3.0 
 
 ## parameters for cdet

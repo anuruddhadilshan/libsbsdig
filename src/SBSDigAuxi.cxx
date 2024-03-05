@@ -39,7 +39,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	break;
       }
     }
-    //while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     if(idet>=0){// && T->Harm_HCalScint.sumedep) {
@@ -65,15 +64,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBPS_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=BBPS_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;  
     // Process BB PS data
@@ -105,15 +104,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=BBSH_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=BBSH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_BBSHTF1.nhits){
@@ -145,15 +144,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //ECal
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=ECAL_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=ECAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     if(idet>=0){// && T->Earm_ECalTF1.nhits){
@@ -169,27 +168,31 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./pow(n_leadglass*beta, 2), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );
-	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_ECalTF1.zhit->at(i)-7.469*pow(T->Earm_ECalTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
+	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(n_leadglass*n_leadglass)) );//ECal is a lead glass detector, so this could be correct
+	  // rough, first step: t of photons at PMT = tavg_TF1_hit + (0.172-z_TF1_hit)*n/C 
+	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+(0.172-T->Earm_ECalTF1.zhit->at(i)*n_leadglass/3.e-1)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_ECalTF1.cell->at(i);
 	  //T->Earm_ECalTF1_hit_sumedep->at(i);
 	  
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
-	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, 0, t, signal);
+	  //ECal switched to FADC :)
+	  //cout << T->Earm_ECalTF1.sumedep->at(i) << " " << Npe << " " << t << " " << pmtdets[idet]->fSigmaPulse << endl;
+	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
 	}
       }
       has_data = true;
     }
     
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=GRINCH_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=GRINCH_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process GRINCH data
@@ -205,15 +208,15 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
   
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=HODO_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=HODO_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
     //cout << " " << idet;
     // Process hodoscope data
@@ -228,14 +231,17 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  //T->Earm_BBHodoScint_hit_sumedep->at(i);
 	  //if(chan>pmtdets[idet]->fNChan)cout << chan << endl;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	  //cout << "BBhodo: chan "<< chan << " Npe " << Npe << " t " << t << ", t_zero = " << tzero << ", t_avg = " << T->Earm_BBHodoScint.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
 	}
       }
       has_data = true;
     }
     
     //CDet
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=CDET_UNIQUE_DETID){
 	idet++;
       }else{
@@ -250,7 +256,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	// 
 	chan = T->CDET_Scint.cell->at(i);
 	Npe = R->Poisson( T->CDET_Scint.sumedep->at(i)*5.634e3 );
-	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16;
+	t = tzero+T->CDET_Scint.tavg->at(i)+5.75+T->CDET_Scint.xhit->at(i)/0.16-pmtdets[idet]->fTrigOffset;
 	
 	
 	pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
@@ -261,23 +267,22 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     // ** How to add a new subsystem **
     // Unfold here the data for the new detector
     //genrp detectors beam side
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
       if(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID){
 	idet++;
       }else{
 	break;
       }
     }
-    //while(detmap[idet]!=PRPOLBS_SCINT_UNIQUE_DETID && idet<(int)detmap.size()){
     if(idet>=detmap.size())idet = -1;
-    //cout << " " << idet;
     // Process hodoscope data
     if(idet>=0){// && T->Harm_PRPolScintBeamSide.nhits){
       for(int i = 0; i<T->Harm_PRPolScintBeamSide.nhits; i++){
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintBeamSide.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_PRPolScintBeamSide.tavg->at(i)+(0.55+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintBeamSide.sumedep->at(i)*0.113187*exp(-(0.25+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/1.03533)* 0.24);
+	  t = tzero+T->Harm_PRPolScintBeamSide.tavg->at(i)+(0.5+pow(-1, j)*T->Harm_PRPolScintBeamSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	  chan = T->Harm_PRPolScintBeamSide.cell->at(i)*2+j;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
 	}
@@ -285,11 +290,14 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       has_data = true;
     }
     //genrp detectors far side scint
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=PRPOLFS_SCINT_UNIQUE_DETID){
 	idet++;
       }else{
+	//cout << "detmap [idet] = " << detmap[idet] << " =? " << PRPOLFS_SCINT_UNIQUE_DETID << " => PR pol scint unique ID FOUND! " << endl;
 	break;
       }
     }
@@ -297,8 +305,12 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     if(idet>=0){// && T->Harm_PRPolScintFarSide.nhits){
       for(int i = 0; i<T->Harm_PRPolScintFarSide.nhits; i++){
 	for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintFarSide.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_PRPolScintFarSide.tavg->at(i)+(0.55+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	  // EPAF: I don't know what scintillator the side hodoscope uses. so I will use the same photon yield and light speed by default.
+	  // section is ~4x larger, so attenuation should be better, but without better information, I will keep the same attenuation as the hodoscope.
+	  // From the 3D drawings shown in the presentations, I will assume that each light guide is about 1/2 of the scintillator length (which is 50 cm).
+	  
+	  Npe = R->Poisson(1.0e7*T->Harm_PRPolScintFarSide.sumedep->at(i)*0.113187*exp(-(0.25+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/1.03533)* 0.24);
+	  t = tzero+T->Harm_PRPolScintFarSide.tavg->at(i)+(0.50+pow(-1, j)*T->Harm_PRPolScintFarSide.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
 	  chan = T->Harm_PRPolScintFarSide.cell->at(i)*2+j;
 	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
 	}
@@ -307,35 +319,42 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
 
     //genrp detectors Activeana
+    idet = 0;
     while(idet<(int)detmap.size()){
-      if(idet<0)idet++;
+      //if(idet<0)idet++;
+      //cout << " " << idet << ":" << detmap[idet];
       if(detmap[idet]!=ACTIVEANA_UNIQUE_DETID){
 	idet++;
       }else{
+	//cout << "detmap [idet] = " << detmap[idet] << " =? " << ACTIVEANA_UNIQUE_DETID << " => Active analyzer FOUND! " << endl;
 	break;
       }
     }
     if(idet>=detmap.size())idet = -1;
     if(idet>=0){// && T->Harm_ActAnScint.nhits){
+      //cout << T->Harm_ActAnScint.nhits << endl;
       for(int i = 0; i<T->Harm_ActAnScint.nhits; i++){
-	//for(int j = 0; j<2; j++){//j = 0: close beam PMT, j = 1: far beam PMT
-     //Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
-// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
-//(which depends on the energy deposit sumedep)times the light attenuation
-//(which depends on the distance between the light production and the PMT)
-// => Npe = (Npe_edep_unit*sumedep)*exp(-(|x_hit-x_PMT|)/Lambda)
-     
-       Npe = R->Poisson(1.0e7*T->Harm_ActAnScint.sumedep->at(i)*0.113187*exp(-(0.3+pow(-1,0)*T->Harm_ActAnScint.xhit->at(i))/1.03533)* 0.24);
-	  t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.55+pow(-1,0)*T->Harm_ActAnScint.xhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
-	  chan = T->Harm_ActAnScint.cell->at(i)*2;
-	  pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
-	//}
+	//Npe = R->Poisson(Npe_edep_unit*T->Harm_ActAnScint.sumedep->at(i)); //Find Npe_edep_unit: Ave. amount of light produced per energy deposit 
+	// The number of photoelectrons for each PMT is the product of the raw number of photoelectrons produced
+	// which depends on the energy deposit sumedep)times the light attenuation
+	// which depends on the distance between the light production and the PMT)
+	// => Npe = (Npe_edep_unit*sumedep)*exp(-(|x_hit-x_PMT|)/Lambda)
+	// EPAF: active analyzer uses same scintillator as hodoscope, hence we can use same photon yield and light speed.
+	// section is 2.56x larger, so attenuation should be better, but without better information, I will keep the same attenuation as the hodoscope.
+	// Also, I assume there is no light guide (or that its length is negligible...
+	
+	Npe = R->Poisson(1.0e7*T->Harm_ActAnScint.sumedep->at(i)*0.113187*exp( (T->Harm_ActAnScint.yhit->at(i)+0.125) /1.03533)* 0.24);
+	t = tzero+T->Harm_ActAnScint.tavg->at(i)+(0.125+T->Harm_ActAnScint.yhit->at(i))/0.15-pmtdets[idet]->fTrigOffset;
+	chan = T->Harm_ActAnScint.cell->at(i);
+	//pmtdets[idet]->PMTmap[chan].Fill(pmtdets[idet]->fRefPulse, Npe, pmtdets[idet]->fThreshold, t, signal);
+	pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+	//cout << "ActiveAna: chan "<< chan << " Npe " << Npe << " t " << t << ", t_zero = " << tzero << ", t_avg = " << T->Harm_ActAnScint.tavg->at(i) << ", -t_offset = " << -pmtdets[idet]->fTrigOffset << endl;
       }
       has_data = true;
     }
-    
-}//end if(!detmap.empty())
- //GEMs
+  }//end if(!detmap.empty())
+  
+  //GEMs
   if(!gemmap.empty()){
     idet = 0;
     while(idet<(int)gemmap.size()){
@@ -393,6 +412,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
     }
     
     //SBS GEM detectors
+    idet = 0;
     while(idet<(int)gemmap.size()){
       if(gemmap[idet]!=SBSGEM_UNIQUE_DETID){
 	idet++;
@@ -486,7 +506,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.xout = T->Harm_FT.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
 	  hit.yout = T->Harm_FT.yout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
 	  hit.zout = T->Harm_FT.zout->at(k)-gemdets[idet]->fZLayer[T->Harm_FT.plane->at(k)-1];//+1.7886925;
-	  //cout << mod << " " << hit.zin << " " << hit.zout << endl;
+	  //cout << T->Harm_FT.plane->at(k) << " " << T->Harm_FT.zin->at(k) << " " << gemdets[idet]->fZLayer[T->Harm_FT.plane->at(k)-1] << " " << mod << " " << hit.zin << " " << hit.zout << endl;
 	  gemdets[idet]->fGEMhits.push_back(hit);
 	}//end if(sumedep>0)
 	
@@ -704,6 +724,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
       }
       has_data = true;  
     }
+
  //GEn-rp GEMs: prpolfs_gem
     idet = 0;
     while(idet<(int)gemmap.size()){
@@ -714,8 +735,6 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	break;
       }
     }
-
-
     if(idet>=gemmap.size())idet = -1;
     if(idet>=0){// && T->Earm_BBGEM.nhits){
       for(int k = 0; k<T->Harm_PrPolGEMFarSide.nhits; k++){
@@ -734,13 +753,13 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  hit.edep = T->Harm_PrPolGEMFarSide.edep->at(k)*1.0e9;//eV! not MeV!!!!
 	  hit.t = tzero+T->Harm_PrPolGEMFarSide.t->at(k);
 	  hit.xin = T->Harm_PrPolGEMFarSide.xin->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yin = T->Harm_PrPolGEMFarSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
-	  hit.zin = T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  hit.yin = T->Harm_PrPolGEMFarSide.zin->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zin = -(T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]);
 	  hit.xout = T->Harm_PrPolGEMFarSide.xout->at(k)-gemdets[idet]->GEMPlanes[mod*2].Xoffset();
-	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset()-1.36;
-	  hit.zout = T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1];//+0.8031825;
+	  hit.yout = T->Harm_PrPolGEMFarSide.zout->at(k)-gemdets[idet]->GEMPlanes[mod*2+1].Xoffset();
+	  hit.zout = -(T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]);
 	  gemdets[idet]->fGEMhits.push_back(hit);
-	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< T->Harm_PrPolGEMFarSide.yin->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<"  zout   "<<T->Harm_PrPolGEMFarSide.yout->at(k)-gemdets[idet]->fZLayer[T->Harm_PrPolGEMFarSide.plane->at(k)-1]<<endl;
+	  //cout<<" Harm_PrPolGEMFarSide  "<<"  zin  "<< hit.zin <<"  zout   "<< hit.zout <<endl;
 	}//end if(sumedep>0)
 	
       }
