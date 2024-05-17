@@ -8,18 +8,18 @@ SBSDigPMTDet::SBSDigPMTDet()
 {
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv));
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i]));
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, double NpeChargeConv, double sigmapulse, double gatewidth):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, double sigmapulse, double gatewidth):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal(NpeChargeConv);
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv));
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i]));
   fRefPulse = new SPEModel(fUniqueID, sigmapulse, 0, -gatewidth/2., gatewidth/2.);
 }
 

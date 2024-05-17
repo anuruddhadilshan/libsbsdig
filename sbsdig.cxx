@@ -154,7 +154,7 @@ int main(int argc, char** argv){
   int nparam_bbps_read = 0;
   Int_t NChan_bbps = 52;
   Double_t gatewidth_bbps = 100.;
-  Double_t gain_bbps = 2.e6;
+  std::vector<Double_t> gain_bbps;
   Double_t ped_bbps = 600.;//
   Double_t pedsigma_bbps = 3.;//
   Double_t trigoffset_bbps = 18.2;//
@@ -168,7 +168,7 @@ int main(int argc, char** argv){
   int nparam_bbsh_read = 0;
   Int_t NChan_bbsh = 189;
   Double_t gatewidth_bbsh = 100.;
-  Double_t gain_bbsh = 7.5e5;
+  std::vector<Double_t> gain_bbsh;
   Double_t ped_bbsh = 500.;
   Double_t pedsigma_bbsh = 4.5;
   Double_t trigoffset_bbsh = 18.5;
@@ -182,7 +182,7 @@ int main(int argc, char** argv){
   int nparam_grinch_read = 0;
   Int_t NChan_grinch = 510;
   Double_t gatewidth_grinch = 100.;
-  Double_t gain_grinch = 7.e6;
+  std::vector<Double_t> gain_grinch;
   Double_t ped_grinch = 0.;
   Double_t pedsigma_grinch = 0.;
   Double_t trigoffset_grinch = 15.3;
@@ -196,7 +196,7 @@ int main(int argc, char** argv){
   int nparam_bbhodo_read = 0;
   Int_t NChan_bbhodo = 180;
   Double_t gatewidth_bbhodo = 100.;
-  Double_t gain_bbhodo = 1.e5;
+  std::vector<Double_t> gain_bbhodo;
   Double_t ped_bbhodo = 0.;
   Double_t pedsigma_bbhodo = 0.;
   Double_t trigoffset_bbhodo = 18.6;
@@ -210,7 +210,7 @@ int main(int argc, char** argv){
   int nparam_hcal_read = 0;
   Int_t NChan_hcal = 288;
   Double_t gatewidth_hcal = 80;
-  Double_t gain_hcal = 1.e6;
+  std::vector<Double_t> gain_hcal;
   Double_t ped_hcal = 0.;
   Double_t pedsigma_hcal = 0.;
   Double_t trigoffset_hcal = 81.;
@@ -256,7 +256,7 @@ int main(int argc, char** argv){
   int nparam_ecal_read = 0;
   Int_t NChan_ecal = 189;
   Double_t gatewidth_ecal = 100.;
-  Double_t gain_ecal = 7.5e5;
+  std::vector<Double_t> gain_ecal;
   Double_t ped_ecal = 500.;
   Double_t pedsigma_ecal = 4.5;
   Double_t trigoffset_ecal = 18.5;
@@ -270,7 +270,7 @@ int main(int argc, char** argv){
   int nparam_cdet_read = 0;
   Int_t NChan_cdet = 189;
   Double_t gatewidth_cdet = 100.;
-  Double_t gain_cdet = 7.5e5;
+  std::vector<Double_t> gain_cdet;
   Double_t ped_cdet = 500.;
   Double_t pedsigma_cdet = 4.5;
   Double_t trigoffset_cdet = 18.5;
@@ -393,7 +393,7 @@ int main(int argc, char** argv){
   int nparam_prpolscint_bs_read = 0;
   Int_t NChan_polscint_bs = 48;
   Double_t gatewidth_polscint_bs = 30.;
-  Double_t gain_polscint_bs = 3.e7;
+  std::vector<Double_t> gain_polscint_bs;
   Double_t ped_polscint_bs = 300.;
   Double_t pedsigma_polscint_bs = 10.;
   Double_t trigoffset_polscint_bs = 37.6;
@@ -408,7 +408,7 @@ int main(int argc, char** argv){
   int nparam_prpolscint_fs_read = 0;
   Int_t NChan_polscint_fs = 48;
   Double_t gatewidth_polscint_fs = 30.;
-  Double_t gain_polscint_fs = 3.e7;
+  std::vector<Double_t> gain_polscint_fs;
   Double_t ped_polscint_fs = 300.;
   Double_t pedsigma_polscint_fs = 3.;
   Double_t trigoffset_polscint_fs = 37.6;
@@ -423,7 +423,7 @@ int main(int argc, char** argv){
   int nparam_activeana_read = 0;
   Int_t NChan_activeana = 32;
   Double_t gatewidth_activeana = 30.;
-  Double_t gain_activeana = 3.e7;
+  std::vector<Double_t> gain_activeana;
   Double_t ped_activeana = 300.;
   Double_t pedsigma_activeana = 10.0;
   Double_t trigoffset_activeana = 37.6;
@@ -489,8 +489,20 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_bbps"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_bbps = stemp.Atof();
+	  gain_bbps.resize(NChan_bbps);
+	  if(ntokens==NChan_bbps+1){
+	    for(int k = 0; k<NChan_bbps; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_bbps[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbps << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbps; k++){
+	      gain_bbps[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_bbps_read++;
 	}
 	
@@ -562,8 +574,20 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_bbsh"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_bbsh = stemp.Atof();
+	  gain_bbsh.resize(NChan_bbsh);
+	  if(ntokens==NChan_bbsh+1){
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_bbsh[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbsh << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      gain_bbsh[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_bbsh_read++;
 	}
 	
@@ -635,8 +659,20 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_grinch"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_grinch = stemp.Atof();
+	  gain_grinch.resize(NChan_grinch);
+	  if(ntokens==NChan_grinch+1){
+	    for(int k = 0; k<NChan_grinch; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_grinch[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_grinch << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_grinch; k++){
+	      gain_grinch[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_grinch_read++;
 	}
 	
@@ -708,8 +744,20 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_bbhodo"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_bbhodo = stemp.Atof();
+	  gain_bbhodo.resize(NChan_bbhodo);
+	  if(ntokens==NChan_bbhodo+1){
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_bbhodo[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbhodo << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      gain_bbhodo[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_bbhodo_read++;
 	}
 	
@@ -781,8 +829,20 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_hcal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_hcal = stemp.Atof();
+	  gain_hcal.resize(NChan_hcal);
+	  if(ntokens==NChan_hcal+1){
+	    for(int k = 0; k<NChan_hcal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_hcal[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_hcal << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_hcal; k++){
+	      gain_hcal[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_hcal_read++;
 	}
 	
@@ -858,8 +918,18 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_ecal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_ecal = stemp.Atof();
+	  gain_ecal.resize(NChan_ecal);
+	  if(ntokens==NChan_ecal+1){
+	    for(int k = 0; k<NChan_ecal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_ecal[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_ecal; k++){
+	      gain_ecal[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_ecal_read++;
 	}
 	
@@ -925,8 +995,18 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_cdet"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_cdet = stemp.Atof();
+	  gain_cdet.resize(NChan_cdet);
+	  if(ntokens==NChan_cdet+1){
+	    for(int k = 0; k<NChan_cdet; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_cdet[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_cdet; k++){
+	      gain_cdet[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_cdet_read++;
 	}
 	
@@ -1001,8 +1081,18 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_polscint_bs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_polscint_bs = stemp.Atof();
+	  gain_polscint_bs.resize(NChan_polscint_bs);
+	  if(ntokens==NChan_polscint_bs+1){
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_polscint_bs[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      gain_polscint_bs[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_prpolscint_bs_read++;
 	}
 	
@@ -1074,8 +1164,18 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_polscint_fs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_polscint_fs = stemp.Atof();
+	  gain_polscint_fs.resize(NChan_polscint_fs);
+	  if(ntokens==NChan_polscint_fs+1){
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_polscint_fs[k] = stemp.Atof()*qe;
+	    }
+	  }else{
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      gain_polscint_fs[k] = stemp.Atof()*qe;
+	    }
+	  }
 	  nparam_prpolscint_fs_read++;
 	}
 	
@@ -1147,8 +1247,18 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="gain_activeana"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  gain_activeana = stemp.Atof();
+	  gain_activeana.resize(NChan_activeana);
+	  if(ntokens==NChan_activeana+1){
+	    for(int k = 0; k<NChan_activeana; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      gain_activeana[k] = stemp.Atof();
+	    }
+	  }else{
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_activeana; k++){
+	      gain_activeana[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_activeana_read++;
 	}
 	
@@ -2899,7 +3009,7 @@ int main(int argc, char** argv){
 	exit(-1);
       }
       //SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
-      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe);
+      SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps);
 
       bbps->fGain = gain_bbps;
       bbps->fPedestal = ped_bbps;
@@ -2926,7 +3036,7 @@ int main(int argc, char** argv){
 	exit(-1);
       }
       //SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
-      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe);
+      SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh);
       
       bbsh->fGain = gain_bbsh;
       bbsh->fPedestal = ped_bbsh;
@@ -2951,7 +3061,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_grinch, gain_grinch*qe, sigmapulse_grinch, gatewidth_grinch);
+      SBSDigPMTDet* grinch = new SBSDigPMTDet(GRINCH_UNIQUE_DETID, NChan_grinch, gain_grinch, sigmapulse_grinch, gatewidth_grinch);
   
       grinch->fGain = gain_grinch;
       grinch->fPedestal = ped_grinch;
@@ -2974,7 +3084,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_bbhodo, gain_bbhodo*qe, sigmapulse_bbhodo, gatewidth_bbhodo);
+      SBSDigPMTDet* bbhodo = new SBSDigPMTDet(HODO_UNIQUE_DETID, NChan_bbhodo, gain_bbhodo, sigmapulse_bbhodo, gatewidth_bbhodo);
       
       bbhodo->fGain = gain_bbhodo;
       bbhodo->fPedestal = ped_bbhodo;
@@ -2997,7 +3107,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal, gain_hcal*qe);
+      SBSDigPMTDet* hcal = new SBSDigPMTDet(HCAL_UNIQUE_DETID, NChan_hcal, gain_hcal);
       
       hcal->fGain = gain_hcal;
       hcal->fPedestal = ped_hcal;
@@ -3023,7 +3133,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* ecal = new SBSDigPMTDet(ECAL_UNIQUE_DETID, NChan_ecal, gain_ecal*qe);
+      SBSDigPMTDet* ecal = new SBSDigPMTDet(ECAL_UNIQUE_DETID, NChan_ecal, gain_ecal);
       
       ecal->fGain = gain_ecal;
       ecal->fPedestal = ped_ecal;
@@ -3049,7 +3159,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet*qe, sigmapulse_cdet, gatewidth_cdet);
+      SBSDigPMTDet* cdet = new SBSDigPMTDet(CDET_UNIQUE_DETID, NChan_cdet, gain_cdet, sigmapulse_cdet, gatewidth_cdet);
       
       cdet->fGain = gain_cdet;
       cdet->fPedestal = ped_cdet;
@@ -3075,7 +3185,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_polscint_bs, gain_polscint_bs*qe, sigmapulse_polscint_bs, gatewidth_polscint_bs);
+      SBSDigPMTDet* polscint_bs = new SBSDigPMTDet(PRPOLBS_SCINT_UNIQUE_DETID, NChan_polscint_bs, gain_polscint_bs, sigmapulse_polscint_bs, gatewidth_polscint_bs);
       
       polscint_bs->fGain = gain_polscint_bs;
       polscint_bs->fPedestal = ped_polscint_bs;
@@ -3098,7 +3208,7 @@ int main(int argc, char** argv){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
-      SBSDigPMTDet* polscint_fs = new SBSDigPMTDet(PRPOLFS_SCINT_UNIQUE_DETID, NChan_polscint_fs, gain_polscint_fs*qe, sigmapulse_polscint_fs, gatewidth_polscint_fs);
+      SBSDigPMTDet* polscint_fs = new SBSDigPMTDet(PRPOLFS_SCINT_UNIQUE_DETID, NChan_polscint_fs, gain_polscint_fs, sigmapulse_polscint_fs, gatewidth_polscint_fs);
       
       polscint_fs->fGain = gain_polscint_fs;
       polscint_fs->fPedestal = ped_polscint_fs;
@@ -3122,7 +3232,7 @@ int main(int argc, char** argv){
 	exit(-1);
       }
       //SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe, sigmapulse_activeana, gatewidth_activeana);
-      SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana*qe);
+      SBSDigPMTDet* activeana = new SBSDigPMTDet(ACTIVEANA_UNIQUE_DETID, NChan_activeana, gain_activeana);
       
       activeana->fGain = gain_activeana;
       activeana->fPedestal = ped_activeana;
