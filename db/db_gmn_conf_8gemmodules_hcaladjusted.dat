@@ -3,7 +3,7 @@ Rseed 0
 #global trigger jitter for all detectors in ns
 TriggerJitter 3.0 
 #list of detectors to digitize
-detectors_list hcal bbps bbsh bbhodo bbgem 
+detectors_list hcal bbps bbsh bbhodo grinch bbgem 
 
 ## parameters for bbps
 NChan_bbps 52 
