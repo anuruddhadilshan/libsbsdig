@@ -7,6 +7,7 @@ detectors_list hcal bbps bbsh bbhodo bbgem grinch activeana prpolscint_fs cepol_
 ## 
 
 ## parameters for bbps
+refindex_bbps 1.65
 NChan_bbps 52 
 gatewidth_bbps 200 
 gain_bbps 2.e6
@@ -21,6 +22,7 @@ TDCbits_bbps 12
 sigmapulse_bbps 40.0 
 
 ## parameters for bbsh
+refindex_bbsh 1.6477
 NChan_bbsh 189
 gatewidth_bbsh 200 
 gain_bbsh 7.5e5

@@ -6,6 +6,7 @@ TriggerJitter 3.0
 detectors_list hcal ecal e_cdet ft fpp1 fpp2
 
 ## parameters for ecal
+refindex_ecal 1.6477
 NChan_ecal 1710
 gatewidth_ecal 100 
 gain_ecal 7.5e5

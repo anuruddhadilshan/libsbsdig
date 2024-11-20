@@ -24,7 +24,8 @@ class SBSDigPMTDet {
   //std::map<int, PMTSignal> PMTmap;
   std::vector<PMTSignal> PMTmap;
   SPEModel* fRefPulse;
-  
+
+  double fRefIndex;// for leadglass detectors
   std::vector<double> fGain;
   double fPedestal;
   double fPedSigma;
