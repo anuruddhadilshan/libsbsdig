@@ -482,7 +482,7 @@ int main(int argc, char** argv){
 	//BBPS
 	if(skey=="refindex_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  refindex_bbps = stemp.Atoi();
+	  refindex_bbps = stemp.Atof();
 	  nparam_bbps_read++;
 	}
 	
@@ -573,7 +573,7 @@ int main(int argc, char** argv){
 	//BBSH
 	if(skey=="refindex_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  refindex_bbsh = stemp.Atoi();
+	  refindex_bbsh = stemp.Atof();
 	  nparam_bbsh_read++;
 	}
 	
@@ -923,7 +923,7 @@ int main(int argc, char** argv){
 	//Ecal
 	if(skey=="refindex_ecal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  refindex_ecal = stemp.Atoi();
+	  refindex_ecal = stemp.Atof();
 	  nparam_ecal_read++;
 	}
 	

@@ -11,7 +11,7 @@ NChan_ecal 1656
 gatewidth_ecal 200 
 gain_ecal 7.5e5
 ped_ecal 300.0 
-pedsigma_ecal 4.5 
+pedsigma_ecal 3.0 
 trigoffset_ecal 32.4 
 threshold_ecal 22.0e-3 
 ADCconv_ecal 40.0 
@@ -38,7 +38,7 @@ NChan_hcal 288
 gatewidth_hcal 200 
 gain_hcal 1.0e6
 ped_hcal 300.0 
-pedsigma_hcal 10.0
+pedsigma_hcal 3.0
 trigoffset_hcal 34.5 
 threshold_hcal 22.e-3 
 ADCconv_hcal 40.0 
