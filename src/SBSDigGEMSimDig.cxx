@@ -1324,16 +1324,16 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
 
 //-------------------------------------------------------
 // Helper functions for integration in AvaModel
-inline static
-Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
-{
-  register double sum = 0.;
-  register int kx = ix*ny;
-  for( Int_t jy = ny; jy != 0; --jy )
-    sum += a[kx++];
+// inline static
+// Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
+// {
+//   register double sum = 0.;
+//   register int kx = ix*ny;
+//   for( Int_t jy = ny; jy != 0; --jy )
+//     sum += a[kx++];
 
-  return sum;
-}
+//   return sum;
+// }
 
 
 void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
