@@ -149,9 +149,11 @@ int main(int argc, char** argv){
   
   const int nparam_pmtdet_adc = 12;
   const int nparam_pmtdet_fadc = 11;
+  const int nparam_pmtdet_fadc_leadglass = 12;
   const int nparam_gemdet = 12;
   
   int nparam_bbps_read = 0;
+  Double_t refindex_bbps = 1.68;
   Int_t NChan_bbps = 52;
   Double_t gatewidth_bbps = 100.;
   std::vector<Double_t> gain_bbps;
@@ -166,6 +168,7 @@ int main(int argc, char** argv){
   Double_t sigmapulse_bbps = 3.0;
     
   int nparam_bbsh_read = 0;
+  Double_t refindex_bbsh = 1.68;
   Int_t NChan_bbsh = 189;
   Double_t gatewidth_bbsh = 100.;
   std::vector<Double_t> gain_bbsh;
@@ -254,6 +257,7 @@ int main(int argc, char** argv){
   
   //GEP detectors: parameters with dummy values...
   int nparam_ecal_read = 0;
+  Double_t refindex_ecal = 1.68;
   Int_t NChan_ecal = 189;
   Double_t gatewidth_ecal = 100.;
   std::vector<Double_t> gain_ecal;
@@ -476,6 +480,12 @@ int main(int argc, char** argv){
 	}
 	
 	//BBPS
+	if(skey=="refindex_bbps"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  refindex_bbps = stemp.Atof();
+	  nparam_bbps_read++;
+	}
+	
 	if(skey=="NChan_bbps"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NChan_bbps = stemp.Atoi();
@@ -561,6 +571,12 @@ int main(int argc, char** argv){
 	}
 	
 	//BBSH
+	if(skey=="refindex_bbsh"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  refindex_bbsh = stemp.Atof();
+	  nparam_bbsh_read++;
+	}
+	
 	if(skey=="NChan_bbsh"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NChan_bbsh = stemp.Atoi();
@@ -905,6 +921,12 @@ int main(int argc, char** argv){
 	}
 	
 	//Ecal
+	if(skey=="refindex_ecal"){
+	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  refindex_ecal = stemp.Atof();
+	  nparam_ecal_read++;
+	}
+	
 	if(skey=="NChan_ecal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  NChan_ecal = stemp.Atoi();
@@ -3004,13 +3026,13 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbps"){
-      if(nparam_bbps_read!=nparam_pmtdet_fadc){
+      if(nparam_bbps_read!=nparam_pmtdet_fadc_leadglass){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
       //SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps*qe, sigmapulse_bbps, gatewidth_bbps);
       SBSDigPMTDet* bbps = new SBSDigPMTDet(BBPS_UNIQUE_DETID, NChan_bbps, gain_bbps);
-
+      bbps->fRefIndex = refindex_bbps;
       bbps->fGain = gain_bbps;
       bbps->fPedestal = ped_bbps;
       bbps->fPedSigma = pedsigma_bbps;
@@ -3031,13 +3053,14 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "bbsh"){
-      if(nparam_bbsh_read!=nparam_pmtdet_fadc){
+      if(nparam_bbsh_read!=nparam_pmtdet_fadc_leadglass){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
       //SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh*qe, sigmapulse_bbsh, gatewidth_bbsh);
       SBSDigPMTDet* bbsh = new SBSDigPMTDet(BBSH_UNIQUE_DETID, NChan_bbsh, gain_bbsh);
       
+      bbsh->fRefIndex = refindex_bbsh;
       bbsh->fGain = gain_bbsh;
       bbsh->fPedestal = ped_bbsh;
       bbsh->fPedSigma = pedsigma_bbsh;
@@ -3129,12 +3152,13 @@ int main(int argc, char** argv){
     }
 
     if(detectors_list[k] == "ecal"){
-      if(nparam_ecal_read!=nparam_pmtdet_fadc){
+      if(nparam_ecal_read!=nparam_pmtdet_fadc_leadglass){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
       SBSDigPMTDet* ecal = new SBSDigPMTDet(ECAL_UNIQUE_DETID, NChan_ecal, gain_ecal);
       
+      ecal->fRefIndex = refindex_ecal;
       ecal->fGain = gain_ecal;
       ecal->fPedestal = ped_ecal;
       ecal->fPedSigma = pedsigma_ecal;

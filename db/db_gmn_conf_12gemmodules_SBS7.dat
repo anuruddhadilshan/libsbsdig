@@ -9,7 +9,7 @@ detectors_list hcal bbps bbsh grinch bbhodo bbgem
 refindex_bbps 1.65
 NChan_bbps 52 
 gatewidth_bbps 200 
-gain_bbps 2.e6
+gain_bbps 1.75e6
 ped_bbps 300.0 
 pedsigma_bbps 3.0 
 trigoffset_bbps 18.2 
@@ -24,7 +24,7 @@ sigmapulse_bbps 40.0
 refindex_bbsh 1.6477
 NChan_bbsh 189
 gatewidth_bbsh 200 
-gain_bbsh 7.5e5
+gain_bbsh 8.2e5
 ped_bbsh 300.0 
 pedsigma_bbsh 3.0 
 trigoffset_bbsh 18.5 
@@ -74,9 +74,9 @@ threshold_hcal 22.e-3
 ADCconv_hcal 40.0 
 TDCconv_hcal 0.12 
 TDCbits_hcal 16 
-sigmapulse_hcal 40.0 
 FADC_ADCbits 12 
 FADC_sampsize 4.0 
+sigmapulse_hcal 40.0 
 
 ## parameters for GEMs
 # number of planes/modules/readout

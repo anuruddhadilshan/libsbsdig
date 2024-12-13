@@ -6,6 +6,7 @@ TriggerJitter 3.0
 detectors_list hcal bbps bbsh grinch bbhodo bbgem 
 
 ## parameters for bbps
+refindex_bbps 1.65
 NChan_bbps 52 
 gatewidth_bbps 200 
 gain_bbps 2.e6
@@ -20,11 +21,12 @@ TDCbits_bbps 12
 sigmapulse_bbps 40.0 
 
 ## parameters for bbsh
+refindex_bbsh 1.6477
 NChan_bbsh 189
 gatewidth_bbsh 200 
 gain_bbsh 7.5e5
 ped_bbsh 300.0 
-pedsigma_bbsh 4.5 
+pedsigma_bbsh 3.0 
 trigoffset_bbsh 18.5 
 threshold_bbsh 22.e-3 
 ADCconv_bbsh 40 
@@ -66,7 +68,7 @@ NChan_hcal 288
 gatewidth_hcal 200 
 gain_hcal 1.0e6
 ped_hcal 300.0 
-pedsigma_hcal 10.0
+pedsigma_hcal 3.0
 trigoffset_hcal 81.0 
 threshold_hcal 22.e-3 
 ADCconv_hcal 40.0 
