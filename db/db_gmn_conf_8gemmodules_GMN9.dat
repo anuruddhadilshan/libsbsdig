@@ -66,7 +66,7 @@ sigmapulse_bbhodo 1.6
 ## parameters for hcal
 NChan_hcal 288
 gatewidth_hcal 200 
-gain_hcal 1.05e6
+gain_hcal 1.10e6
 ped_hcal 300.0 
 pedsigma_hcal 3.0
 trigoffset_hcal 81.0 
