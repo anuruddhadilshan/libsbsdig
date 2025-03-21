@@ -179,6 +179,20 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  //ECal switched to FADC :)
 	  //cout << T->Earm_ECalTF1.sumedep->at(i) << " " << Npe << " " << t << " " << pmtdets[idet]->fSigmaPulse << endl;
 	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+
+	  //Print out FADC diagnostic info for this PMT:
+	  //if( Npe >= 5 ){
+	  if ( false ){
+	    std::cout << "Hit " << i << ": (chan, edep, npe, charge)=("
+		      << chan << ", " << T->Earm_ECalTF1.sumedep->at(i)
+		      << ", " << pmtdets[idet]->PMTmap[chan].Npe()
+		      << ", " << pmtdets[idet]->PMTmap[chan].Charge() << ")"
+		      << std::endl;
+	    // std::cout << "ADC samples: " << std::endl;
+	    // for( int isamp=0; isamp<pmtdets[idet]->PMTmap[chan].GetNADCSamps(); isamp++ ){
+	    //   std::cout << "(isamp, ADC)=(" << isamp << ", " << pmtdets[idet]->PMTmap[chan].ADCSamples(isamp) << ")" << std::endl;
+	    // } ADC samples don't get filled until Digitize
+	  }
 	}
       }
       has_data = true;
