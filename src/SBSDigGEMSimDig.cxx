@@ -86,6 +86,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   }
   fRIon.resize((int)fMaxNIon);
 
+#if DBG_HISTOS > 0
   h2D_nplanesV_ava_dx = new TH2D("h2D_nplanesV_ava_dx", "FT;AVA_dx;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
   h2D_nplanesV_ava_dxs = new TH2D("h2D_nplanesV_ava_dxs", "FT;AVA_dxs;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
   h2D_nplanesV_ava_nstrips = new TH2D("h2D_nplanesV_ava_nstrips", "FT;AVA_nstrips;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
@@ -93,7 +94,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   h2D_nplanesVnActiveStrips = new TH2D("h2D_nplanesVnActiveStrips", "FT;Strips above threshold;Module", 50, 0, 50, nchambers*2, 0, nchambers*2);
   h2D_nplanesVnAllHitStrips = new TH2D("h2D_nplanesVnAllHitStrips", "FT;All Hit Strips;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
   h2D_nplanesVnADCSum = new TH2D("h2D_nplanesVnADCSum", "FT;ADC sum;Module", 250, 0, 10000, nchambers*2, 0, nchambers*2);
-
+#endif
   /*
   h2D_edepVdr = new TH2D("h2D_edepVdr", ";sqrt(dx2_hit+dy2_hit);edep;", 100, 0., 50., 100, 0., 1.e5);
 
@@ -701,10 +702,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //if(ipl==1 && ic<4){
     //h1_ds_Y[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
     //}
-
+#if DBG_HISTOS > 0
     h2D_nplanesV_ava_dx->Fill(x1-x0, min(ic,3)*2+ipl);
     h2D_nplanesV_ava_dxs->Fill(xs1-xs0, min(ic,3)*2+ipl);
-    
+#endif    
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
@@ -774,9 +775,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 #endif
     assert( nx > 0 && ny > 0 );
     
+#if DBG_HISTOS > 0
     h2D_nplanesV_ava_nstrips->Fill(nstrips, min(ic,3)*2+ipl);
     h2D_nplanesV_ava_nx->Fill(nx, min(ic,3)*2+ipl);
-    
+#endif
     //if(ipl==0 && ic<4){
     //h1_nstrips_X[int(ic>0)]->Fill(nstrips);
     //h1_ds_X[int(ic>0)]->Fill(yt-yb);
@@ -1635,6 +1637,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	
       }
     }
+#if DBG_HISTOS > 0
     if(nstripshit_total>0){
       if(i>9){
 	h2D_nplanesVnActiveStrips->Fill(nstripshit_abovethr, i-4);
@@ -1650,6 +1653,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	h2D_nplanesVnADCSum->Fill(ADC_sum, i);
       }
     }
+#endif
 #if DBG_AVA >0 
     if(nstripshit_total>0){cout << " N hit strips (above thr): " << nstripshit_abovethr << " (total) " << nstripshit_total << " ADCsum " << ADC_sum << endl;}else{cout << endl;}
 #endif 
@@ -1689,6 +1693,7 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+#if DBG_HISTOS > 0
   h2D_nplanesV_ava_dx->Write();
   h2D_nplanesV_ava_dxs->Write();
   h2D_nplanesV_ava_nstrips->Write();
@@ -1785,6 +1790,7 @@ void SBSDigGEMSimDig::write_histos()
   h1_yGEMvsADC_inava_4->Write();
   h1_yGEM_incheckout->Write();
   */
+#endif
 }
 
 void SBSDigGEMSimDig::print_time_execution()
