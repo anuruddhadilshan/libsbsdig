@@ -128,7 +128,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_BBSHTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_BBSHTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex * beta*beta), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
+	  Npe = R->Poisson(500.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
 	  t = tzero+T->Earm_BBSHTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1.zhit->at(i)-7.469*pow(T->Earm_BBSHTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBSHTF1.cell->at(i);
 	  //T->Earm_BBSHTF1_hit_sumedep->at(i);
@@ -168,7 +168,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_ECalTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_ECalTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex * beta*beta), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );//ECal is a lead glass detector, so this could be correct
+	  Npe = R->Poisson(500.0*T->Earm_ECalTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );//ECal is a lead glass detector, so this could be correct
 	  // rough, first step: t of photons at PMT = tavg_TF1_hit + (0.172-z_TF1_hit)*n/C 
 	  t = tzero+T->Earm_ECalTF1.tavg->at(i)+(0.172-T->Earm_ECalTF1.zhit->at(i)*pmtdets[idet]->fRefIndex/3.e-1)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_ECalTF1.cell->at(i);
