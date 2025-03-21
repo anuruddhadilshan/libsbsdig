@@ -15,6 +15,8 @@
 #include <vector>
 #include <chrono>
 
+#define DBG_HISTOS 0
+
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
 //class gmn_tree;
@@ -102,7 +104,15 @@ class SBSDigGEMSimDig {
 		      Double_t C,  // normalization factor
 		      Double_t Tp); // shaping time 
   //ClassDef (SBSDigGEMSimDig, 0) 
-  
+#if DBG_HISTOS>0
+  TH2D* h2D_nplanesV_ava_dx; 
+  TH2D* h2D_nplanesV_ava_dxs; 
+  TH2D* h2D_nplanesV_ava_nstrips; 
+  TH2D* h2D_nplanesV_ava_nx; 
+  TH2D* h2D_nplanesVnActiveStrips;
+  TH2D* h2D_nplanesVnAllHitStrips;
+  TH2D* h2D_nplanesVnADCSum;
+#endif
   /*
   TH2D* h2D_edepVdr;
   

@@ -85,7 +85,16 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
     }
   }
   fRIon.resize((int)fMaxNIon);
-  
+
+#if DBG_HISTOS > 0
+  h2D_nplanesV_ava_dx = new TH2D("h2D_nplanesV_ava_dx", "FT;AVA_dx;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_dxs = new TH2D("h2D_nplanesV_ava_dxs", "FT;AVA_dxs;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_nstrips = new TH2D("h2D_nplanesV_ava_nstrips", "FT;AVA_nstrips;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_nx = new TH2D("h2D_nplanesV_ava_nx", "FT;AVA_nx;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
+  h2D_nplanesVnActiveStrips = new TH2D("h2D_nplanesVnActiveStrips", "FT;Strips above threshold;Module", 50, 0, 50, nchambers*2, 0, nchambers*2);
+  h2D_nplanesVnAllHitStrips = new TH2D("h2D_nplanesVnAllHitStrips", "FT;All Hit Strips;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
+  h2D_nplanesVnADCSum = new TH2D("h2D_nplanesVnADCSum", "FT;ADC sum;Module", 250, 0, 10000, nchambers*2, 0, nchambers*2);
+#endif
   /*
   h2D_edepVdr = new TH2D("h2D_edepVdr", ";sqrt(dx2_hit+dy2_hit);edep;", 100, 0., 50., 100, 0., 1.e5);
 
@@ -367,6 +376,10 @@ void SBSDigGEMSimDig::Integration_semiana(double roangle,
 					   int nx, double xbw)
 {
   double amplitude_sum = 0;
+#if DBG_AVA > 1
+  cout << "Integration_semi_ana: roangle (deg)" << roangle*TMath::RadToDeg() << endl;
+  cout << "x limits: l " << xl << " r " << xr << " y limits: b " << yb << " " << yt << endl;
+#endif
     
   for (UInt_t i = 0; i < fRNIon; i++){
     Double_t frxs = fRIon[i].X*cos(roangle) - fRIon[i].Y*sin(roangle);
@@ -374,7 +387,8 @@ void SBSDigGEMSimDig::Integration_semiana(double roangle,
     
     Int_t ix = (frxs-xl) / xbw;
     Int_t dx = fRIon[i].SNorm / xbw  + 1;
-#if DBG_AVA > 1
+#if DBG_AVA > 2
+    cout << "frxs " << frxs << " frys " << frys << endl;
     cout << "ix dx " << ix << " " << dx << endl;
 #endif
     
@@ -423,6 +437,8 @@ void SBSDigGEMSimDig::Integration_semiana(double roangle,
     //h1_SumweightsSemiAna->Fill(inte4);
     //h1_GammaEffSemiAna->Fill(eff_sigma);
   }
+// #if DBG_AVA >1
+// #endif
   //h1_NormSemiAna->Fill(amplitude_sum);
 }
 
@@ -435,7 +451,9 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3* R, double roangle,
 					   int nx, double xbw, 
 					   int ny, double ybw)
 {
-  //cout << " integration_fastappx " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+#if DBG_AVA > 0
+  cout << " integration_fastappx " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+#endif
   //so we do the numerical stuff, but only on the average hit... and then what?
   Double_t frxs = xc_hit*cos(roangle) - yc_hit*sin(roangle);
   Double_t frys = xc_hit*sin(roangle) + yc_hit*cos(roangle);
@@ -650,7 +668,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
   //TGEMSBSGEMHit **virs;
   //virs = new TGEMSBSGEMHit *[fNROPlanes[ic]];
   for (UInt_t ipl = 0; ipl < fNROPlanes; ++ipl){
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "coordinate " << ipl << " =========================" << endl;
 #endif
      
@@ -672,7 +690,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
     Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
     Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
     cout //<< ic << " " << ipl << " " << roangle_mod 
       << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
@@ -684,7 +702,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //if(ipl==1 && ic<4){
     //h1_ds_Y[int(ic>0)]->Fill(xs0-xs1, ys0-ys1);
     //}
-
+#if DBG_HISTOS > 0
+    h2D_nplanesV_ava_dx->Fill(x1-x0, min(ic,3)*2+ipl);
+    h2D_nplanesV_ava_dxs->Fill(xs1-xs0, min(ic,3)*2+ipl);
+#endif    
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
@@ -696,13 +717,14 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //if( (iL <= 0 && iU <= 0) || (iL>=pl.GetNStrips() && iU>=pl.GetNStrips()) ) {
       // All of the avalanche outside -> nothing to do
       // TODO: what if this happens for only one strip coordinate (ipl)?
-// #if DBG_AVA > 0
-//       cerr << __FILE__ << " " << __FUNCTION__ << ": out of active area, "
-// 	   << "chamber " << ic << " sector " << ic%30 << " plane " << ic/30 << endl
-// 	   << "iL_raw " << pl.GetStripUnchecked(xs0*1e-3) << " "
-// 	   << "iU_raw " << pl.GetStripUnchecked(xs1*1e-3) << endl
-// 	   << endl << endl;
-// #endif
+#if DBG_AVA > 1
+      // cerr << __FILE__ << " " << __FUNCTION__ << ": out of active area, "
+      // 	   << "chamber " << ic << " sector " << ic%30 << " plane " << ic/30 << endl
+      // 	   << "iL_raw " << pl.GetStripUnchecked(xs0*1e-3) << " "
+      // 	   << "iU_raw " << pl.GetStripUnchecked(xs1*1e-3) << endl
+      // 	   << endl << endl;
+    cout << "Low strip " << iL << " Up strip " << iU << " N strips? " << abs(iU-iL) << endl;
+#endif
     if(iL==iU){//nothing to do
       return;
     }
@@ -718,7 +740,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     Double_t xl = (iL*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripLowerEdge (iL) * 1000.0;
     Double_t xr = ((iU+1)*fStripPitch-dx_mod/2.)*1.e3;//pl.GetStripUpperEdge (iU) * 1000.0;
 
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "iL gsle " << iL << " " << xl << endl;
     cout << "iU gsue " << iU << " " << xr << endl;
 #endif
@@ -746,13 +768,17 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     Int_t nstrips = iU - iL + 1;
     Int_t nx = (iU - iL + 1) * integral_steps_x;//fXIntegralStepsPerPitch;
     Int_t ny = TMath::Nint( (yt - yb)/yq );
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "xr xl yt yb nx ny "
 	 << xr << " " << xl << " " << yt << " " << yb
 	 << " " << nx << " " << ny << endl;
 #endif
     assert( nx > 0 && ny > 0 );
     
+#if DBG_HISTOS > 0
+    h2D_nplanesV_ava_nstrips->Fill(nstrips, min(ic,3)*2+ipl);
+    h2D_nplanesV_ava_nx->Fill(nx, min(ic,3)*2+ipl);
+#endif
     //if(ipl==0 && ic<4){
     //h1_nstrips_X[int(ic>0)]->Fill(nstrips);
     //h1_ds_X[int(ic>0)]->Fill(yt-yb);
@@ -766,12 +792,12 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 
     Double_t xbw = (xr - xl) / nx;
     Double_t ybw = (yt - yb) / ny;
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "xbw ybw " << xbw << " " << ybw << endl;
 #endif
     
     Int_t sumASize = nx;
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout<<nx<<" : "<<ny<< ", nx*ny " << sumASize <<" Nstrips: "<<nstrips<<endl;
 #endif
     fSumA.resize(sumASize);
@@ -784,7 +810,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     
     //    fSumA.resize(nx*ny);
     //memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << fRNIon << " " << fRIon.size() << endl;
 #endif
     /*
@@ -910,7 +936,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     
     fTotalTime_int+= fDiff.count();
     
-#if DBG_AVA > 0
+#if DBG_AVA > 1
     cout << "t0 = " << t0 << " plane " << ipl 
 	 << endl;
 #endif
@@ -932,7 +958,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 	us += fSumA[kx++];
       }
       
-#if DBG_AVA > 0
+#if DBG_AVA > 2
       cout << "strip " << iL+j << " us " << us << endl;
 #endif
       
@@ -948,7 +974,7 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
 				   fADCgain,
 				   fADCbits );
 
-#if DBG_AVA > 0
+#if DBG_AVA > 2
 	if(pulse>0)
 	  cout << "strip number " << iL+j << ", sampling number " << b << ", t0 = " << t0 << endl
 	       << "pulse = " << pulse << ", (val - off)/gain = " 
@@ -981,8 +1007,9 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
 {
   // xi, xo are in chamber frame, in mm
   
-  //cout << " avamodel_2 " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
-  
+#if DBG_AVA > 0
+  cout << " avamodel_2 " << fRNIon << " " << fRSMax << " " << fRTime0 << endl;
+#endif
   Double_t nsigma = fAvalancheFiducialBand; // coverage factor
   
   //trying something:
@@ -1054,7 +1081,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
     Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
     Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
     Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
-    
+
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     Int_t iU = min(Int_t((xs1*1.e-3+dx_mod/2.)/fStripPitch), GEMstrips);
@@ -1102,7 +1129,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
     Int_t nstrips = iU - iL + 1;
     Int_t nx = (iU - iL + 1) * integral_steps_x;//fXIntegralStepsPerPitch;
     Int_t ny = TMath::Nint( (yt - yb)/yq );
-    
+
     // define function, gaussian and sum of gaussian
 
     Double_t xbw = (xr - xl) / nx;
@@ -1357,6 +1384,12 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   //cout << "commonmode " << commonmode << endl;
   int apv_ctr;
   for(size_t i = 0; i<gemdet->GEMPlanes.size(); i++){
+#if DBG_AVA >0 
+    cout << "GEM plane/RO " << i << " ( chamber " << i/2 << ", proj " << i%2 << "); ";
+#endif
+    double ADC_sum = 0.0;
+    int nstripshit_total = 0;
+    int nstripshit_abovethr = 0;
     for(int j = 0; j<gemdet->GEMPlanes[i].GetNStrips(); j++){
       //if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       //cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " << i << " " << j << endl;
@@ -1374,6 +1407,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
       //cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
       //}
       if(gemdet->GEMPlanes[i].GetADCSum(j)>0){
+#if DBG_AVA >0
+#endif
+	nstripshit_total++;
+	ADC_sum+=gemdet->GEMPlanes[i].GetADCSum(j);
 	//if(i%2==1 && i<24)h1_yGEM_incheckout->Fill(j*fStripPitch-gemdet->GEMPlanes[i].dX()/2.);
 	if(!sigonly){
 	  for(int k = 0; k<fNSamples; k++){
@@ -1540,7 +1577,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	  }
 	  
 	  if(uniqueid==FT_UNIQUE_DETID){
-	     for(int k = 0; k<fNSamples; k++){
+#if DBG_AVA >0
+#endif
+	    nstripshit_abovethr++;
+	    for(int k = 0; k<fNSamples; k++){
 	       T->Harm_FT_Dig.nstrips++;
 	       T->Harm_FT_Dig.module->push_back(i);
 	       T->Harm_FT_Dig.strip->push_back(j);
@@ -1597,7 +1637,27 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	
       }
     }
-  }  
+#if DBG_HISTOS > 0
+    if(nstripshit_total>0){
+      if(i>9){
+	h2D_nplanesVnActiveStrips->Fill(nstripshit_abovethr, i-4);
+	h2D_nplanesVnAllHitStrips->Fill(nstripshit_total, i-4);
+	h2D_nplanesVnADCSum->Fill(ADC_sum, i-4);
+      }else if(i>7){
+	h2D_nplanesVnActiveStrips->Fill(nstripshit_abovethr, i-2);
+	h2D_nplanesVnAllHitStrips->Fill(nstripshit_total, i-2);
+	h2D_nplanesVnADCSum->Fill(ADC_sum, i-2);
+      }else{
+	h2D_nplanesVnActiveStrips->Fill(nstripshit_abovethr, i);
+	h2D_nplanesVnAllHitStrips->Fill(nstripshit_total, i);
+	h2D_nplanesVnADCSum->Fill(ADC_sum, i);
+      }
+    }
+#endif
+#if DBG_AVA >0 
+    if(nstripshit_total>0){cout << " N hit strips (above thr): " << nstripshit_abovethr << " (total) " << nstripshit_total << " ADCsum " << ADC_sum << endl;}else{cout << endl;}
+#endif 
+  }
 }
 
 //___________________________________________________________________________________
@@ -1633,6 +1693,15 @@ void SBSDigGEMSimDig::Print()
 
 void SBSDigGEMSimDig::write_histos()
 {
+#if DBG_HISTOS > 0
+  h2D_nplanesV_ava_dx->Write();
+  h2D_nplanesV_ava_dxs->Write();
+  h2D_nplanesV_ava_nstrips->Write();
+  h2D_nplanesV_ava_nx->Write();
+  h2D_nplanesVnActiveStrips->Write();
+  h2D_nplanesVnAllHitStrips->Write();
+  h2D_nplanesVnADCSum->Write();
+
   /*
   h2D_edepVdr->Write();
 
@@ -1721,6 +1790,7 @@ void SBSDigGEMSimDig::write_histos()
   h1_yGEMvsADC_inava_4->Write();
   h1_yGEM_incheckout->Write();
   */
+#endif
 }
 
 void SBSDigGEMSimDig::print_time_execution()
