@@ -87,8 +87,10 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_
   fRIon.resize((int)fMaxNIon);
 
 #if DBG_HISTOS > 0
-  h2D_nplanesV_ava_dx = new TH2D("h2D_nplanesV_ava_dx", "FT;AVA_dx;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
-  h2D_nplanesV_ava_dxs = new TH2D("h2D_nplanesV_ava_dxs", "FT;AVA_dxs;Module", 100, -20, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_dx = new TH2D("h2D_nplanesV_ava_dx", "FT;AVA_dx;Module", 100, 0, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_dxs = new TH2D("h2D_nplanesV_ava_dxs", "FT;AVA_dxs;Module", 100, 0, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_dy = new TH2D("h2D_nplanesV_ava_dy", "FT;AVA_dy;Module", 100, 0, 20, nchambers*2, 0, nchambers*2);
+  h2D_nplanesV_ava_dys = new TH2D("h2D_nplanesV_ava_dys", "FT;AVA_dys;Module", 100, 0, 20, nchambers*2, 0, nchambers*2);
   h2D_nplanesV_ava_nstrips = new TH2D("h2D_nplanesV_ava_nstrips", "FT;AVA_nstrips;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
   h2D_nplanesV_ava_nx = new TH2D("h2D_nplanesV_ava_nx", "FT;AVA_nx;Module", 100, 0, 100, nchambers*2, 0, nchambers*2);
   h2D_nplanesVnActiveStrips = new TH2D("h2D_nplanesVnActiveStrips", "FT;Strips above threshold;Module", 50, 0, 50, nchambers*2, 0, nchambers*2);
@@ -686,14 +688,22 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
     
     // Positions in strip frame
-    Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
-    Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
-    Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
-    Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
+    Double_t xsm = ( (x0+x1)*cos(roangle_mod) - (y0+y1)*sin(roangle_mod) ) * 0.5;
+    Double_t ysm = ( (x0+x1)*sin(roangle_mod) + (y0+y1)*cos(roangle_mod) ) * 0.5;
+    Double_t xs0 = xsm-(x1-x0)*0.5;
+    Double_t ys0 = ysm-(y1-y0)*0.5;
+    Double_t xs1 = xsm+(x1-x0)*0.5;
+    Double_t ys1 = ysm+(y1-y0)*0.5;
+    // Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
+    // Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
+    // Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
+    // Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
 #if DBG_AVA > 1
     cout << "glx gly gux guy " << glx << " " << gly << " " << gux << " " << guy << endl;
-    cout //<< ic << " " << ipl << " " << roangle_mod 
-      << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
+    cout << ic << " " << ipl << " " << roangle_mod 
+	 << " xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
+    cout << " ref: xs0 ys0 xs1 ys1 " << x0*cos(roangle_mod) - y0*sin(roangle_mod) << " " << x0*sin(roangle_mod) + y0*cos(roangle_mod)
+	 << " " << x1*cos(roangle_mod) - y1*sin(roangle_mod) << " " << x1*sin(roangle_mod) + y1*cos(roangle_mod) << endl;
 #endif
     //if(ipl==1 && ic<12)h1_yGEM_inava->Fill(xs0*1.e-3);
     //if(ipl==0 && ic<4){
@@ -704,8 +714,10 @@ void SBSDigGEMSimDig::AvaModel(const int ic,
     //}
 #if DBG_HISTOS > 0
     h2D_nplanesV_ava_dx->Fill(x1-x0, min(ic,3)*2+ipl);
-    h2D_nplanesV_ava_dxs->Fill(xs1-xs0, min(ic,3)*2+ipl);
-#endif    
+    h2D_nplanesV_ava_dxs->Fill(abs(xs1-xs0), min(ic,3)*2+ipl);
+    h2D_nplanesV_ava_dy->Fill(y1-y0, min(ic,3)*2+ipl);
+    h2D_nplanesV_ava_dys->Fill(abs(ys1-ys0), min(ic,3)*2+ipl);
+#endif
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
     //pl.GetStrip (xs0 * 1e-3, ys0 * 1e-3);
@@ -1696,6 +1708,8 @@ void SBSDigGEMSimDig::write_histos()
 #if DBG_HISTOS > 0
   h2D_nplanesV_ava_dx->Write();
   h2D_nplanesV_ava_dxs->Write();
+  h2D_nplanesV_ava_dy->Write();
+  h2D_nplanesV_ava_dys->Write();
   h2D_nplanesV_ava_nstrips->Write();
   h2D_nplanesV_ava_nx->Write();
   h2D_nplanesVnActiveStrips->Write();

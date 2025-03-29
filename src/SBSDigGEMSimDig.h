@@ -15,7 +15,7 @@
 #include <vector>
 #include <chrono>
 
-#define DBG_HISTOS 0
+#define DBG_HISTOS 1
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
@@ -107,6 +107,8 @@ class SBSDigGEMSimDig {
 #if DBG_HISTOS>0
   TH2D* h2D_nplanesV_ava_dx; 
   TH2D* h2D_nplanesV_ava_dxs; 
+  TH2D* h2D_nplanesV_ava_dy; 
+  TH2D* h2D_nplanesV_ava_dys; 
   TH2D* h2D_nplanesV_ava_nstrips; 
   TH2D* h2D_nplanesV_ava_nx; 
   TH2D* h2D_nplanesVnActiveStrips;
