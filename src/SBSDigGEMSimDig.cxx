@@ -1089,10 +1089,16 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic,
     GEMstrips = gemdet->GEMPlanes[ic*2+ipl].GetNStrips();
     
     // Positions in strip frame
-    Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
-    Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
-    Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
-    Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
+    Double_t xsm = ( (x0+x1)*cos(roangle_mod) - (y0+y1)*sin(roangle_mod) ) * 0.5;
+    Double_t ysm = ( (x0+x1)*sin(roangle_mod) + (y0+y1)*cos(roangle_mod) ) * 0.5;
+    Double_t xs0 = xsm-(x1-x0)*0.5;
+    Double_t ys0 = ysm-(y1-y0)*0.5;
+    Double_t xs1 = xsm+(x1-x0)*0.5;
+    Double_t ys1 = ysm+(y1-y0)*0.5;
+    // Double_t xs0 = x0*cos(roangle_mod) - y0*sin(roangle_mod);
+    // Double_t ys0 = x0*sin(roangle_mod) + y0*cos(roangle_mod);
+    // Double_t xs1 = x1*cos(roangle_mod) - y1*sin(roangle_mod); 
+    // Double_t ys1 = x1*sin(roangle_mod) + y1*cos(roangle_mod);
 
     Int_t iL = max(0, Int_t((xs0*1.e-3+dx_mod/2.)/fStripPitch) );
     iL = min(iL, GEMstrips);
