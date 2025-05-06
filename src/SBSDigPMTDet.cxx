@@ -23,6 +23,13 @@ SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> 
   fRefPulse = new SPEModel(fUniqueID, sigmapulse, 0, -gatewidth/2., gatewidth/2.);
 }
 
+void SBSDigPMTDet::SetHitPosRespParam(const int nparam, const double* paramarray)
+{
+  for(int i = 0; i<nparam; i++){
+    fHitPosRespParam.push_back(paramarray[i]);
+  }
+}
+
 SBSDigPMTDet::~SBSDigPMTDet()
 {
   

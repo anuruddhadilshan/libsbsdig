@@ -17,6 +17,7 @@ class SBSDigPMTDet {
   void Digitize(g4sbs_tree* T, TRandom3* R);
   void Clear(bool dosamples = false);
   void SetSamples(double sampsize);
+  void SetHitPosRespParam(const int nparam, const double* paramarray);
   
   //private:
   UInt_t fNChan;
@@ -37,6 +38,7 @@ class SBSDigPMTDet {
   double fTDCconv;
   double fTDCbits;
   double fSigmaPulse;
+  std::vector<double> fHitPosRespParam;
 };
 
 #endif

@@ -149,6 +149,7 @@ int main(int argc, char** argv){
   
   const int nparam_pmtdet_adc = 12;
   const int nparam_pmtdet_fadc = 11;
+  const int nparam_pmtdet_fadc_hitposresp = 12;
   const int nparam_pmtdet_fadc_leadglass = 12;
   const int nparam_gemdet = 12;
   
@@ -224,6 +225,7 @@ int main(int argc, char** argv){
   Int_t FADC_ADCbits = 12;
   Double_t FADC_sampsize = 4.0;
   Double_t sigmapulse_hcal = 20.0;
+  Double_t hcalzhitresp_p[3] = {5.242, 11.39, 10.41};
   
   int nparam_bbgem_read = 0;
   Int_t NPlanes_bbgem = 32;// number of planes/modules/readout
@@ -910,6 +912,16 @@ int main(int argc, char** argv){
 	  nparam_hcal_read++;
 	}
 	
+	if(skey=="zhitresp_hcal"){
+	  if(ntokens==3+1){
+	    for(int k = 0; k<3; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      hcalzhitresp_p[k] = stemp.Atof(); 
+	    }
+	    nparam_hcal_read++;
+	  }
+	}
+	
 	if(skey=="FADC_ADCbits"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  FADC_ADCbits = stemp.Atoi();
@@ -919,7 +931,7 @@ int main(int argc, char** argv){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
 	  FADC_sampsize = stemp.Atof();
 	}
-	
+
 	//Ecal
 	if(skey=="refindex_ecal"){
 	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
@@ -3126,7 +3138,7 @@ int main(int argc, char** argv){
     }
     
     if(detectors_list[k] == "hcal"){
-      if(nparam_hcal_read!=nparam_pmtdet_fadc){
+      if(nparam_hcal_read!=nparam_pmtdet_fadc_hitposresp){
 	cout << detectors_list[k] <<  " does not have the right number of parameters!!! " << endl << " fix database and retry! " << endl;
 	exit(-1);
       }
@@ -3144,6 +3156,7 @@ int main(int argc, char** argv){
       hcal->fTDCbits = TDCbits_hcal; 
       hcal->fSigmaPulse = sigmapulse_hcal; 
       hcal->SetSamples(FADC_sampsize);
+      hcal->SetHitPosRespParam(3, hcalzhitresp_p);
       
       //ordered by increasing uinque id
       PMTdetectors.push_back(hcal);

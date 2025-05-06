@@ -51,7 +51,8 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	// Evaluation of number of photoelectrons from energy deposit documented at:
 	// https://sbs.jlab.org/DocDB/0000/000043/002/Harm_HCal_Digi_EdepOnly_2.pdf
 	// TODO: put that stuff in DB...
-	Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
+	//Npe_Edep_ratio = 5.242+11.39*z_hit+10.41*pow(z_hit, 2);
+	Npe_Edep_ratio = pmtdets[idet]->fHitPosRespParam[0]+pmtdets[idet]->fHitPosRespParam[1]*z_hit+pmtdets[idet]->fHitPosRespParam[2]*pow(z_hit, 2);
 	Npe = R->Poisson(Npe_Edep_ratio*T->Harm_HCalScint.sumedep->at(k)*1.0e3);
 	t = tzero+R->Gaus(T->Harm_HCalScint.tavg->at(k)+10.11, 1.912)-pmtdets[idet]->fTrigOffset;
       
