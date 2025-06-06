@@ -9,7 +9,7 @@ detectors_list hcal ecal cdet ft fpp1
 refindex_ecal 1.6477
 NChan_ecal 1656
 gatewidth_ecal 200 
-gain_ecal 7.5e5
+gain_ecal 2.9e6
 ped_ecal 300.0 
 pedsigma_ecal 3.0 
 trigoffset_ecal 15.7 
