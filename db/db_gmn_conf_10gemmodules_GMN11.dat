@@ -9,7 +9,8 @@ detectors_list hcal bbps bbsh grinch bbhodo bbgem
 refindex_bbps 1.65
 NChan_bbps 52 
 gatewidth_bbps 200 
-gain_bbps 1.72e6
+#gain_bbps 1.72e6
+gain_bbps 3.194e6
 ped_bbps 300.0 
 pedsigma_bbps 3.0 
 trigoffset_bbps 18.2 
@@ -24,7 +25,8 @@ sigmapulse_bbps 40.0
 refindex_bbsh 1.6477
 NChan_bbsh 189
 gatewidth_bbsh 200 
-gain_bbsh 8.32e5
+#gain_bbsh 8.32e5
+gain_bbsh 2.037e6
 ped_bbsh 300.0 
 pedsigma_bbsh 3.0 
 trigoffset_bbsh 18.5 
