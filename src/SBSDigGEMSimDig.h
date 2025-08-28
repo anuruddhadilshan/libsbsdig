@@ -15,7 +15,7 @@
 #include <vector>
 #include <chrono>
 
-#define DBG_HISTOS 1
+#define DBG_HISTOS 0
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
