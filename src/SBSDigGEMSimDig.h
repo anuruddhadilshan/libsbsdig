@@ -26,7 +26,7 @@ class SBSDigGEMSimDig {
  public:
   //Constructor and destructor
   SBSDigGEMSimDig();
-  SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv = 0, double* commonmode_array = 0);
+  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0);
   virtual ~SBSDigGEMSimDig();
   void Print();
   
@@ -85,7 +85,7 @@ class SBSDigGEMSimDig {
   Double_t fRSMax;
   Double_t fRTotalCharge;
   Double_t fRTime0;
-  Double_t fTimeZero;
+  //Double_t fTimeZero;
   
   std::vector<Double_t> fSumA;
   //std::vector<Short_t>  fDADC;

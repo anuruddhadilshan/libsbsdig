@@ -2867,7 +2867,7 @@ int main(int argc, char** argv){
       }
 
       SBSDigGEMDet* bbgem = new SBSDigGEMDet(BBGEM_UNIQUE_DETID, NPlanes_bbgem, layer_bbgem, nstrips_bbgem, offset_bbgem, RO_angle_bbgem, 6, ZsupThr_bbgem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, ZsupThr_bbgem, nAPV_bbgem, commonmode_array_bbgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_bbgem/2, triggeroffset_bbgem, gain_bbgem, ZsupThr_bbgem, nAPV_bbgem, commonmode_array_bbgem);
       for(int m = 0; m<Nlayers_bbgem; m++){
 	bbgem->fZLayer.push_back(bbgem_layer_z[m]);
       }
@@ -2885,7 +2885,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* sbsgem = new SBSDigGEMDet(SBSGEM_UNIQUE_DETID, NPlanes_sbsgem, layer_sbsgem, nstrips_sbsgem, offset_sbsgem, RO_angle_sbsgem, 6, ZsupThr_sbsgem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_sbsgem/2, triggeroffset_sbsgem, ZsupThr_sbsgem, nAPV_sbsgem, commonmode_array_sbsgem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_sbsgem/2, triggeroffset_sbsgem, gain_sbsgem, ZsupThr_sbsgem, nAPV_sbsgem, commonmode_array_sbsgem);
       for(int m = 0; m<Nlayers_sbsgem; m++){
 	sbsgem->fZLayer.push_back(sbsgem_layer_z[m]);
       }
@@ -2903,7 +2903,7 @@ int main(int argc, char** argv){
       }
 
       SBSDigGEMDet* cepol_front = new SBSDigGEMDet(CEPOL_GEMFRONT_UNIQUE_DETID, NPlanes_cepol_front, layer_cepol_front, nstrips_cepol_front, offset_cepol_front, RO_angle_cepol_front, 6, ZsupThr_cepol_front);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_front/2, triggeroffset_cepol_front, ZsupThr_cepol_front, nAPV_cepol_front, commonmode_array_cepol_front);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_front/2, triggeroffset_cepol_front, gain_cepol_front, ZsupThr_cepol_front, nAPV_cepol_front, commonmode_array_cepol_front);
       for(int m = 0; m<Nlayers_cepol_front; m++){
 	cepol_front->fZLayer.push_back(cepol_front_layer_z[m]);
       }
@@ -2921,7 +2921,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* cepol_rear = new SBSDigGEMDet(CEPOL_GEMREAR_UNIQUE_DETID, NPlanes_cepol_rear, layer_cepol_rear, nstrips_cepol_rear, offset_cepol_rear, RO_angle_cepol_rear, 6, ZsupThr_cepol_rear);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_rear/2, triggeroffset_cepol_rear, ZsupThr_cepol_rear, nAPV_cepol_rear, commonmode_array_cepol_rear);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_cepol_rear/2, triggeroffset_cepol_rear, gain_cepol_rear, ZsupThr_cepol_rear, nAPV_cepol_rear, commonmode_array_cepol_rear);
       for(int m = 0; m<Nlayers_cepol_rear; m++){
 	cepol_rear->fZLayer.push_back(cepol_rear_layer_z[m]);
       }
@@ -2939,7 +2939,7 @@ int main(int argc, char** argv){
       }
 
      SBSDigGEMDet* prpolbs_gem = new SBSDigGEMDet(PRPOLBS_GEM_UNIQUE_DETID, NPlanes_prpolbs_gem, layer_prpolbs_gem, nstrips_prpolbs_gem, offset_prpolbs_gem, RO_angle_prpolbs_gem, 6, ZsupThr_prpolbs_gem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolbs_gem/2, triggeroffset_prpolbs_gem, ZsupThr_prpolbs_gem, nAPV_prpolbs_gem, commonmode_array_prpolbs_gem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolbs_gem/2, triggeroffset_prpolbs_gem, gain_prpolbs_gem, ZsupThr_prpolbs_gem, nAPV_prpolbs_gem, commonmode_array_prpolbs_gem);
       for(int m = 0; m<Nlayers_prpolbs_gem; m++){
 	prpolbs_gem->fZLayer.push_back(prpolbs_gem_layer_z[m]);
       }
@@ -2957,7 +2957,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* prpolfs_gem = new SBSDigGEMDet(PRPOLFS_GEM_UNIQUE_DETID, NPlanes_prpolfs_gem, layer_prpolfs_gem, nstrips_prpolfs_gem, offset_prpolfs_gem, RO_angle_prpolfs_gem, 6, ZsupThr_prpolfs_gem);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolfs_gem/2, triggeroffset_prpolfs_gem, ZsupThr_prpolfs_gem, nAPV_prpolfs_gem, commonmode_array_prpolfs_gem);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_prpolfs_gem/2, triggeroffset_prpolfs_gem, gain_prpolfs_gem, ZsupThr_prpolfs_gem, nAPV_prpolfs_gem, commonmode_array_prpolfs_gem);
       for(int m = 0; m<Nlayers_prpolfs_gem; m++){
 	prpolfs_gem->fZLayer.push_back(prpolfs_gem_layer_z[m]);
       }
@@ -2975,7 +2975,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft);
       for(int m = 0; m<Nlayers_ft; m++){
 	ft->fZLayer.push_back(ft_layer_z[m]);
       }
@@ -2994,7 +2994,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* fpp1 = new SBSDigGEMDet(FPP1_UNIQUE_DETID, NPlanes_fpp1, layer_fpp1, nstrips_fpp1, offset_fpp1, RO_angle_fpp1, 6, ZsupThr_fpp1);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp1/2, triggeroffset_fpp1, ZsupThr_fpp1, nAPV_fpp1, commonmode_array_fpp1);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp1/2, triggeroffset_fpp1, gain_fpp1, ZsupThr_fpp1, nAPV_fpp1, commonmode_array_fpp1);
       for(int m = 0; m<Nlayers_fpp1; m++){
 	fpp1->fZLayer.push_back(fpp1_layer_z[m]);
       }
@@ -3013,7 +3013,7 @@ int main(int argc, char** argv){
       }
       
       SBSDigGEMDet* fpp2 = new SBSDigGEMDet(FPP2_UNIQUE_DETID, NPlanes_fpp2, layer_fpp2, nstrips_fpp2, offset_fpp2, RO_angle_fpp2, 6, ZsupThr_fpp2);
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp2/2, triggeroffset_fpp2, ZsupThr_fpp2, nAPV_fpp2, commonmode_array_fpp2);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_fpp2/2, triggeroffset_fpp2, gain_fpp2, ZsupThr_fpp2, nAPV_fpp2, commonmode_array_fpp2);
       for(int m = 0; m<Nlayers_fpp2; m++){
 	fpp2->fZLayer.push_back(fpp2_layer_z[m]);
       }
@@ -3332,7 +3332,8 @@ int main(int argc, char** argv){
       BkgdGenerator = new SBSDigBkgdGen(f_bkgd, detectors_list, BkgdTimeWindow, pmtbkgddig);
       cout << "Includes background from file: " << inputbkgdfile.c_str() 
 	   << " (integrated on " << BkgdTimeWindow << " ns time window);" 
-	   << endl << " assuming " << LumiFrac*100 << "% luminosity."<< endl;
+	   << endl << " assuming " << LumiFrac*100 << "% luminosity." << endl
+	   << " Doing PMT background digitization? " << pmtbkgddig << endl;
     }
   }
   
