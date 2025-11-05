@@ -32,6 +32,9 @@
 #define fPulseNoisePeriod 200. // period of the pedestal noise, assuming sinusoidal function
 #define fPulseNoiseAmpConst 0  // constant term of the pedestal noise amplitude
 #define fPulseNoiseAmpSigma 0  // sigma term of the pedestal noise amplitude
+#define fCMSigma 20.           // CM fluctuation sigma. For testing.
+#define fPedMeanSigma 50.      // A sigma value for pedestal mean(offset) distribution.
+#define fPedRMS 9.             // A RMS value for pedestal.
 
 //paramters for cross-talk
 #define fNCStripApart 32  // # of strips the induced signal is away from the mean signal
@@ -1398,7 +1401,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
   //   }cout << endl;
   // }
   short strip;
-  double commonmode = 0;
+  double commonmode = 0; double commonmode_mean_apv = 0;
+  std::vector<double> commonmode_apv_ts (fNSamples, 0.);
   if(fDoCommonMode){commonmode = fCommonModeArray[0];}
   //cout << "commonmode " << commonmode << endl;
   int apv_ctr;
@@ -1418,7 +1422,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
       if(fDoCommonMode && !sigonly){
 	//cout << " hou " << endl;
 	if(j%128==0 && apv_ctr<fCommonModeArray.size()){
-	  commonmode = fCommonModeArray[apv_ctr++];
+	  commonmode = fCommonModeArray[apv_ctr++]; //commendted out by Anu for new modifications.
+    commonmode_mean_apv = fCommonModeArray[apv_ctr++];
+
+    for (int i=0; i<fNSamples; i++) commonmode_apv_ts.at(i) = R->Gaus(commonmode_mean_apv, fPulseNoiseSigma);
 	  //cout << commonmode << endl;
 	}
       }
@@ -1436,7 +1443,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
 	    //cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j) << " = = > ";
 	    //int ped = TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma));
 	    //if(gemdet->GEMPlanes[i].GetADC(j, k)<0 || gemdet->GEMPlanes[i].GetADC(j, k)>4096)cout << i << " " << j << " " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << ped << " " << commonmode << " " << fPulseNoiseSigma << endl;
-	    gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma)));
+	    //gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode, fPulseNoiseSigma)));
+      gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint( R->Gaus(0., fPedMeanSigma) + R->Gaus(0., fPedRMS) + commonmode_apv_ts.at(k) ));
 	    //cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " << gemdet->GEMPlanes[i].GetADCSum(j)<< endl;
 	    //handle saturation
 	    if(gemdet->GEMPlanes[i].GetADC(j, k)>pow(2, fADCbits) ){
