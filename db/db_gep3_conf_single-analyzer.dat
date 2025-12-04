@@ -71,6 +71,9 @@ gain_ft 20.
 ZsupThr_ft 0.
 #common mode value/array for GEMs in ADC channels
 commonmode_array_ft 1500.
+do_pedcm_ft 1
+pedfile_ft ft_pedout_peddat.dat
+cmfile_ft ft_cm.dat
 
 # number of planes/modules/readout
 NPlanes_fpp1 64 

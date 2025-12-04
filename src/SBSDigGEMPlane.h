@@ -8,6 +8,19 @@
 //#include "TH1D.h"
 #include "TRandom3.h"
 
+struct Pedestal {
+  double mean{};
+  double rms{};
+};
+
+struct CommonMode {
+  double mean{};
+  double sigma{};
+};
+
+using pedmap = std::map<int, Pedestal>; // Map ped mean and rms value to each strip number.
+using cmmap = std::map<int, CommonMode>; // Map CM mean and sigma values to each APV number.
+
 class SBSDigGEMPlane {
  public:
   SBSDigGEMPlane();
@@ -40,31 +53,40 @@ class SBSDigGEMPlane {
     //}
   };
 
-  void SetPlaneStripPed(){ // This function will set the pedestal mean and RMS for each strip in the GEM plane.
+  void SetPlaneStripPed(const pedmap& PedestalMap){ // This function will set the pedestal mean and RMS for each strip in the GEM plane.
 
-    for (int istrip=0; istrip<fNStrips; istrip++){
+    // for (int istrip=0; istrip<fNStrips; istrip++){
 
-      fStripPedOffset[istrip] = R->Gaus(0,50.); //using some hard-coded values here just for testing.
-      fStripPedRMS[istrip] = R->Gaus(0, 9.);
-    }
+    //   fStripPedOffset[istrip] = R->Gaus(0,50.); //using some hard-coded values here just for testing.
+    //   fStripPedRMS[istrip] = R->Gaus(0, 9.);
+    // }
+    fPedestalMap = PedestalMap;
+
   };
 
-  void SetPlaneAPVCM(){  // This function will set CM mean and std.dev values for each APV in the GEM plane.
+  void SetPlaneAPVCM(const cmmap& CommonmodeMap){  // This function will set CM mean and std.dev values for each APV in the GEM plane.
 
-    for (int istrip=0; istrip<fNStrips; istrip++){
+    // for (int istrip=0; istrip<fNStrips; istrip++){
 
-      if ( istrip%128==0 ){
-        int iAPV = istrip/128;
-        fAPVCMMean[iAPV] = R->Gaus(1500, 200);
-        fAPVCMSigma[iAPV] = 20;
-      }
-    }
+    //   if ( istrip%128==0 ){
+    //     int iAPV = istrip/128;
+    //     fAPVCMMean[iAPV] = R->Gaus(1500, 200);
+    //     fAPVCMSigma[iAPV] = 20;
+    //   }
+    // }
+    fCommonmodeMap = CommonmodeMap;
+    
   };
 
-  Double_t GetStripPedMean(int strip) {return fStripPedOffset[strip];};
-  Double_t GetStripPedRMS(int strip) {return fStripPedRMS[strip];};
-  Double_t GetAPVCMMean(int apv) {return fAPVCMMean[apv];};
-  Double_t GetAPVCMSigma(int apv) {return fAPVCMSigma[apv];};
+
+  // Double_t GetStripPedMean(int strip) {return fStripPedOffset[strip];};
+  // Double_t GetStripPedRMS(int strip) {return fStripPedRMS[strip];};
+  // Double_t GetAPVCMMean(int apv) {return fAPVCMMean[apv];};
+  // Double_t GetAPVCMSigma(int apv) {return fAPVCMSigma[apv];};
+  Double_t GetStripPedMean(int strip) {return fPedestalMap[strip].mean;};
+  Double_t GetStripPedRMS(int strip) {return fPedestalMap[strip].rms;};
+  Double_t GetAPVCMMean(int apv) {return fCommonmodeMap[apv].mean;};
+  Double_t GetAPVCMSigma(int apv) {return fCommonmodeMap[apv].sigma;};
   
  private:
   // ADC sampled value of strip array of each axis
@@ -86,6 +108,8 @@ class SBSDigGEMPlane {
   Double_t* fStripPedRMS;
   Double_t* fAPVCMMean;
   Double_t* fAPVCMSigma;
+  pedmap fPedestalMap;
+  cmmap fCommonmodeMap;
   
 };
 #endif

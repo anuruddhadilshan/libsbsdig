@@ -1427,8 +1427,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
     
 	  //cout << commonmode << endl;
 	}
-
-  
+  // Plan for implementing online CM and ZS:
+  // Start counting 128 strips from j%120==0 which will be 1 APV card. store those values for 6 TSs in an array?
+  // Then perform 'online' CM calculation and ZS for each TS.
+  // Store the results if it passes online CM and ZS.
 
   if (j%128==0)
   {
@@ -1436,6 +1438,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet* gemdet,
     int iAPV = j/128;
     double commonmode_mean_apv = gemdet->GEMPlanes[i].GetAPVCMMean(iAPV);
     double commonmode_sigma_apv = gemdet->GEMPlanes[i].GetAPVCMSigma(iAPV);
+    
     commonmode_apv_ts_sum = 0;
     for (int i=0; i<fNSamples; i++){
       commonmode_apv_ts.at(i) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv);
