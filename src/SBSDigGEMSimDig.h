@@ -26,12 +26,13 @@ class SBSDigGEMSimDig {
  public:
   //Constructor and destructor
   SBSDigGEMSimDig();
-  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0);
+  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0, bool do_online_cm = false, bool do_online_zs = false);
   virtual ~SBSDigGEMSimDig();
   void Print();
   
   Int_t Digitize (SBSDigGEMDet* gemdet, TRandom3* R, bool bkgdonly = false);//, gmn_tree* T);
   //void CheckOut(SBSDigGEMDet* gemdet, TRandom3* R, gmn_tree* T);
+  void FillOutputTreeVectors(SBSDigGEMDet* gemdet, const int i /*plane#*/, const int j/*strp#*/, const int uniqueid, g4sbs_tree* T);
   void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T, bool sigonly = false);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
   void write_histos();
@@ -92,12 +93,18 @@ class SBSDigGEMSimDig {
 
   Double_t fAvaGain;
   Int_t fNSamples;
+  Int_t fNAPVChannels;
   
   //zero suppression and common mode
   Bool_t fDoZeroSup;
   Double_t fZeroSup;
   Bool_t fDoCommonMode;
   std::vector<Double_t> fCommonModeArray;
+
+  //New (Dec, 2025): 'Online' CM corrections and ZS.
+  Bool_t fDoOnlineCommonMode;
+  Bool_t fDoOnlineZeroSuppression; // Online CM *MUST BE* true for online ZS to take effect.  
+  
   
   Short_t ADCConvert(Double_t val, Double_t off, Double_t gain, Int_t bits);
   Double_t PulseShape(Double_t t, 

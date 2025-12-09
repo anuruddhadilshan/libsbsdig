@@ -74,6 +74,8 @@ commonmode_array_ft 1500.
 do_pedcm_ft 1
 pedfile_ft ft_pedout_peddat.dat
 cmfile_ft ft_cm.dat
+do_online_cm_ft 1 #Apply online CM correction.
+#do_online_zs_ft   #Apply online zero-suppresion.
 
 # number of planes/modules/readout
 NPlanes_fpp1 64 
