@@ -85,8 +85,8 @@ SBSDigGEMSimDig::
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
                                  double *gain, double zsup_thr, int napv,
-                                 double *commonmode_array, const bool do_online_cm, const bool do_online_zs)
-    : fZeroSup(zsup_thr), fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs) {
+                                 double *commonmode_array, bool do_variable_pedcm, bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma)
+    : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm), fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), fOnlineZSThrNsigma(online_zs_thr_nsigma) {
   // TODO: pass as parameters.
   fAvaGain = gain[0];
   fNSamples = 6;
@@ -1775,65 +1775,93 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
   //    }cout << endl;
   //  }
   short strip;
-  double commonmode =
-      0; // double commonmode_mean_apv = 0; double commonmode_sigma_apv = 0;
-  double commonmode_apv_ts_sum = 0;
-  std::vector<double> commonmode_apv_ts(fNSamples, 0.);
+  double commonmode = 0; // double commonmode_mean_apv = 0; double commonmode_sigma_apv = 0;
+  
   if (fDoCommonMode) {
     commonmode = fCommonModeArray[0];
   }
   // cout << "commonmode " << commonmode << endl;
-  int apv_ctr;
+  int apv_ctr = 0;   
   for (size_t i = 0; i < gemdet->GEMPlanes.size(); i++) { // Being loop over GEM planes.
 #if DBG_AVA > 0
     cout << "GEM plane/RO " << i << " ( chamber " << i / 2 << ", proj " << i % 2
          << "); ";
 #endif
+
     double ADC_sum = 0.0;
     int nstripshit_total = 0;
     int nstripshit_abovethr = 0;
 
-    // For 'online' CM and ZS suppression after the following for-loop over strips.
-
-
-    //
-
+    double commonmode_apv_ts_sum = 0;
+    std::vector<double> commonmode_apv_ts(fNSamples, 0.);
+ 
     for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++) { // Begin loop over strips.
       // if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       // cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " <<
       // i << " " << j << endl; test = gemdet->GEMPlanes[4].GetADCSum(400);
       // }
       // cout << fDoCommonMode << endl;
-      if (fDoCommonMode && !sigonly) {
-        // cout << " hou " << endl;
-        if (j % 128 == 0 && apv_ctr < fCommonModeArray.size()) {
-          commonmode = fCommonModeArray[apv_ctr++];
+      if (!sigonly){
+        if (fDoVariablePedCM){ // New CM.
+          if (j % 128 == 0) {
+            // commonmode_mean_apv = commonmode;
+            int iAPV = j / 128;
+            double commonmode_mean_apv = gemdet->GEMPlanes[i].GetAPVCMMean(iAPV);
+            double commonmode_sigma_apv = gemdet->GEMPlanes[i].GetAPVCMSigma(iAPV);
 
-          // cout << commonmode << endl;
-        }
-        // Plan for implementing online CM and ZS:
-        // Start counting 128 strips from j%128==0 which will be 1 APV card.
-        // store those values for 6 TSs in an array? Then perform 'online' CM
-        // calculation and ZS for each TS. Store the results if it passes online
-        // CM and ZS.
-
-        if (j % 128 == 0) {
-          // commonmode_mean_apv = commonmode;
-          int iAPV = j / 128;
-          double commonmode_mean_apv = gemdet->GEMPlanes[i].GetAPVCMMean(iAPV);
-          double commonmode_sigma_apv = gemdet->GEMPlanes[i].GetAPVCMSigma(iAPV);
-
-          commonmode_apv_ts_sum = 0;
-          for (int i = 0; i < fNSamples; i++) {
-            commonmode_apv_ts.at(i) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv);
-            commonmode_apv_ts_sum += commonmode_apv_ts.at(i);
+            commonmode_apv_ts_sum = 0;
+            for (int i = 0; i < fNSamples; i++) {
+              commonmode_apv_ts.at(i) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv);
+              commonmode_apv_ts_sum += commonmode_apv_ts.at(i);
+            }
           }
         }
-      }
+        else if (fDoCommonMode){ // Old CM array.
+          // cout << " hou " << endl;
+          if (j % 128 == 0 && apv_ctr < fCommonModeArray.size()) {
+            commonmode = fCommonModeArray[apv_ctr++];
+
+            // cout << commonmode << endl;
+          }        
+        }
+       }       
+
       // if(i==4 && j==400){
       // cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
       // }
-      if (gemdet->GEMPlanes[i].GetADCSum(j) > 0) {
+
+      if ( !sigonly && fDoVariablePedCM && fDoOnlineCommonMode ){ // For online CM to work, we need to add ped+CM to ALL the strips.
+
+        for (int k=0; k < fNSamples; k++){
+          gemdet->GEMPlanes[i].AddADC(j, k,
+          TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
+          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)) +
+          commonmode_apv_ts.at(k)));
+
+          // Handle saturation.
+          if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
+              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
+              gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
+              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
+          }          
+        }
+      }
+      else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode && gemdet->GEMPlanes[i].GetADCSum(j) > 0 ) { // If not doing online CM, no need to add ped and CM to all strips.
+        for (int k=0; k < fNSamples; k++){
+          gemdet->GEMPlanes[i].AddADC(j, k,
+          TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
+          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)) +
+          commonmode_apv_ts.at(k)));
+
+          // Handle saturation.
+          if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
+              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
+              gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
+              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
+          }          
+        }
+      }
+      else if (gemdet->GEMPlanes[i].GetADCSum(j) > 0) {
 #if DBG_AVA > 0
 #endif
         nstripshit_total++;
@@ -1850,17 +1878,9 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
             // gemdet->GEMPlanes[i].GetADC(j, k)>4096)cout << i << " " << j << "
             // " << k << " " << gemdet->GEMPlanes[i].GetADC(j, k) << " " << ped
             // << " " << commonmode << " " << fPulseNoiseSigma << endl;
-            // gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(R->Gaus(commonmode,
-            // fPulseNoiseSigma)));
-            // gemdet->GEMPlanes[i].AddADC(j, k, TMath::Nint(
-            // R->Gaus(0.,fPedMeanSigma) + R->Gaus(0.,fPedRMS) +
-            // commonmode_apv_ts.at(k) ));
-            gemdet->GEMPlanes[i].AddADC(
-                j, k,
-                TMath::Nint(
-                    gemdet->GEMPlanes[i].GetStripPedMean(j) +
-                    R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)) +
-                    commonmode_apv_ts.at(k)));
+              gemdet->GEMPlanes[i].AddADC(j, k,
+              TMath::Nint(R->Gaus(commonmode,fPulseNoiseSigma)));
+                        
             // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " <<
             // gemdet->GEMPlanes[i].GetADCSum(j)<< endl; handle saturation
             if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
@@ -1870,36 +1890,47 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
             }
           }
         }
-        // #ifdef
-        //  if( (fDoZeroSup &&
-        //  gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) ||
-        //  !fDoZeroSup) {
-        if ( ((fDoZeroSup &&
-             gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup) && !fDoOnlineCommonMode) {
+      }
+      // #ifdef
+      //  if( (fDoZeroSup &&
+      //  gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) ||
+      //  !fDoZeroSup) {
+      if ( !fDoVariablePedCM && 
+           ((fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode*6 > fZeroSup) || !fDoZeroSup) ) {
           // if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " "
           // << commonmode << endl;
-
-          FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
-          
-
-        } // end if(...)
+        FillOutputTreeVectors(gemdet, i, j, uniqueid, T);      
+      }
+      else if ( fDoVariablePedCM && !fDoOnlineCommonMode && 
+                ( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup ) ) {
+                // Do variable CM but do not do online CM and/or ZS.
+        FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
       }
     } // End loop over strips (j).
 
     // Let us implement 'online' CM calculation and ZS here for this GEM plane.
-    if (fDoOnlineCommonMode){ // Do 'online' Danning CM calculation and subtraction.
+    if ( fDoVariablePedCM && fDoOnlineCommonMode ){ // Do 'online' Danning CM calculation and subtraction. But ONLY do if variable ped and CM is applied.
       
       gemdet->GEMPlanes[i].ApplyOnlineCMCorr();
 
-      if (!fDoOnlineZeroSuppression) {
-        
-        for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){ // Begin loop over strips.
+      if (fDoOnlineZeroSuppression) {
+
+        gemdet->GEMPlanes[i].ApplyOnlineZS(fOnlineZSThrNsigma);
+
+        for(int j=0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
+          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
+            FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
+          }          
+        }        
+      }
+      else {
+        for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
           if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
             FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
           }
         }
       }      
-    }
+    }    
    
 #if DBG_HISTOS > 0
     if (nstripshit_total > 0) {

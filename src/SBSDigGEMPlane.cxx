@@ -112,9 +112,9 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr(){ // Calculate CM for per 128 strip-set 
 
     int iAPV = int(istrip/fNChanAPV);
 
-    std::array <int, fNChanAPV> thisAPVthisSampPedSubADC{-1500};
-    
     for ( int isamp=0; isamp < fNSamples; isamp++ ){
+
+      std::array <int, fNChanAPV> thisAPVthisSampPedSubADC{-1500};
 
       for ( int ichan=0; ichan < fNChanAPV; ichan++ ){
         thisAPVthisSampPedSubADC[ichan] = fStripPedSubADC[(istrip+ichan)*fNSamples+isamp];
@@ -124,22 +124,24 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr(){ // Calculate CM for per 128 strip-set 
 
       for ( int ichan=0; ichan < fNChanAPV; ichan++ ){
         fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp] = TMath::Nint(fStripPedSubADC[(istrip+ichan)*fNSamples+isamp] - thisAPVthisSampOnineCM);
-        fStripADC[(istrip+ichan)*fNSamples+isamp] = fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp];
+        //fStripADC[(istrip+ichan)*fNSamples+isamp] = fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp];
+        SetADC((istrip+ichan), isamp, fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp]);
       }
     }
   }  
 }
 
-// void SBSDigGEMPlane::ApplyOnlineCMCorr(){ // Apply online CM correction. Called by SBSDigGEMSimgDig.
+void SBSDigGEMPlane::ApplyOnlineZS(const double zs_thr_nsigma){
 
-//   // Simply copy over fStripCMCorrADC to fStripADC.
-//   for ( int i=0; i < fNStrips*fNSamples; i++ ){
-//     fStripADC[i] = fStripCMCorrADC[i];
-//   }
-// }
+  for ( int istrip=0; istrip < fNStrips; istrip++ ){
 
+    bool stripPassZS = GetADCSum(istrip)/double(fNSamples) > zs_thr_nsigma*fPedestalMap[istrip].rms;
 
-// void SBSDigGEMPlane::ZeroSuppress(){
-
-
-// }
+    // zero-suppress the strips that did not pass the threshold.
+    if (!stripPassZS){
+      for ( int isamp=0; isamp < fNSamples; isamp++ ){
+        SetADC(istrip, isamp, 0);
+      }
+    }
+  }
+}

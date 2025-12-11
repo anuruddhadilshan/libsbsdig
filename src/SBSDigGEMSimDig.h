@@ -26,7 +26,7 @@ class SBSDigGEMSimDig {
  public:
   //Constructor and destructor
   SBSDigGEMSimDig();
-  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0, bool do_online_cm = false, bool do_online_zs = false);
+  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0, bool do_variable_pedcm = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0);
   virtual ~SBSDigGEMSimDig();
   void Print();
   
@@ -101,9 +101,13 @@ class SBSDigGEMSimDig {
   Bool_t fDoCommonMode;
   std::vector<Double_t> fCommonModeArray;
 
-  //New (Dec, 2025): 'Online' CM corrections and ZS.
-  Bool_t fDoOnlineCommonMode;
-  Bool_t fDoOnlineZeroSuppression; // Online CM *MUST BE* true for online ZS to take effect.  
+  //New (Nov, 2025): Apply variable CM (apv card wise - per every 128 channels) and pedestal (channel wise).
+  Bool_t fDoVariablePedCM;
+
+  //New (Dec, 2025): 'Online' CM corrections and ZS. ADR.
+  Bool_t fDoOnlineCommonMode; // fDoVariablePedCM *MUST BE* true for online CM to take effect.
+  Bool_t fDoOnlineZeroSuppression; // Online CM *MUST BE* true for online ZS to take effect. 
+  Double_t fOnlineZSThrNsigma; 
   
   
   Short_t ADCConvert(Double_t val, Double_t off, Double_t gain, Int_t bits);

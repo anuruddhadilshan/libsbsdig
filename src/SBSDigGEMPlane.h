@@ -71,9 +71,9 @@ class SBSDigGEMPlane {
 
   void DoPedSub();
   double GetOnlineCommonMode(const std::array <int,fNChanAPV>&, int); // Danning method online version CM calculation.
-  //void ZeroSuppress();
   void ApplyOnlineCMCorr(); // Implement CM correction to digitized data.
-  
+  void ApplyOnlineZS(const double zs_thr_nsigma); // Implement zero suppression. Only to be done after ApplyOnlineCMCorr().
+
  private:
   // ADC sampled value of strip array of each axis
   Short_t fLayer;
