@@ -443,6 +443,7 @@ namespace TSBSGeant4 {
     module = new std::vector<int>;
     strip = new std::vector<int>;
     adc = new std::vector<int>;
+    adc_mip = new std::vector<int>;
     samp = new std::vector<int>;
     
     b_nstrips = tree->Branch(Form("%s.nstrips", prefix), &nstrips);
@@ -457,6 +458,7 @@ namespace TSBSGeant4 {
     b_adc_5 = tree->Branch(Form("%s.adc_5", prefix), &adc_5);
     */
     b_adc = tree->Branch(Form("%s.adc", prefix), &adc);
+    b_adc_mip = tree->Branch(Form("%s.adc_mip", prefix), &adc_mip);
     b_samp = tree->Branch(Form("%s.samp", prefix), &samp);
     return true;
   }
@@ -476,6 +478,7 @@ namespace TSBSGeant4 {
       adc_5->clear();
       */
       adc->clear();
+      adc_mip->clear();
       samp->clear();
     }
   }
@@ -495,6 +498,7 @@ namespace TSBSGeant4 {
       b_adc_5->Fill();
       */
       b_adc->Fill();
+      b_adc_mip->Fill();
       b_samp->Fill();
     }
   } 

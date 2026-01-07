@@ -55,6 +55,17 @@ class SBSDigGEMPlane {
     //printf("strip = %d / %d, sample %d /%d \n", strip, fNStrips, samp, fNSamples);
     //}
   };
+  void SetMipADC(int strip, int samp, int adc){
+    if(strip<fNStrips){
+      fStripMipADC[strip*fNSamples+samp] = adc;
+    }
+  };
+  void AddMipADC(int strip, int samp, int adc){
+    if(strip<fNStrips){
+      fStripMipADC[strip*fNSamples+samp]+=adc;      
+    }
+  };
+  Short_t GetMipADC(int strip, int samp){ return fStripMipADC[strip*fNSamples+samp]; };
 
   void SetPlaneStripPed(const pedmap& PedestalMap){ // This function will set the pedestal mean and RMS for each strip in the GEM plane.
     fPedestalMap = PedestalMap;
@@ -86,6 +97,7 @@ class SBSDigGEMPlane {
   Short_t* fStripADC;
   Short_t* fStripPedSubADC; // Pedestal subtracted ADC of the strip -> For online CM calcualtions.
   Short_t* fStripCMCorrADC; // Online Danning method CM corrected ADC of the strip -> For online CM calculations.
+  Short_t* fStripMipADC;    // ADC contribution from the MIP avalanche -> To be used as MC truth infomation.
   
   double fdX;
   double fXoffset;
