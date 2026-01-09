@@ -1085,7 +1085,7 @@ inte4 << endl;
         gemdet->GEMPlanes[ic * 2 + ipl].AddADC(iL + j, b, dadc);
         // Below is for 'MC truth' info. We used AvaModel() function for MIP avalanches ONLY.  
         // Only fill if the hit is from the primary/mother particle.   
-        if ( mid == 0 ) gemdet->GEMPlanes[ic * 2 + ipl].AddMipADC(iL + j, b, dadc);         
+        if ( mid == 0 ) gemdet->GEMPlanes[ic * 2 + ipl].AddGoodADC(iL + j, b, dadc);         
 
         // cross talk here
         if (xt_factor > 0) {
@@ -1303,7 +1303,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic, SBSDigGEMDet *gemdet,
                                   fADCgain, fADCbits);
 
         gemdet->GEMPlanes[ic * 2 + ipl].AddADC(iL + j, b, dadc);
-        gemdet->GEMPlanes[ic * 2 + ipl].AddMipADC(iL + j, b, 0); // For 'MC truth' info. We use AvaModel2() function for background ONLY.
+        gemdet->GEMPlanes[ic * 2 + ipl].AddGoodADC(iL + j, b, 0); // For 'MC truth' info. We use AvaModel2() function for background ONLY.
 
         if (xt_factor > 0) {
           if (iL + j + isLeft * fNCStripApart >= 0 &&
@@ -1712,7 +1712,7 @@ void SBSDigGEMSimDig::FillOutputTreeVectors(SBSDigGEMDet* gemdet, const int i /*
               */
               T->Harm_FT_Dig.samp->push_back(k);
               T->Harm_FT_Dig.adc->push_back(gemdet->GEMPlanes[i].GetADC(j, k));
-              T->Harm_FT_Dig.adc_mip->push_back(gemdet->GEMPlanes[i].GetMipADC(j,k)); // 'MC truth' info.
+              T->Harm_FT_Dig.adc_good->push_back(gemdet->GEMPlanes[i].GetGoodADC(j,k)); // 'MC truth' info.
             }
           }
 
@@ -1738,7 +1738,7 @@ void SBSDigGEMSimDig::FillOutputTreeVectors(SBSDigGEMDet* gemdet, const int i /*
               T->Harm_FPP1_Dig.samp->push_back(k);
               T->Harm_FPP1_Dig.adc->push_back(
                   gemdet->GEMPlanes[i].GetADC(j, k));
-              T->Harm_FPP1_Dig.adc_mip->push_back(gemdet->GEMPlanes[i].GetMipADC(j,k)); // 'MC truth' info.
+              T->Harm_FPP1_Dig.adc_good->push_back(gemdet->GEMPlanes[i].GetGoodADC(j,k)); // 'MC truth' info.
             }
           }
 
@@ -1764,7 +1764,7 @@ void SBSDigGEMSimDig::FillOutputTreeVectors(SBSDigGEMDet* gemdet, const int i /*
               T->Harm_FPP2_Dig.samp->push_back(k);
               T->Harm_FPP2_Dig.adc->push_back(
                   gemdet->GEMPlanes[i].GetADC(j, k));
-              T->Harm_FPP2_Dig.adc_mip->push_back(gemdet->GEMPlanes[i].GetMipADC(j,k)); // 'MC truth' info.
+              T->Harm_FPP2_Dig.adc_good->push_back(gemdet->GEMPlanes[i].GetGoodADC(j,k)); // 'MC truth' info.
             }
           }
 }

@@ -55,17 +55,17 @@ class SBSDigGEMPlane {
     //printf("strip = %d / %d, sample %d /%d \n", strip, fNStrips, samp, fNSamples);
     //}
   };
-  void SetMipADC(int strip, int samp, int adc){
+  void SetGoodADC(int strip, int samp, int adc){
     if(strip<fNStrips){
       fStripMipADC[strip*fNSamples+samp] = adc;
     }
   };
-  void AddMipADC(int strip, int samp, int adc){
+  void AddGoodADC(int strip, int samp, int adc){
     if(strip<fNStrips){
       fStripMipADC[strip*fNSamples+samp]+=adc;      
     }
   };
-  Short_t GetMipADC(int strip, int samp){ return fStripMipADC[strip*fNSamples+samp]; };
+  Short_t GetGoodADC(int strip, int samp){ return fStripMipADC[strip*fNSamples+samp]; };
 
   void SetPlaneStripPed(const pedmap& PedestalMap){ // This function will set the pedestal mean and RMS for each strip in the GEM plane.
     fPedestalMap = PedestalMap;
