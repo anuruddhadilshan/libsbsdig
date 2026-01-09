@@ -33,6 +33,7 @@ class SBSDigGEMDet {
     double xout;
     double yout;
     double zout;
+    int mid;
   };
 
   std::vector<gemhit> fGEMhits;

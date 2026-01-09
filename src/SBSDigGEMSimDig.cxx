@@ -645,7 +645,7 @@ void SBSDigGEMSimDig::Integration_fastappx(TRandom3 *R, double roangle,
 // TGEMSBSGEMHit **
 void SBSDigGEMSimDig::AvaModel(const int ic, SBSDigGEMDet *gemdet, TRandom3 *R,
                                const TVector3 &xi, const TVector3 &xo,
-                               const Double_t t0) {
+                               const Double_t t0, const Int_t mid) {
 #if DBG_AVA > 0
   cout << "Chamber " << ic << "----------------------------------" << endl;
   cout << "In  " << xi.X() << " " << xi.Y() << " " << xi.Z() << endl;
@@ -1083,7 +1083,9 @@ inte4 << endl;
 #endif
 
         gemdet->GEMPlanes[ic * 2 + ipl].AddADC(iL + j, b, dadc);
-        gemdet->GEMPlanes[ic * 2 + ipl].AddMipADC(iL + j, b, dadc); // For 'MC truth' info. We used AvaModel() function for MIP avalanches ONLY.        
+        // Below is for 'MC truth' info. We used AvaModel() function for MIP avalanches ONLY.  
+        // Only fill if the hit is from the primary/mother particle.   
+        if ( mid == 0 ) gemdet->GEMPlanes[ic * 2 + ipl].AddMipADC(iL + j, b, dadc);         
 
         // cross talk here
         if (xt_factor > 0) {
@@ -1104,7 +1106,7 @@ inte4 << endl;
 // TGEMSBSGEMHit **
 void SBSDigGEMSimDig::AvaModel_2(const int ic, SBSDigGEMDet *gemdet,
                                  TRandom3 *R, const TVector3 &xi,
-                                 const TVector3 &xo, const Double_t t0) {
+                                 const TVector3 &xo, const Double_t t0, const Int_t mid) {
   // xi, xo are in chamber frame, in mm
 
 #if DBG_AVA > 0
@@ -1452,7 +1454,7 @@ Int_t SBSDigGEMSimDig::Digitize(SBSDigGEMDet *gemdet, TRandom3 *R,
       if (is_background) {
         AvaModel_2(igem, gemdet, R, vv1, vv2, time_zero);
       } else {
-        AvaModel(igem, gemdet, R, vv1, vv2, time_zero);
+        AvaModel(igem, gemdet, R, vv1, vv2, time_zero, gemdet->fGEMhits[ih].mid);
       }
       fEnd = std::chrono::steady_clock::now();
       fDiff = fEnd - fStart2;

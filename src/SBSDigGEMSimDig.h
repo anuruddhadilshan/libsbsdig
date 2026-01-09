@@ -53,14 +53,16 @@ class SBSDigGEMSimDig {
 		TRandom3* R,
 		const TVector3& xi,
 		const TVector3& xo,
-		const Double_t t0);
+		const Double_t t0,
+    const Int_t mid = -1);
   
   void AvaModel_2(const int ic, //module number
 		  SBSDigGEMDet* gemdet,
 		  TRandom3* R,
 		  const TVector3& xi,
 		  const TVector3& xo,
-		  const Double_t t0);
+		  const Double_t t0,
+      const Int_t mid = -1);
   
   void Integration_semiana(double roangle, 
 			    double xl, double xr, double yb, double yt, 
