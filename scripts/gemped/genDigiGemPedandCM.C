@@ -315,8 +315,8 @@ int makePedfile(const std::string& pedfile_name, const string& pedfileout_name){
            }
            else if (tokens->GetEntries() >= 3 && ((TObjString*)(*tokens)[0])->GetString().IsDigit()) {
             int raw_stripnum =  ((TObjString*)(*tokens)[0])->GetString().Atoi();
-            double pedmean = ((TObjString*)(*tokens)[1])->GetString().Atoi();
-            double pedrms = ((TObjString*)(*tokens)[2])->GetString().Atoi();
+            double pedmean = ((TObjString*)(*tokens)[1])->GetString().Atof();
+            double pedrms = ((TObjString*)(*tokens)[2])->GetString().Atof();
 
             int physical_stripnum = GetStripNumber(raw_stripnum, apv_pos, apv_invert, db_modAPVmap.at(apv_gemid));
             trackerpedmap[apv_digigemplane_num][physical_stripnum] = Pedestal{pedmean,pedrms};
