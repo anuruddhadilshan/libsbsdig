@@ -38,6 +38,7 @@
 #define fPedMeanSigma                                                          \
   50.              // A sigma value for pedestal mean(offset) distribution.
 #define fPedRMS 9. // A RMS value for pedestal.
+#define fSqrtOfSix 2.4494897 //Sqrt of six to be used when smearing ped distribution.
 
 // paramters for cross-talk
 #define fNCStripApart                                                          \
@@ -1831,7 +1832,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
             // cout << commonmode << endl;
           }        
         }
-       }       
+      }       
 
       // if(i==4 && j==400){
       // cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
@@ -1842,7 +1843,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
         for (int k=0; k < fNSamples; k++){
           gemdet->GEMPlanes[i].AddADC(j, k,
           TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
-          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)) +
+          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
           commonmode_apv_ts.at(k)));
 
           // Handle saturation.
@@ -1853,11 +1854,11 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
           }          
         }
       }
-      else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode && gemdet->GEMPlanes[i].GetADCSum(j) > 0 ) { // If not doing online CM, no need to add ped and CM to all strips.
+      else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode /*(&& gemdet->GEMPlanes[i].GetADCSum(j) > 0*/ ) {
         for (int k=0; k < fNSamples; k++){
           gemdet->GEMPlanes[i].AddADC(j, k,
           TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
-          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)) +
+          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
           commonmode_apv_ts.at(k)));
 
           // Handle saturation.
@@ -1908,8 +1909,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
           // << commonmode << endl;
         FillOutputTreeVectors(gemdet, i, j, uniqueid, T);      
       }
-      else if ( fDoVariablePedCM && !fDoOnlineCommonMode && 
-                ( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup ) ) {
+      else if ( fDoVariablePedCM && !fDoOnlineCommonMode /*&& // 'FULL R/O mode'
+                ( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup )*/ ) {
                 // Do variable CM but do not do online CM and/or ZS.
         FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
       }
@@ -1925,16 +1926,16 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
         gemdet->GEMPlanes[i].ApplyOnlineZS(fOnlineZSThrNsigma);
 
         for(int j=0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
-          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
+          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){ // Only write out non-zero suppressed channels.
             FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
           }          
         }        
       }
       else {
         for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
-          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
-            FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
-          }
+          //if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
+            FillOutputTreeVectors(gemdet, i, j, uniqueid, T); // For no-ZS we shoulod write-out all the channels.
+          //}
         }
       }      
     }    
