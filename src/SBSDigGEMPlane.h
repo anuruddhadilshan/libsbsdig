@@ -98,7 +98,7 @@ class SBSDigGEMPlane {
 
   void DoPedSub();
   double GetOnlineCommonMode(const std::array <int,fNChanAPV>&, int); // Danning method online version CM calculation.
-  void ApplyOnlineCMCorr( const int do_onlineCM_histos = 0 ); // Implement CM correction to digitized data.
+  void ApplyOnlineCMCorr( const bool do_onlineCM_histos = false ); // Implement CM correction to digitized data.
   void WriteCMHistos(); // Write online CM histos.
   void ApplyOnlineZS(const double zs_thr_nsigma); // Implement zero suppression. Only to be done after ApplyOnlineCMCorr().
   void InsertTrueCM( const int iAPV, const int isamp, const double true_cm_mean ) { fTrueCMmap.emplace(ApvTS{iAPV,isamp}, true_cm_mean); };

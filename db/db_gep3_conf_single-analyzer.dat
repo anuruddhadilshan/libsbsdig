@@ -73,9 +73,10 @@ commonmode_array_ft 1500.
 do_pedcm_ft 1
 pedfile_ft ft_pedout_peddat.dat
 cmfile_ft ft_cmout_peddat.dat
-do_online_cm_ft 0 #Apply online CM correction.
+do_online_cm_ft 1 #Apply online CM correction.
 do_online_zs_ft 0 #Apply online zero-suppresion.
 online_zs_thr_nsigma_ft 3.0 #online zero-suppression threshold.
+make_online_cmplots_ft 1 #Produce Online CM plots. Will only take effect if 'do_online_cm' is turned ON. Keep OFF/0 by default to save memory usage and disk space.
 
 # number of planes/modules/readout
 NPlanes_fpp1 64 

@@ -16,7 +16,6 @@
 #include <chrono>
 
 #define DBG_HISTOS 0
-#define ONLINE_CM_HISTOS 1
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
@@ -27,7 +26,8 @@ class SBSDigGEMSimDig {
  public:
   //Constructor and destructor
   SBSDigGEMSimDig();
-  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0, bool do_variable_pedcm = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0);
+  SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0,
+   bool do_variable_pedcm = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0, bool make_online_cmplots = false);
   virtual ~SBSDigGEMSimDig();
   void Print();
   
@@ -111,6 +111,7 @@ class SBSDigGEMSimDig {
   Bool_t fDoOnlineCommonMode; // fDoVariablePedCM *MUST BE* true for online CM to take effect.
   Bool_t fDoOnlineZeroSuppression; // Online CM *MUST BE* true for online ZS to take effect. 
   Double_t fOnlineZSThrNsigma; 
+  Bool_t fMakeOnlineCMplots; // Produce diagnostic online CM plots?
   
   
   Short_t ADCConvert(Double_t val, Double_t off, Double_t gain, Int_t bits);

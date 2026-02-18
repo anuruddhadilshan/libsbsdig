@@ -86,8 +86,10 @@ SBSDigGEMSimDig::
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
                                  double *gain, double zsup_thr, int napv,
-                                 double *commonmode_array, bool do_variable_pedcm, bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma)
-    : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm), fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), fOnlineZSThrNsigma(online_zs_thr_nsigma) {
+                                 double *commonmode_array, bool do_variable_pedcm, 
+                                 bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma, bool make_online_cmplots)
+    : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm),
+     fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), fOnlineZSThrNsigma(online_zs_thr_nsigma), fMakeOnlineCMplots(make_online_cmplots) {
   // TODO: pass as parameters.
   fAvaGain = gain[0];
   fNSamples = 6;
@@ -1924,7 +1926,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
     // Let us implement 'online' CM calculation and ZS here for this GEM plane.
     if ( fDoVariablePedCM && fDoOnlineCommonMode ){ // Do 'online' Danning CM calculation and subtraction. But ONLY do if variable ped and CM is applied.
       
-      gemdet->GEMPlanes[i].ApplyOnlineCMCorr(ONLINE_CM_HISTOS);
+      gemdet->GEMPlanes[i].ApplyOnlineCMCorr(fMakeOnlineCMplots);
 
       if (fDoOnlineZeroSuppression) {
 
@@ -2106,9 +2108,8 @@ void SBSDigGEMSimDig::write_histos(SBSDigGEMDet *gemdet) {
   */
 #endif
 
-#if ONLINE_CM_HISTOS > 0
-  for (size_t i = 0; i < gemdet->GEMPlanes.size(); i++) gemdet->GEMPlanes[i].WriteCMHistos();
-#endif  
+  if ( fMakeOnlineCMplots && fDoOnlineCommonMode )  for (size_t i = 0; i < gemdet->GEMPlanes.size(); i++) gemdet->GEMPlanes[i].WriteCMHistos();
+
 }
 
 void SBSDigGEMSimDig::print_time_execution() {

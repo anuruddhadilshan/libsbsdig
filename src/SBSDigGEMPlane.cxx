@@ -112,7 +112,7 @@ double SBSDigGEMPlane::GetOnlineCommonMode(const std::array <int,fNChanAPV>& adc
 
 }
 
-void SBSDigGEMPlane::ApplyOnlineCMCorr( const int do_onlineCM_histos ){ // Calculate CM for per 128 strip-set (per APV) for each TS.
+void SBSDigGEMPlane::ApplyOnlineCMCorr( const bool do_onlineCM_histos ){ // Calculate CM for per 128 strip-set (per APV) for each TS.
 // Then apply the CM correction to the fStripADC array. 
 
   DoPedSub();// First have to subtract pedestal offsets.
@@ -131,7 +131,7 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr( const int do_onlineCM_histos ){ // Calcu
 
       double thisAPVthisSampOnineCM = GetOnlineCommonMode(thisAPVthisSampPedSubADC, iAPV);
 
-      if ( do_onlineCM_histos > 0 ){
+      if ( do_onlineCM_histos ){
         fCommonModeDiffOnlineMean->Fill( iAPV, thisAPVthisSampOnineCM - GetAPVCMMean(iAPV) );
         fCommonModeDiffOnlineTrue->Fill( iAPV, thisAPVthisSampOnineCM - fTrueCMmap.at(ApvTS{iAPV, isamp}) );
       }
