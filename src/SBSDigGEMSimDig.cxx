@@ -1789,7 +1789,8 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
     commonmode = fCommonModeArray[0];
   }
   // cout << "commonmode " << commonmode << endl;
-  int apv_ctr = 0;   
+  int apv_ctr = 0;
+
   for (size_t i = 0; i < gemdet->GEMPlanes.size(); i++) { // Being loop over GEM planes.
 #if DBG_AVA > 0
     cout << "GEM plane/RO " << i << " ( chamber " << i / 2 << ", proj " << i % 2
@@ -1802,7 +1803,9 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
 
     double commonmode_apv_ts_sum = 0;
     std::vector<double> commonmode_apv_ts(fNSamples, 0.);
- 
+
+    gemdet->GEMPlanes[i].ClearTrueCMmap(); // Clear the previous event's true CM vals.
+
     for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++) { // Begin loop over strips.
       // if(gemdet->GEMPlanes[4].GetADCSum(400)!=test){
       // cout << gemdet->GEMPlanes[4].GetADCSum(400) << "!=" << test << ": " <<
@@ -1818,9 +1821,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
             double commonmode_sigma_apv = gemdet->GEMPlanes[i].GetAPVCMSigma(iAPV);
 
             commonmode_apv_ts_sum = 0;
-            for (int i = 0; i < fNSamples; i++) {
-              commonmode_apv_ts.at(i) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv);
-              commonmode_apv_ts_sum += commonmode_apv_ts.at(i);
+            for (int tsi = 0; tsi < fNSamples; tsi++) {
+              commonmode_apv_ts.at(tsi) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv); // DOES THE 'cm_sigma' also need to be multiplied by 6??
+              commonmode_apv_ts_sum += commonmode_apv_ts.at(tsi);
+              gemdet->GEMPlanes[i].InsertTrueCM(iAPV, tsi, commonmode_apv_ts.at(tsi));
             }
           }
         }
@@ -1838,11 +1842,12 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
       // cout << gemdet->GEMPlanes[i].GetADCSum(j) << endl;
       // }
 
-      if ( !sigonly && fDoVariablePedCM && fDoOnlineCommonMode ){ // For online CM to work, we need to add ped+CM to ALL the strips.
+      if ( !sigonly && fDoVariablePedCM /*&& fDoOnlineCommonMode*/ ){ // For online CM to work, we need to add ped_noise+CM to ALL the strips.
 
         for (int k=0; k < fNSamples; k++){
           gemdet->GEMPlanes[i].AddADC(j, k,
-          TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
+          TMath::Nint(
+          //gemdet->GEMPlanes[i].GetStripPedMean(j) +  //Let's remove pedestal offset addition.
           R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
           commonmode_apv_ts.at(k)));
 
@@ -1854,21 +1859,21 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
           }          
         }
       }
-      else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode /*(&& gemdet->GEMPlanes[i].GetADCSum(j) > 0*/ ) {
-        for (int k=0; k < fNSamples; k++){
-          gemdet->GEMPlanes[i].AddADC(j, k,
-          TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
-          R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
-          commonmode_apv_ts.at(k)));
+      // else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode /*(&& gemdet->GEMPlanes[i].GetADCSum(j) > 0*/ ) {
+      //   for (int k=0; k < fNSamples; k++){
+      //     gemdet->GEMPlanes[i].AddADC(j, k,
+      //     TMath::Nint(gemdet->GEMPlanes[i].GetStripPedMean(j) + 
+      //     R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
+      //     commonmode_apv_ts.at(k)));
 
-          // Handle saturation.
-          if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
-              gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
-          }          
-        }
-      }
+      //     // Handle saturation.
+      //     if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
+      //         // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
+      //         gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
+      //         // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
+      //     }          
+      //   }
+      // }
       else if (gemdet->GEMPlanes[i].GetADCSum(j) > 0) {
 #if DBG_AVA > 0
 #endif
@@ -1913,13 +1918,13 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
                 ( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup )*/ ) {
                 // Do variable CM but do not do online CM and/or ZS.
         FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
-      }
+      }      
     } // End loop over strips (j).
 
     // Let us implement 'online' CM calculation and ZS here for this GEM plane.
     if ( fDoVariablePedCM && fDoOnlineCommonMode ){ // Do 'online' Danning CM calculation and subtraction. But ONLY do if variable ped and CM is applied.
       
-      gemdet->GEMPlanes[i].ApplyOnlineCMCorr();
+      gemdet->GEMPlanes[i].ApplyOnlineCMCorr(ONLINE_CM_HISTOS);
 
       if (fDoOnlineZeroSuppression) {
 
@@ -1999,7 +2004,7 @@ void SBSDigGEMSimDig::Print() {
   // cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
 }
 
-void SBSDigGEMSimDig::write_histos() {
+void SBSDigGEMSimDig::write_histos(SBSDigGEMDet *gemdet) {
 #if DBG_HISTOS > 0
   h2D_nplanesV_ava_dx->Write();
   h2D_nplanesV_ava_dxs->Write();
@@ -2100,6 +2105,10 @@ void SBSDigGEMSimDig::write_histos() {
   h1_yGEM_incheckout->Write();
   */
 #endif
+
+#if ONLINE_CM_HISTOS > 0
+  for (size_t i = 0; i < gemdet->GEMPlanes.size(); i++) gemdet->GEMPlanes[i].WriteCMHistos();
+#endif  
 }
 
 void SBSDigGEMSimDig::print_time_execution() {

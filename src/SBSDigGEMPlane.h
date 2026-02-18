@@ -8,6 +8,10 @@
 #include <TROOT.h>
 //#include "TH1D.h"
 #include "TRandom3.h"
+#include "TH2D.h"
+#include "TString.h"
+
+class TH2D;
 
 struct Pedestal {
   double mean{};
@@ -19,15 +23,27 @@ struct CommonMode {
   double sigma{};
 };
 
+struct ApvTS {
+    int APV_val;
+    int ts_val;
+
+    bool operator<(const ApvTS& other) const {
+        if (APV_val != other.APV_val)
+            return APV_val < other.APV_val;
+        return ts_val < other.ts_val;
+    }
+};
+
 using pedmap = std::map<int, Pedestal>; // Map ped mean and rms value to each strip number.
 using cmmap = std::map<int, CommonMode>; // Map CM mean and sigma values to each APV number.
+using cmmeanmap = std::map<ApvTS, double>; // Map to hold true simulated CM mean value for a all the strips and TS.
 
 constexpr int fNChanAPV {128};
 
 class SBSDigGEMPlane {
  public:
   SBSDigGEMPlane();
-  SBSDigGEMPlane(short layer, short mod, int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
+  SBSDigGEMPlane(short trackeruniqueid, short layer, short mod, int nstrips, int nsamples = 6, double thr = 100, double offset = 0, double roangle = 0);
   virtual ~SBSDigGEMPlane();
   void Clear();
   
@@ -82,8 +98,11 @@ class SBSDigGEMPlane {
 
   void DoPedSub();
   double GetOnlineCommonMode(const std::array <int,fNChanAPV>&, int); // Danning method online version CM calculation.
-  void ApplyOnlineCMCorr(); // Implement CM correction to digitized data.
+  void ApplyOnlineCMCorr( const int do_onlineCM_histos = 0 ); // Implement CM correction to digitized data.
+  void WriteCMHistos(); // Write online CM histos.
   void ApplyOnlineZS(const double zs_thr_nsigma); // Implement zero suppression. Only to be done after ApplyOnlineCMCorr().
+  void InsertTrueCM( const int iAPV, const int isamp, const double true_cm_mean ) { fTrueCMmap.emplace(ApvTS{iAPV,isamp}, true_cm_mean); };
+  void ClearTrueCMmap(){ fTrueCMmap.clear(); }; // Has to be cleared after each loop over the 'j' strips in the SBSDigGEMSimDig::Checkout() method.
 
  private:
   // ADC sampled value of strip array of each axis
@@ -102,6 +121,7 @@ class SBSDigGEMPlane {
   double fdX;
   double fXoffset;
   double fROangle;
+  short fTrackerID;
   //ClassDef(SBSDigGEMPlane, 1)
 
   // Ped and CM values.
@@ -117,6 +137,11 @@ class SBSDigGEMPlane {
   double fCommonModeRange_nsigma = 5.0;
   double fCommonModeDanningMethod_NsigmaCut = 3.0; // As set in SBSGEMModule.cxx as the default.
   int fCommonModeMinStripsInRange = 25;
+
+  // Define CM histogram(s) to validate 'online' CM calculation accuracy.
+  TH2D* fCommonModeDiffOnlineMean;
+  cmmeanmap fTrueCMmap; // std::map to hold the true simulated CM values.
+  TH2D* fCommonModeDiffOnlineTrue;
   
 };
 #endif

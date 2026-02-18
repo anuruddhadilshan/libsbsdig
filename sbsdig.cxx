@@ -3469,7 +3469,7 @@ int main(int argc, char** argv){
     // if there are debugging histos to write, write them...
     for(int k = 0; k<GEMdetectors.size(); k++){
       cout << "GEM det ID: " << GEMdetectors[k]->fUniqueID << endl;
-      GEMsimDig[k]->write_histos();
+      GEMsimDig[k]->write_histos(GEMdetectors[k]);
       GEMsimDig[k]->print_time_execution();
     }
     if(LumiFrac>0)BkgdGenerator->WriteXCHistos();

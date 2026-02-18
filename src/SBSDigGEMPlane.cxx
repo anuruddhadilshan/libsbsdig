@@ -13,8 +13,8 @@ SBSDigGEMPlane::SBSDigGEMPlane() :
   // SetPlaneAPVCM();
 }
 
-SBSDigGEMPlane::SBSDigGEMPlane(short layer, short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
-  fLayer(layer), fModule(mod), fNStrips(nstrips), fNSamples(nsamples), fStripThr(thr), fXoffset(offset), fROangle(roangle)
+SBSDigGEMPlane::SBSDigGEMPlane(short trackeruniqueid, short layer, short mod, int nstrips, int nsamples, double thr, double offset, double roangle) :
+  fTrackerID(trackeruniqueid), fLayer(layer), fModule(mod), fNStrips(nstrips), fNSamples(nsamples), fStripThr(thr), fXoffset(offset), fROangle(roangle)
 {
   //fModule = mod;
   fdX = fNStrips*4.e-4;
@@ -27,6 +27,13 @@ SBSDigGEMPlane::SBSDigGEMPlane(short layer, short mod, int nstrips, int nsamples
 
   fNAPVs = int(fNStrips/fNChanAPV);
 
+  TString trackerName = "undefined";
+
+  if ( fTrackerID == 42 ) trackerName = "ft";
+  else if ( fTrackerID == 43 ) trackerName = "fpp1";
+
+  fCommonModeDiffOnlineMean = new TH2D( TString::Format("hDiffOnlineCMandCMmean_%s_mod%i",trackerName.Data(),fModule), "Online Danning CM - CM mean; APV card; CM online - CM mean (user)", fNAPVs, -0.5, fNAPVs-0.5, 500, -200.0, 200.0 );
+  fCommonModeDiffOnlineTrue = new TH2D( TString::Format("hDiffOnlineCMandTrueCM_%s_mod%i",trackerName.Data(),fModule), "Online Danning CM - True CM; APV card; CM online - True CM (simulated)", fNAPVs, -0.5, fNAPVs-0.5, 500, -200.0, 200.0 );
 
   Clear();
 }
@@ -54,7 +61,7 @@ void SBSDigGEMPlane::DoPedSub(){ // First subtract pedestals from each channel b
 
   for ( int istrip=0; istrip < fNStrips; istrip++ ){
     for ( int isamp=0; isamp < fNSamples; isamp++ ){
-      fStripPedSubADC[istrip*fNSamples+isamp] = fStripADC[istrip*fNSamples+isamp] - fPedestalMap[istrip].mean; 
+      fStripPedSubADC[istrip*fNSamples+isamp] = fStripADC[istrip*fNSamples+isamp]; //- fPedestalMap[istrip].mean; // Removed pedestal offset addition in SBSDigGEMSimDig.cxx on Feb 17, 2026. ADR.
     }    
   }
 }
@@ -105,7 +112,7 @@ double SBSDigGEMPlane::GetOnlineCommonMode(const std::array <int,fNChanAPV>& adc
 
 }
 
-void SBSDigGEMPlane::ApplyOnlineCMCorr(){ // Calculate CM for per 128 strip-set (per APV) for each TS.
+void SBSDigGEMPlane::ApplyOnlineCMCorr( const int do_onlineCM_histos ){ // Calculate CM for per 128 strip-set (per APV) for each TS.
 // Then apply the CM correction to the fStripADC array. 
 
   DoPedSub();// First have to subtract pedestal offsets.
@@ -123,6 +130,11 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr(){ // Calculate CM for per 128 strip-set 
       }
 
       double thisAPVthisSampOnineCM = GetOnlineCommonMode(thisAPVthisSampPedSubADC, iAPV);
+
+      if ( do_onlineCM_histos > 0 ){
+        fCommonModeDiffOnlineMean->Fill( iAPV, thisAPVthisSampOnineCM - GetAPVCMMean(iAPV) );
+        fCommonModeDiffOnlineTrue->Fill( iAPV, thisAPVthisSampOnineCM - fTrueCMmap.at(ApvTS{iAPV, isamp}) );
+      }
 
       for ( int ichan=0; ichan < fNChanAPV; ichan++ ){
         fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp] = TMath::Nint(fStripPedSubADC[(istrip+ichan)*fNSamples+isamp] - thisAPVthisSampOnineCM);
@@ -146,4 +158,10 @@ void SBSDigGEMPlane::ApplyOnlineZS(const double zs_thr_nsigma){
       }
     }
   }
+}
+
+void SBSDigGEMPlane::WriteCMHistos(){
+
+  fCommonModeDiffOnlineMean->Write();
+  fCommonModeDiffOnlineTrue->Write();
 }

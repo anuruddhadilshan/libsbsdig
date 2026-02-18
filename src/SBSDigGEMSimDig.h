@@ -16,6 +16,7 @@
 #include <chrono>
 
 #define DBG_HISTOS 0
+#define ONLINE_CM_HISTOS 1
 
 class SBSDigGEMDet;
 class SBSDigGEMPlane;
@@ -35,7 +36,7 @@ class SBSDigGEMSimDig {
   void FillOutputTreeVectors(SBSDigGEMDet* gemdet, const int i /*plane#*/, const int j/*strp#*/, const int uniqueid, g4sbs_tree* T);
   void CheckOut(SBSDigGEMDet* gemdet, const int uniqueid, TRandom3* R, g4sbs_tree* T, bool sigonly = false);
   //void FillBBGEMTree(const SBSDigGEMPlane pl, gmn_tree* T, int j);
-  void write_histos();
+  void write_histos(SBSDigGEMDet *gemdet);
   void print_time_execution();
   
   struct IonPar_t {

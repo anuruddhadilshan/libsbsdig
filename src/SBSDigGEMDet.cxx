@@ -119,7 +119,7 @@ SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, int* layer, int* n
   //for(uint i = 0; i<fNPlanes; i++)GEMPlanes[i] = SBSDigGEMPlane(nstrips[i], nsamp, zsup_thr);
   for(uint i = 0; i<fNPlanes; i++){
     cout << i << " " << layer[i] << " " << nstrips[i] << " " << offset[i] << " " << roangle[i] << endl; 
-    GEMPlanes.push_back(SBSDigGEMPlane(layer[i], i/2, nstrips[i], nsamp, zsup_thr, offset[i], roangle[i]));
+    GEMPlanes.push_back(SBSDigGEMPlane(fUniqueID, layer[i], i/*/2*/, nstrips[i], nsamp, zsup_thr, offset[i], roangle[i]));
 
     if (do_ped_cm){
       GEMPlanes.at(i).SetPlaneStripPed(fTrackerPedMap[i]);
