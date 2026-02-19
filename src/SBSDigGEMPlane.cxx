@@ -115,7 +115,7 @@ double SBSDigGEMPlane::GetOnlineCommonMode(const std::array <int,fNChanAPV>& adc
 void SBSDigGEMPlane::ApplyOnlineCMCorr( const bool do_onlineCM_histos ){ // Calculate CM for per 128 strip-set (per APV) for each TS.
 // Then apply the CM correction to the fStripADC array. 
 
-  DoPedSub();// First have to subtract pedestal offsets.
+  //DoPedSub();// First have to subtract pedestal offsets. --> We are NOT adding pedestal offsets now. ADR 02/19/2026.
 
   for ( int istrip=0; istrip < fNStrips; istrip += fNChanAPV ){
 
@@ -126,7 +126,8 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr( const bool do_onlineCM_histos ){ // Calc
       std::array <int, fNChanAPV> thisAPVthisSampPedSubADC{-1500};
 
       for ( int ichan=0; ichan < fNChanAPV; ichan++ ){
-        thisAPVthisSampPedSubADC[ichan] = fStripPedSubADC[(istrip+ichan)*fNSamples+isamp];
+        //thisAPVthisSampPedSubADC[ichan] = fStripPedSubADC[(istrip+ichan)*fNSamples+isamp];
+        thisAPVthisSampPedSubADC[ichan] = fStripADC[(istrip+ichan)*fNSamples+isamp];
       }
 
       double thisAPVthisSampOnineCM = GetOnlineCommonMode(thisAPVthisSampPedSubADC, iAPV);
@@ -137,8 +138,9 @@ void SBSDigGEMPlane::ApplyOnlineCMCorr( const bool do_onlineCM_histos ){ // Calc
       }
 
       for ( int ichan=0; ichan < fNChanAPV; ichan++ ){
-        fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp] = TMath::Nint(fStripPedSubADC[(istrip+ichan)*fNSamples+isamp] - thisAPVthisSampOnineCM);
-        //fStripADC[(istrip+ichan)*fNSamples+isamp] = fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp];
+        //fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp] = TMath::Nint(fStripPedSubADC[(istrip+ichan)*fNSamples+isamp] - thisAPVthisSampOnineCM);
+        // fStripADC[(istrip+ichan)*fNSamples+isamp] = fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp];
+        fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp] = TMath::Nint(fStripADC[(istrip+ichan)*fNSamples+isamp] - thisAPVthisSampOnineCM);
         SetADC((istrip+ichan), isamp, fStripCMCorrADC[(istrip+ichan)*fNSamples+isamp]);
       }
     }
