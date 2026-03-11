@@ -511,9 +511,14 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     Int_t Nconv = fNSamps/fNADCSamps;
     for(int i = 0; i<fNADCSamps; i++){
       for(int j = 0; j<Nconv; j++){
+
+	
 	fADCSamples[i]+=fSamples[i*Nconv+j]*fSampSize;//renormalize the sample for the integration;
+	//The purpose of the multiplication by fSampSize here is to integrate the charge within a single FADC sample. fSampSize is 0.125 ns (4.0 ns/32)
 	//if(detid==ACTIVEANA_UNIQUE_DETID && TMath::IsNaN(fADCSamples[i]) )cout << " i " << i << " j " << j << ", idx " << i*Nconv+j << " size " << sizeof(fSamples) << " samp " << fSamples[i*Nconv+j] << "; ";
       }
+      //Now fADCSamples[i] contains the integral charge of the sample in Coulombs
+      // ADC conv = 40 fC/LSB, so FADC in LSB is sample charge (C) * 1e15 fC/C / 40 fC/LSB
       fADCSamples[i]*=1.0e15/ADCconv;
       fADCSamples[i]+=R->Gaus(ped, ped_noise);
       
@@ -970,9 +975,9 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
 void PMTSignal::SetSamples(double tmin, double tmax, double sampsize)
 {
   fTmin = tmin;
-  fADCSampSize = sampsize;
+  fADCSampSize = sampsize; // = 4.0 ns for FADC
   //fSampSize = sampsize/10;//the bin size is too large for the tdc size 
-  fSampSize = sampsize/32;// bin size is similar to TDC bit size
+  fSampSize = sampsize/32.0; // = 0.125 ns by default (bin size is similar to TDC bit size)
   fNADCSamps = round((tmax-tmin)/fADCSampSize);
   fNSamps = round((tmax-tmin)/fSampSize);
   fADCSamples = new double[fNADCSamps];

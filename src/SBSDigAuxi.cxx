@@ -90,7 +90,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_BBPSTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_BBPSTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex * beta*beta), 0.);
 	  //1500. Used to be 454.: just wrong
-	  Npe = R->Poisson(300.0*T->Earm_BBPSTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
+	  Npe = R->Poisson(420.0*T->Earm_BBPSTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
 	  t = tzero+T->Earm_BBPSTF1.tavg->at(i)+R->Gaus(3.2-5.805*T->Earm_BBPSTF1.zhit->at(i)-17.77*pow(T->Earm_BBPSTF1.zhit->at(i), 2), 0.5)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBPSTF1.cell->at(i);
 	  //T->Earm_BBPSTF1_hit_sumedep->at(i);
@@ -129,7 +129,7 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  beta = sqrt( pow(m_e+T->Earm_BBSHTF1.sumedep->at(i), 2)-m_e*m_e )/(m_e + T->Earm_BBSHTF1.sumedep->at(i));
 	  sin2thetaC = TMath::Max(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex * beta*beta), 0.);
 	  //1800. Used to be 932.: just wrong
-	  Npe = R->Poisson(360.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
+	  Npe = R->Poisson(500.0*T->Earm_BBSHTF1.sumedep->at(i)*sin2thetaC/(1.-1./(pmtdets[idet]->fRefIndex*pmtdets[idet]->fRefIndex)) );
 	  t = tzero+T->Earm_BBSHTF1.tavg->at(i)+R->Gaus(2.216-8.601*T->Earm_BBSHTF1.zhit->at(i)-7.469*pow(T->Earm_BBSHTF1.zhit->at(i), 2), 0.8)-pmtdets[idet]->fTrigOffset;
 	  chan = T->Earm_BBSHTF1.cell->at(i);
 	  //T->Earm_BBSHTF1_hit_sumedep->at(i);
@@ -180,6 +180,20 @@ bool UnfoldData(g4sbs_tree* T, double theta_sbs, double d_hcal, TRandom3* R,
 	  //ECal switched to FADC :)
 	  //cout << T->Earm_ECalTF1.sumedep->at(i) << " " << Npe << " " << t << " " << pmtdets[idet]->fSigmaPulse << endl;
 	  pmtdets[idet]->PMTmap[chan].Fill_FADCmode1(Npe, pmtdets[idet]->fThreshold, t, pmtdets[idet]->fSigmaPulse, signal);
+
+	  //Print out FADC diagnostic info for this PMT:
+	  //if( Npe >= 5 ){
+	  if ( false ){
+	    std::cout << "Hit " << i << ": (chan, edep, npe, charge)=("
+		      << chan << ", " << T->Earm_ECalTF1.sumedep->at(i)
+		      << ", " << pmtdets[idet]->PMTmap[chan].Npe()
+		      << ", " << pmtdets[idet]->PMTmap[chan].Charge() << ")"
+		      << std::endl;
+	    // std::cout << "ADC samples: " << std::endl;
+	    // for( int isamp=0; isamp<pmtdets[idet]->PMTmap[chan].GetNADCSamps(); isamp++ ){
+	    //   std::cout << "(isamp, ADC)=(" << isamp << ", " << pmtdets[idet]->PMTmap[chan].ADCSamples(isamp) << ")" << std::endl;
+	    // } ADC samples don't get filled until Digitize
+	  }
 	}
       }
       has_data = true;

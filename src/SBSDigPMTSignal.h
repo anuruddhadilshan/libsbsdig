@@ -54,7 +54,10 @@ class PMTSignal {
   };
   void SetNpeChargeConv(double npechargeconv){fNpeChargeConv = npechargeconv;};
   void SetSamples(double tmin, double tmax, double sampsize);
-    
+  
+  int GetNSamps() const { return fNSamps; }
+  int GetNADCSamps() const { return fNADCSamps; }
+  
   double SumEdep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
   double Charge(){return fNpe*fNpeChargeConv;};
@@ -74,6 +77,9 @@ class PMTSignal {
   double Eval(double t){
     //printf("tau = %f, result = %f \n", ftau, TMath::Max(0., fNorm*((t-ft0+ftau*0.4)/(ftau*ftau*0.16))*TMath::Exp(-(t-ft0+ftau*0.4)/(ftau*0.4))) );
     return( TMath::Max(0., fNorm*((t-ft0+ftau*0.4)/(ftau*ftau*0.16))*TMath::Exp(-(t-ft0+ftau*0.4)/(ftau*0.4))) );
+    // NOTES: fNorm for PMT detectors is npe*PMT gain in Coulombs (total pulse charge).
+    // I am not sure where the 0.4*tau offset is coming from. Is that arbitrary?
+    // Pulse shape is like Charge * ( t - t0 + 0.4*tau )*exp(-(t-t0+0.4*tau)/(0.4*tau)). WHAT? 
   }//can't be worse than TF1::Eval... can it?
   
   void SetPulseParam(double norm, double t0, double tau){

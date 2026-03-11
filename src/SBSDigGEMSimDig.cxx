@@ -66,10 +66,10 @@ SBSDigGEMSimDig::SBSDigGEMSimDig()// :
   fNSamples = 6;
 }
 
-SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double zsup_thr, int napv, double* commonmode_array) : fZeroSup(zsup_thr) 
+SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv, double* commonmode_array) : fZeroSup(zsup_thr) 
 {
   //TODO: pass as parameters.
-  fAvaGain = 20.0;
+  fAvaGain = gain[0];
   fNSamples = 6;
   
   for(int i = 0; i<nchambers; i++){
@@ -1313,7 +1313,8 @@ SBSDigGEMSimDig::Digitize (SBSDigGEMDet* gemdet,
     //event_time = fTrnd.Uniform((-fGateWidth+2*fEleSamplingPeriod), 8*fEleSamplingPeriod);
     //} else {
     // Signal events occur at t = 0, 
-    event_time = fTimeZero+gemdet->fGEMhits[ih].t;
+    event_time = //fTimeZero+
+      gemdet->fGEMhits[ih].t;
     //}
     //  cout<<event_time<<"  "<<ih<<endl;
     // Adding drift time and trigger_jitter

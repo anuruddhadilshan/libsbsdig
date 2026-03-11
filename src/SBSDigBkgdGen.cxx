@@ -1062,7 +1062,7 @@ void SBSDigBkgdGen::GenerateBkgd(TRandom3* R,
   int idet = 0;
   
   if(fPMTBkgdDig){//
-  
+    cout << " are we doing this???" << endl;
     //ordering by increasing unique det ID
     while(detmap[idet]!=HCAL_UNIQUE_DETID && idet<(int)detmap.size())idet++;
     if(idet>=detmap.size())idet = -1;
