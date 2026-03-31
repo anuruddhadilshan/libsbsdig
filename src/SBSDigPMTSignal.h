@@ -41,9 +41,9 @@ class PMTSignal {
  public:
   PMTSignal();
   PMTSignal(double npechargeconv);
-  void Fill(SPEModel *model, int npe, double thr, double evttime, int signal);
-  void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal);
-  void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal);
+  void Fill(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
+  void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal, TRandom3* R = 0);
+  void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
   void Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T, 
 		TRandom3* R, double ped, double ped_noise, double ADCconv, double ADCbits, double TDCconv, double TDCbits, int thr_adc);
   void Clear(bool dosamples = false);

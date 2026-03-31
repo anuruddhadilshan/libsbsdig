@@ -147,19 +147,23 @@ PMTSignal::PMTSignal(double npechargeconv)
   //f1 = 0;
 }
 
-void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int signal)
+void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R)
 {
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
   //if(model->PulseOverThr(fCharge, thr))fNpe//fADC = model->GetCharge()*model->GetADCconversion();
     
+  double charge = npe*fNpeChargeConv;
+  //This is step 1 of checking the effect of some charge distribution for single photoelectrons 
+  if(R!=0)charge = R->Poisson(npe*fNpeChargeConv);
+  
   //determine lead and trail times
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
   // the following line slows the digitization in the case of full background. 
   // Needs improvement ASAP!
   bool goodtime = 
-    model->FindLeadTrailTime(npe*fNpeChargeConv, thr, t_lead, t_trail);
+    model->FindLeadTrailTime(charge, thr, t_lead, t_trail);
   
   //if(goodtime)cout << evttime << " " << t_lead << " " << t_trail << endl;
   
@@ -273,7 +277,7 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
   }//end if(t_lead && t_trail<30)
 }
 
-void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal)
+void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal, TRandom3* R)
 {
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
@@ -284,8 +288,11 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   if(evttime>=fTmin+fNSamps*fSampSize)return;
   
   //cout << "fillfadcmode1 " << sigmatime << endl;
+  double charge = npe*fNpeChargeConv;
+  //This is step 1 of checking the effect of some charge distribution for single photoelectrons 
+  if(R!=0)charge = R->Poisson(npe*fNpeChargeConv);
   
-  SetPulseParam(npe*fNpeChargeConv, evttime, sigmatime);
+  SetPulseParam(charge, evttime, sigmatime);
   
   //cout << npe*fNpeChargeConv << " " << evttime << " " << sigmatime << endl;
   
@@ -429,7 +436,7 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   }//end if(t_lead && t_trail<30)
 }
 
-void PMTSignal::Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal)
+void PMTSignal::Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R)
 {
   if(signal==0)fEventTime = evttime;
   fNpe+= npe;
