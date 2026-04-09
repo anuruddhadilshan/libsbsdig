@@ -66,7 +66,10 @@ sigmapulse_bbhodo 1.6
 ## parameters for hcal
 NChan_hcal 288
 gatewidth_hcal 200 
-gain_hcal 1.04e6
+#gain_hcal 1.04e6
+#gain_hcal 5.545e6
+#gain_hcal 1.2e7
+gain_hcal 1.11e7
 ped_hcal 300.0 
 pedsigma_hcal 3.0
 trigoffset_hcal 81.0 
@@ -78,7 +81,11 @@ FADC_ADCbits 12
 FADC_sampsize 4.0 
 sigmapulse_hcal 40.0 
 #zhitresp_hcal 5.242 11.39 10.41
-zhitresp_hcal 0.5242 1.139 1.041
+#zhitresp_hcal 5.242 0 0
+#zhitresp_hcal 0.10484 0.2278 0.2082
+#zhitresp_hcal 0.215 0.0 0.0
+#zhitresp_hcal 0.1 0.0 0.0
+zhitresp_hcal 0.05242 0.1139 0.1041
 
 ## parameters for GEMs
 # number of planes/modules/readout

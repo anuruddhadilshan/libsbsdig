@@ -39,8 +39,8 @@ class SPEModel {
 //_________________________________
 class PMTSignal {
  public:
-  PMTSignal();
-  PMTSignal(double npechargeconv);
+  PMTSignal(int nstages = 12);
+  PMTSignal(double npechargeconv, int nstages = 12);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
   void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal, TRandom3* R = 0);
   void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
@@ -56,11 +56,12 @@ class PMTSignal {
   void SetSamples(double tmin, double tmax, double sampsize);
   
   int GetNSamps() const { return fNSamps; }
+  int GetNStages() const { return fNStages; }
   int GetNADCSamps() const { return fNADCSamps; }
   
   double SumEdep(){return fSumEdep;};
   UInt_t Npe(){return fNpe;};
-  double Charge(){return fNpe*fNpeChargeConv;};
+  double Charge(){return fCharge;};
   UInt_t ADC(){return fADC;};
 
   double EventTime(){return fEventTime;};
@@ -92,6 +93,7 @@ class PMTSignal {
   //summing variables for dig...
   double fSumEdep;//Not forced to use it for everything
   UInt_t fNpe;
+  double fCharge;
   double fNpeChargeConv;
   UInt_t fADC;// One unique ADC value ?
 
@@ -118,6 +120,7 @@ class PMTSignal {
   double fTmin;
   double* fSamples;
   double* fADCSamples;
+  int fNStages;
 };
 
 #endif

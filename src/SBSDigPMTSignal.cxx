@@ -124,8 +124,8 @@ double SPEModel::GetHistoX(double y, double x1, double x2)
 //
 // Class PMTSignal
 //
-PMTSignal::PMTSignal()
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0)
+PMTSignal::PMTSignal(int nstages)
+  : fSumEdep(0), fNpe(0), fCharge(0.0), fNpeChargeConv(1.0), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0), fNStages(nstages)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
@@ -136,8 +136,8 @@ PMTSignal::PMTSignal()
   //R = TRndmManager::GetInstance();
 }
 
-PMTSignal::PMTSignal(double npechargeconv)
-  : fSumEdep(0), fNpe(0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0)
+PMTSignal::PMTSignal(double npechargeconv, int nstages)
+  : fSumEdep(0), fNpe(0), fCharge(0.0), fNpeChargeConv(npechargeconv), fADC(0), fEventTime(0), fNorm(0), ft0(0), ftau(0), fNADCSamps(0), fNSamps(0), fNStages(nstages)
 { 
   fLeadTimes.clear();
   fTrailTimes.clear();
@@ -155,8 +155,14 @@ void PMTSignal::Fill(SPEModel *model, int npe, double thr, double evttime, int s
     
   double charge = npe*fNpeChargeConv;
   //This is step 1 of checking the effect of some charge distribution for single photoelectrons 
-  if(R!=0)charge = R->Poisson(npe*fNpeChargeConv);
-  
+  if(R!=0){
+    // temporary: below will have to happen in the class at initialization
+    // it is just for test now...
+    // h1_speqdist_mimic->Fill(R->Gaus(1.0*gain, gain*sqrt(1.0)/sqrt(stagegain)/fudge ));//R->PoissonD(fudge*stagegain)*gain/stagegain/fudge);
+    double stagegain = pow(fNpeChargeConv/qe, 1./fNStages);//*pow(0.97, 12.0);
+    double fudgefac = pow(0.988, fNStages);
+    charge = R->Gaus(npe*fNpeChargeConv/qe, fNpeChargeConv/qe*sqrt(npe)/sqrt(stagegain))*qe;//R->PoissonD(npe*stagegain)/stagegain*fNpeChargeConv;
+  }
   //determine lead and trail times
   double t_lead, t_trail;
   // find the lead and trail time for *this* pulse, not the total pulse
@@ -290,8 +296,19 @@ void PMTSignal::Fill_FADCmode1(int npe, double thr, double evttime, double sigma
   //cout << "fillfadcmode1 " << sigmatime << endl;
   double charge = npe*fNpeChargeConv;
   //This is step 1 of checking the effect of some charge distribution for single photoelectrons 
-  if(R!=0)charge = R->Poisson(npe*fNpeChargeConv);
-  
+  if(R!=0){
+    // temporary: below will have to happen in the class at initialization
+    // it is just for test now...
+    // h1_speqdist_mimic->Fill(R->Gaus(1.0*gain, gain*sqrt(1.0)/sqrt(stagegain)/fudge ));//R->PoissonD(fudge*stagegain)*gain/stagegain/fudge);
+    double stagegain = pow(fNpeChargeConv/qe, 1./fNStages);//*pow(0.97, 12.0);
+    double fudgefac = pow(0.988, fNStages);
+    charge = R->Gaus(npe*fNpeChargeConv/qe, fNpeChargeConv/qe*sqrt(npe)/sqrt(stagegain))*qe;//R->PoissonD(npe*stagegain)/stagegain*fNpeChargeConv;
+    //if(npe>0)cout << " npe " << npe << " charge not smeared " <<  npe*fNpeChargeConv << ", smeared " << charge << endl; 
+  }
+  // fNpe is what is used at the end, I might want to change that...
+  // for the moment, we test...
+  // fNpe+= npe;//charge/fNpeChargeConv;
+  fCharge+= charge;
   SetPulseParam(charge, evttime, sigmatime);
   
   //cout << npe*fNpeChargeConv << " " << evttime << " " << sigmatime << endl;
@@ -469,9 +486,9 @@ void PMTSignal::Digitize(int chan, int detid, g4sbs_tree* T, //gmn_tree* T,
     //fADC = R->Gaus(ped, ped_noise);
     return;
   }
-
+  
   fADC = TMath::Nint(Charge()*1.0e15/ADCconv+R->Gaus(ped, ped_noise));
-
+  //if(detid==0)cout << "channel " << chan << " npe: " << fNpe << " charge " << Charge() << " npe_eff " << Charge()/fNpeChargeConv << endl;  
   if( fADC>UInt_t(TMath::Nint( TMath::Power(2, ADCbits) )) ){
     fADC = TMath::Nint( TMath::Power(2, ADCbits) );
   }
@@ -1006,6 +1023,7 @@ void PMTSignal::Clear(bool dosamples)
   
   fSumEdep = 0;
   fNpe = 0;
+  fCharge = 0.0;
   fADC = 0;
   
   fEventTime = 0;
