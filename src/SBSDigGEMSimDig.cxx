@@ -67,6 +67,8 @@
 #define fNROPlanes 2
 #define fStripPitch 4.e-4
 
+long nMPID0 = 0;
+
 #include <iomanip>
 
 using namespace std;
@@ -1087,8 +1089,13 @@ inte4 << endl;
 
         gemdet->GEMPlanes[ic * 2 + ipl].AddADC(iL + j, b, dadc);
         // Below is for 'MC truth' info. We used AvaModel() function for MIP avalanches ONLY.  
-        // Only fill if the hit is from the primary/mother particle.   
-        if ( mid == 0 ) gemdet->GEMPlanes[ic * 2 + ipl].AddGoodADC(iL + j, b, dadc);         
+        // Only fill if the hit is from the primary/mother particle.
+
+        if ( mid == 0 ){
+          gemdet->GEMPlanes[ic * 2 + ipl].AddGoodADC(iL + j, b, dadc);         
+          nMPID0++;
+        }
+        else gemdet->GEMPlanes[ic * 2 + ipl].AddGoodADC(iL + j, b, 0);
 
         // cross talk here
         if (xt_factor > 0) {
@@ -1910,11 +1917,12 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
       //  if( (fDoZeroSup &&
       //  gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) ||
       //  !fDoZeroSup) {
-      if ( !fDoVariablePedCM && 
-           ((fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode*6 > fZeroSup) || !fDoZeroSup) ) {
+      if ( !fDoVariablePedCM ){
+        if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode*6 > fZeroSup) || !fDoZeroSup || gemdet->GEMPlanes[i].GetGoodADCSum(j) > 0 ) {
           // if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " "
           // << commonmode << endl;
-        FillOutputTreeVectors(gemdet, i, j, uniqueid, T);      
+          FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
+        }      
       }
       else if ( fDoVariablePedCM && !fDoOnlineCommonMode /*&& // 'FULL R/O mode'
                 ( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode_apv_ts_sum > fZeroSup) || !fDoZeroSup )*/ ) {
@@ -1933,7 +1941,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
         gemdet->GEMPlanes[i].ApplyOnlineZS(fOnlineZSThrNsigma);
 
         for(int j=0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
-          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){ // Only write out non-zero suppressed channels.
+          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 || gemdet->GEMPlanes[i].GetGoodADCSum(j) > 0 ){ // Only write out non-zero suppressed channels.
             FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
           }          
         }        
@@ -2119,6 +2127,7 @@ void SBSDigGEMSimDig::print_time_execution() {
        << " s;" << endl;
   cout << " Integration total duration " << std::setprecision(9)
        << fTotalTime_int << " s;" << endl;
+  std::cout << "Tot Mother particles: " << nMPID0 << std::endl;
 }
 
 /*

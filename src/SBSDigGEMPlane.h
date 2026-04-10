@@ -57,6 +57,7 @@ class SBSDigGEMPlane {
   Int_t GetNStrips(){return fNStrips;};
   Short_t GetADC(int strip, int samp){return  fStripADC[strip*fNSamples+samp];};
   Int_t GetADCSum(int strip){return fStripADCsum[strip];};
+  Int_t GetGoodADCSum(int strip){return fStripMipADCsum[strip];};
   void SetADC(int strip, int samp, int adc){
     if(strip<fNStrips){
       fStripADCsum[strip]+= adc-fStripADC[strip*fNSamples+samp];
@@ -73,12 +74,14 @@ class SBSDigGEMPlane {
   };
   void SetGoodADC(int strip, int samp, int adc){
     if(strip<fNStrips){
+      fStripMipADCsum[strip]+= adc-fStripMipADC[strip*fNSamples+samp];
       fStripMipADC[strip*fNSamples+samp] = adc;
     }
   };
   void AddGoodADC(int strip, int samp, int adc){
     if(strip<fNStrips){
-      fStripMipADC[strip*fNSamples+samp]+=adc;      
+      fStripMipADC[strip*fNSamples+samp]+=adc;
+      fStripMipADCsum[strip]+=adc;    
     }
   };
   Short_t GetGoodADC(int strip, int samp){ return fStripMipADC[strip*fNSamples+samp]; };
@@ -116,6 +119,7 @@ class SBSDigGEMPlane {
   Short_t* fStripADC;
   Short_t* fStripPedSubADC; // Pedestal subtracted ADC of the strip -> For online CM calcualtions.
   Short_t* fStripCMCorrADC; // Online Danning method CM corrected ADC of the strip -> For online CM calculations.
+  Int_t* fStripMipADCsum;
   Short_t* fStripMipADC;    // ADC contribution from the MIP avalanche -> To be used as MC truth infomation.
   
   double fdX;
