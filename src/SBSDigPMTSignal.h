@@ -39,8 +39,8 @@ class SPEModel {
 //_________________________________
 class PMTSignal {
  public:
-  PMTSignal(int nstages = 12);
-  PMTSignal(double npechargeconv, int nstages = 12);
+  PMTSignal(int nstages);
+  PMTSignal(double npechargeconv, int nstages);
   void Fill(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
   void Fill_FADCmode1(int npe, double thr, double evttime, double sigmatime, int signal, TRandom3* R = 0);
   void Fill_FADCmode7(SPEModel *model, int npe, double thr, double evttime, int signal, TRandom3* R = 0);
