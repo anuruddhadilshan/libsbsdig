@@ -1918,7 +1918,7 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
       //  gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) ||
       //  !fDoZeroSup) {
       if ( !fDoVariablePedCM ){
-        if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode*6 > fZeroSup) || !fDoZeroSup || gemdet->GEMPlanes[i].GetGoodADCSum(j) > 0 ) {
+        if( (fDoZeroSup && gemdet->GEMPlanes[i].GetADCSum(j) - commonmode*6 > fZeroSup) || !fDoZeroSup ) {
           // if(i<4)cout << i << " " << gemdet->GEMPlanes[i].GetNStrips() << " "
           // << commonmode << endl;
           FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
@@ -1941,16 +1941,15 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
         gemdet->GEMPlanes[i].ApplyOnlineZS(fOnlineZSThrNsigma);
 
         for(int j=0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
-          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 || gemdet->GEMPlanes[i].GetGoodADCSum(j) > 0 ){ // Only write out non-zero suppressed channels.
+          if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){ // Only write out non-zero suppressed channels.
             FillOutputTreeVectors(gemdet, i, j, uniqueid, T);
           }          
         }        
       }
       else {
         for (int j = 0; j < gemdet->GEMPlanes[i].GetNStrips(); j++){
-          //if ( gemdet->GEMPlanes[i].GetADCSum(j) > 0 ){
+          
             FillOutputTreeVectors(gemdet, i, j, uniqueid, T); // For no-ZS we shoulod write-out all the channels.
-          //}
         }
       }      
     }    
