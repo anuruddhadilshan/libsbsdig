@@ -1,4 +1,4 @@
-void HCalMapReorder(const char* inputfile, const char* outputfile){
+void HCalMapReorder(const char* inputfile, const char* outputfile, const double gain_multiplier = 1.0){
   ifstream infile(inputfile);
   ofstream outfile(outputfile);
 
@@ -14,7 +14,7 @@ void HCalMapReorder(const char* inputfile, const char* outputfile){
     col = 12-1-col;
     idx_out = row*12 + col;
     cout << " => col " << col << " idx_out " << idx_out << " gain " << gain << endl;
-    gain_array[idx_out] = gain;
+    gain_array[idx_out] = gain*gain_multiplier;
     idx_in++;
   }
   
