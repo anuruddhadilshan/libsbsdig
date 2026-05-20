@@ -37,7 +37,7 @@ SBSDigPMTDet::~SBSDigPMTDet()
 
 void SBSDigPMTDet::Digitize(g4sbs_tree* T, TRandom3* R)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits, int(fThreshold));
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal[i], fPedSigma[i], fADCconv, fADCbits, fTDCconv, fTDCbits, int(fThreshold));
 }
   
 void SBSDigPMTDet::SetSamples(double sampsize)

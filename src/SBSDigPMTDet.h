@@ -29,8 +29,8 @@ class SBSDigPMTDet {
   double fRefIndex;// for leadglass detectors
   std::vector<double> fGain;
   std::vector<int> fNstages;
-  double fPedestal;
-  double fPedSigma;
+  std::vector<double> fPedestal;
+  std::vector<double> fPedSigma;
   double fTrigOffset;
   double fThreshold;
   double fGateWidth;

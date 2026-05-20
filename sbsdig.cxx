@@ -159,8 +159,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_bbps = 100.;
   std::vector<Double_t> gain_bbps;
   std::vector<Int_t> nstages_bbps;
-  Double_t ped_bbps = 600.;//
-  Double_t pedsigma_bbps = 3.;//
+  std::vector<Double_t> ped_bbps;//
+  std::vector<Double_t> pedsigma_bbps;
   Double_t trigoffset_bbps = 18.2;//
   Double_t threshold_bbps = 3.e-3;
   Double_t ADCconv_bbps = 50.;
@@ -175,8 +175,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_bbsh = 100.;
   std::vector<Double_t> gain_bbsh;
   std::vector<Int_t> nstages_bbsh;
-  Double_t ped_bbsh = 500.;
-  Double_t pedsigma_bbsh = 4.5;
+  std::vector<Double_t> ped_bbsh;
+  std::vector<Double_t> pedsigma_bbsh;
   Double_t trigoffset_bbsh = 18.5;
   Double_t threshold_bbsh = 3.e-3;
   Double_t ADCconv_bbsh = 50.;
@@ -190,8 +190,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_grinch = 100.;
   std::vector<Double_t> gain_grinch;
   std::vector<Int_t> nstages_grinch;
-  Double_t ped_grinch = 0.;
-  Double_t pedsigma_grinch = 0.;
+  std::vector<Double_t> ped_grinch;
+  std::vector<Double_t> pedsigma_grinch;
   Double_t trigoffset_grinch = 15.3;
   Double_t threshold_grinch = 3.e-3;
   Double_t ADCconv_grinch = 100;
@@ -205,8 +205,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_bbhodo = 100.;
   std::vector<Double_t> gain_bbhodo;
   std::vector<Int_t> nstages_bbhodo;
-  Double_t ped_bbhodo = 0.;
-  Double_t pedsigma_bbhodo = 0.;
+  std::vector<Double_t> ped_bbhodo;
+  std::vector<Double_t> pedsigma_bbhodo;
   Double_t trigoffset_bbhodo = 18.6;
   Double_t threshold_bbhodo = 3.e3;
   Double_t ADCconv_bbhodo = 100.;
@@ -220,8 +220,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_hcal = 80;
   std::vector<Double_t> gain_hcal;
   std::vector<Int_t> nstages_hcal;
-  Double_t ped_hcal = 0.;
-  Double_t pedsigma_hcal = 0.;
+  std::vector<Double_t> ped_hcal;
+  std::vector<Double_t> pedsigma_hcal;
   Double_t trigoffset_hcal = 81.;
   Double_t threshold_hcal = 3.e-3;
   Double_t ADCconv_hcal = 1.;
@@ -269,8 +269,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_ecal = 100.;
   std::vector<Double_t> gain_ecal;
   std::vector<Int_t> nstages_ecal;
-  Double_t ped_ecal = 500.;
-  Double_t pedsigma_ecal = 4.5;
+  std::vector<Double_t> ped_ecal;
+  std::vector<Double_t> pedsigma_ecal;
   Double_t trigoffset_ecal = 18.5;
   Double_t threshold_ecal = 3.e-3;
   Double_t ADCconv_ecal = 50.;
@@ -284,8 +284,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_cdet = 100.;
   std::vector<Double_t> gain_cdet;
   std::vector<Int_t> nstages_cdet;
-  Double_t ped_cdet = 500.;
-  Double_t pedsigma_cdet = 4.5;
+  std::vector<Double_t> ped_cdet;
+  std::vector<Double_t> pedsigma_cdet;
   Double_t trigoffset_cdet = 18.5;
   Double_t threshold_cdet = 3.e-3;
   Double_t ADCconv_cdet = 50.;
@@ -408,8 +408,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_polscint_bs = 30.;
   std::vector<Double_t> gain_polscint_bs;
   std::vector<Int_t> nstages_polscint_bs;
-  Double_t ped_polscint_bs = 300.;
-  Double_t pedsigma_polscint_bs = 10.;
+  std::vector<Double_t> ped_polscint_bs;
+  std::vector<Double_t> pedsigma_polscint_bs;
   Double_t trigoffset_polscint_bs = 37.6;
   Double_t threshold_polscint_bs = 3.e3;
   Double_t ADCconv_polscint_bs = 100.;
@@ -424,8 +424,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_polscint_fs = 30.;
   std::vector<Double_t> gain_polscint_fs;
   std::vector<Int_t> nstages_polscint_fs;
-  Double_t ped_polscint_fs = 300.;
-  Double_t pedsigma_polscint_fs = 3.;
+  std::vector<Double_t> ped_polscint_fs;
+  std::vector<Double_t> pedsigma_polscint_fs;
   Double_t trigoffset_polscint_fs = 37.6;
   Double_t threshold_polscint_fs = 3.e3;
   Double_t ADCconv_polscint_fs = 100.;
@@ -440,8 +440,8 @@ int main(int argc, char** argv){
   Double_t gatewidth_activeana = 30.;
   std::vector<Double_t> gain_activeana;
   std::vector<Int_t> nstages_activeana;
-  Double_t ped_activeana = 300.;
-  Double_t pedsigma_activeana = 10.0;
+  std::vector<Double_t> ped_activeana;
+  std::vector<Double_t> pedsigma_activeana;
   Double_t trigoffset_activeana = 37.6;
   Double_t threshold_activeana = 3.e3;
   Double_t ADCconv_activeana = 100.;
@@ -547,14 +547,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_bbps"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_bbps = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_bbps = stemp.Atof();
+	  ped_bbps.resize(NChan_bbps);
+	  if(ntokens==NChan_bbps+1){
+	    for(int k = 0; k<NChan_bbps; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_bbps[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbps << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbps; k++){
+	      ped_bbps[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbps_read++;
 	}
 	
 	if(skey=="pedsigma_bbps"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_bbps = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_bbps = stemp.Atof();
+	  pedsigma_bbps.resize(NChan_bbps);
+	  if(ntokens==NChan_bbps+1){
+	    for(int k = 0; k<NChan_bbps; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_bbps[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbps << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbps; k++){
+	      pedsigma_bbps[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbps_read++;
 	}
 	
@@ -656,14 +684,42 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="ped_bbsh"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_bbsh = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_bbsh = stemp.Atof();
+	  ped_bbsh.resize(NChan_bbsh);
+	  if(ntokens==NChan_bbsh+1){
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_bbsh[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbsh << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      ped_bbsh[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbsh_read++;
 	}
 	
 	if(skey=="pedsigma_bbsh"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_bbsh = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_bbsh = stemp.Atof();
+	  pedsigma_bbsh.resize(NChan_bbsh);
+	  if(ntokens==NChan_bbsh+1){
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_bbsh[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbsh << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbsh; k++){
+	      pedsigma_bbsh[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbsh_read++;
 	}
 	
@@ -759,14 +815,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_grinch"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_grinch = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_grinch = stemp.Atof();
+	  ped_grinch.resize(NChan_grinch);
+	  if(ntokens==NChan_grinch+1){
+	    for(int k = 0; k<NChan_grinch; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_grinch[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_grinch << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_grinch; k++){
+	      ped_grinch[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_grinch_read++;
 	}
 	
 	if(skey=="pedsigma_grinch"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_grinch = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_grinch = stemp.Atof();
+	  pedsigma_grinch.resize(NChan_grinch);
+	  if(ntokens==NChan_grinch+1){
+	    for(int k = 0; k<NChan_grinch; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_grinch[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_grinch << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_grinch; k++){
+	      pedsigma_grinch[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_grinch_read++;
 	}
 	
@@ -862,14 +946,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_bbhodo"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_bbhodo = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_bbhodo = stemp.Atof();
+	  ped_bbhodo.resize(NChan_bbhodo);
+	  if(ntokens==NChan_bbhodo+1){
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_bbhodo[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbhodo << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      ped_bbhodo[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbhodo_read++;
 	}
 	
 	if(skey=="pedsigma_bbhodo"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_bbhodo = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_bbhodo = stemp.Atof();
+	  pedsigma_bbhodo.resize(NChan_bbhodo);
+	  if(ntokens==NChan_bbhodo+1){
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_bbhodo[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_bbhodo << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_bbhodo; k++){
+	      pedsigma_bbhodo[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_bbhodo_read++;
 	}
 	
@@ -965,14 +1077,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_hcal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_hcal = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_hcal = stemp.Atof();
+	  ped_hcal.resize(NChan_hcal);
+	  if(ntokens==NChan_hcal+1){
+	    for(int k = 0; k<NChan_hcal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_hcal[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_hcal << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_hcal; k++){
+	      ped_hcal[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_hcal_read++;
 	}
 	
 	if(skey=="pedsigma_hcal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_hcal = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_hcal = stemp.Atof();
+	  pedsigma_hcal.resize(NChan_hcal);
+	  if(ntokens==NChan_hcal+1){
+	    for(int k = 0; k<NChan_hcal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_hcal[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_hcal << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_hcal; k++){
+	      pedsigma_hcal[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_hcal_read++;
 	}
 	
@@ -1086,14 +1226,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_ecal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_ecal = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_ecal = stemp.Atof();
+	  ped_ecal.resize(NChan_ecal);
+	  if(ntokens==NChan_ecal+1){
+	    for(int k = 0; k<NChan_ecal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_ecal[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_ecal << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_ecal; k++){
+	      ped_ecal[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_ecal_read++;
 	}
 	
 	if(skey=="pedsigma_ecal"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_ecal = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_ecal = stemp.Atof();
+	  pedsigma_ecal.resize(NChan_ecal);
+	  if(ntokens==NChan_ecal+1){
+	    for(int k = 0; k<NChan_ecal; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_ecal[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_ecal << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_ecal; k++){
+	      pedsigma_ecal[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_ecal_read++;
 	}
 	
@@ -1181,14 +1349,42 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="ped_cdet"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_cdet = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_cdet = stemp.Atof();
+	  ped_cdet.resize(NChan_cdet);
+	  if(ntokens==NChan_cdet+1){
+	    for(int k = 0; k<NChan_cdet; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_cdet[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_cdet << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_cdet; k++){
+	      ped_cdet[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_cdet_read++;
 	}
 	
 	if(skey=="pedsigma_cdet"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_cdet = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_cdet = stemp.Atof();
+	  pedsigma_cdet.resize(NChan_cdet);
+	  if(ntokens==NChan_cdet+1){
+	    for(int k = 0; k<NChan_cdet; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_cdet[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_cdet << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_cdet; k++){
+	      pedsigma_cdet[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_cdet_read++;
 	}
 	
@@ -1285,14 +1481,42 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="ped_polscint_bs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_polscint_bs = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_polscint_bs = stemp.Atof();
+	  ped_polscint_bs.resize(NChan_polscint_bs);
+	  if(ntokens==NChan_polscint_bs+1){
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_polscint_bs[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_polscint_bs << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      ped_polscint_bs[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_prpolscint_bs_read++;
 	}
 	
 	if(skey=="pedsigma_polscint_bs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_polscint_bs = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_polscint_bs = stemp.Atof();
+	  pedsigma_polscint_bs.resize(NChan_polscint_bs);
+	  if(ntokens==NChan_polscint_bs+1){
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_polscint_bs[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_polscint_bs << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_bs; k++){
+	      pedsigma_polscint_bs[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_prpolscint_bs_read++;
 	}
 	
@@ -1386,14 +1610,42 @@ int main(int argc, char** argv){
 	}
 
 	if(skey=="ped_polscint_fs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_polscint_fs = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_polscint_fs = stemp.Atof();
+	  ped_polscint_fs.resize(NChan_polscint_fs);
+	  if(ntokens==NChan_polscint_fs+1){
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_polscint_fs[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_polscint_fs << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      ped_polscint_fs[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_prpolscint_fs_read++;
 	}
 	
 	if(skey=="pedsigma_polscint_fs"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_polscint_fs = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_polscint_fs = stemp.Atof();
+	  pedsigma_polscint_fs.resize(NChan_polscint_fs);
+	  if(ntokens==NChan_polscint_fs+1){
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_polscint_fs[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_polscint_fs << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_polscint_fs; k++){
+	      pedsigma_polscint_fs[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_prpolscint_fs_read++;
 	}
 	
@@ -1487,14 +1739,42 @@ int main(int argc, char** argv){
 	}
 	
 	if(skey=="ped_activeana"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  ped_activeana = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // ped_activeana = stemp.Atof();
+	  ped_activeana.resize(NChan_activeana);
+	  if(ntokens==NChan_activeana+1){
+	    for(int k = 0; k<NChan_activeana; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      ped_activeana[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_activeana << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_activeana; k++){
+	      ped_activeana[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_activeana_read++;
 	}
 	
 	if(skey=="pedsigma_activeana"){
-	  TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-	  pedsigma_activeana = stemp.Atof();
+	  // TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	  // pedsigma_activeana = stemp.Atof();
+	  pedsigma_activeana.resize(NChan_activeana);
+	  if(ntokens==NChan_activeana+1){
+	    for(int k = 0; k<NChan_activeana; k++){
+	      TString stemp = ( (TObjString*) (*tokens)[k+1] )->GetString();
+	      pedsigma_activeana[k] = stemp.Atof();
+	    }
+	  }else{
+	    cout << ntokens-1 << " entries for " << skey << " dont match number of channels = "  
+		 << NChan_activeana << endl <<  " applying first value on all planes " << endl;
+	    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	    for(int k = 0; k<NChan_activeana; k++){
+	      pedsigma_activeana[k] = stemp.Atof();
+	    }
+	  }
 	  nparam_activeana_read++;
 	}
 	
