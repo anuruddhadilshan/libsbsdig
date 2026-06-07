@@ -84,6 +84,7 @@ FADC_ADCbits 12
 FADC_sampsize 4.0 
 sigmapulse_hcal 40.0 
 #zhitresp_hcal 5.242 11.39 10.41
+zhitresp_hcal 0.5242 1.139 1.041
 
 ## parameters for GEMs
 # number of planes/modules/readout
