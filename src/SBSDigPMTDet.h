@@ -11,12 +11,13 @@
 class SBSDigPMTDet {
  public:
   SBSDigPMTDet();
-  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv);
-  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, double sigmapulse, double gatewidth);
+  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, std::vector<int> nstages);
+  SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, std::vector<int> nstages, double sigmapulse, double gatewidth);
   virtual ~SBSDigPMTDet();
   void Digitize(g4sbs_tree* T, TRandom3* R);
   void Clear(bool dosamples = false);
   void SetSamples(double sampsize);
+  void SetHitPosRespParam(const int nparam, const double* paramarray);
   
   //private:
   UInt_t fNChan;
@@ -27,8 +28,9 @@ class SBSDigPMTDet {
 
   double fRefIndex;// for leadglass detectors
   std::vector<double> fGain;
-  double fPedestal;
-  double fPedSigma;
+  std::vector<int> fNstages;
+  std::vector<double> fPedestal;
+  std::vector<double> fPedSigma;
   double fTrigOffset;
   double fThreshold;
   double fGateWidth;
@@ -37,6 +39,7 @@ class SBSDigPMTDet {
   double fTDCconv;
   double fTDCbits;
   double fSigmaPulse;
+  std::vector<double> fHitPosRespParam;
 };
 
 #endif
