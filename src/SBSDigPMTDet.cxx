@@ -8,19 +8,26 @@ SBSDigPMTDet::SBSDigPMTDet()
 {
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, std::vector<int> nstages):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal();
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i]));
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i], nstages[i]));
 }
 
-SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, double sigmapulse, double gatewidth):
+SBSDigPMTDet::SBSDigPMTDet(UShort_t uniqueid, UInt_t nchan, std::vector<double> NpeChargeConv, std::vector<int> nstages, double sigmapulse, double gatewidth):
   fUniqueID(uniqueid), fNChan(nchan)
 {
   //for(int i = 0; i<fNChan; i++)PMTmap[i] = PMTSignal(NpeChargeConv);
-  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i]));
+  for(int i = 0; i<fNChan; i++)PMTmap.push_back(PMTSignal(NpeChargeConv[i], nstages[i]));
   fRefPulse = new SPEModel(fUniqueID, sigmapulse, 0, -gatewidth/2., gatewidth/2.);
+}
+
+void SBSDigPMTDet::SetHitPosRespParam(const int nparam, const double* paramarray)
+{
+  for(int i = 0; i<nparam; i++){
+    fHitPosRespParam.push_back(paramarray[i]);
+  }
 }
 
 SBSDigPMTDet::~SBSDigPMTDet()
@@ -30,7 +37,7 @@ SBSDigPMTDet::~SBSDigPMTDet()
 
 void SBSDigPMTDet::Digitize(g4sbs_tree* T, TRandom3* R)
 {
-  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal, fPedSigma, fADCconv, fADCbits, fTDCconv, fTDCbits, int(fThreshold));
+  for(int i = 0; i<fNChan; i++)PMTmap[i].Digitize(i, fUniqueID, T, R, fPedestal[i], fPedSigma[i], fADCconv, fADCbits, fTDCconv, fTDCbits, int(fThreshold));
 }
   
 void SBSDigPMTDet::SetSamples(double sampsize)
