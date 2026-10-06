@@ -12,7 +12,9 @@
 #include "TH2D.h"
 
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <map>
 #include <chrono>
 
 #define DBG_HISTOS 0
@@ -80,6 +82,9 @@ class SBSDigGEMSimDig {
 		 const TVector3& xi,
 		 const TVector3& xo,
 		 const Double_t elost);
+
+  void LoadAPVOffsets(const char* filename);
+  std::vector<std::map<int, double>> fAPVOffsets;
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers
