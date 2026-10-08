@@ -101,18 +101,11 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
     fTriggerOffset.push_back(trigoffset[i]);
     cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
   }
-  fDoZeroSup = (fZeroSup > 0);
-<<<<<<< HEAD
-  if (fZeroSup > 0)
-    fDoZeroSup = true;
-  if (napv) {
-=======
   // Load APV offsets from file
   LoadAPVOffsets("/w/halla-scshelf2102/sbs/mcjacob/sbsoffline/SBS-replay/GEP-Analysis/output/Digi.txt");  // TODO: pass filename as parameter
 
-  if(fZeroSup>0)fDoZeroSup = true;
-  if(napv){
->>>>>>> c68385d (Added APV timing offsets)
+  fDoZeroSup = (fZeroSup > 0);
+  if (napv) {
     fDoCommonMode = true;
     for (int i = 0; i < napv; i++) {
       fCommonModeArray.push_back(commonmode_array[i]);
@@ -425,8 +418,6 @@ Double_t SBSDigGEMSimDig::PulseShape(Double_t t,
   return (v > 0.) ? v : 0.;
 }
 
-<<<<<<< HEAD
-=======
 // Load APV timing offsets from a file
 void SBSDigGEMSimDig::LoadAPVOffsets(const char* filename) {
   std::ifstream infile(filename);
@@ -473,7 +464,6 @@ void SBSDigGEMSimDig::LoadAPVOffsets(const char* filename) {
 }
 
 
->>>>>>> c68385d (Added APV timing offsets)
 #define DBG_AVA 0
 //.......................................................
 // avalanche model
@@ -1117,63 +1107,29 @@ inte4 << endl;
       //  cout<<"strip: "<<iL+j<<":    ";
       // Int_t posflag = 0;
       Double_t us = 0.;
-<<<<<<< HEAD
       // for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
       for (UInt_t k = 0; k < integral_steps_x; k++) {
         int kx = (j * integral_steps_x + k); // * ny;
         us += fSumA[kx++];
       }
-=======
-      //for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
-      for (UInt_t k=0; k<integral_steps_x; k++){
-	      int kx = (j * integral_steps_x + k);// * ny;
-	      us += fSumA[kx++];
-      }
-
-      //**** START ADDING HERE ****//
-      Int_t strip_number = iL + j;
-      Int_t apv_in_plane = strip_number / 128;
-      
-#if DBG_AVA > 2
-      cout << "strip " << iL+j << " us " << us << endl;
-#endif
-      
-      double apv_offset = 0.0;
-      if(ic*2+ipl < (int)fAPVOffsets.size() && fAPVOffsets[ic*2+ipl].find(apv_in_plane) != fAPVOffsets[ic*2+ipl].end()) {
-        apv_offset = fAPVOffsets[ic*2+ipl][apv_in_plane];
-      }
-      //cout << "APV offset for plane " << ic*2+ipl << ", strip " << strip_number << ", APV " << apv_in_plane << ": " << apv_offset << endl;
-  
-      for (Int_t b = 0; b < fEleSamplingPoints; b++){
-	      //cout << "APV offset for plane " << ipl << ", strip " << strip_number << ", APV " << apv_in_plane << ": " << apv_offset << endl;
-        Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0 - 2*apv_offset, us, fPulseShapeTau);
-        //Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0, us, fPulseShapeTau);
-        Short_t dadc = ADCConvert(pulse, 0, fADCgain, fADCbits);
-        gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
-
-    //************************** */
-      
-/*
-      for (Int_t b = 0; b < fEleSamplingPoints; b++){
-	      Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0,
-				     us,
-				     fPulseShapeTau);
-	//fPulseShapeTau0, fPulseShapeTau1 );
-	
-	Short_t dadc = ADCConvert( pulse,
-				   0,// fADCoffset,
-				   fADCgain,
-				   fADCbits );
->>>>>>> c68385d (Added APV timing offsets)
 
 #if DBG_AVA > 2
       cout << "strip " << iL + j << " us " << us << endl;
 #endif
 
-<<<<<<< HEAD
+      // Shift each strip using the timing calibration for its physical APV.
+      const int plane = ic * 2 + ipl;
+      const int apv = (iL + j) / fNAPVChannels;
+      double apv_offset = 0.0;
+      if (plane >= 0 && plane < static_cast<int>(fAPVOffsets.size())) {
+        const auto offset = fAPVOffsets[plane].find(apv);
+        if (offset != fAPVOffsets[plane].end()) apv_offset = offset->second;
+      }
+
       for (Int_t b = 0; b < fEleSamplingPoints; b++) {
         Double_t pulse =
-            PulseShape(fEleSamplingPeriod * b - t0, us, fPulseShapeTau);
+            PulseShape(fEleSamplingPeriod * b - t0 - 2.0 * apv_offset,
+                       us, fPulseShapeTau);
         // fPulseShapeTau0, fPulseShapeTau1 );
 
         Short_t dadc = ADCConvert(pulse,
@@ -1208,16 +1164,6 @@ inte4 << endl;
                 TMath::Nint(dadc * xt_factor));            
           }
         }
-=======
-	gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j, b, dadc);
-	*/
-	//cross talk here
-	if(xt_factor>0){
-	  if(iL+j+isLeft*fNCStripApart>=0 && iL+j+isLeft*fNCStripApart<GEMstrips){
-	    gemdet->GEMPlanes[ic*2+ipl].AddADC(iL+j+isLeft*fNCStripApart, b, TMath::Nint(dadc*xt_factor));
-	  }
-	}
->>>>>>> c68385d (Added APV timing offsets)
       }
 
     } // end loop on strips
@@ -1404,41 +1350,8 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic, SBSDigGEMDet *gemdet,
 
     for (Int_t j = 0; j < nstrips; j++) {
       Double_t us = 0.;
-<<<<<<< HEAD
       for (UInt_t k = 0; k < integral_steps_x; k++) {
         int kx = (j * integral_steps_x + k); // * ny;
-=======
-      for (UInt_t k=0; k<integral_steps_x; k++){
-	      int kx = (j * integral_steps_x + k);// * ny;
-	
-	      kx*= ny;
-	      Double_t integralY_tmp = 0;
-	      for( Int_t jy = ny; jy != 0; --jy ){
-	        integralY_tmp += fSumA[kx++];
-	      }
-	      us += integralY_tmp * area;
-      }
-      //**** START ADDING HERE ****//
-      Int_t strip_number = iL + j;
-      Int_t apv_in_plane = strip_number / 128;
-      
-      double apv_offset = 0.0;
-      if(ic*2+ipl < (int)fAPVOffsets.size() && fAPVOffsets[ic*2+ipl].find(apv_in_plane) != fAPVOffsets[ic*2+ipl].end()) {
-        apv_offset = fAPVOffsets[ic*2+ipl][apv_in_plane];
-      }
-      //cout << "APV offset for plane " << ic*2+ipl << ", strip " << strip_number << ", APV " << apv_in_plane << ": " << apv_offset << endl;
-      
-      for (Int_t b = 0; b < fEleSamplingPoints; b++){
-	      Double_t pulse = PulseShape (fEleSamplingPeriod * b - t0 - 2*apv_offset,
-				     us,
-				     fPulseShapeTau);
-	//fPulseShapeTau0, fPulseShapeTau1 );
-	
-	Short_t dadc = ADCConvert( pulse,
-				   0,// fADCoffset,
-				   fADCgain,
-				   fADCbits );
->>>>>>> c68385d (Added APV timing offsets)
 
         kx *= ny;
         Double_t integralY_tmp = 0;
@@ -1448,9 +1361,19 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic, SBSDigGEMDet *gemdet,
         us += integralY_tmp * area;
       }
 
+      // Shift each strip using the timing calibration for its physical APV.
+      const int plane = ic * 2 + ipl;
+      const int apv = (iL + j) / fNAPVChannels;
+      double apv_offset = 0.0;
+      if (plane >= 0 && plane < static_cast<int>(fAPVOffsets.size())) {
+        const auto offset = fAPVOffsets[plane].find(apv);
+        if (offset != fAPVOffsets[plane].end()) apv_offset = offset->second;
+      }
+
       for (Int_t b = 0; b < fEleSamplingPoints; b++) {
         Double_t pulse =
-            PulseShape(fEleSamplingPeriod * b - t0, us, fPulseShapeTau);
+            PulseShape(fEleSamplingPeriod * b - t0 - 2.0 * apv_offset,
+                       us, fPulseShapeTau);
         // fPulseShapeTau0, fPulseShapeTau1 );
 
         Short_t dadc = ADCConvert(pulse,
