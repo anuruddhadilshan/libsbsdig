@@ -101,8 +101,7 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
     fTriggerOffset.push_back(trigoffset[i]);
     cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
   }
-  if (fZeroSup > 0)
-    fDoZeroSup = true;
+  fDoZeroSup = (fZeroSup > 0);
   if (napv) {
     fDoCommonMode = true;
     for (int i = 0; i < napv; i++) {
@@ -1883,11 +1882,16 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
       //     }          
       //   }
       // }
-      else if (gemdet->GEMPlanes[i].GetADCSum(j) > 0) {
+      else if (gemdet->GEMPlanes[i].GetADCSum(j) > 0 ||
+               (!sigonly && !fDoVariablePedCM && !fDoZeroSup)) {
 #if DBG_AVA > 0
 #endif
-        nstripshit_total++;
-        ADC_sum += gemdet->GEMPlanes[i].GetADCSum(j);
+        // Legacy full readout needs fixed baseline/noise on quiet strips too.
+        // Preserve the positive-ZS path and signal-only strip statistics.
+        if (gemdet->GEMPlanes[i].GetADCSum(j) > 0) {
+          nstripshit_total++;
+          ADC_sum += gemdet->GEMPlanes[i].GetADCSum(j);
+        }
         // if(i%2==1 &&
         // i<24)h1_yGEM_incheckout->Fill(j*fStripPitch-gemdet->GEMPlanes[i].dX()/2.);
         if (!sigonly) {

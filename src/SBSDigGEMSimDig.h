@@ -99,9 +99,9 @@ class SBSDigGEMSimDig {
   Int_t fNAPVChannels;
   
   //zero suppression and common mode
-  Bool_t fDoZeroSup;
-  Double_t fZeroSup;
-  Bool_t fDoCommonMode;
+  Bool_t fDoZeroSup = false;
+  Double_t fZeroSup = 0.0;
+  Bool_t fDoCommonMode = false;
   std::vector<Double_t> fCommonModeArray;
 
   //New (Nov, 2025): Apply variable CM (apv card wise - per every 128 channels) and pedestal (channel wise).
