@@ -311,6 +311,7 @@ int main(int argc, char** argv){
   bool do_pedcm_ft = false;
   std::string pedfile_ft = "";
   std::string cmfile_ft = "";
+  bool do_cmsag_ft = false; //Apply the CM sag effect. Will only take effect if 'do_pedcm' is turned ON.
   std::string cmfitfile_ft = "";
   bool do_online_cm_ft = false;
   bool do_online_zs_ft = false;
@@ -3023,6 +3024,12 @@ int main(int argc, char** argv){
     cmfile_ft = stemp.Data();
     // nparam_ft_read++; // Intentionally not incrementing 'nparam_ft_read' to ensure backward compatibility with old database files.
   }
+
+  if(skey=="do_cmsag_ft"){
+	cout << "reading " << skey.Data() << endl;
+	TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+	do_cmsag_ft = stemp.Atoi();
+  }
   
   if(skey=="cmfitfile_ft"){
     cout << "reading " << skey.Data() << endl;
@@ -3518,9 +3525,8 @@ int main(int argc, char** argv){
       
       //SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft);
       
-      SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft, cmfitfile_ft);
-      
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft);
+      SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft, do_cmsag_ft, cmfitfile_ft);      
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_cmsag_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft);
       for(int m = 0; m<Nlayers_ft; m++){
 	     ft->fZLayer.push_back(ft_layer_z[m]);
       }

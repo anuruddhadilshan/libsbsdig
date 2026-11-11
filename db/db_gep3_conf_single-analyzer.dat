@@ -82,6 +82,7 @@ commonmode_array_ft 1500.
 do_pedcm_ft 1
 pedfile_ft ft_pedout_run5514.dat
 cmfile_ft ft_cmout_run5514.dat
+do_cmsag_ft 1 #Apply the CM sag effect. Will only take effect if 'do_pedcm' is turned ON.
 cmfitfile_ft cmfit_ft_5633.txt
 do_online_cm_ft 1 #Apply online CM correction.
 do_online_zs_ft 1 #Apply online zero-suppresion.

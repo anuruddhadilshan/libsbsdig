@@ -29,7 +29,7 @@ class SBSDigGEMSimDig {
   //Constructor and destructor
   SBSDigGEMSimDig();
   SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0,
-   bool do_variable_pedcm = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0, bool make_online_cmplots = false);
+   bool do_variable_pedcm = false, bool do_cmsag = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0, bool make_online_cmplots = false);
   virtual ~SBSDigGEMSimDig();
   void Print();
   
@@ -111,6 +111,9 @@ class SBSDigGEMSimDig {
 
   //New (Nov, 2025): Apply variable CM (apv card wise - per every 128 channels) and pedestal (channel wise).
   Bool_t fDoVariablePedCM;
+
+  // Nov, 2026: Apply CM sag effect (per APV) based on Crystal Ball fits of the beam CM distributions.
+  Bool_t fDoCMSag;
 
   //New (Dec, 2025): 'Online' CM corrections and ZS. ADR.
   Bool_t fDoOnlineCommonMode; // fDoVariablePedCM *MUST BE* true for online CM to take effect.

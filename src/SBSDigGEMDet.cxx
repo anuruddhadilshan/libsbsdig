@@ -8,7 +8,7 @@ SBSDigGEMDet::SBSDigGEMDet()
 {
 }
 
-SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, int* layer, int* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr, bool do_ped_cm, std::string pedfile, std::string cmfile, std::string cmfitfile):
+SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, int* layer, int* nstrips, double* offset, double* roangle, int nsamp, double zsup_thr, bool do_ped_cm, std::string pedfile, std::string cmfile, bool do_cmsag, std::string cmfitfile):
   fUniqueID(uniqueid), fNPlanes(nplanes)
 {
 
@@ -103,7 +103,7 @@ SBSDigGEMDet::SBSDigGEMDet(UShort_t uniqueid, UInt_t nplanes, int* layer, int* n
     }
     // ---------------------------------------------------------------------------------------------
     //Crystal Ball fits of the beam CM per APV 
-    if ( !cmfitfile.empty() ) {
+    if ( do_cmsag && !cmfitfile.empty() ) {
       ifstream in_cmfit(std::string(env_libsbsdig)+"/db/"+cmfitfile);
       if ( !in_cmfit.is_open() ) {
         cout << "GEM CM fit file: " << cmfitfile.c_str() << " does not exist!!!" << endl;

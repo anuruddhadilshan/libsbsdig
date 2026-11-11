@@ -88,10 +88,11 @@ SBSDigGEMSimDig::
 
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
                                  double *gain, double zsup_thr, int napv,
-                                 double *commonmode_array, bool do_variable_pedcm, 
+                                 double *commonmode_array, bool do_variable_pedcm, bool do_cmsag,
                                  bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma, bool make_online_cmplots)
-    : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm),
-     fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), fOnlineZSThrNsigma(online_zs_thr_nsigma), fMakeOnlineCMplots(make_online_cmplots) {
+                                : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm), fDoCMSag(do_cmsag),
+                                  fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), 
+                                  fOnlineZSThrNsigma(online_zs_thr_nsigma), fMakeOnlineCMplots(make_online_cmplots) {
   // TODO: pass as parameters.
   fAvaGain = gain[0];
   fNSamples = 6;
@@ -1899,8 +1900,10 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
 
             commonmode_apv_ts_sum = 0;
             for (int tsi = 0; tsi < fNSamples; tsi++) {
-              //commonmode_apv_ts.at(tsi) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv); // DOES THE 'cm_sigma' also need to be multiplied by 6??
-	      commonmode_apv_ts.at(tsi) = gemdet->GEMPlanes[i].SampleTrueCM(iAPV, R);
+
+              if (fDoCMSag) commonmode_apv_ts.at(tsi) = gemdet->GEMPlanes[i].SampleTrueCM(iAPV, R);
+              else commonmode_apv_ts.at(tsi) = R->Gaus(commonmode_mean_apv, commonmode_sigma_apv);
+              	            
               commonmode_apv_ts_sum += commonmode_apv_ts.at(tsi);
               gemdet->GEMPlanes[i].InsertTrueCM(iAPV, tsi, commonmode_apv_ts.at(tsi));
             }
