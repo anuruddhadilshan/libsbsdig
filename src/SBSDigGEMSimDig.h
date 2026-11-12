@@ -29,7 +29,8 @@ class SBSDigGEMSimDig {
   //Constructor and destructor
   SBSDigGEMSimDig();
   SBSDigGEMSimDig(int nchambers, double* trigoffset, double* gain, double zsup_thr, int napv = 0, double* commonmode_array = 0,
-   bool do_variable_pedcm = false, bool do_cmsag = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0, bool make_online_cmplots = false);
+   bool do_variable_pedcm = false, bool do_cmsag = false, bool do_online_cm = false, bool do_online_zs = false, double online_zs_thr_nsigma = 3.0, bool make_online_cmplots = false,
+   bool do_APV_offsets = false, std::string APV_offset_file = "");
   virtual ~SBSDigGEMSimDig();
   void Print();
   
@@ -85,6 +86,7 @@ class SBSDigGEMSimDig {
 
   void LoadAPVOffsets(const char* filename);
   std::vector<std::map<int, double>> fAPVOffsets;
+  Bool_t fdo_APV_offsets;
   
   std::vector<Double_t> fTriggerOffset; // trigger offset (ns), incl latency & readout offset
   //UInt_t fNChambers;  // # chambers

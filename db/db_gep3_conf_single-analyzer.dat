@@ -89,6 +89,10 @@ do_online_zs_ft 1 #Apply online zero-suppresion.
 online_zs_thr_nsigma_ft 3.0 #online zero-suppression threshold.
 make_online_cmplots_ft 1 #Produce Online CM plots. Will only take effect if 'do_online_cm' is turned ON. Keep OFF/0 by default to save memory usage and disk space.
 
+#Enable timing offsets for APVs
+do_APV_offsets 1
+APV_offsets_file ApvOffsets.txt
+
 # number of planes/modules/readout
 NPlanes_fpp1 64 
 # data acquisition window for fpp1 in ns
