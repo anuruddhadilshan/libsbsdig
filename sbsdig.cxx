@@ -319,8 +319,8 @@ int main(int argc, char** argv){
   bool make_online_cmplots_ft = false;
 
   //APV Timing Offsets
-  bool do_APV_offsets = false;
-  std::string APV_offset_file = "";
+  bool do_APV_offsets_ft = false;
+  std::string APV_offset_file_ft = "";
 
   int nparam_fpp1_read = 0;
   Int_t NPlanes_fpp1 = 40;// number of planes/modules/readout
@@ -3065,16 +3065,16 @@ int main(int argc, char** argv){
     make_online_cmplots_ft = stemp.Atoi();
   }
 
-  if(skey=="do_APV_offsets"){
+  if(skey=="do_APV_offsets_ft"){
     cout << "reading " << skey.Data() << endl;
     TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-    do_APV_offsets = stemp.Atoi();
+    do_APV_offsets_ft = stemp.Atoi();
   }
 
-  if(skey=="APV_offsets_file"){
+  if(skey=="APV_offsets_file_ft"){
     cout << "reading " << skey.Data() << endl;
     TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
-    APV_offset_file = stemp.Data();
+    APV_offset_file_ft = stemp.Data();
   }
 
 	
