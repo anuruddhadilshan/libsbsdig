@@ -12,6 +12,10 @@ using namespace std;
 int db_nmodules {-1};
 std::vector<int> db_modAPVmap {-1};
 
+// Parameters to be read-in from the local MC database.
+int db_mc_nmodules {-1};
+std::vector<int> db_mc_modAPVmap {-1};
+
 //module id, axis, position on axis
 struct apvInfoGEM {
 	int gemid, axis, pos, invert;
@@ -55,6 +59,7 @@ struct apvInfoDAQ{
 
 // Map with each APV's DAQ info (vtpcrate, fiber, adc_ch) being used as keys to get their values (gemid, axis, pos, invert) at the GEM module's end.
 std::map<apvInfoDAQ, apvInfoGEM> db_apvInfoMap;
+std::map<apvInfoGEM, apvInfoDAQ> db_mc_apvInfoMap; // For MC, the mapping is reversed: GEM info is used as keys to get DAQ info as values.
 
 struct CommonMode {
   double mean{};
@@ -62,7 +67,7 @@ struct CommonMode {
 };
 
 using cmmap = std::map<int, CommonMode>; // Map CM mean and sigma values to each APV number.
-//using trackercmmap = std::map<int, cmmap>; // Map each APV to GEM planes. GEM plane# = GEM_ID*2 + Axis_no
+std::map<int, cmmap> trackercmmap; // Defining globally.
 
 // 
 struct Pedestal {
@@ -71,7 +76,7 @@ struct Pedestal {
 };
 
 using pedmap = std::map<int, Pedestal>; // Map ped mean and rms value to each strip number (physical strip #, as used in the digitization).
-//using trackerpedmap = std::map<int, pedmap>; // Map strip ped values to GEM planes.
+std::map<int, pedmap> trackerpedmap; // Defining globally.
 
 
 
@@ -79,12 +84,33 @@ int readlocalDB ( const string& db_name );
 int makeCMfile ( const string& cmfile_name, const string& cmfileout_name );
 int makePedfile ( const string& pedfile_name, const string& pedfileout_name );
 
+// Making the replay pedestal and common mode files for digitized GEM ADC samples.
+int readlocalMCDB ( const string& mcdb_name );
+int make_MCreplay_CMfile ( const string& mc_replay_cmfile_name );
+int make_MCreplay_Pedfile ( const string& mc_replay_pedfile_name );
 
-int genDigiGemPedandCM( const string db_name, const string cmfile_name, const string digicmoutfile_name, const string pedfile_name, const string digipedoutfile_name  ){
 
-	if ( readlocalDB(db_name) < 0 ) return -1;
-    if ( makeCMfile(cmfile_name,digicmoutfile_name) < 0 ) return -1;
-    if ( makePedfile(pedfile_name,digipedoutfile_name) < 0 ) return -1;
+int genDigiGemPedandCM( const string outname_prepend, const string db_name, const string realdatcmfile_name, const string realdatpedfile_name, 
+                        const bool makeMCreplayFiles = false, const string mcdb_name = "" ) {
+
+	if ( readlocalDB(db_name) < 0 ) return -1; // Real real data local DB file and make APV and GEM module mapping.
+
+    std::string digicmoutfile_name = outname_prepend + "_digiCM.dat";
+    std::string digipedoutfile_name = outname_prepend + "_digiPed.dat";
+    if ( makeCMfile(realdatcmfile_name,digicmoutfile_name) < 0 ) return -1;
+    if ( makePedfile(realdatpedfile_name,digipedoutfile_name) < 0 ) return -1;
+
+    if ( makeMCreplayFiles ) {
+        if ( mcdb_name.empty() ) {
+            std::cerr << "ERROR: MC DB file name is empty. Cannot generate MC replay files." << std::endl;
+            return -1;
+        }
+        if ( readlocalMCDB(mcdb_name) < 0 ) return -1;
+        std::string mc_replay_cmfile_name = outname_prepend + "_MCreplayDB_CM.dat";
+        std::string mc_replay_pedfile_name = outname_prepend + "_MCreplayDB_Ped.dat";
+        if ( make_MCreplay_CMfile(mc_replay_cmfile_name) < 0 ) return -1;
+        if ( make_MCreplay_Pedfile(mc_replay_pedfile_name) < 0 ) return -1;
+    }    
 
     return 0;
 }
@@ -134,7 +160,7 @@ int readlocalDB(const std::string& db_name) {
                         while (currentline.ReadLine(m_dbFile)) {
                             if (currentline.BeginsWith("#")) break;
                             TObjArray* tokens_chanmap = currentline.Tokenize(" ");
-                            if (tokens_chanmap->GetEntries() == 9 &&
+                            if (tokens_chanmap->GetEntries() >= 9 &&
                                 ((TObjString*)(*tokens_chanmap)[0])->GetString().IsDigit()) {
                                 int vtpcrate = ((TObjString*)(*tokens_chanmap)[0])->GetString().Atoi();
                                 int fiber    = ((TObjString*)(*tokens_chanmap)[2])->GetString().Atoi();
@@ -177,7 +203,9 @@ int makeCMfile(const std::string& cmfile_name, const string& cmfileout_name) {
         return -1;
     }
 
-    std::map<int, cmmap> trackercmmap; // digiplane -> (pos -> CM info)
+    //std::map<int, cmmap> trackercmmap; // digiplane -> (pos -> CM info)
+    trackercmmap.clear();
+
     TString currentline;
 
     while (currentline.ReadLine(m_cmfile)) {
@@ -277,7 +305,7 @@ int makePedfile(const std::string& pedfile_name, const string& pedfileout_name){
 
     InitAPVMAP();
 
-    std::map <int, pedmap> trackerpedmap;
+    trackerpedmap.clear();
     TString currentline;
     int apv_vtpcrate = -1; 
     int apv_fiber    = -1;
@@ -339,5 +367,173 @@ int makePedfile(const std::string& pedfile_name, const string& pedfileout_name){
 
     m_peddigifile.close();
     std::cout << "Ouput digi ped file " << pedfileout_name << " created.\n";
+    return 0;
+}
+
+
+int readlocalMCDB(const std::string& mcdb_name) {
+    std::cout << "Reading Local MC Database file " << mcdb_name << std::endl;
+    std::ifstream m_mcdbFile(mcdb_name);
+    if (!m_mcdbFile.is_open()) {
+        std::cerr << "ERROR: Could not open the MC DB file " << mcdb_name << std::endl;
+        return -1;
+    }
+
+    TString currentline;
+    // First pass: find nmodules
+    while (currentline.ReadLine(m_mcdbFile)) {
+        if (!currentline.BeginsWith("#")) {
+            TObjArray* tokens = currentline.Tokenize(" ");
+            if (tokens->GetEntries() > 1) {
+                TString skey = ((TObjString*)(*tokens)[0])->GetString();
+                if (skey == "nmodules") {
+                    db_mc_nmodules = ((TObjString*)(*tokens)[1])->GetString().Atoi();
+                }
+            }
+        }
+    }
+
+    if (db_mc_nmodules != db_nmodules) {
+        std::cerr << "The number of modules defined in the MC DB " << mcdb_name << ", does not match the number defined in the real data DB!!!" << std::endl;
+        return -1;
+    }
+
+    db_mc_modAPVmap.clear();
+    db_mc_modAPVmap.resize(db_nmodules);
+
+    m_mcdbFile.clear();
+    m_mcdbFile.seekg(0); // Reset file pointer for second pass
+
+    while (currentline.ReadLine(m_mcdbFile)) {
+        if (!currentline.BeginsWith("#")) {
+            TObjArray* tokens = currentline.Tokenize(" ");
+            if (tokens->GetEntries() >= 1) {
+                TString skey = ((TObjString*)(*tokens)[0])->GetString();
+                for (int i = 0; i < db_nmodules; i++) {
+                    if (skey == Form("m%i.chanmap", i)) {
+                        while (currentline.ReadLine(m_mcdbFile)) {
+                            if (currentline.BeginsWith("#")) break;
+                            TObjArray* tokens_chanmap = currentline.Tokenize(" ");
+                            if (tokens_chanmap->GetEntries() >= 9 &&
+                                ((TObjString*)(*tokens_chanmap)[0])->GetString().IsDigit()) {
+                                int vtpcrate = ((TObjString*)(*tokens_chanmap)[0])->GetString().Atoi();
+                                int fiber    = ((TObjString*)(*tokens_chanmap)[2])->GetString().Atoi();
+                                int adc_ch   = ((TObjString*)(*tokens_chanmap)[4])->GetString().Atoi();
+                                int gemid    = i;
+                                int pos      = ((TObjString*)(*tokens_chanmap)[6])->GetString().Atoi();
+                                int invert   = ((TObjString*)(*tokens_chanmap)[7])->GetString().Atoi();
+                                int axis     = ((TObjString*)(*tokens_chanmap)[8])->GetString().Atoi();
+
+                                apvInfoGEM thisAPVgeminfo{gemid, axis, pos, invert};
+                                apvInfoDAQ thisAPVdaqinfo{vtpcrate, fiber, adc_ch};
+                                db_mc_apvInfoMap[thisAPVgeminfo] = thisAPVdaqinfo;
+                            } else break;
+                            delete tokens_chanmap;
+                        }
+                    }                    
+                }
+            }
+            if (tokens->GetEntries()>1){
+               TString skey = ((TObjString*)(*tokens)[0])->GetString(); 
+               for (int i=0; i<db_nmodules; i++){
+                if(skey == Form("m%i.apvmap",i)){
+                    int thismodAPVmap = ((TObjString*)(*tokens)[1])->GetString().Atoi();
+                    db_mc_modAPVmap[i] = thismodAPVmap;
+                }
+               }
+            }
+            delete tokens;
+        }
+    }    
+    return 0;
+}
+
+int make_MCreplay_CMfile ( const string& mc_replay_cmfile_name ){
+
+    std::ofstream mcreplay_cmfile(mc_replay_cmfile_name);
+    if (  !mcreplay_cmfile.is_open() ) {
+        std::cerr << "ERROR: could not open MC replay CM file " << mc_replay_cmfile_name << std::endl;
+        return -1;
+    }
+    
+    mcreplay_cmfile << "#format = crate, slot, mpd, adc_ch, CM mean, CM RMS:\n";
+
+    for (const auto& [geminfo, daqinfo] : db_mc_apvInfoMap) {
+        int gemid = geminfo.gemid;
+        int axis  = geminfo.axis;
+        int pos   = geminfo.pos;
+
+        int digiplane_num = gemid * 2 + axis;
+
+        auto cm_it = trackercmmap.find(digiplane_num);
+        if (cm_it != trackercmmap.end()) {
+            const auto& apvcmmap = cm_it->second;
+            auto apv_cm_it = apvcmmap.find(pos);
+            if (apv_cm_it != apvcmmap.end()) {
+                const CommonMode& cminfo = apv_cm_it->second;
+                mcreplay_cmfile << daqinfo.vtpcrate << " "
+                                << daqinfo.fiber << " " // We use fiber ID for slot numer in the replay CM MC file.
+                                << daqinfo.fiber << " "
+                                << daqinfo.adc_ch << " "
+                                << cminfo.mean << " "
+                                << cminfo.sigma << "\n";
+            } else {
+                std::cerr << "Warning: No CM info found for GEM plane " << digiplane_num
+                          << " and APV position " << pos << std::endl;
+            }
+        } else {
+            std::cerr << "Warning: No CM info found for GEM plane " << digiplane_num << std::endl;
+        }
+    }
+
+    mcreplay_cmfile.close();
+    return 0;
+}
+
+int make_MCreplay_Pedfile ( const string& mc_replay_pedfile_name ){
+
+    std::ofstream mcreplay_pedfile(mc_replay_pedfile_name);
+    if (  !mcreplay_pedfile.is_open() ) {
+        std::cerr << "ERROR: could not open MC replay ped file " << mc_replay_pedfile_name << std::endl;
+        return -1;
+    }
+    
+    mcreplay_pedfile << "# format = APV  crate  slotmpd_id  adc_ch followed by" << std::endl;
+    mcreplay_pedfile << "# MC_APV_ channel_ number  pedestal mean  pedestal rms" << std::endl;
+
+    for (const auto& [geminfo, daqinfo] : db_mc_apvInfoMap) {
+        int gemid = geminfo.gemid;
+        int axis  = geminfo.axis;
+        int pos   = geminfo.pos;
+        int firststrip_gemplane = pos * 128; // First physical strip number for this APV in the GEM plane.
+
+        int digiplane_num = gemid * 2 + axis;
+
+        // Print APV header line for each APV
+        mcreplay_pedfile << "APV " << daqinfo.vtpcrate << " "
+                         << daqinfo.fiber << " " // We use fiber ID for slot numer in the replay ped MC file.
+                         << daqinfo.fiber << " "
+                         << daqinfo.adc_ch << "\n";
+
+        auto ped_it = trackerpedmap.find(digiplane_num);
+        if (ped_it != trackerpedmap.end()) {            
+            const auto& apvpedmap = ped_it->second;
+            
+            for ( int i = 0; i < 128; i++ ){
+                int gemplane_stripnum = firststrip_gemplane + i; // Physical strip number in the GEM plane.
+                auto strip_it = apvpedmap.find(gemplane_stripnum);
+                if (strip_it != apvpedmap.end()) {
+                    const Pedestal& pedinfo = strip_it->second; 
+                    mcreplay_pedfile << i << " " // MC APV channel number == APV physical strip number.
+                                     << pedinfo.mean << " "
+                                     << pedinfo.rms << "\n";
+                }
+            }           
+        } else {
+            std::cerr << "Warning: No pedestal info found for GEM plane " << digiplane_num << std::endl;
+        }
+    }
+
+    mcreplay_pedfile.close();
     return 0;
 }
