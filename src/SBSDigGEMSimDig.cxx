@@ -89,10 +89,12 @@ SBSDigGEMSimDig::
 SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
                                  double *gain, double zsup_thr, int napv,
                                  double *commonmode_array, bool do_variable_pedcm, bool do_cmsag,
-                                 bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma, bool make_online_cmplots)
+                                 bool do_online_cm, bool do_online_zs, double online_zs_thr_nsigma, bool make_online_cmplots,
+                                bool do_APV_offsets, std::string APV_offset_file)
                                 : fZeroSup(zsup_thr), fDoVariablePedCM(do_variable_pedcm), fDoCMSag(do_cmsag),
                                   fDoOnlineCommonMode(do_online_cm), fDoOnlineZeroSuppression(do_online_zs), 
-                                  fOnlineZSThrNsigma(online_zs_thr_nsigma), fMakeOnlineCMplots(make_online_cmplots) {
+                                  fOnlineZSThrNsigma(online_zs_thr_nsigma), fMakeOnlineCMplots(make_online_cmplots)
+                                {
   // TODO: pass as parameters.
   fAvaGain = gain[0];
   fNSamples = 6;
@@ -103,7 +105,17 @@ SBSDigGEMSimDig::SBSDigGEMSimDig(int nchambers, double *trigoffset,
     cout << i << "/" << nchambers << ": " << fTriggerOffset[i] << endl;
   }
   // Load APV offsets from file
-  LoadAPVOffsets("/w/halla-scshelf2102/sbs/mcjacob/sbsoffline/SBS-replay/GEP-Analysis/output/Digi.txt");  // TODO: pass filename as parameter
+  if (do_APV_offsets) {
+    fdo_APV_offsets = true;
+    const char* env_libsbsdig = std::getenv("LIBSBSDIG");
+    LoadAPVOffsets((std::string(env_libsbsdig) + "/db/" + APV_offset_file).c_str());
+    cout << "APV offsets applied from file: " << (std::string(env_libsbsdig) + "/db/" + APV_offset_file).c_str() << endl;
+  }
+  else {
+    cout << "APV offsets not applied." << endl;
+  }
+
+  //LoadAPVOffsets("/w/halla-scshelf2102/sbs/mcjacob/sbsoffline/SBS-replay/GEP-Analysis/output/Digi.txt");  // TODO: pass filename as parameter
 
   fDoZeroSup = (fZeroSup > 0);
   if (napv) {
@@ -1122,7 +1134,7 @@ inte4 << endl;
       const int plane = ic * 2 + ipl;
       const int apv = (iL + j) / fNAPVChannels;
       double apv_offset = 0.0;
-      if (plane >= 0 && plane < static_cast<int>(fAPVOffsets.size())) {
+      if (fdo_APV_offsets==1 && plane < static_cast<int>(fAPVOffsets.size())) {
         const auto offset = fAPVOffsets[plane].find(apv);
         if (offset != fAPVOffsets[plane].end()) apv_offset = offset->second;
       }
@@ -1366,7 +1378,7 @@ void SBSDigGEMSimDig::AvaModel_2(const int ic, SBSDigGEMDet *gemdet,
       const int plane = ic * 2 + ipl;
       const int apv = (iL + j) / fNAPVChannels;
       double apv_offset = 0.0;
-      if (plane >= 0 && plane < static_cast<int>(fAPVOffsets.size())) {
+      if (fdo_APV_offsets==1 && plane >= 0 && plane < static_cast<int>(fAPVOffsets.size())) {
         const auto offset = fAPVOffsets[plane].find(apv);
         if (offset != fAPVOffsets[plane].end()) apv_offset = offset->second;
       }

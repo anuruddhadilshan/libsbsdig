@@ -318,6 +318,10 @@ int main(int argc, char** argv){
   Double_t online_zs_thr_nsigma_ft = 3.0;
   bool make_online_cmplots_ft = false;
 
+  //APV Timing Offsets
+  bool do_APV_offsets_ft = false;
+  std::string APV_offset_file_ft = "";
+
   int nparam_fpp1_read = 0;
   Int_t NPlanes_fpp1 = 40;// number of planes/modules/readout
   Double_t gatewidth_fpp1 = 400.;
@@ -3061,6 +3065,18 @@ int main(int argc, char** argv){
     make_online_cmplots_ft = stemp.Atoi();
   }
 
+  if(skey=="do_APV_offsets_ft"){
+    cout << "reading " << skey.Data() << endl;
+    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+    do_APV_offsets_ft = stemp.Atoi();
+  }
+
+  if(skey=="APV_offsets_file_ft"){
+    cout << "reading " << skey.Data() << endl;
+    TString stemp = ( (TObjString*) (*tokens)[1] )->GetString();
+    APV_offset_file_ft = stemp.Data();
+  }
+
 	
 	//FPP1
 	if(skey=="NPlanes_fpp1"){
@@ -3526,7 +3542,7 @@ int main(int argc, char** argv){
       //SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft);
       
       SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft, do_cmsag_ft, cmfitfile_ft);      
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_cmsag_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_cmsag_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft, do_APV_offsets_ft, APV_offset_file_ft);
       for(int m = 0; m<Nlayers_ft; m++){
 	     ft->fZLayer.push_back(ft_layer_z[m]);
       }
