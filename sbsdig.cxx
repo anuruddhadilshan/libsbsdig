@@ -3542,7 +3542,7 @@ int main(int argc, char** argv){
       //SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft);
       
       SBSDigGEMDet* ft = new SBSDigGEMDet(FT_UNIQUE_DETID, NPlanes_ft, layer_ft, nstrips_ft, offset_ft, RO_angle_ft, 6, ZsupThr_ft, do_pedcm_ft, pedfile_ft, cmfile_ft, do_cmsag_ft, cmfitfile_ft);      
-      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_cmsag_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft, do_APV_offsets, APV_offset_file);
+      SBSDigGEMSimDig* gemdig = new SBSDigGEMSimDig(NPlanes_ft/2, triggeroffset_ft, gain_ft, ZsupThr_ft, nAPV_ft, commonmode_array_ft, do_pedcm_ft, do_cmsag_ft, do_online_cm_ft, do_online_zs_ft, online_zs_thr_nsigma_ft, make_online_cmplots_ft, do_APV_offsets_ft, APV_offset_file_ft);
       for(int m = 0; m<Nlayers_ft; m++){
 	     ft->fZLayer.push_back(ft_layer_z[m]);
       }
