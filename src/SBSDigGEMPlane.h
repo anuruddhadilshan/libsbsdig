@@ -61,7 +61,7 @@ class SBSDigGEMPlane {
   Double_t Xoffset(){return fXoffset;};
   Double_t ROangle(){return fROangle;};
   Int_t GetNStrips(){return fNStrips;};
-  Short_t GetADC(int strip, int samp){return  fStripADC[strip*fNSamples+samp];};
+  Int_t GetADC(int strip, int samp){return  fStripADC[strip*fNSamples+samp];};
   Int_t GetADCSum(int strip){return fStripADCsum[strip];};
   Int_t GetGoodADCSum(int strip){return fStripMipADCsum[strip];};
   void SetADC(int strip, int samp, int adc){
@@ -129,7 +129,7 @@ class SBSDigGEMPlane {
   Int_t fNAPVs; // Number of APV cards in the GEM plane.
   Double_t fStripThr;//threshold for ADC sum
   Int_t* fStripADCsum;
-  Short_t* fStripADC;
+  Int_t* fStripADC; // Accumulate overlapping signals without 16-bit wraparound before saturation.
   Short_t* fStripPedSubADC; // Pedestal subtracted ADC of the strip -> For online CM calcualtions.
   Short_t* fStripCMCorrADC; // Online Danning method CM corrected ADC of the strip -> For online CM calculations.
   Int_t* fStripMipADCsum;

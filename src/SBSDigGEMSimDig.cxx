@@ -1944,12 +1944,6 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
           R->Gaus(0., gemdet->GEMPlanes[i].GetStripPedRMS(j)*fSqrtOfSix) + // Multiply by sqrt(6) to get the ped noise for a single TS.
           commonmode_apv_ts.at(k)));
 
-          // Handle saturation.
-          if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
-              gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
-          }          
         }
       }
       // else if ( !sigonly && fDoVariablePedCM && !fDoOnlineCommonMode /*(&& gemdet->GEMPlanes[i].GetADCSum(j) > 0*/ ) {
@@ -1992,16 +1986,19 @@ void SBSDigGEMSimDig::CheckOut(SBSDigGEMDet *gemdet, const int uniqueid,
               gemdet->GEMPlanes[i].AddADC(j, k,
               TMath::Nint(R->Gaus(commonmode,fPulseNoiseSigma)));
                         
-            // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " " <<
-            // gemdet->GEMPlanes[i].GetADCSum(j)<< endl; handle saturation
-            if (gemdet->GEMPlanes[i].GetADC(j, k) > pow(2, fADCbits)) {
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << " => ";
-              gemdet->GEMPlanes[i].SetADC(j, k, TMath::Nint(pow(2, fADCbits)));
-              // cout << gemdet->GEMPlanes[i].GetADC(j, k) << endl;
-            }
           }
         }
       }
+      // Saturate after signal/noise/CM accumulation, before output or online CM/ZS.
+      // Keep the existing +4096 convention and preserve signed negative samples.
+      // Apply the same upper limit to signal-only digitization as well.
+      const Int_t adcSaturation = 1 << fADCbits;
+      for (int k = 0; k < fNSamples; k++) {
+        if (gemdet->GEMPlanes[i].GetADC(j, k) > adcSaturation) {
+          gemdet->GEMPlanes[i].SetADC(j, k, adcSaturation);
+        }
+      }
+
       // #ifdef
       //  if( (fDoZeroSup &&
       //  gemdet->GEMPlanes[i].GetADCSum(j)-commonmode*6>fZeroSup) ||

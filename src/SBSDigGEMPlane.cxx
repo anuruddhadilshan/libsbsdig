@@ -20,7 +20,7 @@ SBSDigGEMPlane::SBSDigGEMPlane(short trackeruniqueid, short layer, short mod, in
   fdX = fNStrips*4.e-4;
   
   fStripADCsum = new Int_t[fNStrips];
-  fStripADC = new Short_t[fNStrips*fNSamples];
+  fStripADC = new Int_t[fNStrips*fNSamples];
   fStripMipADCsum = new Int_t[fNStrips];
   fStripMipADC = new Short_t[fNStrips*fNSamples];
   fStripPedSubADC = new Short_t[fNStrips*fNSamples];
@@ -51,7 +51,7 @@ SBSDigGEMPlane::~SBSDigGEMPlane()
 void SBSDigGEMPlane::Clear()
 {
   memset(fStripADCsum, 0, fNStrips*sizeof(Int_t));
-  memset(fStripADC, 0, fNStrips*fNSamples*sizeof(Short_t));
+  memset(fStripADC, 0, fNStrips*fNSamples*sizeof(*fStripADC));
   memset(fStripPedSubADC, 0, fNStrips*fNSamples*sizeof(Short_t));
   memset(fStripCMCorrADC, 0, fNStrips*fNSamples*sizeof(Short_t));
   memset(fStripMipADCsum, 0, fNStrips*sizeof(Int_t));
